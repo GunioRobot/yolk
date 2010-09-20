@@ -1,0 +1,29 @@
+# All keys used in this file _must_ be defined in the Configuration.Types
+# type in core/configuration.ads.
+#
+# The path to this file is defined in Configuration.Config_File. It defaults
+# to same folder as the executable, ie. plain "config.ini".
+
+#######################
+#  Resource handlers  #
+#######################
+
+# These Key/Value pairs are literal names and regular expressions used to
+# define which dispatcher is used for a given resource.
+#
+# NOTE:
+#   Remember that the content is served on a "first hit" basis, meaning that
+#   the first handler to return true wins.
+#
+# All dispatchers are set in the Handlers.Initialize procedure.
+
+Handler_Foo /[fF]oo
+Handler_Index /|/[Ii]ndex
+
+############################
+#  Path To Template Files  #
+############################
+
+Template_Foo templates/website/foo.tmpl
+Template_Index templates/website/index.tmpl
+

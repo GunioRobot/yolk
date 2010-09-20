@@ -1,0 +1,39 @@
+--  TODO: Write some comments in this file.
+
+with "aws";
+with "gnatcoll_postgres";
+
+project Yolk is
+
+   for Source_Dirs use (".",
+                        "core",
+			"my_configuration",
+                        "my_database",
+                        "my_handlers",
+                        "my_view");
+
+   for Main use ("yolk.adb");
+
+   for Exec_Dir use "exe";
+
+   for Object_Dir use "build";
+
+   package Ide is
+
+      for Compiler_Command ("ada") use "/usr/gnat/bin/gnatmake";
+
+   end Ide;
+
+   package Compiler is
+
+      Common_Options := ("-gnatwa",
+                         "-gnaty3abcdefhiklmnoprstux",
+                         "-Wall",
+                         "-O2",
+                         "-gnat05");
+
+     for Default_Switches ("Ada") use Common_Options;
+
+   end Compiler;
+
+end Yolk;

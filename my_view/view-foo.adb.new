@@ -1,0 +1,43 @@
+with AWS.MIME;
+with AWS.Templates;     use AWS.Templates;
+with My_Configuration;  use My_Configuration;
+with Rotating_Log;      use Rotating_Log;
+
+package body View.Foo is
+
+   ---------------
+   --  Generate --
+   ---------------
+
+   function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
+   is
+
+      Content           : AWS.Response.Data;
+      Resource_String   : constant String := Resource ("Foo");
+      T                 : Translate_Set;
+
+   begin
+
+      Track (Handle     => Info,
+             Log_String => Resource_String);
+
+      Track (Handle     => Error,
+             Log_String => Resource_String);
+
+      Insert (T, Assoc ("RESOURCE", Resource_String));
+      Insert (T, Assoc ("HANDLER", String'(Get (Handler_Foo))));
+      Insert (T, Assoc ("TEMPLATE", String'(Get (Template_Foo))));
+      Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
+
+      Content := AWS.Response.Build
+        (Content_Type => AWS.MIME.Text_HTML,
+         Message_Body => Parse
+           (Filename     => Get (Template_Foo),
+            Translations => T,
+            Cached       => True));
+
+      return Content;
+
+   end Generate;
+
+end View.Foo;
