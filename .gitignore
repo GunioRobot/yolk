@@ -1,0 +1,22 @@
+# Do not track build objects.
+build/*.o
+build/*.ali
+
+# Do not track .ini files
+exe/configuration/*.ini
+exe/*.ini
+
+# Do not track template .tmpl files
+exe/templates/system/*.tmpl
+exe/templates/website/*.tmpl
+
+# Do not track the Yolk executable
+exe/yolk
+
+# Do not track Ada source code files in the my_* directories
+my_configuration/*.adb
+my_configuration/*.ads
+my_handlers/*.adb
+my_handlers/*.ads
+my_view/*.adb
+my_view/*.ads

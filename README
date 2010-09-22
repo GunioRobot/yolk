@@ -8,7 +8,8 @@ Contents of this README:
     4. The Yolk Structure
     5. Using Yolk
     6. Getting Rid Of The GNATCOLL/PostgreSQL Dependency
-    7. References
+    7. Fixing The .gitignore File
+    8. References
 
 -------------------
 --  Introduction --
@@ -153,6 +154,16 @@ bunch of object files in the build/ directory.
 --  Getting Rid Of The GNATCOLL/PostgreSQL Dependency  --
 ---------------------------------------------------------
 
+----------------------------------
+--  Fixing The .gitignore File  --
+----------------------------------
+In the top level Yolk directory there's a .gitignore file. You should adjust
+this so that your own .ini, .tmpl, .ad[bs] files are tracked. This is of
+course only necessary to worry about, if you intend to use Git as your SCM.
+
+These files are not tracked by default. Instead the .example files are tracked.
+This makes it easier to upgrade to a newer Yolk version, without having to
+worry about overwriting ones own files.
 
 ------------------
 --  References  --
