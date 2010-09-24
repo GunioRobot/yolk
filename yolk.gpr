@@ -8,6 +8,7 @@ project Yolk is
    for Source_Dirs use (".",
                         "core",
 			"my_configuration",
+			"my_core",
                         "my_database",
                         "my_handlers",
                         "my_view");
