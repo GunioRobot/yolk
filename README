@@ -4,7 +4,7 @@ Contents of this README:
 
     1. Introduction
     2. Dependencies
-    3. Compiling Yolk
+    3. Compiling And Trying Out Yolk
     4. The Yolk Structure
     5. Using Yolk
     6. Getting Rid Of The GNATCOLL/PostgreSQL Dependency
@@ -15,7 +15,8 @@ Contents of this README:
 --  Introduction --
 -------------------
 
-Yolk is an Ada based web-framework that sits on top of AWS[1] and GNATCOLL[2].
+Yolk is an Ada based web-framework that sits on top of AWS[1], XML/Ada[2], 
+GNATCOLL[3] and PostgreSQL[4].
 With Yolk some of the tasks involved in developing a web-application using Ada,
 AWS and GNATCOLL is made simpler and a specific style is enforced in regards to
 how the application is made.
@@ -29,6 +30,7 @@ convenience. Some of things that Yolk make very easy are:
     * Adding new resources to your web application
     * Loading configuration files
     * Handling the most common static content types (HTML, PNG, ICO and so on)
+    * Easy RSS 2.0 generation
 
 Yolk is not a magic bullet though. If your needs are very complex, you might
 be better off using plain AWS.
@@ -37,22 +39,72 @@ be better off using plain AWS.
 --  Dependencies  --
 --------------------
 
-Yolk depends on four things:
+Yolk depends on five things:
 
-    1. AWS[1]
-    2. GNATCOLL[2]
-    3. PostgreSQL[3]
-    4. An Ada 2005 compiler[4]
+    1. An Ada 2005 compiler[5]
+    2. AWS
+    3. XML/Ada
+    4. GNATCOLL
+    5. PostgreSQL
 
-The path to the AWS and GNATCOLL project files must be added to the
+The path to the AWS, XML/Ada and GNATCOLL project files must be added to the
 ADA_PROJECT_PATH environment variable, or else your Yolk project wont
 compile.
 
+My usual modus operandi for setting up these 5 things goes something like this:
+
+    1.  Install GNAT GPL in its default location (/usr/gnat)
+    2.  Install XML/Ada in /usr/gnat (./configure --prefix=/usr/gnat)
+    3.  Install GNATCOLL in /usr/gnat:
+    
+            /configure --prefix=/usr/gnat \
+            --disable-gtk \
+            --disable-pygtk \
+            --without-python \
+            --with-postgresql=/usr/include/postgresql \
+            --without-sqlite \
+            --disable-syslog
+            
+    4.  Install AWS in its default location. See makefile.conf for further
+        information. After having run "$ make setup", be sure to check that 
+        makefile.setup contains the correct information. It should look
+        something like this, of course depending on how much you've enabled
+        in the makefile.conf file:
+        
+            prefix=/usr/gnat/bin/..
+            DEFAULT_LIBRARY_TYPE=static
+            DEFAULT_TARGET=native
+            ENABLE_SHARED=true
+            ZLIB=true
+            XMLADA=true
+            ASIS=false
+            IPv6=false
+            SOCKET=std
+            LDAP=false
+            DEBUG=false
+            CJOBS=2
+            DEMOS=false
+            TARGET=native
+            
+    5.  Add /usr/gnat/bin to your PATH environment variable.
+    6.  Add /usr/gnat/lib/gnat to your ADA_PROJECT_PATH environment variable.
+
+For reference, I can say that on my Slackware Linux system, I have the AWS,
+XML/Ada and GNATCOLL project files available in these directories:
+
+    /usr/gnat/lib/gnat/aws.gpr
+    /usr/gnat/lib/gnat/xmlada.gpr
+    /usr/gnat/lib/gnat/gnatcoll_postgresql.gpr
+
+My ADA_PROJECT_PATH environment variable hence contains this:
+
+    /usr/gnat/lib/gnat
+
+If your distribution provides pre-made packages for all of this, you should
+probably use those instead.
+
 PostgreSQL must be installed on both the system where the Yolk application is
 compiled and on the system where the application will be running.
-
-GNATCOLL must be compiled with the --with-postgresql=<dir> configuration option
-set.
 
 The GNATCOLL/PostgreSQL dependencies are a bit annoying for applications that
 doesn't need access to a RDBMS, but I've found that those applications are few
@@ -62,19 +114,9 @@ document. The process is a bit involved but if you've managed to compile AWS
 and setup an Ada compiler, then I'm sure messing around in the very simple Yolk
 source code will be a walk in the park.
 
-For reference, I can say that on my Slackware Linux system, I have the AWS and
-GNATCOLL project files available in these directories:
-
-    /usr/gnat/lib/gnat/aws.gpr
-    /usr/local/lib/gnat/gnatcoll_postgresql.gpr
-
-My ADA_PROJECT_PATH environment variable hence contains these two paths:
-
-    /usr/gnat/lib/gnat:/usr/local/lib/gnat
-
-----------------------
---  Compiling Yolk  --
-----------------------
+-------------------------------------
+--  Compiling And Trying Out Yolk  --
+-------------------------------------
 
 When you clone Yolk from the offical Git repository, what you get is not 
 immediately ready to be compiled. If you try:
@@ -91,45 +133,44 @@ You'll end up with an error that looks something like this:
     yolk.adb:27:06: "Handlers (spec)" depends on "My_Handlers (spec)"
     gnatmake: "/path/to/Yolk/yolk.adb" compilation error
 
-The reason for this is simple: All the files that you must do something with
-in order for Yolk to produce output to a browser are marked with a .example
+The reason for this is simple: Most o the files that you must do something with
+in order for Yolk to produce output to a browser are marked with an .example
 extension. This has been done to clearly mark the files in which changes must
 and will be done in order for _your_ version of Yolk to function.
 
 So the first we thing we need to do is find all the .example files and get rid
-of the .example extension.
+of the .example extension. For this we have the tools/start.sh script:
 
     $ cd /path/to/yolk.gpr
-    $ find . -name *.example
+    $ tools/start.sh
 
-That should result in output similar to this:
+That should result in some output clearly telling you that a bunch of 
+.example file has been copied to their .example-less equivalent.
 
-    ./my_configuration/my_configuration.ads.example
-    ./my_configuration/my_configuration.adb.example
-    ./my_handlers/my_handlers.adb.example
-    ./my_handlers/my_handlers.ads.example
-    ./my_view/view.ads.example
-    ./my_view/view-index.ads.example
-    ./my_view/view-index.adb.example
-    ./my_view/view-foo.adb.example
-    ./my_view/view.adb.example
-    ./my_view/view-foo.ads.example
-    ./exe/configuration/GNATCOLL.SQL.Logs.ini.example
-    ./exe/configuration/config.ini.example
-    ./exe/configuration/my_config.ini.example
-    ./exe/templates/system/404.tmpl.example
-    ./exe/templates/website/index.tmpl.example
-    ./exe/templates/website/foo.tmpl.example
-    ./exe/aws.ini.example
-
-Those 17 files must have their .example extension removed either by renaming
-or copying. When that is done we can try compiling Yolk again:
+Now lets try compiling Yolk again:
 
     $ cd /path/to/yolk.gpr
     $ gnatmake -P yolk.gpr
 
 This time the result should be a yolk executable in the exe/ directory and a
-bunch of object files in the build/ directory.
+bunch of object files in the build/ directory. Starting Yolk is as simple as:
+
+    $ cd /path/to/yolk/exe
+    $ ./yolk
+
+You should now see something happening in the exe/logs/ directory, and you
+can access the demo Yolk website by visiting http://localhost:8080 using any
+browser.
+
+To see the status page for the application, go to http://localhost:8080/status
+and enter admin as username and changemenow as password. Please make sure that
+this password is changed before you go public with your application.
+
+You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
+found in the yolk.pid file.
+
+If you can see the status page and the two demo content pages (Index and Foo),
+then you're ready to build your own application.
 
 --------------------------
 --  The Yolk Structure  --
@@ -171,15 +212,19 @@ worry about overwriting ones own files.
 [1]
     Ada Web Server
     http://libre.adacore.com/libre/tools/aws/
-
+    
 [2]
+    XML/Ada
+    http://libre.adacore.com/libre/tools/xmlada/
+
+[3]
     GNAT Component Collection
     http://libre.adacore.com/libre/tools/gnat-component-collection/
 
-[3]
+[4]
     PostgreSQL
     http://www.postgresql.org/
 
-[4]
+[5]
     I personally use the GNAT GPL compiler from AdaCore
     http://libre.adacore.com/libre/

@@ -13,6 +13,9 @@ exe/templates/website/*.tmpl
 # Do not track the Yolk executable
 exe/yolk
 
+# Do not track the log files
+exe/logs/*.log
+
 # Do not track Ada source code files in the my_* directories
 my_configuration/*.adb
 my_configuration/*.ads
