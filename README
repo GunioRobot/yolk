@@ -26,7 +26,7 @@ accomplished using plain AWS and GNATCOLL. It is, for lack of a better term, a
 convenience. Some of things that Yolk make very easy are:
 
     * Sending simple (no attachment) HTML/text emails from the application
-    * Setting up rotating log files
+    * Setting up rotating log files and handling basic log file management
     * Adding new resources to your web application
     * Loading configuration files
     * Handling the most common static content types (HTML, PNG, ICO and so on)
@@ -110,9 +110,7 @@ The GNATCOLL/PostgreSQL dependencies are a bit annoying for applications that
 doesn't need access to a RDBMS, but I've found that those applications are few
 and far between. If you absolutely don't want those dependencies, then take a
 look at the "Getting Rid Of The GNATCOLL/PostgreSQL Dependency" section of this
-document. The process is a bit involved but if you've managed to compile AWS
-and setup an Ada compiler, then I'm sure messing around in the very simple Yolk
-source code will be a walk in the park.
+document.
 
 -------------------------------------
 --  Compiling And Trying Out Yolk  --
@@ -235,10 +233,10 @@ my_database/
     You can of course also use this directory for other database related code.
     
 my_handlers/
-    The two my_handlers.ad[sb] found here are required in order for the Yolk app-
-    lication to function properly. The default Yolk application define two resource
-    handlers. You can freely add/remove handlers in these files. See the README
-    file in the directory for more information.
+    The two my_handlers.ad[bs] files found here are required in order for the Yolk
+    application to function properly. The default Yolk application define two
+    resource handlers. You can freely add/remove handlers in these files. See the
+    README file in the directory for more information.
     
 my_view/
     This is where you're supposed to place the meat of your application: The code
@@ -263,9 +261,56 @@ accompanying core/ files, without having to worry about overwriting your own cod
 --  Using Yolk  --
 ------------------
 
+There's a short process you will have to go through before building a new Yolk
+application:
+
+    1. Download and unpack Yolk. See the Dependencies and Compiling Yolk sections.
+    2. Run the tools/startup.sh script.
+    3. Verify that the default Yolk application works.
+    4. Adjust the my_configuration.ad[bs] files to suit your needs.
+    5. Adjust the my_handlers.ad[bs] to account for your content.
+    6. Add my_view/view.xxx files for all your resources.
+    
+You should of course read all configuration files and make sure you understand what
+the different settings do.
+
+When starting a Yolk application, a PID file is placed in the exe/ directory. The
+process ID of the running application can be found in this file. The PID file is 
+destroyed when the application exits. The Yolk application does _not_ fork to 
+background, so if you want to avoid blocking the shell, use the & character to send
+it into the background:
+
+    $ yolk &
+
+The application can be properly shutdown using the following four signals:
+
+    1. SIGHUP
+    2. SIGINT
+    3. SIGTERM
+    4. SIGPWR
+    
+Or you can simply bring it to the foreground and click CTRL+c.
+
+Managing the log files is done auto-magically. You do not have to worry about his,
+as long as your log file configuration settings are sane.
+
+The source files are self-documenting, meaning that they are commented in a way 
+that makes it easy to "get" what is going on, so if you want to know how to send
+and email using Yolk, just open the two core/simple_email.ad[bs] files and read
+source. In some cases there will even be usage examples in the source code.
+
+The official AWS, GNATCOLL and XMLAda documentation is handy to have nearby when
+building web applications using Yolk, as much of the functionality is bound to 
+involve one or more of these projects. These docs are not included in Yolk.
+
 ---------------------------------------------------------
 --  Getting Rid Of The GNATCOLL/PostgreSQL Dependency  --
 ---------------------------------------------------------
+
+If you're not using PostgreSQL, you can get rid of it simply by removing the 
+with "gnatcoll_postgres"; line in yolk.gpr.
+
+Yes, it's that simple.
 
 ----------------------------------
 --  Fixing The .gitignore File  --

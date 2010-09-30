@@ -1,7 +1,8 @@
 --  TODO: Write some comments in this file.
 
 with "aws";
-with "gnatcoll_postgres";
+with "gnatcoll";
+--  with "gnatcoll_postgres";
 
 project Yolk is
 
