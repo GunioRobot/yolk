@@ -1,8 +1,9 @@
---  TODO: Write some comments in this file.
+--  To get rid of the PostgreSQL dependency, just comment the
+--  with "gnatcoll_postgres" line.
 
 with "aws";
 with "gnatcoll";
---  with "gnatcoll_postgres";
+with "gnatcoll_postgres";
 
 project Yolk is
 
