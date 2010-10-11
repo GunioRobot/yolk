@@ -22,7 +22,6 @@
 -------------------------------------------------------------------------------
 
 with My_Configuration;  use My_Configuration;
-with View.Foo;
 with View.Index;
 
 package body My_Handlers is
