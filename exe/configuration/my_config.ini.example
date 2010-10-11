@@ -17,13 +17,42 @@
 #
 # All dispatchers are set in the Handlers.Initialize procedure.
 
-Handler_Foo /[fF]oo
 Handler_Index /|/[Ii]ndex
 
 ############################
 #  Path To Template Files  #
 ############################
 
-Template_Foo templates/website/foo.tmpl
 Template_Index templates/website/index.tmpl
 
+##############
+#  Database  #
+##############
+
+DB_Name
+# String.
+# Default: [no value]
+# The name of the database we want to connect to.
+
+DB_Host
+# String.
+# Default: [no value]
+# The host where the database resides.
+
+DB_User
+# String.
+# Default: [no value]
+# The database user.
+
+DB_Password
+# String.
+# Default: [no value]
+
+###########
+#  Email  #
+###########
+
+SMTP
+# String.
+# Default: [no value]
+# The SMTP server used by the Simple_Email package to send email.

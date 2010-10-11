@@ -1,0 +1,96 @@
+body {
+    height: 100%;
+    width: 100%;
+    font-family: arial, helvetica, sans-serif;
+    font-size: 14px;
+    background-color: #fffffa;
+    margin: 0px;
+    padding: 0px;
+}
+
+p {
+    font-size: 14px;
+    color: #444;
+    background-color: inherit;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+dl {
+    margin-left: 15px;
+}
+
+dt {
+    margin-top: 15px;
+}
+
+dd {
+    font-size: 12px;
+    color: #444;
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+a {
+    color: #000080;
+    background-color: inherit;
+}
+
+a:hover {
+    color: #add8e6; 
+    background-color: inherit;
+}
+
+#content {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 7%;
+    border: solid 1px #d3d3d3;
+    width: 570px;
+    padding: 15px;
+    position: relative;
+}
+
+#content div {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: -6px;
+}
+
+#box1 {
+    background-color: #d3d3d3;
+    left: 555px;
+}
+
+#box2 {
+    background-color: #800000;
+    left: 570px;
+}
+
+#box3 {
+    background-color: #808080;
+    left: 585px;
+}
+
+#headline {
+    margin: 0px;
+    position: absolute;
+    font-size: 16px;
+    top: -16px;
+    color: #808080;
+    background-color: inherit;    
+}
+
+#w3c {
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+    text-align: right;
+    padding-top: 5px;
+    padding-right: 5px;
+}
+
+#w3c img {
+    border: none;
+}

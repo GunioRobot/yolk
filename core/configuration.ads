@@ -34,10 +34,6 @@ with Config_File_Parser;
 package Configuration is
 
    type Keys is (CSS_Path,
-                 DB_Host,
-                 DB_Name,
-                 DB_User,
-                 DB_Password,
                  GIF_Path,
                  GNATCOLL_Traces_Ini_File,
                  Handler_CSS,
@@ -60,7 +56,6 @@ package Configuration is
                  Max_Logged_Characters,
                  PNG_Path,
                  Session_Data_File,
-                 SMTP,
                  System_Templates_Path,
                  XML_Path,
                  XSL_Path);
@@ -89,10 +84,6 @@ private
      To_Unbounded_String;
    Defaults_Array : constant Defaults :=
                       (CSS_Path                 => TUS ("static_content/css"),
-                       DB_Host                  => TUS (""),
-                       DB_Name                  => TUS (""),
-                       DB_User                  => TUS (""),
-                       DB_Password              => TUS (""),
                        GIF_Path                 => TUS ("static_content/gif"),
                        GNATCOLL_Traces_Ini_File =>
                          TUS ("configuration/GNATCOLL.SQL.Logs.ini"),
@@ -117,7 +108,6 @@ private
                        PNG_Path                 => TUS ("static_content/png"),
                        Session_Data_File        =>
                          TUS ("session/session.data"),
-                       SMTP                     => TUS (""),
                        System_Templates_Path    => TUS ("templates/system"),
                        XML_Path                 => TUS ("static_content/xml"),
                        XSL_Path                 => TUS ("static_content/xsl"));

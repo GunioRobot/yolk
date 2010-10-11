@@ -211,35 +211,3 @@ Handler_Unknown [^status].*
 # The regular expression used to decide if a requested resource is unknown.
 # This handler is only called of none of the other handlers match the resource.
 
-##############
-#  Database  #
-##############
-
-DB_Name
-# String.
-# Default: [no value]
-# The name of the database we want to connect to.
-
-DB_Host
-# String.
-# Default: [no value]
-# The host where the database resides.
-
-DB_User
-# String.
-# Default: [no value]
-# The database user.
-
-DB_Password
-# String.
-# Default: [no value]
-
-###########
-#  Email  #
-###########
-
-SMTP
-# String.
-# Default: [no value]
-# The SMTP server used by the Simple_Email package to send email.
-

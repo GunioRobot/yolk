@@ -1,16 +1,48 @@
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>
-        Yolk
-    </title>
-</head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=iso-8859-1" />
+        <link rel="stylesheet" type="text/css" href="index.css" />
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <title>
+            Yolk is alive!
+        </title>
+    </head>
 <body>
-    <h3>Your Yolk/AWS install is up and running!</h3>
-    <p>@_RESOURCE_@</p>
-    <p>URI: @_URI_@</p>
-    <p>Handler_Index: @_HANDLER_@</p>
-    <p>Template_Index: @_TEMPLATE_@</p>
-    <p>Go to the <a href="/Foo">Foo resource</a>.</p>
+    <div id="content">
+        <div id="box1"></div>
+        <div id="box2"></div>
+        <div id="box3"></div>
+        <h3 id="headline">Yolk is alive!</h3>
+        <p>
+            Congratulations! Your Yolk install is up and running.
+        </p>
+        <dl>
+            <dt>Resource called:</dt>
+            <dd>
+                @_RESOURCE_@
+            </dd>
+            <dt>URI:</dt>
+            <dd>
+                @_URI_@
+            </dd>
+            <dt>Content Handler:</dt>
+            <dd>
+                @_HANDLER_@
+            </dd>
+            <dt>Template</dt>
+            <dd>
+                @_TEMPLATE_@
+            </dd>
+        </dl>
+        <p>
+            Yolk is created by Thomas Løcke.
+        </p>
+    </div>
+    <div id="w3c">
+        <a href="http://validator.w3.org/check?uri=referer">
+            <img src="valid-xhtml10-blue.png" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+        </a>
+    </div>
 </body>
 </html>

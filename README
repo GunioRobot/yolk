@@ -167,14 +167,15 @@ can access the demo Yolk website by visiting http://localhost:8080 using any
 browser.
 
 To see the status page for the application, go to http://localhost:8080/status
-and enter admin as username and changemenow as password. Please make sure that
-this password is changed before you go public with your application.
+and enter "admin" as username and "changemenow" as password. Please make sure 
+that this password is changed before you go public with your application.
 
 You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
 found in the yolk.pid file.
 
-If you can see the status page and the two demo content pages (Index and Foo),
-then you're ready to build your own application.
+If the index page (with all the static content tests) are shown correctly and
+you can access the status page, then Yolk is ready to be used for your own
+purposes.
 
 --------------------------
 --  The Yolk Structure  --

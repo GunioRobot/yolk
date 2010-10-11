@@ -60,11 +60,6 @@ package body My_Handlers is
          URI        => Get (Handler_Index),
          Action     => View.Index.Generate'Access);
 
-      AWS.Services.Dispatchers.URI.Register_Regexp
-        (Dispatcher => Resource_Handlers,
-         URI        => Get (Handler_Foo),
-         Action     => View.Foo.Generate'Access);
-
    end Initialize;
 
 begin
