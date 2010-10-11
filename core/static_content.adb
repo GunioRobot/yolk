@@ -189,4 +189,24 @@ package body Static_Content is
 
    end XML;
 
+   -----------
+   --  XSL  --
+   -----------
+
+   function XSL (Request : in AWS.Status.Data) return AWS.Response.Data
+   is
+
+      XSL_File : constant String := Get (XSL_Path) & AWS.Status.URI (Request);
+
+   begin
+
+      if not Exists (XSL_File) then
+         return Not_Found.Output (Request);
+      end if;
+
+      return AWS.Response.File (Content_Type  => AWS.MIME.Application_XML,
+                                Filename      => XSL_File);
+
+   end XSL;
+
 end Static_Content;

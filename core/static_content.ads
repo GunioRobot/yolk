@@ -41,5 +41,6 @@ package Static_Content is
    function JS (Request : in AWS.Status.Data) return AWS.Response.Data;
    function PNG (Request : in AWS.Status.Data) return AWS.Response.Data;
    function XML (Request : in AWS.Status.Data) return AWS.Response.Data;
+   function XSL (Request : in AWS.Status.Data) return AWS.Response.Data;
 
 end Static_Content;

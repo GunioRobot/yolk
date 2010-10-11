@@ -48,6 +48,7 @@ package Configuration is
                  Handler_JS,
                  Handler_PNG,
                  Handler_XML,
+                 Handler_XSL,
                  Handler_Unknown,
                  HTML_Path,
                  ICO_Path,
@@ -61,7 +62,8 @@ package Configuration is
                  Session_Data_File,
                  SMTP,
                  System_Templates_Path,
-                 XML_Path);
+                 XML_Path,
+                 XSL_Path);
    --  The valid configuration keys. Only keys found in the Keys type are valid
    --  as keys in the Config_File configuration file.
    --  These configuration keys are essential for other core parts of this
@@ -102,6 +104,7 @@ private
                        Handler_JS               => TUS (".*\.js"),
                        Handler_PNG              => TUS (".*\.png"),
                        Handler_XML              => TUS (".*\.xml"),
+                       Handler_XSL              => TUS (".*\.xsl"),
                        Handler_Unknown          => TUS ("[^status].*"),
                        HTML_Path                => TUS ("static_content/html"),
                        ICO_Path                 => TUS ("static_content/ico"),
@@ -116,7 +119,8 @@ private
                          TUS ("session/session.data"),
                        SMTP                     => TUS (""),
                        System_Templates_Path    => TUS ("templates/system"),
-                       XML_Path                 => TUS ("static_content/xml"));
+                       XML_Path                 => TUS ("static_content/xml"),
+                       XSL_Path                 => TUS ("static_content/xsl"));
    --  Default values for the configuration Keys.
 
    package Ini is new Config_File_Parser (Keys => Keys);

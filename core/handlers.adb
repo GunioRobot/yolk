@@ -95,6 +95,11 @@ package body Handlers is
          URI         => Get (Handler_XML),
          Action      => Static_Content.XML'Access);
 
+      AWS.Services.Dispatchers.URI.Register_Regexp
+        (Dispatcher  => Resource_Handlers,
+         URI         => Get (Handler_XSL),
+         Action      => Static_Content.XSL'Access);
+
       -----------------------------------------
       --  Unknown Resource (404) Dispatcher  --
       -----------------------------------------

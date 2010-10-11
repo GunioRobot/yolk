@@ -131,6 +131,11 @@ XML_Path    static_content/xml
 # Default: static_content/xml
 # Path to the directory where the XML files are located.
 
+XSL_Path    static_content/xsl
+# String.
+# Default: static_content/xsl
+# Path to the directory where the XSL files are located.
+
 ##########################
 #  Path To Session File  #
 ##########################
@@ -194,6 +199,11 @@ Handler_XML .*\.xml
 # String.
 # Default: .*\.xml
 # The regular expression used to decide if a requested resource is a XML file.
+
+Handler_XSL .*\.xsl
+# String.
+# Default: .*\.xsl
+# The regular expression used to decide if a requested resource is a XSL file.
 
 Handler_Unknown [^status].*
 # String.

@@ -45,7 +45,7 @@ Yolk depends on five things:
     2. AWS
     3. XML/Ada
     4. GNATCOLL
-    5. PostgreSQL
+    5. PostgreSQL (if you need it)
 
 The path to the AWS, XML/Ada and GNATCOLL project files must be added to the
 ADA_PROJECT_PATH environment variable, or else your Yolk project wont
