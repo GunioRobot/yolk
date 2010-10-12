@@ -25,7 +25,7 @@ It is important to understand that Yolk itself does very little that cannot be
 accomplished using plain AWS and GNATCOLL. It is, for lack of a better term, a
 convenience. Some of things that Yolk make very easy are:
 
-    * Sending simple (no attachment) HTML/text emails from the application
+    * Sending simple (no attachments) HTML/text emails from the application
     * Setting up rotating log files and handling basic log file management
     * Adding new resources to your web application
     * Loading configuration files
@@ -131,7 +131,7 @@ You'll end up with an error that looks something like this:
     yolk.adb:27:06: "Handlers (spec)" depends on "My_Handlers (spec)"
     gnatmake: "/path/to/Yolk/yolk.adb" compilation error
 
-The reason for this is simple: Most o the files that you must do something with
+The reason for this is simple: Most of the files that you must do something with
 in order for Yolk to produce output to a browser are marked with an .example
 extension. This has been done to clearly mark the files in which changes must
 and will be done in order for _your_ version of Yolk to function.
@@ -181,10 +181,10 @@ purposes.
 --  The Yolk Structure  --
 --------------------------
 
-In the main Yolk directory you'll find some directories and files. Getting to
-know what each of these do is crucial to using Yolk properly, so I'm going to
-meticulously describe it all. If you're an adventurous type you can skip this
-section, but for the rest of us, it's worth reading.
+In the main Yolk directory you'll find some directories and files. Knowing what
+each of these do is crucial to using Yolk properly, so I'm going to meticulously
+describe it all. If you're an adventurous type you can skip this section, but
+for the rest of us, it's worth reading.
 
 Paths and files described in the following will assume that you're in the same
 directory as the yolk.gpr file.
@@ -235,9 +235,8 @@ my_database/
     
 my_handlers/
     The two my_handlers.ad[bs] files found here are required in order for the Yolk
-    application to function properly. The default Yolk application define two
-    resource handlers. You can freely add/remove handlers in these files. See the
-    README file in the directory for more information.
+    application to function properly. You can freely add/remove handlers in these
+    files. See the README file in the directory for more information.
     
 my_view/
     This is where you're supposed to place the meat of your application: The code
@@ -267,7 +266,7 @@ application:
 
     1. Download and unpack Yolk. See the Dependencies and Compiling Yolk sections.
     2. Run the tools/startup.sh script.
-    3. Verify that the default Yolk application works.
+    3. Verify that the default Yolk application works by visiting the demo website.
     4. Adjust the my_configuration.ad[bs] files to suit your needs.
     5. Adjust the my_handlers.ad[bs] to account for your content.
     6. Add my_view/view.xxx files for all your resources.

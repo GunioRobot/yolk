@@ -1,5 +1,3 @@
-with AWS.MIME;
-with AWS.Templates;     use AWS.Templates;
 with My_Configuration;  use My_Configuration;
 with Rotating_Log;      use Rotating_Log;
 
@@ -12,31 +10,22 @@ package body View.Index is
    function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      Content           : AWS.Response.Data;
-      Resource_String   : constant String := Resource ("Index");
       T                 : Translate_Set;
 
    begin
 
       Track (Handle     => Info,
-             Log_String => Resource_String);
+             Log_String => "Testing the INFO track");
 
       Track (Handle     => Error,
-             Log_String => Resource_String);
+             Log_String => "Testing the ERROR track");
 
-      Insert (T, Assoc ("RESOURCE", Resource_String));
       Insert (T, Assoc ("HANDLER", String'(Get (Handler_Index))));
       Insert (T, Assoc ("TEMPLATE", String'(Get (Template_Index))));
       Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
 
-      Content := AWS.Response.Build
-        (Content_Type => AWS.MIME.Text_HTML,
-         Message_Body => Parse
-           (Filename     => Get (Template_Index),
-            Translations => T,
-            Cached       => True));
-
-      return Content;
+      return View.Build_Response (Template_File => Get (Template_Index),
+                                  Translations  => T);
 
    end Generate;
 

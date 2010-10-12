@@ -13,15 +13,11 @@
         <div id="box1"></div>
         <div id="box2"></div>
         <div id="box3"></div>
-        <h3 id="headline">Yolk is alive!</h3>
+        <h3 id="headline">Yolk Web Framework</h3>
         <p>
             Congratulations! Your Yolk install is up and running.
         </p>
         <dl>
-            <dt>Resource called:</dt>
-            <dd>
-                @_RESOURCE_@
-            </dd>
             <dt>URI:</dt>
             <dd>
                 @_URI_@

@@ -20,19 +20,31 @@
 --  MA 02110 - 1301, USA.                                                    --
 --                                                                           --
 -------------------------------------------------------------------------------
+with AWS.MIME;
 
 package body View is
 
-   ----------------
-   --  Resource  --
-   ----------------
+   ----------------------
+   --  Build_Response  --
+   ----------------------
 
-   function Resource (S : in String) return String
+   function Build_Response (Template_File : in String;
+                            Translations  : in Translate_Set)
+                            return AWS.Response.Data
    is
+
+      Content : AWS.Response.Data;
+
    begin
 
-      return "Resource " & S & " called.";
+      Content := AWS.Response.Build
+        (Content_Type => AWS.MIME.Text_HTML,
+         Message_Body => Parse
+           (Filename     => Template_File,
+            Translations => Translations,
+            Cached       => True));
+      return Content;
 
-   end Resource;
+   end Build_Response;
 
 end View;
