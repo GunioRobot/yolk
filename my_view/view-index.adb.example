@@ -10,7 +10,7 @@ package body View.Index is
    function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      T                 : Translate_Set;
+      T : Translate_Set;
 
    begin
 
@@ -24,8 +24,8 @@ package body View.Index is
       Insert (T, Assoc ("TEMPLATE", String'(Get (Template_Index))));
       Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
 
-      return View.Build_Response (Template_File => Get (Template_Index),
-                                  Translations  => T);
+      return Build_Response (Template_File => Get (Template_Index),
+                             Translations  => T);
 
    end Generate;
 
