@@ -27,7 +27,23 @@
 ##
 ##	$ tools/start.sh
 ##
-## .example files that  have already been renamed by other means are ignored.
+## .example files that have already been renamed by other means are ignored.
+
+# Check for --help argument
+if [ "$1" = "--help" ]
+then
+    echo "";
+    echo "When executed, this script removes the .example part of all"
+    echo "[filename].example files found in the Yolk project folder."
+    echo "Options:"
+    echo "    --help"
+    echo "        Output this text."
+    echo "    --force"
+    echo "        Overwrite already renamed .example files. Use with care!"
+    echo ""
+    
+    exit 1;
+fi
 
 # Check that we're in the right directory
 if [ ! -f yolk.gpr -a ! -f tools/start.sh ]
@@ -39,6 +55,7 @@ fi
 # It appears that we're in the right place, so lets move on
 echo "Fixing all the .example files";
 
+# Set some base variables
 FOUND=0;
 COPIED=0;
 
@@ -48,11 +65,18 @@ do
     NEW=${i%.example}
     if [ -f $NEW ]
     then
-	echo "    File $NEW already exists. No copy done."
+        if [ "$1" = "--force" ]
+        then
+            echo "    File $NEW already exists. Overwriting it with $ORG."
+            cp $ORG $NEW
+            let COPIED=$COPIED+1;
+        else
+            echo "    File $NEW already exists. No copy done."
+        fi
     else
-	echo "    Copying $ORG to $NEW"
-	cp $ORG $NEW
-	let COPIED=$COPIED+1;
+        echo "    Copying $ORG to $NEW"
+        cp $ORG $NEW
+        let COPIED=$COPIED+1;
     fi
     
     let FOUND=$FOUND+1;

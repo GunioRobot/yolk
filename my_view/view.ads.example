@@ -34,6 +34,6 @@ private
    --  This is a convenience function that gets rid of a few with clauses in
    --  in the files for the individual resources. Also since we need to create
    --  the AWS.Response.Data object for each and every resource, we might as
-   --  shorten the call a bit.
+   --  well shorten the call a bit.
 
 end View;
