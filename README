@@ -163,10 +163,10 @@ Starting Yolk is as simple as:
     $ ./yolk
 
 You should now see something happening in the exe/logs/ directory, and you
-can access the demo Yolk website by visiting http://localhost:8080 using any
+can access the demo Yolk website by visiting http://localhost:4242 using any
 browser.
 
-To see the status page for the application, go to http://localhost:8080/status
+To see the status page for the application, go to http://localhost:4242/status
 and enter "admin" as username and "changemenow" as password. Please make sure 
 that this password is changed before you go public with your application.
 

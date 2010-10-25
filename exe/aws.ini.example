@@ -78,9 +78,9 @@ Server_Name Yolk
 # match the name of the application, ie. the name of the main Ada file.
 # The Server_Name is also prefixed to the server log files.
 
-Server_Port 8080
+Server_Port 4242
 # Positive
-# Default: 8080
+# Default: 4242
 # Port the server is listening on. Remember that only root can listen on
 # ports < 1024, so this value should be higher than 1024, or else you'll 
 # have to run the server as root, which is _not_ recommended.
