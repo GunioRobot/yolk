@@ -1,16 +1,16 @@
---  To get rid of the PostgreSQL dependency, just comment the
---  with "gnatcoll_postgres" line.
-
 with "aws";
 with "gnatcoll";
+
+--  To get rid of the PostgreSQL dependency, just comment the
+--  with "gnatcoll_postgres" line.
 with "gnatcoll_postgres";
 
 project Yolk is
 
    for Source_Dirs use (".",
                         "core",
-			"my_configuration",
-			"my_core",
+                        "my_configuration",
+                        "my_core",
                         "my_database",
                         "my_handlers",
                         "my_view");
