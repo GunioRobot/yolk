@@ -22,15 +22,18 @@
             <dd>
                 @_URI_@
             </dd>
-            <dt>Content Handler:</dt>
+            <dt>Content Handler for this page:</dt>
             <dd>
                 @_HANDLER_@
             </dd>
-            <dt>Template</dt>
+            <dt>Template used by this page:</dt>
             <dd>
                 @_TEMPLATE_@
             </dd>
         </dl>
+        <p>
+            You can visit the 
+        <p>
         <p>
             Yolk is created by Thomas Løcke.
         </p>

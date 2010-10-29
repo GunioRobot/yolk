@@ -4,10 +4,10 @@ Contents of this README:
 
     1. Introduction
     2. Dependencies
-    3. Compiling And Trying Out Yolk
-    4. The Yolk Structure
-    5. Using Yolk
-    6. Getting Rid Of The GNATCOLL/PostgreSQL Dependency
+    3. Getting Rid Of The PostgreSQL Dependency
+    4. Compiling And Trying Out Yolk
+    5. The Yolk Structure
+    6. Using Yolk
     7. Fixing The .gitignore File
     8. References
 
@@ -19,7 +19,7 @@ Yolk is an Ada based web-framework that sits on top of AWS[1], XML/Ada[2],
 GNATCOLL[3] and PostgreSQL[4].
 With Yolk some of the tasks involved in developing a web-application using Ada,
 AWS and GNATCOLL is made simpler and a specific style is enforced in regards to
-how the application is made.
+how the application is put together.
 
 It is important to understand that Yolk itself does very little that cannot be
 accomplished using plain AWS and GNATCOLL. It is, for lack of a better term, a
@@ -39,11 +39,11 @@ be better off using plain AWS.
 --  Dependencies  --
 --------------------
 
-Yolk depends on five things:
+Yolk depends on 5 things out of the box:
 
     1. An Ada 2005 compiler[5]
     2. AWS
-    3. XML/Ada
+    3. XML/Ada (actually this is more an AWS requirement)
     4. GNATCOLL
     5. PostgreSQL (if you need it)
 
@@ -53,19 +53,29 @@ compile.
 
 My usual modus operandi for setting up these 5 things goes something like this:
 
-    1.  Install GNAT GPL in its default location (/usr/gnat)
-    2.  Install XML/Ada in /usr/gnat (./configure --prefix=/usr/gnat)
-    3.  Install GNATCOLL in /usr/gnat:
+    1.  Install PostgreSQL by whatever means is fitting for you OS. If you don't
+        need an RDBMS, ignore this step and adjust the following steps to get
+        rid of the PostgreSQL dependency. It should be quite obvious where 
+        changes are needed.
+    2.  Install GNAT GPL in its default location (/usr/gnat)
+    3.  Install XML/Ada in /usr/gnat:
     
-            /configure --prefix=/usr/gnat \
+            ./configure --prefix=/usr/gnat
+            
+    4.  Install GNATCOLL in /usr/gnat:
+    
+            ./configure --prefix=/usr/gnat \
             --disable-gtk \
             --disable-pygtk \
             --without-python \
             --with-postgresql=/usr/include/postgresql \
             --without-sqlite \
             --disable-syslog
-            
-    4.  Install AWS in its default location. See makefile.conf for further
+        
+        You should of course adjust the above configuration options to fit your
+        needs.
+        
+    5.  Install AWS in its default location. See makefile.conf for further
         information. After having run "$ make setup", be sure to check that 
         makefile.setup contains the correct information. It should look
         something like this, of course depending on how much you've enabled
@@ -103,14 +113,20 @@ My ADA_PROJECT_PATH environment variable hence contains this:
 If your distribution provides pre-made packages for all of this, you should
 probably use those instead.
 
-PostgreSQL must be installed on both the system where the Yolk application is
-compiled and on the system where the application will be running.
-
 The GNATCOLL/PostgreSQL dependencies are a bit annoying for applications that
 doesn't need access to a RDBMS, but I've found that those applications are few
 and far between. If you absolutely don't want those dependencies, then take a
 look at the "Getting Rid Of The GNATCOLL/PostgreSQL Dependency" section of this
 document.
+
+---------------------------------------------------------
+--  Getting Rid Of The GNATCOLL/PostgreSQL Dependency  --
+---------------------------------------------------------
+
+If you're not using PostgreSQL, you can get rid of it simply by removing the 
+with "gnatcoll_postgres"; line in yolk.gpr.
+
+Yes, it's that simple.
 
 -------------------------------------
 --  Compiling And Trying Out Yolk  --
@@ -302,15 +318,6 @@ source. In some cases there will even be usage examples in the source code.
 The official AWS, GNATCOLL and XMLAda documentation is handy to have nearby when
 building web applications using Yolk, as much of the functionality is bound to 
 involve one or more of these projects. These docs are not included in Yolk.
-
----------------------------------------------------------
---  Getting Rid Of The GNATCOLL/PostgreSQL Dependency  --
----------------------------------------------------------
-
-If you're not using PostgreSQL, you can get rid of it simply by removing the 
-with "gnatcoll_postgres"; line in yolk.gpr.
-
-Yes, it's that simple.
 
 ----------------------------------
 --  Fixing The .gitignore File  --
