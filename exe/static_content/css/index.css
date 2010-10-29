@@ -1,31 +1,42 @@
-body {
-    height: 100%;
-    width: 100%;
-    font-family: arial, helvetica, sans-serif;
-    font-size: 14px;
-    background-color: #fffffa;
+html, body, div, span, h1, h2, h3, h4, h5, h6, p,
+blockquote, a, em, font, img, strong, dl, dt, dd,
+ol, ul, li, form, table, tr, th, td {
     margin: 0px;
     padding: 0px;
 }
 
-p {
+
+body {
+    height: 100%;
+    width: 100%;
+    font-family: "DejaVu Sans", Arial, sans-serif;
     font-size: 14px;
+    background-color: #fffffa;
+}
+
+p {
+    font-size: 15px;
     color: #444;
     background-color: inherit;
-    margin-bottom: 5px;
-    margin-top: 5px;
-}
-
-dl {
-    margin-left: 15px;
-}
-
-dt {
+    margin-bottom: 15px;
     margin-top: 15px;
 }
 
+dl {
+    margin: 20px 15px;
+    padding: 0px 10px 10px 10px;
+    border: solid 1px #ddd;
+    background-color: #eee;
+}
+
+dt {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 dd {
-    font-size: 12px;
+    font-size: 13px;
     color: #444;
     margin-top: 5px;
     margin-left: 20px;
@@ -37,17 +48,30 @@ a {
 }
 
 a:hover {
-    color: #add8e6; 
+    color: #800000; 
     background-color: inherit;
 }
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.strike {
+    text-decoration: line-through;
+}
+
 
 #content {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 7%;
+    margin-top: 5%;
     border: solid 1px #d3d3d3;
-    width: 570px;
-    padding: 15px;
+    width: 600px;
+    padding: 10px 25px;
     position: relative;
 }
 
@@ -60,24 +84,24 @@ a:hover {
 
 #box1 {
     background-color: #d3d3d3;
-    left: 555px;
+    left: 595px;
 }
 
 #box2 {
     background-color: #800000;
-    left: 570px;
+    left: 610px;
 }
 
 #box3 {
     background-color: #808080;
-    left: 585px;
+    left: 625px;
 }
 
 #headline {
-    margin: 0px;
     position: absolute;
     font-size: 16px;
     top: -16px;
+    left: 15px;
     color: #808080;
     background-color: inherit;    
 }
@@ -85,10 +109,10 @@ a:hover {
 #w3c {
     margin-left: auto;
     margin-right: auto;
-    width: 600px;
+    width: 650px;
     text-align: right;
     padding-top: 5px;
-    padding-right: 5px;
+    padding-right: 0px;
 }
 
 #w3c img {

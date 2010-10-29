@@ -2,8 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=iso-8859-1" />
+        <script src="click.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="index.css" />
-        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <title>
             Yolk Web Framework
         </title>
@@ -15,10 +16,56 @@
         <div id="box3"></div>
         <h3 id="headline">Yolk Web Framework</h3>
         <p>
-            Congratulations! Your Yolk install is up and running.
+            Congratulations! Your Yolk install is up and running. 
+        </p>
+        <p>
+            You can visit the servers status page <a href="status">here</a>. Username is "admin" and password is "changemenow".
+        </p>
+        <p>
+            In the following we will verify that all the static content handlers are working as intended.
         </p>
         <dl>
-            <dt>URI:</dt>
+            <dt>CSS test</dt>
+            <dd>
+                If <span class="bold">bold</span>, <span class="strike">line-through</span> and <span class="italic">italic</span> work, then the CSS handler is functional.
+            </dd>
+            <dt>Javascript test</dt>
+            <dd>
+                <button type="button" onclick="works();">Click me!</button>
+                <br />
+                You must of course have Javascript enabled for this test to work. If you get a Javascript alert, then the Javascript handler is functional.
+            </dd>
+            <dt>GIF, JPG and PNG test:</dt>
+            <dd>
+                <img src="test.gif" alt="Test GIF" />
+                <img src="test.jpg" alt="Test JPG" />
+                <img src="test.png" alt="Test PNG" />
+                <br />
+                If you can see three images, then the GIF/JPG/PNG handlers are functional.
+            </dd>
+            <dt>ICO test:</dt>
+            <dd>
+                This page should have a a favourite icon that looks like this: <img src="favicon.ico" alt="ICO file" />
+                <br />
+                If you can see the icon, then the ICO handler is functional.
+            </dd>
+            <dt>HTML test:</dt>
+            <dd>
+                To test the HTML handler <a href="test.html">click here</a>.
+            </dd>
+            <dt>XML/XSL test:</dt>
+            <dd>
+                To test the XML/XSL handlers <a href="test.xml">click here</a>.
+            </dd>
+        </dl>
+        <p>
+            If all the content handlers are functional, then you're ready to start using Yolk. Don't forget to read all the README files. Also there are valuable comments in the various configuration files and in the source itself. Enjoy!
+        </p>
+        <p>
+            Lets end this with some basic stats for this page:
+        </p>
+        <dl>
+            <dt>URI called:</dt>
             <dd>
                 @_URI_@
             </dd>
@@ -31,9 +78,6 @@
                 @_TEMPLATE_@
             </dd>
         </dl>
-        <p>
-            You can visit the 
-        <p>
         <p>
             Yolk is created by Thomas Løcke.
         </p>
