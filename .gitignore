@@ -2,9 +2,11 @@
 build/*.o
 build/*.ali
 
-# Do not track .ini files
+# Do not track .ini files, pid files and the yolk executable in exe/
 exe/configuration/*.ini
 exe/*.ini
+exe/yolk
+exe/yolk.pid
 
 # Do not track template .tmpl files
 exe/templates/system/*.tmpl
