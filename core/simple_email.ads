@@ -30,11 +30,30 @@ package Simple_Email is
                   To_Email    : in String;
                   To_Name     : in String;
                   Subject     : in String;
+                  Charset     : in String := "iso-8859-1";
                   SMTP_Server : in String) return Boolean;
    --  Compose and send a multipart email messages. This is for simple messages
    --  only. Attachments are not supported. If you need such "fancy" things
    --  then AWS.SMTP is what you're looking for.
    --  NOTE:
-   --    The charset is _hardcoded_ to ISO-8859-1 in the Send function.
+   --    The Charset string should of course match the encoding used in the
+   --    HTML_Part and Text_Part.
+
+   procedure Send (HTML_Part   : in String;
+                   Text_Part   : in String;
+                   From_Email  : in String;
+                   From_Name   : in String;
+                   To_Email    : in String;
+                   To_Name     : in String;
+                   Subject     : in String;
+                   Charset     : in String := "iso-8859-1";
+                   SMTP_Server : in String;
+                   Success     : in out Boolean);
+   --  Compose and send a multipart email messages. This is for simple messages
+   --  only. Attachments are not supported. If you need such "fancy" things
+   --  then AWS.SMTP is what you're looking for.
+   --  NOTE:
+   --    The Charset string should of course match the encoding used in the
+   --    HTML_Part and Text_Part.
 
 end Simple_Email;

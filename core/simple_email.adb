@@ -39,6 +39,7 @@ package body Simple_Email is
                   To_Email    : in String;
                   To_Name     : in String;
                   Subject     : in String;
+                  Charset     : in String := "iso-8859-1";
                   SMTP_Server : in String) return Boolean
    is
 
@@ -54,12 +55,12 @@ package body Simple_Email is
         (Parts => Alter,
          Data  => AWS.Attachments.Value
            (Data => Text_Part,
-            Content_Type => AWS.MIME.Text_Plain & "; charset=ISO-8859-1"));
+            Content_Type => AWS.MIME.Text_Plain & "; charset=" & Charset));
       AWS.Attachments.Add
         (Parts => Alter,
          Data  => AWS.Attachments.Value
            (Data => HTML_Part,
-            Content_Type => AWS.MIME.Text_HTML & "; charset=ISO-8859-1"));
+            Content_Type => AWS.MIME.Text_HTML & "; charset=" & Charset));
 
       AWS.Attachments.Add (Attachments => E_Content,
                            Parts       => Alter);
@@ -79,6 +80,35 @@ package body Simple_Email is
       else
          return False;
       end if;
+
+   end Send;
+
+   ------------
+   --  Send  --
+   ------------
+
+   procedure Send (HTML_Part   : in String;
+                   Text_Part   : in String;
+                   From_Email  : in String;
+                   From_Name   : in String;
+                   To_Email    : in String;
+                   To_Name     : in String;
+                   Subject     : in String;
+                   Charset     : in String := "iso-8859-1";
+                   SMTP_Server : in String;
+                   Success     : in out Boolean)
+   is
+   begin
+
+      Success := Send (HTML_Part   => HTML_Part,
+                       Text_Part   => Text_Part,
+                       From_Email  => From_Email,
+                       From_Name   => From_Name,
+                       To_Email    => To_Email,
+                       To_Name     => To_Name,
+                       Subject     => Subject,
+                       Charset     => Charset,
+                       SMTP_Server => SMTP_Server);
 
    end Send;
 
