@@ -27,6 +27,8 @@ with AWS.SMTP;                use type AWS.SMTP.E_Mail_Data;
 
 package Simple_Email is
 
+   Attachment_File_Not_Found : exception;
+
    type Email_Structure is private;
    type Encoding is (None, Base64);
 
@@ -53,7 +55,9 @@ package Simple_Email is
                            Encode_Attachment : in     Encoding := Base64;
                            SMTP_Server       : in     String := "localhost");
 
-   function Send (ES : Email_Structure) return Boolean;
+   function Is_Send (ES : in Email_Structure) return Boolean;
+
+   procedure Send (ES : in out Email_Structure);
    --  Compose and send a multipart email messages. This is for simple messages
    --  only. Attachments are not supported. If you need such "fancy" things
    --  then AWS.SMTP is what you're looking for.
@@ -79,14 +83,16 @@ package Simple_Email is
 
 private
 
+   type Email_Kind is (Simple_Text_Only, Complex_Multipart);
+   type Send_Status is (Yes, No);
+
    type File_Attachment is record
       File     : Unbounded_String;
       Encode   : AWS.Attachments.Encoding;
    end record;
+
    package File_Attachments is new Vectors (Positive, File_Attachment);
-
    package Recipients is new Vectors (Positive, AWS.SMTP.E_Mail_Data);
-
    package SMTP_Servers is new Vectors (Positive, Unbounded_String);
 
    type Email_Structure is record
@@ -98,10 +104,15 @@ private
       Charset           : Unbounded_String;
       Attachments_List  : File_Attachments.Vector;
       SMTP_List         : SMTP_Servers.Vector;
+      Email_Type        : Email_Kind := Simple_Text_Only;
+      Is_Email_Send     : Send_Status := No;
    end record;
 
    function Get_Recipients (ES : in Email_Structure)
                             return AWS.SMTP.Recipients;
+
+   procedure Send_Simple_Text_Only (ES : in out Email_Structure);
+   procedure Send_Complex_Multipart (ES : in out Email_Structure);
 
    procedure Set_Alternative_Parts (C  : in out AWS.Attachments.List;
                                     ES : in     Email_Structure);

@@ -41,13 +41,24 @@ package body Simple_Email is
 
    begin
 
-      An_Attachment.File   := To_Unbounded_String (Attach_File);
-      if Encode_Attachment = Base64 then
-         An_Attachment.Encode := AWS.Attachments.Base64;
-      else
-         An_Attachment.Encode := AWS.Attachments.None;
+      if Attach_File /= "" then
+         if Exists (Attach_File) then
+            An_Attachment.File   := To_Unbounded_String (Attach_File);
+            if Encode_Attachment = Base64 then
+               An_Attachment.Encode := AWS.Attachments.Base64;
+            else
+               An_Attachment.Encode := AWS.Attachments.None;
+            end if;
+            ES.Attachments_List.Append (An_Attachment);
+            ES.Email_Type := Complex_Multipart;
+         else
+            raise Attachment_File_Not_Found with Attach_File;
+         end if;
       end if;
-      ES.Attachments_List.Append (An_Attachment);
+
+   exception
+      when others =>
+         raise Attachment_File_Not_Found with Attach_File;
 
    end Add_Attachment;
 
@@ -85,7 +96,11 @@ package body Simple_Email is
    is
    begin
 
-      ES.HTML_Part := To_Unbounded_String (HTML_Part);
+      if HTML_Part /= "" then
+         ES.HTML_Part := To_Unbounded_String (HTML_Part);
+         ES.Email_Type := Complex_Multipart;
+      end if;
+
       ES.Text_Part := To_Unbounded_String (Text_Part);
 
       ES.From := AWS.SMTP.E_Mail (Name    => From_Name,
@@ -103,7 +118,12 @@ package body Simple_Email is
                       Attach_File       => Attach_File,
                       Encode_Attachment => Encode_Attachment);
 
-      ES.SMTP_List.Append (To_Unbounded_String (SMTP_Server));
+      if SMTP_Server /= "" then
+         ES.SMTP_List.Append (To_Unbounded_String (SMTP_Server));
+      else
+         null;
+         --  TODO: No SMTP server given. Raise exception or??
+      end if;
 
    end Create_Email;
 
@@ -132,11 +152,43 @@ package body Simple_Email is
 
    end Get_Recipients;
 
+   ---------------
+   --  Is_Send  --
+   ---------------
+
+   function Is_Send (ES : in Email_Structure) return Boolean
+   is
+   begin
+
+      if ES.Is_Email_Send = Yes then
+         return True;
+      else
+         return False;
+      end if;
+
+   end Is_Send;
+
    ------------
    --  Send  --
    ------------
 
-   function Send (ES : Email_Structure) return Boolean
+   procedure Send (ES : in out Email_Structure)
+   is
+   begin
+
+      if ES.Email_Type = Simple_Text_Only then
+         Send_Simple_Text_Only (ES);
+      else
+         Send_Complex_Multipart (ES);
+      end if;
+
+   end Send;
+
+   ------------------------------
+   --  Send_Complex_Multipart  --
+   ------------------------------
+
+   procedure Send_Complex_Multipart (ES : in out Email_Structure)
    is
 
       SMTP              : constant AWS.SMTP.Receiver
@@ -164,12 +216,36 @@ package body Simple_Email is
          Status      => Status);
 
       if AWS.SMTP.Is_Ok (Status) then
-         return True;
-      else
-         return False;
+         ES.Is_Email_Send := Yes;
       end if;
 
-   end Send;
+   end Send_Complex_Multipart;
+
+   -----------------------------
+   --  Send_Simple_Text_Only  --
+   -----------------------------
+
+   procedure Send_Simple_Text_Only (ES : in out Email_Structure)
+   is
+
+      SMTP              : constant AWS.SMTP.Receiver
+        := AWS.SMTP.Client.Initialize (TS (ES.SMTP_List.Element (1)));
+      Status            : AWS.SMTP.Status;
+
+   begin
+
+      AWS.SMTP.Client.Send (Server  => SMTP,
+                            From    => ES.From,
+                            To      => Get_Recipients (ES),
+                            Subject => To_String (ES.Subject),
+                            Message => To_String (ES.Text_Part),
+                            Status  => Status);
+
+      if AWS.SMTP.Is_Ok (Status) then
+         ES.Is_Email_Send := Yes;
+      end if;
+
+   end Send_Simple_Text_Only;
 
    ------------------------
    --  Set_Alternatives  --
