@@ -73,7 +73,7 @@ package Config_File_Parser is
    Cannot_Convert_To_Integer  : exception;
    --  These Cannot_Convert_To_xxx exceptions are raised if conversion from the
    --  String VALUE to the target type cannot be done, eg. converting the value
-   --  "foo" to Integeror the value "Faalse" to Boolean.
+   --  "foo" to Integer or the value "bleh" to Boolean.
 
    function Get (Key : in Keys) return Boolean;
    function Get (Key : in Keys) return Float;
