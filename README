@@ -60,7 +60,12 @@ My usual modus operandi for setting up these 5 things goes something like this:
         need an RDBMS, ignore this step and adjust the following steps to get
         rid of the PostgreSQL dependency. It should be quite obvious where 
         changes are needed.
-    2.  Install GNAT GPL in its default location (/usr/gnat)
+    2.  Install GNAT GPL in its default location (/usr/gnat) and add /usr/gnat/bin
+	to your PATH:
+
+	    $ PATH=$PATH:/usr/gnat/bin
+	    $ export PATH
+
     3.  Install GNATcoll in /usr/gnat:
     
             ./configure --prefix=/usr/gnat \
@@ -73,6 +78,14 @@ My usual modus operandi for setting up these 5 things goes something like this:
         
         You should of course adjust the above configuration options to fit your
         needs.
+	At the time of writing, the GNATcoll "make" step will fail if you don't
+	manually define the "PROCESSORS" variable, like this:
+
+	    $ PROCESSORS=4 make
+	    $ make install
+
+	Of course adjusting the PROCESSORS number to what is suitable on your
+	own system.
     4.  Install XML/Ada in /usr/gnat:
     
             ./configure --prefix=/usr/gnat
@@ -100,6 +113,9 @@ My usual modus operandi for setting up these 5 things goes something like this:
             
     5.  Add /usr/gnat/bin to your PATH environment variable.
     6.  Add /usr/gnat/lib/gnat to your ADA_PROJECT_PATH environment variable.
+
+Don't take the above for gospel. You should _always_ read all the accompanying
+documentation for the software you're trying to install.
 
 For reference, I can say that on my Slackware Linux system, I have the AWS,
 XML/Ada and GNATcoll project files available in these directories:
