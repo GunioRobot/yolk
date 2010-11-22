@@ -21,136 +21,127 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Directories; use Ada.Directories;
-with AWS.Headers;
-with AWS.MIME;
-with AWS.SMTP.Client;
+with Ada.Directories;   use Ada.Directories;
+with Ada.Text_IO;       use Ada.Text_IO;
+--  with AWS.Headers;
+--  with AWS.MIME;
+--  with AWS.Utils;
+--  with AWS.SMTP.Client;
 
 package body Simple_Email is
 
-   ----------------------
-   --  Add_Attachment  --
-   ----------------------
+   ---------------------------
+   --  Add_File_Attachment  --
+   ---------------------------
 
-   procedure Add_Attachment (ES                 : in out Email_Structure;
-                             Attach_File        : in     String;
-                             Encode_Attachment  : in     Encoding := Base64)
+   procedure Add_File_Attachment
+     (ES            : in out Email_Structure;
+      Path_To_File  : in     String;
+      Charset       : in     Character_Set := ISO_8859_1)
    is
 
-      An_Attachment : File_Attachment;
+      New_Attachment : Attachment_Data;
 
    begin
 
-      if Attach_File /= "" then
-         if Exists (Attach_File) then
-            An_Attachment.File   := To_Unbounded_String (Attach_File);
-            if Encode_Attachment = Base64 then
-               An_Attachment.Encode := AWS.Attachments.Base64;
-            else
-               An_Attachment.Encode := AWS.Attachments.None;
-            end if;
-            ES.Attachments_List.Append (An_Attachment);
-            ES.Email_Type := Complex_Multipart;
-         else
-            raise Attachment_File_Not_Found with Attach_File;
-         end if;
-      end if;
+      New_Attachment.Charset        := Charset;
+      New_Attachment.Path_To_File   := TUS (Path_To_File);
+      ES.Attachment_List.Append (New_Attachment);
 
-   exception
-      when others =>
-         raise Attachment_File_Not_Found with Attach_File;
+      ES.Has_Attachment := True;
 
-   end Add_Attachment;
+   end Add_File_Attachment;
+
+   ----------------
+   --  Add_From  --
+   ----------------
+
+   procedure Add_From (ES        : in out Email_Structure;
+                       Address   : in     String;
+                       Name      : in     String;
+                       Charset   : in     Character_Set := ISO_8859_1)
+   is
+
+      New_From : Email_Data;
+
+   begin
+
+      New_From.Address  := TUS (Address);
+      New_From.Charset  := Charset;
+      New_From.Name     := TUS (Name);
+      ES.From_List.Append (New_Item => New_From);
+
+   end Add_From;
 
    ---------------------
    --  Add_Recipient  --
    ---------------------
 
-   procedure Add_Recipient (ES         : in out Email_Structure;
-                            To_Address : in     String;
-                            To_Name    : in     String)
+   procedure Add_Recipient (ES       : in out Email_Structure;
+                            Address  : in     String;
+                            Name     : in     String;
+                            Kind     : in     Recipient_Kind := To;
+                            Charset  : in     Character_Set := ISO_8859_1)
    is
+
+      New_Recipient : Email_Data;
+
    begin
 
-      ES.To_List.Append (AWS.SMTP.E_Mail (Name    => To_Name,
-                                          Address => To_Address));
+      New_Recipient.Address   := TUS (Address);
+      New_Recipient.Charset   := Charset;
+      New_Recipient.Name      := TUS (Name);
+
+      case Kind is
+         when Bcc =>
+            ES.Bcc_List.Append (New_Item => New_Recipient);
+         when Cc =>
+            ES.Cc_List.Append (New_Item => New_Recipient);
+         when To =>
+            ES.To_List.Append (New_Item => New_Recipient);
+      end case;
 
    end Add_Recipient;
 
    --------------------
-   --  Create_Email  --
+   --  Add_Reply_To  --
    --------------------
 
-   procedure Create_Email (ES                : in out Email_Structure;
-                           HTML_Part         : in     String;
-                           Text_Part         : in     String;
-                           From_Address      : in     String;
-                           From_Name         : in     String;
-                           To_Address        : in     String;
-                           To_Name           : in     String;
-                           Subject           : in     String := "(no subject)";
-                           Charset           : in     String := "iso-8859-1";
-                           Attach_File       : in     String := "";
-                           Encode_Attachment : in     Encoding := Base64;
-                           SMTP_Server       : in     String := "localhost")
-   is
-   begin
-
-      if HTML_Part /= "" then
-         ES.HTML_Part := To_Unbounded_String (HTML_Part);
-         ES.Email_Type := Complex_Multipart;
-      end if;
-
-      ES.Text_Part := To_Unbounded_String (Text_Part);
-
-      ES.From := AWS.SMTP.E_Mail (Name    => From_Name,
-                                  Address => From_Address);
-
-      Add_Recipient (ES         => ES,
-                     To_Address => To_Address,
-                     To_Name    => To_Name);
-
-      ES.Subject := To_Unbounded_String (Subject);
-
-      ES.Charset := To_Unbounded_String (Charset);
-
-      Add_Attachment (ES                => ES,
-                      Attach_File       => Attach_File,
-                      Encode_Attachment => Encode_Attachment);
-
-      if SMTP_Server /= "" then
-         ES.SMTP_List.Append (To_Unbounded_String (SMTP_Server));
-      else
-         null;
-         --  TODO: No SMTP server given. Raise exception or??
-      end if;
-
-   end Create_Email;
-
-   ---------------------
-   --  Get_Recipient  --
-   ---------------------
-
-   function Get_Recipients (ES : in Email_Structure) return AWS.SMTP.Recipients
+   procedure Add_Reply_To (ES       : in out Email_Structure;
+                           Address  : in     String;
+                           Name     : in     String;
+                           Charset  : in     Character_Set := ISO_8859_1)
    is
 
-      Recipient_List : AWS.SMTP.Recipients (1 .. ES.To_List.Last_Index);
+      New_Reply_To : Email_Data;
 
    begin
 
-      --  Populate the Recipient_List array with the elements found in the
-      --  To_List vector.
-      if Recipient_List'Length > 1 then
-         for i in Recipient_List'Range loop
-            Recipient_List (i) := ES.To_List.Element (i);
-         end loop;
-      else
-         Recipient_List (1) := ES.To_List.Element (1);
-      end if;
+      New_Reply_To.Address := TUS (Address);
+      New_Reply_To.Charset := Charset;
+      New_Reply_To.Name    := TUS (Name);
+      ES.Reply_To_List.Append (New_Item => New_Reply_To);
 
-      return Recipient_List;
+   end Add_Reply_To;
 
-   end Get_Recipients;
+   -----------------------
+   --  Add_SMTP_Server  --
+   -----------------------
+
+   procedure Add_SMTP_Server (ES    : in out Email_Structure;
+                              Host  : in     String;
+                              Port  : in     Positive := 25)
+   is
+
+      New_SMTP : SMTP_Server;
+
+   begin
+
+      New_SMTP.Host := TUS (Host);
+      New_SMTP.Port := Port;
+      ES.SMTP_List.Append (New_Item => New_SMTP);
+
+   end Add_SMTP_Server;
 
    ---------------
    --  Is_Send  --
@@ -160,11 +151,7 @@ package body Simple_Email is
    is
    begin
 
-      if ES.Is_Email_Send = Yes then
-         return True;
-      else
-         return False;
-      end if;
+      return ES.Email_Is_Send;
 
    end Is_Send;
 
@@ -176,190 +163,404 @@ package body Simple_Email is
    is
    begin
 
-      if ES.Email_Type = Simple_Text_Only then
-         Send_Simple_Text_Only (ES);
-      else
-         Send_Complex_Multipart (ES);
-      end if;
+      Set_Type_Of_Email (ES => ES);
+
+      case ES.Type_Of_Email is
+         when Text =>
+            Put_Line ("Text type");
+         when Text_With_Attachment =>
+            Put_Line ("Text_With_Attachment type");
+         when Text_And_HTML =>
+            Put_Line ("Text_And_HTML type");
+         when Text_And_HTML_With_Attachment =>
+            Put_Line ("Text_And_HTML_With_Attachment type");
+      end case;
 
    end Send;
-
-   ------------------------------
-   --  Send_Complex_Multipart  --
-   ------------------------------
-
-   procedure Send_Complex_Multipart (ES : in out Email_Structure)
-   is
-
-      SMTP              : constant AWS.SMTP.Receiver
-        := AWS.SMTP.Client.Initialize (TS (ES.SMTP_List.Element (1)));
-      Email_Contents    : AWS.Attachments.List;
-      Status            : AWS.SMTP.Status;
-
-   begin
-
-      --  Add the alternative parts.
-      Set_Alternative_Parts (C   => Email_Contents,
-                             ES  => ES);
-
-      --  Add the file attachments.
-      Set_File_Attachments (C  => Email_Contents,
-                            ES => ES);
-
-      --  Send the email.
-      AWS.SMTP.Client.Send
-        (Server      => SMTP,
-         From        => ES.From,
-         To          => Get_Recipients (ES),
-         Subject     => To_String (ES.Subject),
-         Attachments => Email_Contents,
-         Status      => Status);
-
-      if AWS.SMTP.Is_Ok (Status) then
-         ES.Is_Email_Send := Yes;
-      end if;
-
-   end Send_Complex_Multipart;
-
-   -----------------------------
-   --  Send_Simple_Text_Only  --
-   -----------------------------
-
-   procedure Send_Simple_Text_Only (ES : in out Email_Structure)
-   is
-
-      SMTP              : constant AWS.SMTP.Receiver
-        := AWS.SMTP.Client.Initialize (TS (ES.SMTP_List.Element (1)));
-      Status            : AWS.SMTP.Status;
-
-   begin
-
-      AWS.SMTP.Client.Send (Server  => SMTP,
-                            From    => ES.From,
-                            To      => Get_Recipients (ES),
-                            Subject => To_String (ES.Subject),
-                            Message => To_String (ES.Text_Part),
-                            Status  => Status);
-
-      if AWS.SMTP.Is_Ok (Status) then
-         ES.Is_Email_Send := Yes;
-      end if;
-
-   end Send_Simple_Text_Only;
-
-   ------------------------
-   --  Set_Alternatives  --
-   ------------------------
-
-   procedure Set_Alternative_Parts (C  : in out AWS.Attachments.List;
-                                    ES : in     Email_Structure)
-   is
-
-      Alternative_Parts : AWS.Attachments.Alternatives;
-
-   begin
-
-      --  Alternative parts.
-      --  These are added with the least favorable part first and the most
-      --  favorable part last.
-      --  Alternative parts are simply just different versions of the same
-      --  content, usually a text and a HTML version.
-      --  If there a HTML part, then we favor that. Only when the HTML part is
-      --  empty do we favor the Text part.
-      if ES.HTML_Part = "" then
-         AWS.Attachments.Add
-           (Parts => Alternative_Parts,
-            Data  => AWS.Attachments.Value
-              (Data         => TS (ES.HTML_Part),
-               Content_Type => AWS.MIME.Text_HTML &
-               "; charset=" & TS (ES.Charset)));
-
-         AWS.Attachments.Add
-           (Parts => Alternative_Parts,
-            Data  => AWS.Attachments.Value
-              (Data         => TS (ES.Text_Part),
-               Content_Type => AWS.MIME.Text_Plain &
-               "; charset=" & TS (ES.Charset)));
-      else
-         AWS.Attachments.Add
-           (Parts => Alternative_Parts,
-            Data  => AWS.Attachments.Value
-              (Data         => TS (ES.Text_Part),
-               Content_Type => AWS.MIME.Text_Plain &
-               "; charset=" & TS (ES.Charset)));
-
-         AWS.Attachments.Add
-           (Parts => Alternative_Parts,
-            Data  => AWS.Attachments.Value
-              (Data         => TS (ES.HTML_Part),
-               Content_Type => AWS.MIME.Text_HTML &
-               "; charset=" & TS (ES.Charset)));
-      end if;
-
-      AWS.Attachments.Add (Attachments => C,
-                           Parts       => Alternative_Parts);
-
-   end Set_Alternative_Parts;
-
-   ----------------------------
-   --  Set_File_Attachments  --
-   ----------------------------
-
-   procedure Set_File_Attachments (C   : in out AWS.Attachments.List;
-                                   ES  : in     Email_Structure)
-   is
-
-      ESA : File_Attachments.Vector renames ES.Attachments_List;
-
-   begin
-
-      for i in ESA.First_Index .. ESA.Last_Index loop
-         AWS.Attachments.Add
-           (Attachments => C,
-            Filename    => To_String (ESA.Element (i).File),
-            Headers     => AWS.Headers.Empty_List,
-            Name        => Simple_Name (To_String (ESA.Element (i).File)),
-            Encode      => ESA.Element (i).Encode);
-      end loop;
---        AWS.Attachments.Add (Attachments => C,
---                             Filename    => ES.Attachments_List,
---                             Headers     => AWS.Headers.Empty_List,
---                             Name        => "",
---                             Encode      => AWS.Attachments.Base64);
---
---        AWS.Attachments.Add (Attachments => C,
---                             Filename    => "test.lyx",
---                             Headers     => AWS.Headers.Empty_List,
---                             Name        => "",
---                             Encode      => AWS.Attachments.Base64);
-
-   end Set_File_Attachments;
 
    ------------
    --  Send  --
    ------------
 
---     procedure Send (Parts         : in Alternative_Parts;
---                     From_Email    : in String;
---                     From_Name     : in String;
---                     To_Email      : in String;
---                     To_Name       : in String;
---                     Subject       : in String;
---                     Charset       : in String := "iso-8859-1";
---                     SMTP_Server   : in String;
---                     Success       : in out Boolean)
+   procedure Send
+     (ES             : in out Email_Structure;
+      From_Address   : in     String;
+      From_Name      : in     String;
+      To_Address     : in     String;
+      To_Name        : in     String;
+      Subject        : in     String;
+      Text_Part      : in     String;
+      SMTP_Server    : in     String;
+      SMTP_Port      : in     Positive := 25;
+      Charset        : in     Character_Set := ISO_8859_1)
+   is
+   begin
+
+      Add_From (ES      => ES,
+                Address => From_Address,
+                Name    => From_Name,
+                Charset => Charset);
+
+      Add_Recipient (ES      => ES,
+                     Address => To_Address,
+                     Name    => To_Name,
+                     Kind    => To,
+                     Charset => Charset);
+
+      Set_Subject (ES      => ES,
+                   Subject => Subject,
+                   Charset => Charset);
+
+      Set_Text_Part (ES      => ES,
+                     Part    => Text_Part,
+                     Charset => Charset);
+
+      Add_SMTP_Server (ES   => ES,
+                       Host => SMTP_Server,
+                       Port => SMTP_Port);
+
+      Send (ES => ES);
+
+   end Send;
+
+   ------------
+   --  Send  --
+   ------------
+
+   procedure Send
+     (ES             : in out Email_Structure;
+      From_Address   : in     String;
+      From_Name      : in     String;
+      To_Address     : in     String;
+      To_Name        : in     String;
+      Subject        : in     String;
+      Text_Part      : in     String;
+      HTML_Part      : in     String;
+      SMTP_Server    : in     String;
+      SMTP_Port      : in     Positive := 25;
+      Charset        : in     Character_Set := ISO_8859_1)
+   is
+   begin
+
+      Add_From (ES      => ES,
+                Address => From_Address,
+                Name    => From_Name,
+                Charset => Charset);
+
+      Add_Recipient (ES      => ES,
+                     Address => To_Address,
+                     Name    => To_Name,
+                     Kind    => To,
+                     Charset => Charset);
+
+      Set_Subject (ES      => ES,
+                   Subject => Subject,
+                   Charset => Charset);
+
+      Set_Text_Part (ES      => ES,
+                     Part    => Text_Part,
+                     Charset => Charset);
+
+      Set_HTML_Part (ES      => ES,
+                     Part    => HTML_Part,
+                     Charset => Charset);
+
+      Add_SMTP_Server (ES   => ES,
+                       Host => SMTP_Server,
+                       Port => SMTP_Port);
+
+      Send (ES => ES);
+
+   end Send;
+
+   ---------------------
+   --  Set_HTML_Part  --
+   ---------------------
+
+   procedure Set_HTML_Part
+     (ES         : in out Email_Structure;
+      Part       : in     String;
+      Charset    : in     Character_Set := ISO_8859_1)
+   is
+   begin
+
+      ES.HTML_Part.Content := TUS (Part);
+      ES.HTML_Part.Charset := Charset;
+
+      ES.Has_HTML_Part := True;
+
+   end Set_HTML_Part;
+
+   ------------------
+   --  Set_Sender  --
+   ------------------
+
+   procedure Set_Sender (ES         : in out Email_Structure;
+                         Address    : in     String;
+                         Name       : in     String;
+                         Charset    : in     Character_Set := ISO_8859_1)
+   is
+   begin
+
+      ES.Sender.Address := TUS (Address);
+      ES.Sender.Charset := Charset;
+      ES.Sender.Name    := TUS (Name);
+
+   end Set_Sender;
+
+   -------------------
+   --  Set_Subject  --
+   -------------------
+
+   procedure Set_Subject (ES        : in out Email_Structure;
+                          Subject   : in     String;
+                          Charset   : in     Character_Set := ISO_8859_1)
+   is
+   begin
+
+      ES.Subject.Content := TUS (Subject);
+      ES.Subject.Charset := Charset;
+
+   end Set_Subject;
+
+   ---------------------
+   --  Set_Text_Part  --
+   ---------------------
+
+   procedure Set_Text_Part
+     (ES         : in out Email_Structure;
+      Part       : in     String;
+      Charset    : in     Character_Set := ISO_8859_1)
+   is
+   begin
+
+      ES.Text_Part.Content := TUS (Part);
+      ES.Text_Part.Charset := Charset;
+
+      ES.Has_Text_Part := True;
+
+   end Set_Text_Part;
+
+   -------------------------
+   --  Set_Type_Of_Email  --
+   -------------------------
+
+   procedure Set_Type_Of_Email (ES : in out Email_Structure)
+   is
+   begin
+
+      if not ES.Has_Text_Part then
+         Set_Text_Part (ES       => ES,
+                        Part     => "");
+      end if;
+      ES.Type_Of_Email := Text;
+
+      if ES.Has_HTML_Part then
+         ES.Type_Of_Email := Text_And_HTML;
+      end if;
+
+      if ES.Has_Attachment then
+         if ES.Type_Of_Email = Text then
+            ES.Type_Of_Email := Text_With_Attachment;
+         elsif ES.Type_Of_Email = Text_And_HTML then
+            ES.Type_Of_Email := Text_And_HTML_With_Attachment;
+         end if;
+      end if;
+
+   end Set_Type_Of_Email;
+
+   -------------------
+   --  Status_Code  --
+   -------------------
+
+   function Status_Code (ES : in Email_Structure) return Positive
+   is
+   begin
+
+      return Positive (AWS.SMTP.Status_Code (Status => ES.Status));
+
+   end Status_Code;
+
+   ----------------------
+   --  Status_Message  --
+   ----------------------
+
+   function Status_Message (ES : in Email_Structure) return String
+   is
+   begin
+
+      return AWS.SMTP.Status_Message (Status => ES.Status);
+
+   end Status_Message;
+
+   -----------------------
+   --  To_Virtual_File  --
+   -----------------------
+
+   function To_Virtual_File (Item : in Attachment_Data) return Virtual_File
+   is
+
+      Path_To_File : constant String := TS (Item.Path_To_File);
+
+   begin
+
+      if not Exists (Path_To_File) then
+         raise Attachment_File_Not_Found;
+      end if;
+
+      return Locate_On_Path (Filesystem_String (Path_To_File));
+
+   end To_Virtual_File;
+
+   ------------------------------
+   --  Send_Complex_Multipart  --
+   ------------------------------
+
+--     procedure Send_Complex_Multipart (ES : in out Email_Structure)
 --     is
+--
+--        SMTP              : constant AWS.SMTP.Receiver
+--          := AWS.SMTP.Client.Initialize (TS (ES.SMTP_List.Element (1)));
+--        Email_Contents    : AWS.Attachments.List;
+--        Status            : AWS.SMTP.Status;
+--
 --     begin
 --
---        Success := Send (Parts        => Parts,
---                         From_Email   => From_Email,
---                         From_Name    => From_Name,
---                         To_Email     => To_Email,
---                         To_Name      => To_Name,
---                         Subject      => Subject,
---                         Charset      => Charset,
---                         SMTP_Server  => SMTP_Server);
+--        --  Add the alternative parts.
+--        Set_Alternative_Parts (C   => Email_Contents,
+--                               ES  => ES);
 --
---     end Send;
+--        --  Add the file attachments.
+--        Set_File_Attachments (C  => Email_Contents,
+--                              ES => ES);
+--
+--        --  Send the email.
+--        AWS.SMTP.Client.Send
+--          (Server      => SMTP,
+--           From        => ES.From,
+--           To          => Get_Recipients (ES),
+--           Subject     => To_String (ES.Subject),
+--           Attachments => Email_Contents,
+--           Status      => Status);
+--
+--        if AWS.SMTP.Is_Ok (Status) then
+--           ES.Is_Email_Send := Yes;
+--        end if;
+--
+--     end Send_Complex_Multipart;
+
+   -----------------------------
+   --  Send_Simple_Text_Only  --
+   -----------------------------
+
+--     procedure Send_Simple_Text_Only (ES : in out Email_Structure)
+--     is
+--
+--        SMTP              : constant AWS.SMTP.Receiver
+--          := AWS.SMTP.Client.Initialize (TS (ES.SMTP_List.Element (1)));
+--        Status            : AWS.SMTP.Status;
+--
+--     begin
+--
+--        AWS.SMTP.Client.Send (Server  => SMTP,
+--                              From    => ES.From,
+--                              To      => Get_Recipients (ES),
+--                              Subject => To_String (ES.Subject),
+--                              Message => To_String (ES.Text_Part),
+--                              Status  => Status);
+--
+--        if AWS.SMTP.Is_Ok (Status) then
+--           ES.Is_Email_Send := Yes;
+--        end if;
+--
+--     end Send_Simple_Text_Only;
+
+   ------------------------
+   --  Set_Alternatives  --
+   ------------------------
+
+--     procedure Set_Alternative_Parts (C  : in out AWS.Attachments.List;
+--                                      ES : in     Email_Structure)
+--     is
+--
+--        Alternative_Parts : AWS.Attachments.Alternatives;
+--
+--     begin
+--
+--        --  Alternative parts.
+--        --  These are added with the least favorable part first and the most
+--        --  favorable part last.
+--        --  Alternative parts are simply just different versions of the same
+--        --  content, usually a text and a HTML version.
+--        --  If there a HTML part, then we favor that. Only when the HTML part
+--        --  is empty do we favor the Text part.
+--        if ES.HTML_Part = "" then
+--           AWS.Attachments.Add
+--             (Parts => Alternative_Parts,
+--              Data  => AWS.Attachments.Value
+--                (Data         => TS (ES.HTML_Part),
+--                 Content_Type => AWS.MIME.Text_HTML &
+--                 "; charset=" & TS (ES.Charset)));
+--
+--           AWS.Attachments.Add
+--             (Parts => Alternative_Parts,
+--              Data  => AWS.Attachments.Value
+--                (Data         => TS (ES.Text_Part),
+--                 Content_Type => AWS.MIME.Text_Plain &
+--                 "; charset=" & TS (ES.Charset)));
+--        else
+--           AWS.Attachments.Add
+--             (Parts => Alternative_Parts,
+--              Data  => AWS.Attachments.Value
+--                (Data         => TS (ES.Text_Part),
+--                 Content_Type => AWS.MIME.Text_Plain &
+--                 "; charset=" & TS (ES.Charset)));
+--
+--           AWS.Attachments.Add
+--             (Parts => Alternative_Parts,
+--              Data  => AWS.Attachments.Value
+--                (Data         => TS (ES.HTML_Part),
+--                 Content_Type => AWS.MIME.Text_HTML &
+--                 "; charset=" & TS (ES.Charset)));
+--        end if;
+--
+--        AWS.Attachments.Add (Attachments => C,
+--                             Parts       => Alternative_Parts);
+--
+--     end Set_Alternative_Parts;
+
+   ----------------------------
+   --  Set_File_Attachments  --
+   ----------------------------
+
+--     procedure Set_File_Attachments (C   : in out AWS.Attachments.List;
+--                                     ES  : in     Email_Structure)
+--     is
+--
+--        ESA : File_Attachments.Vector renames ES.Attachments_List;
+--
+--     begin
+--
+--        for i in ESA.First_Index .. ESA.Last_Index loop
+--           AWS.Attachments.Add
+--             (Attachments => C,
+--              Filename    => To_String (ESA.Element (i).File),
+--              Headers     => AWS.Headers.Empty_List,
+--              Name        => Simple_Name (To_String (ESA.Element (i).File)),
+--              Encode      => ESA.Element (i).Encode);
+--        end loop;
+--  --        AWS.Attachments.Add (Attachments => C,
+--  --                             Filename    => ES.Attachments_List,
+--  --                             Headers     => AWS.Headers.Empty_List,
+--  --                             Name        => "",
+--  --                             Encode      => AWS.Attachments.Base64);
+--  --
+--  --        AWS.Attachments.Add (Attachments => C,
+--  --                             Filename    => "test.lyx",
+--  --                             Headers     => AWS.Headers.Empty_List,
+--  --                             Name        => "",
+--  --                             Encode      => AWS.Attachments.Base64);
+--
+--     end Set_File_Attachments;
 
 end Simple_Email;

@@ -22,102 +22,172 @@
 -------------------------------------------------------------------------------
 with Ada.Containers.Vectors;  use Ada.Containers;
 with Ada.Strings.Unbounded;   use Ada.Strings.Unbounded;
-with AWS.Attachments;
-with AWS.SMTP;                use type AWS.SMTP.E_Mail_Data;
+with AWS.SMTP;
+with GNATCOLL.Email;          use GNATCOLL.Email;
+with GNATCOLL.VFS;            use GNATCOLL.VFS;
 
 package Simple_Email is
 
-   Attachment_File_Not_Found : exception;
+   Attachment_File_Not_Found        : exception;
+   No_Address_Component             : exception;
+   No_SMTP_Host                     : exception;
+   No_Sender_Set_With_Multiple_From : exception;
 
+   type Character_Set is (US_ASCII,
+                          ISO_8859_1,
+                          ISO_8859_2,
+                          ISO_8859_3,
+                          ISO_8859_4,
+                          ISO_8859_9,
+                          ISO_8859_10,
+                          ISO_8859_13,
+                          ISO_8859_14,
+                          ISO_8859_15,
+                          Windows_1252);
    type Email_Structure is private;
-   type Encoding is (None, Base64);
+   type Recipient_Kind is (Bcc, Cc, To);
 
-   function TS (US : Unbounded_String) return String renames To_String;
+   procedure Add_File_Attachment
+     (ES            : in out Email_Structure;
+      Path_To_File  : in     String;
+      Charset       : in     Character_Set := ISO_8859_1);
 
-   procedure Add_Attachment (ES                 : in out Email_Structure;
-                             Attach_File        : in     String;
-                             Encode_Attachment  : in     Encoding := Base64);
+   procedure Add_From (ES        : in out Email_Structure;
+                       Address   : in     String;
+                       Name      : in     String;
+                       Charset   : in     Character_Set := ISO_8859_1);
 
-   procedure Add_Recipient (ES         : in out Email_Structure;
-                            To_Address : in     String;
-                            To_Name    : in     String);
+   procedure Add_Recipient
+     (ES         : in out Email_Structure;
+      Address    : in     String;
+      Name       : in     String;
+      Kind       : in     Recipient_Kind := To;
+      Charset    : in     Character_Set := ISO_8859_1);
 
-   procedure Create_Email (ES                : in out Email_Structure;
-                           HTML_Part         : in     String;
-                           Text_Part         : in     String;
-                           From_Address      : in     String;
-                           From_Name         : in     String;
-                           To_Address        : in     String;
-                           To_Name           : in     String;
-                           Subject           : in     String := "(no subject)";
-                           Charset           : in     String := "iso-8859-1";
-                           Attach_File       : in     String := "";
-                           Encode_Attachment : in     Encoding := Base64;
-                           SMTP_Server       : in     String := "localhost");
+   procedure Add_Reply_To (ES       : in out Email_Structure;
+                           Address  : in     String;
+                           Name     : in     String;
+                           Charset  : in     Character_Set := ISO_8859_1);
+
+   procedure Add_SMTP_Server (ES    : in out Email_Structure;
+                              Host  : in     String;
+                              Port  : in     Positive := 25);
 
    function Is_Send (ES : in Email_Structure) return Boolean;
 
    procedure Send (ES : in out Email_Structure);
-   --  Compose and send a multipart email messages. This is for simple messages
-   --  only. Attachments are not supported. If you need such "fancy" things
-   --  then AWS.SMTP is what you're looking for.
-   --  NOTE:
-   --    The Charset string should of course match the encoding used in the
-   --    HTML_Part and Text_Part.
 
---     procedure Send (Parts         : in Alternative_Parts;
---                     From_Email    : in String;
---                     From_Name     : in String;
---                     To_Email      : in String;
---                     To_Name       : in String;
---                     Subject       : in String;
---                     Charset       : in String := "iso-8859-1";
---                     SMTP_Server   : in String;
---                     Success       : in out Boolean);
-   --  Compose and send a multipart email messages. This is for simple messages
-   --  only. Attachments are not supported. If you need such "fancy" things
-   --  then AWS.SMTP is what you're looking for.
-   --  NOTE:
-   --    The Charset string should of course match the encoding used in the
-   --    HTML_Part and Text_Part.
+   procedure Send
+     (ES             : in out Email_Structure;
+      From_Address   : in     String;
+      From_Name      : in     String;
+      To_Address     : in     String;
+      To_Name        : in     String;
+      Subject        : in     String;
+      Text_Part      : in     String;
+      SMTP_Server    : in     String;
+      SMTP_Port      : in     Positive := 25;
+      Charset        : in     Character_Set := ISO_8859_1);
+
+   procedure Send
+     (ES             : in out Email_Structure;
+      From_Address   : in     String;
+      From_Name      : in     String;
+      To_Address     : in     String;
+      To_Name        : in     String;
+      Subject        : in     String;
+      Text_Part      : in     String;
+      HTML_Part      : in     String;
+      SMTP_Server    : in     String;
+      SMTP_Port      : in     Positive := 25;
+      Charset        : in     Character_Set := ISO_8859_1);
+
+   procedure Set_HTML_Part
+     (ES         : in out Email_Structure;
+      Part       : in     String;
+      Charset    : in     Character_Set := ISO_8859_1);
+
+   procedure Set_Sender (ES         : in out Email_Structure;
+                         Address    : in     String;
+                         Name       : in     String;
+                         Charset    : in     Character_Set := ISO_8859_1);
+
+   procedure Set_Subject (ES        : in out Email_Structure;
+                          Subject   : in     String;
+                          Charset   : in     Character_Set := ISO_8859_1);
+
+   procedure Set_Text_Part
+     (ES         : in out Email_Structure;
+      Part       : in     String;
+      Charset    : in     Character_Set := ISO_8859_1);
+
+   function Status_Code (ES : in Email_Structure) return Positive;
+
+   function Status_Message (ES : in Email_Structure) return String;
 
 private
 
-   type Email_Kind is (Simple_Text_Only, Complex_Multipart);
-   type Send_Status is (Yes, No);
+   function TS (US : Unbounded_String) return String renames To_String;
+   function TUS (S : String) return Unbounded_String
+                 renames To_Unbounded_String;
 
-   type File_Attachment is record
-      File     : Unbounded_String;
-      Encode   : AWS.Attachments.Encoding;
+   type Attachment_Data is record
+      Charset        : Character_Set;
+      Path_To_File   : Unbounded_String;
    end record;
 
-   package File_Attachments is new Vectors (Positive, File_Attachment);
-   package Recipients is new Vectors (Positive, AWS.SMTP.E_Mail_Data);
-   package SMTP_Servers is new Vectors (Positive, Unbounded_String);
+   type Email_Data is record
+      Address  : Unbounded_String;
+      Charset  : Character_Set;
+      Name     : Unbounded_String;
+   end record;
+
+   type Email_Kind is (Text,
+                       Text_With_Attachment,
+                       Text_And_HTML,
+                       Text_And_HTML_With_Attachment);
+
+   type SMTP_Server is record
+      Host : Unbounded_String;
+      Port : Positive;
+   end record;
+
+   type Subject_Data is record
+      Content : Unbounded_String;
+      Charset : Character_Set;
+   end record;
+
+   type Text_Data is record
+      Content  : Unbounded_String;
+      Charset  : Character_Set;
+   end record;
+
+   package Attachments_Container is new Vectors (Positive, Attachment_Data);
+   package Email_Data_Container is new Vectors (Positive, Email_Data);
+   package SMTP_Servers_Container is new Vectors (Positive, SMTP_Server);
 
    type Email_Structure is record
-      HTML_Part         : Unbounded_String;
-      Text_Part         : Unbounded_String;
-      From              : AWS.SMTP.E_Mail_Data;
-      To_List           : Recipients.Vector;
-      Subject           : Unbounded_String;
-      Charset           : Unbounded_String;
-      Attachments_List  : File_Attachments.Vector;
-      SMTP_List         : SMTP_Servers.Vector;
-      Email_Type        : Email_Kind := Simple_Text_Only;
-      Is_Email_Send     : Send_Status := No;
+      Attachment_List   : Attachments_Container.Vector;
+      Bcc_List          : Email_Data_Container.Vector;
+      Cc_List           : Email_Data_Container.Vector;
+      Email_Is_Send     : Boolean := False;
+      From_List         : Email_Data_Container.Vector;
+      Has_Attachment    : Boolean := False;
+      Has_HTML_Part     : Boolean := False;
+      Has_Text_Part     : Boolean := False;
+      HTML_Part         : Text_Data;
+      Reply_To_List     : Email_Data_Container.Vector;
+      Sender            : Email_Data;
+      SMTP_List         : SMTP_Servers_Container.Vector;
+      Status            : AWS.SMTP.Status;
+      Subject           : Subject_Data;
+      Text_Part         : Text_Data;
+      To_List           : Email_Data_Container.Vector;
+      Type_Of_Email     : Email_Kind;
    end record;
 
-   function Get_Recipients (ES : in Email_Structure)
-                            return AWS.SMTP.Recipients;
+   procedure Set_Type_Of_Email (ES : in out Email_Structure);
 
-   procedure Send_Simple_Text_Only (ES : in out Email_Structure);
-   procedure Send_Complex_Multipart (ES : in out Email_Structure);
-
-   procedure Set_Alternative_Parts (C  : in out AWS.Attachments.List;
-                                    ES : in     Email_Structure);
-
-   procedure Set_File_Attachments (C   : in out AWS.Attachments.List;
-                                   ES  : in     Email_Structure);
+   function To_Virtual_File (Item : in Attachment_Data) return Virtual_File;
 
 end Simple_Email;
