@@ -29,7 +29,10 @@ with GNATCOLL.VFS;            use GNATCOLL.VFS;
 package Simple_Email is
 
    Attachment_File_Not_Found        : exception;
+   --  Is raised if a file attachment is not found.
    No_Address_Component             : exception;
+   --  Is raised if the address component of a recipient or sender is not
+   --  found.
    No_SMTP_Host                     : exception;
    No_Sender_Set_With_Multiple_From : exception;
 
@@ -54,19 +57,19 @@ package Simple_Email is
 
    procedure Add_From (ES        : in out Email_Structure;
                        Address   : in     String;
-                       Name      : in     String;
+                       Name      : in     String := "";
                        Charset   : in     Character_Set := ISO_8859_1);
 
    procedure Add_Recipient
      (ES         : in out Email_Structure;
       Address    : in     String;
-      Name       : in     String;
+      Name       : in     String := "";
       Kind       : in     Recipient_Kind := To;
       Charset    : in     Character_Set := ISO_8859_1);
 
    procedure Add_Reply_To (ES       : in out Email_Structure;
                            Address  : in     String;
-                           Name     : in     String;
+                           Name     : in     String := "";
                            Charset  : in     Character_Set := ISO_8859_1);
 
    procedure Add_SMTP_Server (ES    : in out Email_Structure;
@@ -80,9 +83,9 @@ package Simple_Email is
    procedure Send
      (ES             : in out Email_Structure;
       From_Address   : in     String;
-      From_Name      : in     String;
+      From_Name      : in     String := "";
       To_Address     : in     String;
-      To_Name        : in     String;
+      To_Name        : in     String := "";
       Subject        : in     String;
       Text_Part      : in     String;
       SMTP_Server    : in     String;
@@ -92,9 +95,9 @@ package Simple_Email is
    procedure Send
      (ES             : in out Email_Structure;
       From_Address   : in     String;
-      From_Name      : in     String;
+      From_Name      : in     String := "";
       To_Address     : in     String;
-      To_Name        : in     String;
+      To_Name        : in     String := "";
       Subject        : in     String;
       Text_Part      : in     String;
       HTML_Part      : in     String;
@@ -109,7 +112,7 @@ package Simple_Email is
 
    procedure Set_Sender (ES         : in out Email_Structure;
                          Address    : in     String;
-                         Name       : in     String;
+                         Name       : in     String := "";
                          Charset    : in     Character_Set := ISO_8859_1);
 
    procedure Set_Subject (ES        : in out Email_Structure;
