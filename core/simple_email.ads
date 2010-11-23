@@ -20,6 +20,7 @@
 --  MA 02110 - 1301, USA.                                                    --
 --                                                                           --
 -------------------------------------------------------------------------------
+
 with Ada.Containers.Vectors;  use Ada.Containers;
 with Ada.Strings.Unbounded;   use Ada.Strings.Unbounded;
 with AWS.SMTP;
@@ -30,11 +31,15 @@ package Simple_Email is
 
    Attachment_File_Not_Found        : exception;
    --  Is raised if a file attachment is not found.
-   No_Address_Component             : exception;
-   --  Is raised if the address component of a recipient or sender is not
-   --  found.
-   No_SMTP_Host                     : exception;
+   No_Address_Set                   : exception;
+   --  Is raised if the address component is missing for a sender/recipient.
+   No_Path_Set                      : exception;
+   --  Is raised when the path to an attachment is empty.
    No_Sender_Set_With_Multiple_From : exception;
+   --  Is raised when an email contains multiple From headers but no Sender
+   --  header, as per RFC-5322, 3.6.2. http://tools.ietf.org/html/rfc5322
+   No_SMTP_Host_Set                 : exception;
+   --  Is raised if the SMTP host is empty.
 
    type Character_Set is (US_ASCII,
                           ISO_8859_1,
@@ -47,18 +52,32 @@ package Simple_Email is
                           ISO_8859_14,
                           ISO_8859_15,
                           Windows_1252);
+   --  The available character sets. We try to provide the same character sets
+   --  as defined in gnatcoll-emails.ads
+
    type Email_Structure is private;
+
    type Recipient_Kind is (Bcc, Cc, To);
+   --  The kind of recipient, when adding a new recipient to an email.
 
    procedure Add_File_Attachment
      (ES            : in out Email_Structure;
       Path_To_File  : in     String;
       Charset       : in     Character_Set := ISO_8859_1);
+   --  Add a file attachment to the ES email object. These are _always_ BASE64
+   --  encoded. At this point we do not check whether the file actually exists
+   --  or not, so anything can be added.
+   --  Exceptions:
+   --    No_Attachment_Path_Set
 
    procedure Add_From (ES        : in out Email_Structure;
                        Address   : in     String;
                        Name      : in     String := "";
                        Charset   : in     Character_Set := ISO_8859_1);
+   --  Add a From mailbox to the email. If multiple From mailboxes are added,
+   --  then a subsequent call to Set_Sender is required, as per RFC 5322.
+   --  Exceptions:
+   --    No_Address_Set
 
    procedure Add_Recipient
      (ES         : in out Email_Structure;
@@ -66,19 +85,42 @@ package Simple_Email is
       Name       : in     String := "";
       Kind       : in     Recipient_Kind := To;
       Charset    : in     Character_Set := ISO_8859_1);
+   --  Add a recipient to the email. A new recipient defaults to the To kind.
+   --  For Cc and Bcc recipients, simply set the Kind parameter accordingly.
+   --  Exceptions:
+   --    No_Address_Set
 
    procedure Add_Reply_To (ES       : in out Email_Structure;
                            Address  : in     String;
                            Name     : in     String := "";
                            Charset  : in     Character_Set := ISO_8859_1);
+   --  Reply-To indicates the address(es) to which the author of the message
+   --  suggests that replies be sent. In the absence of Reply-To, the default
+   --  is to send replies to the From mailboxes.
+   --  Exceptions:
+   --    No_Address_Set
 
    procedure Add_SMTP_Server (ES    : in out Email_Structure;
                               Host  : in     String;
                               Port  : in     Positive := 25);
+   --  Set the SMTP servers to use when sending an email. The first server
+   --  added is the first server tried. If the first server fails, then the
+   --  system moves on to the next server, until it either runs out of SMTP
+   --  servers to try, or it manages to send the email.
+   --  Exceptions:
+   --    No_SMTP_Host_Set
 
    function Is_Send (ES : in Email_Structure) return Boolean;
+   --  Return True if the email has been successfully delivered to one of the
+   --  set SMTP servers. False otherwise.
 
    procedure Send (ES : in out Email_Structure);
+   --  Process the ES object. This entails composing the email source and
+   --  sending it via one of the set SMTP servers.
+   --  Exceptions:
+   --    Attachment_File_Not_Found
+   --    No_Recipient_Set
+   --    No_Sender_Set_With_Multiple_From
 
    procedure Send
      (ES             : in out Email_Structure;
@@ -91,6 +133,8 @@ package Simple_Email is
       SMTP_Server    : in     String;
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := ISO_8859_1);
+   --  Exceptions:
+   --    No_Address_Set
 
    procedure Send
      (ES             : in out Email_Structure;
@@ -104,6 +148,8 @@ package Simple_Email is
       SMTP_Server    : in     String;
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := ISO_8859_1);
+   --  Exceptions:
+   --    No_Address_Set
 
    procedure Set_HTML_Part
      (ES         : in out Email_Structure;
@@ -114,6 +160,8 @@ package Simple_Email is
                          Address    : in     String;
                          Name       : in     String := "";
                          Charset    : in     Character_Set := ISO_8859_1);
+   --  Exceptions:
+   --    No_Address_Set
 
    procedure Set_Subject (ES        : in out Email_Structure;
                           Subject   : in     String;
