@@ -8,6 +8,9 @@ exe/*.ini
 exe/yolk
 exe/yolk.pid
 
+# Do not track .pem files in exe/certificates
+exe/certificates/*.pem
+
 # Do not track template .tmpl files
 exe/templates/system/*.tmpl
 exe/templates/website/*.tmpl
