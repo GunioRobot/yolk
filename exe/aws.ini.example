@@ -3,18 +3,18 @@
 # This file is not strictly necessary, as the default AWS settings are fairly
 # sane. The settings defined in this file controls the webserver component of
 # AWS.
-# All the configuration settins can  be found in the AWS manual. Those most
+# All the configuration settings can  be found in the AWS manual. Those most
 # often changed is added to this file.
 #
 # This file can be deleted (or renamed) if the default AWS settings are all
 # the application requires.
 #
 # For website related configuration settings, look at the configuration files
-# in the configuration/ directory.
+# in the exe/configuration/ directory.
 #  
 # NOTE:
 #     The log settings defined here are _not_ the same as the rotating log
-#     settings found in the configuration/config.ini file. The log settings
+#     settings found in the exe/configuration/ config files. The log settings
 #     defined here are for the webserver component of the application, ie. what
 #     resources are requested by whom, and what errors are happening when a 
 #     resource is requested.
@@ -37,6 +37,17 @@ Admin_URI /status
 # String
 # Default: no value
 # This is the URI to call the administrative page.
+
+Certificate certificates/aws.pem
+# String
+# Default: cert.pem
+# Set the certificate file to be used with the secure servers. 
+# A single certificate or a certificate chain is supported. The certificates
+# must be in PEM format and the chain must be sorted starting with the 
+# subject's certificate, followed by intermediate CA certificates if 
+# applicable and ending at the highest level (root) CA certificate. If the 
+# file contains only a singlecertificate, it can be followed by a private key.
+# In this case the Key parameter (see below) must empty.
 
 Error_Log_Split_Mode Daily
 # Enumeration (None, Each_Run, Daily, Monthly)
@@ -70,6 +81,27 @@ Reuse_Address False
 # to bind to a socket that has just been released without the need of 
 # waiting. Enabling this feature is _not_ secure and should probably used 
 # only for debugging purpose.
+
+Security False
+# Boolean
+# Default: False
+# Whether or not to accept HTTPS connections. If set to True, the server will
+# accept HTTPS connections. If false, only regular HTTP connections are
+# accepted.
+# If set to True, AWS must've been compiled with SSL enabled, and the 
+# Certificate option must point to a valid certificate. A test certificate
+# can be made like this:
+#
+#   $ openssl genrsa -rand <filename> -out ca-key.pem
+#   $ $ openssl req -new -x509 -days 730 -key ca-key.pem -out ca-cert.pem
+#   $ cat ca-key.pem ca-cert.pem > aws.pem
+#
+# The file aws.pem is now usable as a test certificate.
+
+Security_Mode SSLv23
+# String
+# Default: SSLv23
+# The security mode to use for the secure connections.
 
 Server_Name Yolk
 # String
