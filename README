@@ -104,7 +104,7 @@ My usual modus operandi for setting up these 5 things goes something like this:
             XMLADA=true
             ASIS=false
             IPv6=false
-            SOCKET=std
+            SOCKET=openssl
             LDAP=false
             DEBUG=false
             CJOBS=2
