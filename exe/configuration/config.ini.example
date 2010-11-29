@@ -1,8 +1,14 @@
-# All keys used in this file _must_ be defined in the Configuration.Types
-# type in core/configuration.ads.
+# All keys used in this file _must_ be defined in the Keys type and in the
+# Defaults_Array in core/configuration.ads
 #
-# The path to this file is defined in Configuration.Config_File. It defaults
-# to same folder as the executable, ie. plain "config.ini".
+# The path to this file is defined in Configuration.Config_File.
+#
+# The options in this configuration file first and foremost relates to Yolk
+# specific settings, such as rotating logfiles, basic resource/content
+# handlers.
+#
+# Specific application configuration settings should be set in the
+# my_configuration/my_configuration.ads file.
 
 ##################
 #  Rotating Log  #
