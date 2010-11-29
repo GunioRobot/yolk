@@ -27,7 +27,7 @@ with Ada.Text_IO;       use Ada.Text_IO;
 --  with AWS.MIME;
 --  with AWS.Utils;
 --  with AWS.SMTP.Client;
-with Utilities;         use Utilities;
+--  with Utilities;         use Utilities;
 
 package body Simple_Email is
 
@@ -44,10 +44,6 @@ package body Simple_Email is
       New_Attachment : Attachment_Data;
 
    begin
-
-      if Is_Empty (Path_To_File) then
-         raise No_Path_Set;
-      end if;
 
       New_Attachment.Charset        := Charset;
       New_Attachment.Path_To_File   := TUS (Path_To_File);
@@ -71,10 +67,6 @@ package body Simple_Email is
 
    begin
 
-      if Is_Empty (Address) then
-         raise No_Address_Set;
-      end if;
-
       New_From.Address  := TUS (Address);
       New_From.Charset  := Charset;
       New_From.Name     := TUS (Name);
@@ -96,10 +88,6 @@ package body Simple_Email is
       New_Recipient : Email_Data;
 
    begin
-
-      if Is_Empty (Address) then
-         raise No_Address_Set;
-      end if;
 
       New_Recipient.Address   := TUS (Address);
       New_Recipient.Charset   := Charset;
@@ -130,10 +118,6 @@ package body Simple_Email is
 
    begin
 
-      if Is_Empty (Address) then
-         raise No_Address_Set;
-      end if;
-
       New_Reply_To.Address := TUS (Address);
       New_Reply_To.Charset := Charset;
       New_Reply_To.Name    := TUS (Name);
@@ -153,10 +137,6 @@ package body Simple_Email is
       New_SMTP : SMTP_Server;
 
    begin
-
-      if Is_Empty (Host) then
-         raise No_SMTP_Host_Set;
-      end if;
 
       New_SMTP.Host := TUS (Host);
       New_SMTP.Port := Port;
@@ -217,10 +197,6 @@ package body Simple_Email is
    is
    begin
 
-      if Is_Empty (From_Address) or Is_Empty (To_Address) then
-         raise No_Address_Set;
-      end if;
-
       Add_From (ES      => ES,
                 Address => From_Address,
                 Name    => From_Name,
@@ -266,10 +242,6 @@ package body Simple_Email is
       Charset        : in     Character_Set := ISO_8859_1)
    is
    begin
-
-      if Is_Empty (From_Address) or Is_Empty (To_Address) then
-         raise No_Address_Set;
-      end if;
 
       Add_From (ES      => ES,
                 Address => From_Address,
@@ -330,10 +302,6 @@ package body Simple_Email is
                          Charset    : in     Character_Set := ISO_8859_1)
    is
    begin
-
-      if Is_Empty (Address) then
-         raise No_Address_Set;
-      end if;
 
       ES.Sender.Address := TUS (Address);
       ES.Sender.Charset := Charset;

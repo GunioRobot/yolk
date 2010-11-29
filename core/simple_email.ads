@@ -33,8 +33,6 @@ package Simple_Email is
    --  Is raised if a file attachment is not found.
    No_Address_Set                   : exception;
    --  Is raised if the address component is missing for a sender/recipient.
-   No_Path_Set                      : exception;
-   --  Is raised when the path to an attachment is empty.
    No_Sender_Set_With_Multiple_From : exception;
    --  Is raised when an email contains multiple From headers but no Sender
    --  header, as per RFC-5322, 3.6.2. http://tools.ietf.org/html/rfc5322
@@ -67,8 +65,6 @@ package Simple_Email is
    --  Add a file attachment to the ES email object. These are _always_ BASE64
    --  encoded. At this point we do not check whether the file actually exists
    --  or not, so anything can be added.
-   --  Exceptions:
-   --    No_Attachment_Path_Set
 
    procedure Add_From (ES        : in out Email_Structure;
                        Address   : in     String;
@@ -76,8 +72,6 @@ package Simple_Email is
                        Charset   : in     Character_Set := ISO_8859_1);
    --  Add a From mailbox to the email. If multiple From mailboxes are added,
    --  then a subsequent call to Set_Sender is required, as per RFC 5322.
-   --  Exceptions:
-   --    No_Address_Set
 
    procedure Add_Recipient
      (ES         : in out Email_Structure;
@@ -87,8 +81,6 @@ package Simple_Email is
       Charset    : in     Character_Set := ISO_8859_1);
    --  Add a recipient to the email. A new recipient defaults to the To kind.
    --  For Cc and Bcc recipients, simply set the Kind parameter accordingly.
-   --  Exceptions:
-   --    No_Address_Set
 
    procedure Add_Reply_To (ES       : in out Email_Structure;
                            Address  : in     String;
@@ -97,8 +89,6 @@ package Simple_Email is
    --  Reply-To indicates the address(es) to which the author of the message
    --  suggests that replies be sent. In the absence of Reply-To, the default
    --  is to send replies to the From mailboxes.
-   --  Exceptions:
-   --    No_Address_Set
 
    procedure Add_SMTP_Server (ES    : in out Email_Structure;
                               Host  : in     String;
@@ -107,8 +97,6 @@ package Simple_Email is
    --  added is the first server tried. If the first server fails, then the
    --  system moves on to the next server, until it either runs out of SMTP
    --  servers to try, or it manages to send the email.
-   --  Exceptions:
-   --    No_SMTP_Host_Set
 
    function Is_Send (ES : in Email_Structure) return Boolean;
    --  Return True if the email has been successfully delivered to one of the
@@ -119,8 +107,9 @@ package Simple_Email is
    --  sending it via one of the set SMTP servers.
    --  Exceptions:
    --    Attachment_File_Not_Found
-   --    No_Recipient_Set
+   --    No_Address_Set
    --    No_Sender_Set_With_Multiple_From
+   --    No_SMTP_Host_Set
 
    procedure Send
      (ES             : in out Email_Structure;
@@ -133,8 +122,10 @@ package Simple_Email is
       SMTP_Server    : in     String;
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := ISO_8859_1);
-   --  Exceptions:
-   --    No_Address_Set
+   --  Convenience wrapper for Send (ES : in out Email_Structure) for Text only
+   --  emails.
+   --  Exceptions raised by the "parent" Send procdure are passively propagated
+   --  up through the call stack to the caller of this Send procedure.
 
    procedure Send
      (ES             : in out Email_Structure;
@@ -148,29 +139,37 @@ package Simple_Email is
       SMTP_Server    : in     String;
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := ISO_8859_1);
-   --  Exceptions:
-   --    No_Address_Set
+   --  Convenience wrapper for Send (ES : in out Email_Structure) for Text and
+   --  HTML multipart emails.
+   --  Exceptions raised by the "parent" Send procdure are passively propagated
+   --  up through the call stack to the caller of this Send procedure.
 
    procedure Set_HTML_Part
      (ES         : in out Email_Structure;
       Part       : in     String;
       Charset    : in     Character_Set := ISO_8859_1);
+   --  When adding a HTML part to an email, it is automatically converted to
+   --  a multipart message. If no Text part is added, an empty one will be
+   --  create automatically.
 
    procedure Set_Sender (ES         : in out Email_Structure;
                          Address    : in     String;
                          Name       : in     String := "";
                          Charset    : in     Character_Set := ISO_8859_1);
-   --  Exceptions:
-   --    No_Address_Set
+   --  If an email has multiple From addresses, then it is required, as per
+   --  RFC 5322, to set a single Sender.
 
    procedure Set_Subject (ES        : in out Email_Structure;
                           Subject   : in     String;
                           Charset   : in     Character_Set := ISO_8859_1);
+   --  Add a Subject to the email.
 
    procedure Set_Text_Part
      (ES         : in out Email_Structure;
       Part       : in     String;
       Charset    : in     Character_Set := ISO_8859_1);
+   --  Add the Text part to an email. An email with just a Text part (no HTML
+   --  or attachments) is a text/plain
 
    function Status_Code (ES : in Email_Structure) return Positive;
 
