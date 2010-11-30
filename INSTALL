@@ -1,7 +1,7 @@
-When you download Yolk, it comes setup with a demo website that will run out
-of the box. This makes it easy to check that everything is working as intended
-at the cost of a bit of cleaning up before you can get started on your own
-application.
+When you clone Yolk from the offical Git repository, it comes setup with a 
+demo website that will run out of the box. 
+This makes it easy to check that everything is working as intended at the 
+cost of a bit of cleaning up before you can get started on your own application.
 
 First order of business is checking that you have all the required dependencies
 installed:
@@ -9,20 +9,32 @@ installed:
     1. AWS
     2. GNATcoll
 
-When you're certain all is well, all you need to do is follow these 6 steps:
+When you're certain all is well, all you need to do is follow these 5 steps:
 
     1. cd /path/to/yolk.gpr
-    2. tools/start.sh
-    3. gnatmake -P yolk.gpr
-    4. cd exe/
-    5. ./yolk
-    6. Using your browser, visit http://localhost:4242
+    2. gnatmake -P yolk.gpr
+    3. cd exe/
+    4. ./yolk
+    5. Using your browser, visit http://localhost:4242
 
-If you see the Yolk demo webpage, all is working. If not, then it's worth
-checking that:
+To see the status page for the application, go to http://localhost:4242/status
+and enter "admin" as username and "changemenow" as password. Please make sure 
+that this password is changed before you go public with your application. See
+exe/aws.ini for how to do this. Look for the Admin_Password option.
+
+You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
+found in the yolk.pid file.
+
+If the index page (with all the static content tests) are shown correctly and
+you can access the status page, then Yolk is ready to be used.
+
+If Yolk isn't working, then it's worth checking that:
 
     * gnatmake is in your PATH
     * The ADA_PROJECT_PATH environment variable contains the paths to your AWS
       and GNATcoll project files.
+    * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin, 
+      then make sure that the "for Compiler_Command" option in yolk.gpr is 
+      adjusted accordingly.
 
 See the README file for more information on how to use Yolk.

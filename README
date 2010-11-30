@@ -5,21 +5,20 @@ Contents of this README:
     1. Introduction
     2. Dependencies
     3. Adding PostgreSQL support
-    4. Compiling And Trying Out Yolk
-    5. The Yolk Structure
-    6. Using Yolk
-    7. Fixing The .gitignore File
-    8. References
+    4. The Yolk Structure
+    5. Using Yolk
+    6. Fixing The .gitignore File
+    7. References
 
 -------------------
 --  Introduction --
 -------------------
 
-Yolk is an Ada based web-framework that sits on top of AWS[1], XML/Ada[2], 
-GNATcoll[3] and PostgreSQL[4].
-With Yolk some of the tasks involved in developing a web-application using Ada,
-AWS and GNATcoll is made simpler and a specific style is enforced in regards to
-how the application is put together.
+Yolk is an Ada based web-framework that sits on top of AWS[1], GNATcoll[2] and
+optionally XML/Ada[3], and PostgreSQL[4].
+With Yolk some of the tasks involved in developing a web-application using Ada 
+is made simpler and a specific style is "enforced" in regards to how the 
+application is put together.
 
 It is important to understand that Yolk itself does very little that cannot be
 accomplished using plain AWS and GNATcoll. It is, for lack of a better term, a
@@ -100,9 +99,9 @@ My usual modus operandi for setting up these 5 things goes something like this:
             $ PROCESSORS=4 make
             $ make install
 
-	Of course adjusting the PROCESSORS number to what is suitable on your
-	own system.
-	
+        Of course adjusting the PROCESSORS number to what is suitable on your
+        own system.
+        
     4.  Install XML/Ada in /usr/gnat:
     
             ./configure --prefix=/usr/gnat
@@ -160,72 +159,6 @@ Simply find and uncomment this line in the yolk.gpr file:
 Yes, it's that simple. This will of course only work if you have compiled
 GNATcoll with PostgreSQL support and you have PostgreSQL installed.
 
--------------------------------------
---  Compiling And Trying Out Yolk  --
--------------------------------------
-
-When you clone Yolk from the offical Git repository, what you get is not 
-immediately ready to be compiled. If you try:
-
-    $ cd /path/to/yolk.gpr
-    $ gnatmake -P yolk.gpr
-
-You'll end up with an error that looks something like this:
-
-    gcc -c -gnatwa -gnaty3abcdefhiklmnoprstux -Wall -O2 -gnat05 -I- -gnatA 
-      /path/to/Yolk/yolk.adb
-    yolk.adb:27:06: file "my_handlers.ads" not found
-    yolk.adb:27:06: "Yolk (body)" depends on "Handlers (spec)"
-    yolk.adb:27:06: "Handlers (spec)" depends on "My_Handlers (spec)"
-    gnatmake: "/path/to/Yolk/yolk.adb" compilation error
-
-The reason for this is simple: Most of the files that you must do something with
-in order for Yolk to produce output to a browser are marked with an .example
-extension. This has been done to clearly mark the files in which changes must
-and will be done in order for _your_ version of Yolk to function.
-
-So the first we thing we need to do is find all the .example files and get rid
-of the .example extension. For this we have the tools/start.sh script:
-
-    $ cd /path/to/yolk.gpr
-    $ tools/start.sh
-
-That should result in some output clearly telling you that a bunch of 
-.example file has been copied to their .example-less equivalent.
-
-Now lets try compiling Yolk again:
-
-    $ cd /path/to/yolk.gpr
-    $ gnatmake -P yolk.gpr
-
-This time the result should be a yolk executable in the exe/ directory and a
-bunch of object files in the build/ directory. 
-
-If you've installed your Ada compiler to somewhere else than /usr/gnat/bin
-and you intend to compile Yolk using an IDE such as GPS, then make sure that
-the "for Compiler_Command" option in yolk.gpr is adjusted accordingly.
-
-Starting Yolk is as simple as:
-
-    $ cd exe/
-    $ ./yolk
-
-You should now see something happening in the exe/logs/ directory, and you
-can access the demo Yolk website by visiting http://localhost:4242 using any
-browser.
-
-To see the status page for the application, go to http://localhost:4242/status
-and enter "admin" as username and "changemenow" as password. Please make sure 
-that this password is changed before you go public with your application. See
-exe/aws.ini (or aws.ini.example) for how to do this. Look for the
-Admin_Password option.
-
-You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
-found in the yolk.pid file.
-
-If the index page (with all the static content tests) are shown correctly and
-you can access the status page, then Yolk is ready to be used.
-
 --------------------------
 --  The Yolk Structure  --
 --------------------------
@@ -247,8 +180,7 @@ build/
 core/
     This directory contains the Yolk source code. In general you should not
     have to mess around in core/ at all. If you need to add new functionality
-    to Yolk, you should use the my_core directory to avoid having your source
-    overwritten by an Yolk update.
+    to Yolk, you should use the my_core directory instead.
 
 docs/
     Here you'll find documentation on how to setup, run and build your Yolk 
@@ -267,35 +199,28 @@ exe/
 my_configuration/
     The my_* directories is where you're supposed to place your application spe-
     cific code. In my_configuration/ you will find an example on how to setup
-    your own configuration system. The two example files are used in the default
-    Yolk application and can be freely altered so suit the needs of your applica-
-    tion. See the docs/ for more information.
+    your own configuration system. See docs/ for more information.
     
 my_core/
     The my_core/ directory is supposed to hold whatever packages your application
-    need to run properly. These should _not_ be placed in core/ to avoid having
-    them overwritten by a later update. See the docs/ for more information.
+    need to run properly. See docs/ for more information.
     
 my_database/
     The intention of this directory is to be the home of the Ada source files 
     generated by the GNATcoll tool gnatcoll_db2ada. This tool generates Ada source
     files based on your database schema. You can of course also use this directory
-    for other database related code. See the docs/ for more information.
+    for other database related code. See docs/ for more information.
     
 my_handlers/
     The two my_handlers.ad[bs] files found here are required in order for the Yolk
     application to function properly. You can freely add/remove handlers in these
-    files. SSee the docs/ for more information.
+    files. See docs/ for more information.
     
 my_view/
     This is where you're supposed to place the meat of your application: The code
     where the actual content is generated. I usually go with a parent/child setup
     where each child represents a specific resource, and the parent holds whatever
-    data that needs to be shared among the children. See the docs/ for more 
-    information.
-    
-tools/
-    Here you will find various scripts to help setup and maintain a Yolk application.
+    data that needs to be shared among the children. See docs/ for more information.
 
 ./
     The main Yolk.adb source file, the project file, an INSTALL file, this README 
@@ -304,7 +229,8 @@ tools/
 The most important thing to take away from all this is: You should only ever place
 your code in the my_* directories. Let the rest stay as they are, to ease the process
 of upgrading Yolk. It is _much_ easier to just grab a new main yolk.adb and the 
-accompanying core/ files, without having to worry about overwriting your own code.
+accompanying core/ files, without having to worry (too much) about overwriting your 
+own code.
 
 ------------------
 --  Using Yolk  --
@@ -313,12 +239,11 @@ accompanying core/ files, without having to worry about overwriting your own cod
 There's a short process you will have to go through before building a new Yolk
 application:
 
-    1. Download and unpack Yolk. See the Dependencies and Compiling Yolk sections.
-    2. Run the tools/start.sh script.
-    3. Verify that the default Yolk application works by visiting the demo website.
-    4. Adjust the my_configuration.ad[bs] files to suit your needs.
-    5. Adjust the my_handlers.ad[bs] to account for your content.
-    6. Add my_view/view.xxx files for all your resources.
+    1. Clone the latest Yolk from the official repository.
+    2. Verify that the default Yolk application works by visiting the demo website.
+    3. Adjust the my_configuration.ad[bs] files to suit your needs.
+    4. Adjust the my_handlers.ad[bs] to account for your content.
+    5. Add my_view/view.xxx files for all your resources.
     
 You should of course read all configuration files and make sure you understand what
 the different settings do.
@@ -345,7 +270,7 @@ as long as your log file configuration settings are sane.
 
 The source files are self-documenting, meaning that they are commented in a way 
 that makes it easy to "get" what is going on, so if you want to know how to send
-and email using Yolk, just open the two core/simple_email.ad[bs] files and read
+and email using Yolk, just open the two core/simple_email.ad[bs] files and read the
 source. In some cases there will even be usage examples in the source code.
 
 The official AWS, GNATcoll and XMLAda documentation is handy to have nearby when
@@ -356,12 +281,8 @@ involve one or more of these projects. These docs are not included in Yolk.
 --  Fixing The .gitignore File  --
 ----------------------------------
 In the top level Yolk directory there's a .gitignore file. You should adjust
-this so that your own .ini, .tmpl, .ad[bs] files are tracked. This is of
-course only necessary to worry about, if you intend to use Git as your SCM.
-
-These files are not tracked by default. Instead the .example files are tracked.
-This makes it easier to upgrade to a newer Yolk version, without having to
-worry about overwriting ones own files.
+this so it matches your own needs. This is of course only necessary to worry about, 
+if you intend to use Git as your VCS.
 
 ------------------
 --  References  --
@@ -369,14 +290,14 @@ worry about overwriting ones own files.
 [1]
     Ada Web Server
     http://libre.adacore.com/libre/tools/aws/
-    
-[2]
-    XML/Ada
-    http://libre.adacore.com/libre/tools/xmlada/
 
-[3]
+[2]
     GNAT Component Collection
     http://libre.adacore.com/libre/tools/gnat-component-collection/
+
+[3]
+    XML/Ada
+    http://libre.adacore.com/libre/tools/xmlada/
 
 [4]
     PostgreSQL
