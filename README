@@ -25,7 +25,7 @@ It is important to understand that Yolk itself does very little that cannot be
 accomplished using plain AWS and GNATcoll. It is, for lack of a better term, a
 convenience. Some of things that Yolk make very easy are:
 
-    * Sending simple (no attachments) HTML/text emails from the application
+    * Sending emails from the application
     * Setting up rotating log files and handling basic log file management
     * Adding new resources to your web application
     * Loading configuration files
@@ -56,15 +56,31 @@ compile.
 
 My usual modus operandi for setting up these 5 things goes something like this:
 
-    1.  Install PostgreSQL by whatever means is fitting for you OS. If you don't
+    1.  Install PostgreSQL by whatever means is fitting for your OS. If you don't
         need an RDBMS, ignore this step and adjust the following steps to get
         rid of the PostgreSQL dependency. It should be quite obvious where 
         changes are needed.
+        
     2.  Install GNAT GPL in its default location (/usr/gnat) and add /usr/gnat/bin
-	to your PATH:
+        to your PATH:
 
-	    $ PATH=$PATH:/usr/gnat/bin
-	    $ export PATH
+            $ PATH=$PATH:/usr/gnat/bin
+            $ export PATH
+
+        You might want to add this to .bashrc:
+
+            PATH=$PATH:/usr/gnat/bin
+            export PATH
+
+        And this to .bash_profile:
+
+            if [ -f ~/.bashrc ]; then
+                . ~/.bashrc;
+            fi
+
+        Of course depending on your system. Mine is Slackware. The important
+        thing is to make sure /usr/gnat/bin is added to your PATH even after
+        a reboot.
 
     3.  Install GNATcoll in /usr/gnat:
     
@@ -78,14 +94,15 @@ My usual modus operandi for setting up these 5 things goes something like this:
         
         You should of course adjust the above configuration options to fit your
         needs.
-	At the time of writing, the GNATcoll "make" step will fail if you don't
-	manually define the "PROCESSORS" variable, like this:
+        At the time of writing, the GNATcoll "make" step will fail if you don't
+        manually define the "PROCESSORS" variable, like this:
 
-	    $ PROCESSORS=4 make
-	    $ make install
+            $ PROCESSORS=4 make
+            $ make install
 
 	Of course adjusting the PROCESSORS number to what is suitable on your
 	own system.
+	
     4.  Install XML/Ada in /usr/gnat:
     
             ./configure --prefix=/usr/gnat
@@ -112,6 +129,7 @@ My usual modus operandi for setting up these 5 things goes something like this:
             TARGET=native
             
     5.  Add /usr/gnat/bin to your PATH environment variable.
+    
     6.  Add /usr/gnat/lib/gnat to your ADA_PROJECT_PATH environment variable.
 
 Don't take the above for gospel. You should _always_ read all the accompanying
