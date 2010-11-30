@@ -20,6 +20,7 @@
 --  MA 02110 - 1301, USA.                                                    --
 --                                                                           --
 -------------------------------------------------------------------------------
+
 with AWS.Response;
 with AWS.Templates; use AWS.Templates;
 
@@ -31,8 +32,8 @@ private
                             Translations  : in Translate_Set)
                             return AWS.Response.Data;
    --  Build the resource response.
-   --  This is a convenience function that gets rid of a few with clauses in the
-   --  files for the individual resources. Also since we need to create the
+   --  This is a convenience function that gets rid of a few with clauses in
+   --  the files for the individual resources. Also since we need to create the
    --  AWS.Response.Data object for each and every resource, we might as well
    --  shorten the call a bit.
 
