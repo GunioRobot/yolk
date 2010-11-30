@@ -1,0 +1,28 @@
+When you download Yolk, it comes setup with a demo website that will run out
+of the box. This makes it easy to check that everything is working as intended
+at the cost of a bit of cleaning up before you can get started on your own
+application.
+
+First order of business is checking that you have all the required dependencies
+installed:
+
+    1. AWS
+    2. GNATcoll
+
+When you're certain all is well, all you need to do is follow these 6 steps:
+
+    1. cd /path/to/yolk.gpr
+    2. tools/start.sh
+    3. gnatmake -P yolk.gpr
+    4. cd exe/
+    5. ./yolk
+    6. Using your browser, visit http://localhost:4242
+
+If you see the Yolk demo webpage, all is working. If not, then it's worth
+checking that:
+
+    * gnatmake is in your PATH
+    * The ADA_PROJECT_PATH environment variable contains the paths to your AWS
+      and GNATcoll project files.
+
+See the README file for more information on how to use Yolk.

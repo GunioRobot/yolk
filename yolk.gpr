@@ -1,9 +1,9 @@
 with "aws";
 with "gnatcoll";
 
---  To get rid of the PostgreSQL dependency, just comment the
---  with "gnatcoll_postgres" line.
-with "gnatcoll_postgres";
+--  To add PostgreSQL support to Yolk, just uncomment the following
+--  with clause:
+--  with "gnatcoll_postgres";
 
 project Yolk is
 
