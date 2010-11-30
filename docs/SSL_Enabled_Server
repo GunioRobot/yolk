@@ -9,7 +9,7 @@ options in the AWS makefile.conf file to "openssl" instead of "std". You must
 of course have OpenSSL installed for this to work. Read the AWS manual for
 more information.
 
-The second can be solved be either having a valid certificate alread, or be
+The second can be solved be either having a valid certificate already, or be
 creating a test certificate yourself. In order to create a test certificate,
 all you have to do is this:
 
