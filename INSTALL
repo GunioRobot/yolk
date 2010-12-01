@@ -36,5 +36,6 @@ If Yolk isn't working, then it's worth checking that:
     * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin, 
       then make sure that the "for Compiler_Command" option in yolk.gpr is 
       adjusted accordingly.
-
+    * That you're not already using port 4242 for something else.
+    
 See the README file for more information on how to use Yolk.
