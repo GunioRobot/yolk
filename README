@@ -87,7 +87,7 @@ My usual modus operandi for setting up these 5 things goes something like this:
             --disable-gtk \
             --disable-pygtk \
             --without-python \
-            --with-postgresql=/usr/include/postgresql \
+            --with-postgresql \
             --without-sqlite \
             --disable-syslog
         

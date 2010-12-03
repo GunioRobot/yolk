@@ -21,11 +21,10 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Containers.Vectors;  use Ada.Containers;
-with Ada.Strings.Unbounded;   use Ada.Strings.Unbounded;
+with Ada.Containers.Vectors;
+with Ada.Strings.Unbounded;
 with AWS.SMTP;
-with GNATCOLL.Email;          use GNATCOLL.Email;
-with GNATCOLL.VFS;            use GNATCOLL.VFS;
+with GNATCOLL.VFS;
 
 package Simple_Email is
 
@@ -63,8 +62,8 @@ package Simple_Email is
       Path_To_File  : in     String;
       Charset       : in     Character_Set := ISO_8859_1);
    --  Add a file attachment to the ES email object. These are _always_ BASE64
-   --  encoded. At this point we do not check whether the file actually exists
-   --  or not, so anything can be added.
+   --  encoded. At this point we do not check whether the file actually exists,
+   --  so anything can be added, even an empty String Path_To_File.
 
    procedure Add_From (ES        : in out Email_Structure;
                        Address   : in     String;
@@ -79,8 +78,7 @@ package Simple_Email is
       Name       : in     String := "";
       Kind       : in     Recipient_Kind := To;
       Charset    : in     Character_Set := ISO_8859_1);
-   --  Add a recipient to the email. A new recipient defaults to the To kind.
-   --  For Cc and Bcc recipients, simply set the Kind parameter accordingly.
+   --  Add a recipient to the email.
 
    procedure Add_Reply_To (ES       : in out Email_Structure;
                            Address  : in     String;
@@ -150,7 +148,7 @@ package Simple_Email is
       Charset    : in     Character_Set := ISO_8859_1);
    --  When adding a HTML part to an email, it is automatically converted to
    --  a multipart message. If no Text part is added, an empty one will be
-   --  create automatically.
+   --  created automatically.
 
    procedure Set_Sender (ES         : in out Email_Structure;
                          Address    : in     String;
@@ -168,14 +166,21 @@ package Simple_Email is
      (ES         : in out Email_Structure;
       Part       : in     String;
       Charset    : in     Character_Set := ISO_8859_1);
-   --  Add the Text part to an email. An email with just a Text part (no HTML
-   --  or attachments) is a text/plain
+   --  Add the Text part to an email.
 
    function Status_Code (ES : in Email_Structure) return Positive;
+   --  The SMTP status code. See AWS.SMTP.Reply_Code for the range of possible
+   --  values.
 
    function Status_Message (ES : in Email_Structure) return String;
+   --  The SMTP error message if Is_Send is False.
 
 private
+
+   use Ada.Containers;
+   use Ada.Strings.Unbounded;
+   --  use GNATCOLL.Email;
+   use GNATCOLL.VFS;
 
    function TS (US : Unbounded_String) return String renames To_String;
    function TUS (S : String) return Unbounded_String
@@ -211,6 +216,9 @@ private
       Content  : Unbounded_String;
       Charset  : Character_Set;
    end record;
+   --  This type is used for both text and HTML parts, so the "Text" part of
+   --  Text_Data simply refers to the fact that both text and HTML parts are
+   --  essentially plain text data.
 
    package Attachments_Container is new Vectors (Positive, Attachment_Data);
    package Email_Data_Container is new Vectors (Positive, Email_Data);
@@ -235,9 +243,64 @@ private
       To_List           : Email_Data_Container.Vector;
       Type_Of_Email     : Email_Kind;
    end record;
+   --  The type used to hold describe an email.
+   --    Attachment_List:
+   --       A list of Attachment_Data records. The validity of the Path_To_File
+   --       component is checked when Send is called.
+   --    Bcc_List:
+   --       A list of Email_Data records. These are collapsed into a single
+   --       Bcc: header when Send is called, and only then do we check if each
+   --       element is valid.
+   --    Cc_List:
+   --       A list of Email_Data records. These are collapsed into a single Cc:
+   --       header when Send is called, and only then do we check if each
+   --       element is valid.
+   --    Email_Is_Send:
+   --       Is set to True if we succeed in sending the email.
+   --    From_List:
+   --       A list of Email_Data records. These are collapsed into a single
+   --       From: header when Send is called, and only then do we check if each
+   --       element is valid.
+   --    Has_Attachment:
+   --       Is set to True if an attachment is added to the email.
+   --    Has_HTML_Part:
+   --       Is set to True if a HTML part is added to the email.
+   --    Has_Text_Part:
+   --       Is set to True if a Text part is added to the email.
+   --    HTML_Part:
+   --       The HTML part of a multipart/alternative email.
+   --    Reply_To_List:
+   --       List of Email_Data records. These are collapsed into a single
+   --       Reply-To: header when Send is called, and only then do we check if
+   --       each element is valid.
+   --    Sender:
+   --       If From_List contains multiple elements, then a Sender: header is
+   --       required as per RFC 5322 3.6.2. This header is build from the value
+   --       of Sender.
+   --    SMTP_List:
+   --       List of SMTP servers to try when sending the email. The first one
+   --       added to the list, is the first one tried. The system will keep
+   --       going down the list, until it either succeeds in sending the email
+   --       or until it runs out of SMTP servers to try.
+   --    Status:
+   --       The status code and message from the SMTP session.
+   --    Subject:
+   --       From this we build the Subject: header.
+   --    Text_Part:
+   --       The text/plain part of an email.
+   --    To_List:
+   --       List of Email_Data records. These are collapsed into a single To:
+   --       header when send is called, and only then do we check if each
+   --       element is valid.
+   --    Type_Of_Email:
+   --       The kind of email we're dealing with.
 
    procedure Set_Type_Of_Email (ES : in out Email_Structure);
+   --  Figure out the kind of email ES is.
 
    function To_Virtual_File (Item : in Attachment_Data) return Virtual_File;
+   --  Convert an Attachment_Data.Path_To_File to a GNATCOLL.VFS Virtual_File.
+   --  Exceptions:
+   --    Attachment_File_Not_Found
 
 end Simple_Email;

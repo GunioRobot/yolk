@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  view                                     --
+--                          Database_Connection                              --
 --                                                                           --
---                                  SPEC                                     --
+--                                  BODY                                     --
 --                                                                           --
 --                     Copyright (C) 2010, Thomas Løcke                      --
 --                                                                           --
@@ -21,38 +21,32 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AWS.Config;
-with AWS.Response;
-with AWS.Templates; use AWS.Templates;
-with Connect_To_DB.PostgreSQL;
+package body Connect_To_DB is
 
-package View is
+   ------------------
+   --  Initialize  --
+   ------------------
 
-private
+   function Set_Credentials (Host          : in String;
+                             Database      : in String;
+                             User          : in String;
+                             Password      : in String;
+                             Server_Config : in AWS.Config.Object)
+                             return Credentials
+   is
 
-   package DB_12boo is new Connect_To_DB.PostgreSQL
-     (Connect_To_DB.Set_Credentials
-        (Host          => "freja.serverbox.dk",
-         Database      => "12boo",
-         User          => "thomas",
-         Password      => "respsltl16117994",
-         Server_Config => AWS.Config.Get_Current));
+      C : Credentials;
 
-   package DB_Wiki is new Connect_To_DB.PostgreSQL
-     (Connect_To_DB.Set_Credentials
-        (Host          => "freja.serverbox.dk",
-         Database      => "wikidb",
-         User          => "wikiuser",
-         Password      => "respsltl16117994",
-         Server_Config => AWS.Config.Get_Current));
+   begin
 
-   function Build_Response (Template_File : in String;
-                            Translations  : in Translate_Set)
-                            return AWS.Response.Data;
-   --  Build the resource response.
-   --  This is a convenience function that gets rid of a few with clauses in
-   --  the files for the individual resources. Also since we need to create the
-   --  AWS.Response.Data object for each and every resource, we might as well
-   --  shorten the call a bit.
+      C.Host       := To_Unbounded_String (Host);
+      C.Database   := To_Unbounded_String (Database);
+      C.User       := To_Unbounded_String (User);
+      C.Password   := To_Unbounded_String (Password);
+      C.Threads    := AWS.Config.Max_Connection (Server_Config);
 
-end View;
+      return C;
+
+   end Set_Credentials;
+
+end Connect_To_DB;

@@ -17,7 +17,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Directories;   use Ada.Directories;
+with Ada.Directories;
 with Ada.Exceptions;    use Ada.Exceptions;
 with AWS.Config;
 with AWS.Server;
@@ -59,6 +59,9 @@ procedure Yolk is
 
    procedure Start_Server (Session_Data_File : in String)
    is
+
+      use Ada.Directories;
+
    begin
 
       if AWS.Config.Session (Web_Server_Config)

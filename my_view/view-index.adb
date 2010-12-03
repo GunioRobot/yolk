@@ -1,9 +1,12 @@
-pragma Assertion_Policy (Check);
+
 with My_Configuration;  use My_Configuration;
 with Rotating_Log;      use Rotating_Log;
 with Simple_Email;      use Simple_Email;
 with GNATCOLL.Email;    use GNATCOLL.Email;
 with GNATCOLL.Email.Utils; use GNATCOLL.Email.Utils;
+
+with GNATCOLL.SQL.Exec;
+with Ada.Text_IO; use Ada.Text_IO;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
 
 --  with Ada.Text_IO; use Ada.Text_IO;
@@ -24,9 +27,56 @@ package body View.Index is
    function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
+      C_12boo : constant
+        GNATCOLL.SQL.Exec.Database_Connection := DB_12boo.Connection;
+      C_Wiki : constant
+        GNATCOLL.SQL.Exec.Database_Connection := DB_Wiki.Connection;
       T : Translate_Set;
+      Cursor : GNATCOLL.SQL.Exec.Forward_Cursor;
 
    begin
+
+      --  DB_12boo tests
+      if GNATCOLL.SQL.Exec.Check_Connection (C_12boo) then
+         Put_Line ("DB_12boo up!");
+      else
+         Put_Line ("DB_12boo down!");
+      end if;
+
+      GNATCOLL.SQL.Exec.Fetch (Result     => Cursor,
+                               Connection => C_12boo,
+                               Query      => "select * from groups");
+
+      if GNATCOLL.SQL.Exec.Success (C_12boo) then
+         while GNATCOLL.SQL.Exec.Has_Row (Cursor) loop
+            Put_Line (GNATCOLL.SQL.Exec.Value (Cursor, 1));
+            GNATCOLL.SQL.Exec.Next (Cursor);
+         end loop;
+      else
+         Put_Line ("DB_12boo not success!");
+      end if;
+      GNATCOLL.SQL.Exec.Commit_Or_Rollback (C_12boo);
+
+      --  DB_Wiki tests
+      if GNATCOLL.SQL.Exec.Check_Connection (C_Wiki) then
+         Put_Line ("DB_Wiki up!");
+      else
+         Put_Line ("DB_Wiki down!");
+      end if;
+
+      GNATCOLL.SQL.Exec.Fetch (Result     => Cursor,
+                               Connection => C_Wiki,
+                               Query      => "select * from page");
+
+      if GNATCOLL.SQL.Exec.Success (C_Wiki) then
+         while GNATCOLL.SQL.Exec.Has_Row (Cursor) loop
+            Put_Line (GNATCOLL.SQL.Exec.Value (Cursor, 2));
+            GNATCOLL.SQL.Exec.Next (Cursor);
+         end loop;
+      else
+         Put_Line ("DB_Wiki not success!");
+      end if;
+      GNATCOLL.SQL.Exec.Commit_Or_Rollback (C_Wiki);
 
       Track (Handle     => Info,
              Log_String => "Testing the INFO track");

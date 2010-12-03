@@ -28,10 +28,12 @@
 --  can be changed by altering the constant Confil_File.
 --  Default values for the keys are set in the constant Defaults_Array.
 
-with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded;
 with Config_File_Parser;
 
 package Configuration is
+
+   use Ada.Strings.Unbounded;
 
    type Keys is (CSS_Path,
                  GIF_Path,

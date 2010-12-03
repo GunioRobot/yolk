@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                              db_connection                                --
+--                        DBMS_Connection.PostgreSQL                         --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -21,27 +21,60 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Task_Identification;
 with GNATCOLL.SQL.Postgres;
 
-package body DB_Connection is
+with Ada.Text_IO; use Ada.Text_IO;
 
-   procedure Initialize;
-   --  Initialize the DB_Connection package.
+package body Connect_To_DB.PostgreSQL is
 
-   function Database_Connection_Factory
-     (Desc : Database_Description) return Database_Connection;
-   --  Return a GNATCOLL.SQL.Exec.Database_Connection object. This function
-   --  is called whenever a task is missing a dedicated database connection, so
-   --  when a call to Get_DB_Connection is made, the
-   --  GNATCOLL.SQL.Exec.Get_Task_Connection check if the current task have an
-   --  active database connection, and if not it calls this factory function.
+   ---------------
+   --  DB_Conn  --
+   ---------------
 
-   ----------------------------
-   --  Database Description  --
-   ----------------------------
+   task body DB_Conn is
+   begin
+      loop
+         select
+            accept Fetch (Conn : out Database_Connection) do
 
-   DB_Description : Database_Description;
-   --  Describes access to the database, ie. user, host, password and such.
+               Put_Line (Ada.Task_Identification.Image
+                         (DB_Conn.Fetch'Caller));
+
+               Conn := Get_Task_Connection
+                 (Description  => DB_Description,
+                  Factory      => Database_Connection_Factory'Access);
+
+            end Fetch;
+         or
+            terminate;
+         end select;
+      end loop;
+
+   end DB_Conn;
+
+   ------------------
+   --  Connection  --
+   ------------------
+
+   function Connection return Database_Connection
+   is
+
+      A_Connection : Database_Connection;
+
+   begin
+
+      Task_List (Counter).Fetch (A_Connection);
+
+      if Counter < These_Credentials.Threads then
+         Counter := Counter + 1;
+      else
+         Counter := 1;
+      end if;
+
+      return A_Connection;
+
+   end Connection;
 
    -----------------------------------
    --  Database_Connection_Factory  --
@@ -65,20 +98,6 @@ package body DB_Connection is
 
    end Database_Connection_Factory;
 
-   -------------------------
-   --  Get_DB_Connection  --
-   -------------------------
-
-   function Get_DB_Connection return Database_Connection
-   is
-   begin
-
-      return Get_Task_Connection
-        (Description  => DB_Description,
-         Factory      => Database_Connection_Factory'Access);
-
-   end Get_DB_Connection;
-
    ------------------
    --  Initialize  --
    ------------------
@@ -88,10 +107,10 @@ package body DB_Connection is
    begin
 
       Setup_Database (Description => DB_Description,
-                      Database    => "12boo",
-                      User        => "thomas",
-                      Host        => "192.168.57.2",
-                      Password    => "respsltl16117994",
+                      Database    => To_String (These_Credentials.Database),
+                      User        => To_String (These_Credentials.User),
+                      Host        => To_String (These_Credentials.Host),
+                      Password    => To_String (These_Credentials.Password),
                       DBMS        => DBMS_Postgresql);
 
    end Initialize;
@@ -100,4 +119,4 @@ begin
 
    Initialize;
 
-end DB_Connection;
+end Connect_To_DB.PostgreSQL;

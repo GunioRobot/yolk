@@ -26,10 +26,12 @@
 --  Currently DB_Connection only supports PostgreSQL, so if you need MySQL or
 --  SQLite, then you'll have to use the GNATCOLL database packages directly.
 
-with GNATCOLL.SQL;      use GNATCOLL.SQL;
-with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
+with GNATCOLL.SQL;
+with GNATCOLL.SQL.Exec;
 
 package DB_Connection is
+
+   use GNATCOLL.SQL.Exec;
 
    function Get_DB_Connection return Database_Connection;
    --  Return a thread specific access to the database.

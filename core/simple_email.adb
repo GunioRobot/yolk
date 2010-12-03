@@ -21,8 +21,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Directories;   use Ada.Directories;
-with Ada.Text_IO;       use Ada.Text_IO;
+with Ada.Directories;
+with Ada.Text_IO;
 --  with AWS.Headers;
 --  with AWS.MIME;
 --  with AWS.Utils;
@@ -162,6 +162,9 @@ package body Simple_Email is
 
    procedure Send (ES : in out Email_Structure)
    is
+
+      use Ada.Text_IO;
+
    begin
 
       Set_Type_Of_Email (ES => ES);
@@ -401,6 +404,7 @@ package body Simple_Email is
    function To_Virtual_File (Item : in Attachment_Data) return Virtual_File
    is
 
+      use Ada.Directories;
       Path_To_File : constant String := TS (Item.Path_To_File);
 
    begin

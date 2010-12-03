@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  view                                     --
+--                        DBMS_Connection.PostgreSQL                         --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,38 +21,41 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AWS.Config;
-with AWS.Response;
-with AWS.Templates; use AWS.Templates;
-with Connect_To_DB.PostgreSQL;
+with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
 
-package View is
+generic
+
+   These_Credentials : Credentials;
+
+package Connect_To_DB.PostgreSQL is
+
+   function Connection return Database_Connection;
+   --  Return a thread specific access to the database.
 
 private
 
-   package DB_12boo is new Connect_To_DB.PostgreSQL
-     (Connect_To_DB.Set_Credentials
-        (Host          => "freja.serverbox.dk",
-         Database      => "12boo",
-         User          => "thomas",
-         Password      => "respsltl16117994",
-         Server_Config => AWS.Config.Get_Current));
+   Counter : Positive := 1;
 
-   package DB_Wiki is new Connect_To_DB.PostgreSQL
-     (Connect_To_DB.Set_Credentials
-        (Host          => "freja.serverbox.dk",
-         Database      => "wikidb",
-         User          => "wikiuser",
-         Password      => "respsltl16117994",
-         Server_Config => AWS.Config.Get_Current));
+   DB_Description : Database_Description;
+   --  Describes access to the database, ie. user, host, password and such.
 
-   function Build_Response (Template_File : in String;
-                            Translations  : in Translate_Set)
-                            return AWS.Response.Data;
-   --  Build the resource response.
-   --  This is a convenience function that gets rid of a few with clauses in
-   --  the files for the individual resources. Also since we need to create the
-   --  AWS.Response.Data object for each and every resource, we might as well
-   --  shorten the call a bit.
+   task type DB_Conn is
+      entry Fetch (Conn : out Database_Connection);
+   end DB_Conn;
+   --  TODO: Write comment.
 
-end View;
+   type Task_Array is array (1 .. These_Credentials.Threads) of DB_Conn;
+   Task_List : Task_Array;
+
+   function Database_Connection_Factory
+     (Desc : Database_Description) return Database_Connection;
+   --  Return a GNATCOLL.SQL.Exec.Database_Connection object. This function
+   --  is called whenever a task is missing a dedicated database connection, so
+   --  when a call to Get_DB_Connection is made, the
+   --  GNATCOLL.SQL.Exec.Get_Task_Connection check if the current task have an
+   --  active database connection, and if not it calls this factory function.
+
+   procedure Initialize;
+   --  Wrapper for the GNATCOLL.SQL.Postgres.Setup_Database procedure.
+
+end Connect_To_DB.PostgreSQL;

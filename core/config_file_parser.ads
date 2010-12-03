@@ -52,13 +52,15 @@
 --  Conversions from VALUE to other types, such as Integer or Float, will raise
 --  an exception on failure. It will NOT return some dummy value.
 
-with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded;
 
 generic
 
    type Keys is (<>);
 
 package Config_File_Parser is
+
+   use Ada.Strings.Unbounded;
 
    Unknown_Ini_Key            : exception;
    --  Is raised when an unknown KEY has been found in the config file.

@@ -21,10 +21,10 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Strings;                use Ada.Strings;
-with Ada.Strings.Fixed;          use Ada.Strings.Fixed;
-with Ada.Strings.Maps;           use Ada.Strings.Maps;
-with Ada.Text_IO;                use Ada.Text_IO;
+with Ada.Strings;
+with Ada.Strings.Fixed;
+with Ada.Strings.Maps;
+with Ada.Text_IO;
 
 package body Config_File_Parser is
 
@@ -107,6 +107,9 @@ package body Config_File_Parser is
    procedure Load_File (Config_File : in String)
    is
 
+      use Ada.Strings;
+      use Ada.Text_IO;
+
       function Key_String (Line : in String) return String;
       function Value_UString (Key   : in String;
                               Line  : in String) return Unbounded_String;
@@ -123,8 +126,8 @@ package body Config_File_Parser is
       begin
 
          if Line /= "" then
-            Key_End := Index (Source => Line,
-                              Set    => To_Set (Space),
+            Key_End := Fixed.Index (Source => Line,
+                              Set    => Maps.To_Set (Space),
                               Going  => Forward);
             if Key_End > Line'First then
                return Line (Line'First .. Key_End - 1);
@@ -162,7 +165,7 @@ package body Config_File_Parser is
 
       while not End_Of_File (File => File) loop
          declare
-            Line     : constant String := Trim (Get_Line (File), Both);
+            Line     : constant String := Fixed.Trim (Get_Line (File), Both);
             Key      : constant String := Key_String (Line);
             Value    : constant Unbounded_String := Value_UString (Key, Line);
          begin
@@ -192,6 +195,9 @@ package body Config_File_Parser is
 
    procedure Save_Config_File (Config_File : in String)
    is
+
+      use Ada.Strings;
+      use Ada.Text_IO;
 
       package Enum_IO is new Ada.Text_IO.Enumeration_IO (Keys);
       File : File_Type;
@@ -236,10 +242,13 @@ package body Config_File_Parser is
    procedure Set (Key   : in Keys;
                   Value : in Float)
    is
+
+      use Ada.Strings;
+
    begin
 
       Parameters (Key) := To_Unbounded_String
-        (Trim (Float'Image (Value), Left));
+        (Fixed.Trim (Float'Image (Value), Left));
 
    end Set;
 
@@ -250,10 +259,13 @@ package body Config_File_Parser is
    procedure Set (Key   : in Keys;
                   Value : in Integer)
    is
+
+      use Ada.Strings;
+
    begin
 
       Parameters (Key) := To_Unbounded_String
-        (Trim (Integer'Image (Value), Left));
+        (Fixed.Trim (Integer'Image (Value), Left));
 
    end Set;
 
