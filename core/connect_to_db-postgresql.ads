@@ -21,6 +21,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Containers.Hashed_Maps;
+with Ada.Task_Identification;
 with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
 
 generic
@@ -34,7 +36,7 @@ package Connect_To_DB.PostgreSQL is
 
 private
 
-   Counter : Positive := 1;
+   use Ada.Task_Identification;
 
    DB_Description : Database_Description;
    --  Describes access to the database, ie. user, host, password and such.
@@ -44,8 +46,11 @@ private
    end DB_Conn;
    --  TODO: Write comment.
 
-   type Task_Array is array (1 .. These_Credentials.Threads) of DB_Conn;
-   Task_List : Task_Array;
+   type DB_Conn_Access is access DB_Conn;
+   Null_DB_Conn_Access : DB_Conn_Access := null;
+   --  type Task_Array is array (1 .. These_Credentials.Threads)
+   --  of DB_Conn_Access;
+   --  Task_List : Task_Array;
 
    function Database_Connection_Factory
      (Desc : Database_Description) return Database_Connection;
@@ -55,7 +60,28 @@ private
    --  GNATCOLL.SQL.Exec.Get_Task_Connection check if the current task have an
    --  active database connection, and if not it calls this factory function.
 
+   function Equivalent_Tasks (Left, Right : in Task_Id) return Boolean;
+
    procedure Initialize;
    --  Wrapper for the GNATCOLL.SQL.Postgres.Setup_Database procedure.
+
+   function Task_ID_Hash (ID : in Task_Id) return Ada.Containers.Hash_Type;
+
+   package Task_Association_Map is new Ada.Containers.Hashed_Maps
+     (Key_Type        => Ada.Task_Identification.Task_Id,
+      Element_Type    => DB_Conn_Access,
+      Hash            => Task_ID_Hash,
+      Equivalent_Keys => Equivalent_Tasks);
+
+   protected Task_Assoc is
+
+      function Get (AWS_Task_ID : in Task_Id) return DB_Conn_Access;
+      procedure Set (AWS_Task_ID : in Task_Id);
+
+   private
+
+      Task_Store : Task_Association_Map.Map;
+
+   end Task_Assoc;
 
 end Connect_To_DB.PostgreSQL;

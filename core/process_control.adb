@@ -111,7 +111,7 @@ package body Process_Control is
 
       -------------
       --  Check  --
-   -------------
+      -------------
 
       entry Check when AWS_State = Shutdown
       is

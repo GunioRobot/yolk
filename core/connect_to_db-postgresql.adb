@@ -21,7 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Task_Identification;
+with Ada.Strings.Hash;
 with GNATCOLL.SQL.Postgres;
 
 with Ada.Text_IO; use Ada.Text_IO;
@@ -36,10 +36,7 @@ package body Connect_To_DB.PostgreSQL is
    begin
       loop
          select
-            accept Fetch (Conn : out Database_Connection) do
-
-               Put_Line (Ada.Task_Identification.Image
-                         (DB_Conn.Fetch'Caller));
+            accept Fetch (Conn   : out Database_Connection) do
 
                Conn := Get_Task_Connection
                  (Description  => DB_Description,
@@ -60,17 +57,18 @@ package body Connect_To_DB.PostgreSQL is
    function Connection return Database_Connection
    is
 
-      A_Connection : Database_Connection;
+      A_Connection   : Database_Connection;
+      A_Task         : DB_Conn_Access;
 
    begin
 
-      Task_List (Counter).Fetch (A_Connection);
-
-      if Counter < These_Credentials.Threads then
-         Counter := Counter + 1;
-      else
-         Counter := 1;
+      A_Task := Task_Assoc.Get (AWS_Task_ID => Current_Task);
+      if A_Task = Null_DB_Conn_Access then
+         Task_Assoc.Set (AWS_Task_ID => Current_Task);
+         A_Task := Task_Assoc.Get (AWS_Task_ID => Current_Task);
       end if;
+
+      A_Task.Fetch (Conn => A_Connection);
 
       return A_Connection;
 
@@ -98,6 +96,18 @@ package body Connect_To_DB.PostgreSQL is
 
    end Database_Connection_Factory;
 
+   ------------------------
+   --  Equivalent_Tasks  --
+   ------------------------
+
+   function Equivalent_Tasks (Left, Right : in Task_Id) return Boolean
+   is
+   begin
+
+      return Left = Right;
+
+   end Equivalent_Tasks;
+
    ------------------
    --  Initialize  --
    ------------------
@@ -114,6 +124,63 @@ package body Connect_To_DB.PostgreSQL is
                       DBMS        => DBMS_Postgresql);
 
    end Initialize;
+
+   --------------------
+   --  Task_ID_Hash  --
+   --------------------
+
+   function Task_ID_Hash (ID : in Task_Id) return Ada.Containers.Hash_Type
+   is
+
+      use Ada.Strings;
+
+   begin
+
+      return Hash (Key => Image (ID));
+
+   end Task_ID_Hash;
+
+   ------------------
+   --  Task_Assoc  --
+   ------------------
+
+   protected body Task_Assoc is
+
+      -----------
+      --  Get  --
+      -----------
+
+      function Get (AWS_Task_ID : in Task_Id) return DB_Conn_Access
+      is
+      begin
+
+         if Task_Store.Contains (Key => AWS_Task_ID) then
+            return Task_Store.Element (AWS_Task_ID);
+         else
+            return Null_DB_Conn_Access;
+         end if;
+
+      end Get;
+
+      -----------
+      --  Set  --
+      -----------
+
+      procedure Set (AWS_Task_ID : in Task_Id)
+      is
+
+         New_DB_Conn_Access : DB_Conn_Access;
+
+      begin
+
+         Put_Line ("Set: " & Ada.Task_Identification.Image (AWS_Task_ID));
+         New_DB_Conn_Access := new DB_Conn;
+         Task_Store.Insert (Key      => AWS_Task_ID,
+                            New_Item => New_DB_Conn_Access);
+
+      end Set;
+
+   end Task_Assoc;
 
 begin
 
