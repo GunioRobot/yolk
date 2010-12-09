@@ -21,7 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
+private with Ada.Strings.Unbounded;
 with AWS.Config;
 
 package Connect_To_DB is
@@ -37,13 +37,11 @@ package Connect_To_DB is
 
 private
 
-   use Ada.Strings.Unbounded;
-
    type Credentials is record
-      Host     : Unbounded_String;
-      Database : Unbounded_String;
-      User     : Unbounded_String;
-      Password : Unbounded_String;
+      Host     : Ada.Strings.Unbounded.Unbounded_String;
+      Database : Ada.Strings.Unbounded.Unbounded_String;
+      User     : Ada.Strings.Unbounded.Unbounded_String;
+      Password : Ada.Strings.Unbounded.Unbounded_String;
       Threads  : Positive;
    end record;
 

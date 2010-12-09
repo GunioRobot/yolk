@@ -75,7 +75,7 @@ package body Configuration is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Unbounded_String
+   function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String
    is
    begin
 
@@ -89,8 +89,12 @@ package body Configuration is
 
    procedure Initialize
    is
+
+      use Ada.Strings.Unbounded;
+
       Value : Unbounded_String;
       Empty : constant Unbounded_String := To_Unbounded_String ("");
+
    begin
 
       Ini.Load_File (Config_File);

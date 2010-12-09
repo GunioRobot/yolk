@@ -34,6 +34,9 @@ package body Config_File_Parser is
 
    function Get (Key : in Keys) return Boolean
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       return Boolean'Value (To_String (Parameters (Key)));
@@ -50,6 +53,9 @@ package body Config_File_Parser is
 
    function Get (Key : in Keys) return Float
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       return Float'Value (To_String (Parameters (Key)));
@@ -66,6 +72,9 @@ package body Config_File_Parser is
 
    function Get (Key : in Keys) return Integer
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       return Integer'Value (To_String (Parameters (Key)));
@@ -82,6 +91,9 @@ package body Config_File_Parser is
 
    function Get (Key : in Keys) return String
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       return To_String (Parameters (Key));
@@ -92,8 +104,11 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Unbounded_String
+   function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       return Parameters (Key);
@@ -108,6 +123,7 @@ package body Config_File_Parser is
    is
 
       use Ada.Strings;
+      use Ada.Strings.Unbounded;
       use Ada.Text_IO;
 
       function Key_String (Line : in String) return String;
@@ -165,10 +181,13 @@ package body Config_File_Parser is
 
       while not End_Of_File (File => File) loop
          declare
+
             Line     : constant String := Fixed.Trim (Get_Line (File), Both);
             Key      : constant String := Key_String (Line);
             Value    : constant Unbounded_String := Value_UString (Key, Line);
+
          begin
+
             --  Ignore empty lines and comments.
             if Line /= "" and then Line (1 .. 1) /= "#" then
                Parameters (Keys'Value (Key)) := Trim (Value, Left);
@@ -178,6 +197,7 @@ package body Config_File_Parser is
             when Constraint_Error =>
                raise Unknown_Ini_Key with
                  "Unknown ini key '" & Key & "' in file " & Config_File;
+
          end;
       end loop;
 
@@ -197,9 +217,11 @@ package body Config_File_Parser is
    is
 
       use Ada.Strings;
+      use Ada.Strings.Unbounded;
       use Ada.Text_IO;
 
       package Enum_IO is new Ada.Text_IO.Enumeration_IO (Keys);
+
       File : File_Type;
 
    begin
@@ -229,6 +251,9 @@ package body Config_File_Parser is
    procedure Set (Key   : in Keys;
                   Value : in Boolean)
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       Parameters (Key) := To_Unbounded_String (Boolean'Image (Value));
@@ -244,6 +269,7 @@ package body Config_File_Parser is
    is
 
       use Ada.Strings;
+      use Ada.Strings.Unbounded;
 
    begin
 
@@ -261,6 +287,7 @@ package body Config_File_Parser is
    is
 
       use Ada.Strings;
+      use Ada.Strings.Unbounded;
 
    begin
 
@@ -276,6 +303,9 @@ package body Config_File_Parser is
    procedure Set (Key   : in Keys;
                   Value : in String)
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       Parameters (Key) := To_Unbounded_String (Value);
@@ -287,7 +317,7 @@ package body Config_File_Parser is
    -----------
 
    procedure Set (Key   : in Keys;
-                  Value : in Unbounded_String)
+                  Value : in Ada.Strings.Unbounded.Unbounded_String)
    is
    begin
 

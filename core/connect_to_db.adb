@@ -35,6 +35,8 @@ package body Connect_To_DB is
                              return Credentials
    is
 
+      use Ada.Strings.Unbounded;
+
       C : Credentials;
 
    begin

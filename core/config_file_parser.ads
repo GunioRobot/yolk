@@ -52,7 +52,7 @@
 --  Conversions from VALUE to other types, such as Integer or Float, will raise
 --  an exception on failure. It will NOT return some dummy value.
 
-with Ada.Strings.Unbounded;
+private with Ada.Strings.Unbounded;
 
 generic
 
@@ -60,7 +60,7 @@ generic
 
 package Config_File_Parser is
 
-   use Ada.Strings.Unbounded;
+   --  use Ada.Strings.Unbounded;
 
    Unknown_Ini_Key            : exception;
    --  Is raised when an unknown KEY has been found in the config file.
@@ -81,7 +81,7 @@ package Config_File_Parser is
    function Get (Key : in Keys) return Float;
    function Get (Key : in Keys) return Integer;
    function Get (Key : in Keys) return String;
-   function Get (Key : in Keys) return Unbounded_String;
+   function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String;
    --  Get the VALUE for Key and convert it to target type.
    --  Exceptions:
    --    Cannot_Convert_To_xxx (depends on target type)
@@ -107,12 +107,13 @@ package Config_File_Parser is
    procedure Set (Key   : in Keys;
                   Value : in String);
    procedure Set (Key   : in Keys;
-                  Value : in Unbounded_String);
+                  Value : in Ada.Strings.Unbounded.Unbounded_String);
    --  Set Key to Value. Whitespace (left and right) is trimmed
 
 private
 
-   type Parameters_Array is array (Keys) of Unbounded_String;
+   type Parameters_Array is array (Keys) of
+     Ada.Strings.Unbounded.Unbounded_String;
    Parameters : Parameters_Array;
 
 end Config_File_Parser;

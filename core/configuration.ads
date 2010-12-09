@@ -29,11 +29,9 @@
 --  Default values for the keys are set in the constant Defaults_Array.
 
 with Ada.Strings.Unbounded;
-with Config_File_Parser;
+private with Config_File_Parser;
 
 package Configuration is
-
-   use Ada.Strings.Unbounded;
 
    type Keys is (CSS_Path,
                  GIF_Path,
@@ -73,17 +71,19 @@ package Configuration is
    function Get (Key : in Keys) return Float;
    function Get (Key : in Keys) return Integer;
    function Get (Key : in Keys) return String;
-   function Get (Key : in Keys) return Unbounded_String;
+   function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String;
    --  Return the value of Key as the appropriate type.
 
 private
 
+   function TUS (S : String) return Ada.Strings.Unbounded.Unbounded_String
+                 renames Ada.Strings.Unbounded.To_Unbounded_String;
+
    Config_File : constant String := "configuration/config.ini";
    --  The path to the config file.
 
-   type Defaults is array (Keys) of Unbounded_String;
-   function TUS (S : String) return Unbounded_String renames
-     To_Unbounded_String;
+   type Defaults is array (Keys) of Ada.Strings.Unbounded.Unbounded_String;
+
    Defaults_Array : constant Defaults :=
                       (CSS_Path                 => TUS ("static_content/css"),
                        GIF_Path                 => TUS ("static_content/gif"),
