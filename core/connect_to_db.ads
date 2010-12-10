@@ -21,8 +21,11 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+private with Ada.Containers.Hashed_Maps;
 private with Ada.Strings.Unbounded;
+private with Ada.Task_Identification;
 with AWS.Config;
+with GNATCOLL.SQL.Exec;
 
 package Connect_To_DB is
 
@@ -34,8 +37,31 @@ package Connect_To_DB is
                              Password      : in String;
                              Server_Config : in AWS.Config.Object)
                              return Credentials;
+   --  Define the credentials necessary to connect to the database. The actual
+   --  DBMS used is decided when the relevant child package (generic) is
+   --  instantiated, for example like this:
+   --
+   --    package DB is new Connect_To_DB.PostgreSQL
+   --      (Connect_To_DB.Set_Credentials
+   --       (Host          => "some-host",
+   --        Database      => "some-database",
+   --        User          => "some-user",
+   --        Password      => "some-password",
+   --        Server_Config => AWS.Config.Get_Current));
 
 private
+
+   task type DB_Conn is
+      entry Fetch (Conn : out GNATCOLL.SQL.Exec.Database_Connection;
+                   Desc : in GNATCOLL.SQL.Exec.Database_Description);
+   end DB_Conn;
+   --  Here we fetch a thread specific database connection. If a connection
+   --  has not yet been made for the calling thread, a new one is established
+   --  using the Database_Connection_Factory function.
+
+   type DB_Conn_Access is access DB_Conn;
+   Null_DB_Conn_Access : DB_Conn_Access := null;
+   --  Access to the DB_Conn tasks.
 
    type Credentials is record
       Host     : Ada.Strings.Unbounded.Unbounded_String;
@@ -44,5 +70,53 @@ private
       Password : Ada.Strings.Unbounded.Unbounded_String;
       Threads  : Positive;
    end record;
+
+   function Database_Connection_Factory
+     (Desc : GNATCOLL.SQL.Exec.Database_Description)
+      return GNATCOLL.SQL.Exec.Database_Connection;
+   --  Return a GNATCOLL.SQL.Exec.Database_Connection object. This function
+   --  is called whenever a task is missing a dedicated database connection.
+
+   function Equivalent_Tasks (Left, Right : in Ada.Task_Identification.Task_Id)
+                              return Boolean;
+   --  Equivalence function used by the Task_Assocition_Map.
+
+   function Task_ID_Hash (ID : in Ada.Task_Identification.Task_Id)
+                          return Ada.Containers.Hash_Type;
+   --  Hash function used by the Task_Association_Map.
+
+   package Task_Association_Map is new Ada.Containers.Hashed_Maps
+     (Key_Type        => Ada.Task_Identification.Task_Id,
+      Element_Type    => DB_Conn_Access,
+      Hash            => Task_ID_Hash,
+      Equivalent_Keys => Equivalent_Tasks);
+   --  This map is the binding between the AWS tasks and the database tasks.
+   --  We need this to ensure that there's a correlation between AWS task A and
+   --  database connection A.
+
+   protected type Protected_Association_Map is
+
+      function Get (AWS_Task_ID : in Ada.Task_Identification.Task_Id)
+                    return DB_Conn_Access;
+      --  Return the DB_Conn_Access object that matches the AWS_Task_ID,
+      --  according to the Task_Store.
+
+      procedure Set (DB_Task     : out DB_Conn_Access;
+                     AWS_Task_ID : in Ada.Task_Identification.Task_Id);
+      --  Add a new AWS_Task_ID to the Task_Association_Map. This also entails
+      --  starting a new DB_Conn task, and adding access to this to the
+      --  Task_Store.
+
+   private
+
+      Task_Store : Task_Association_Map.Map;
+      --  Here we keep all the AWS task -> DB_Conn_Access relations.
+
+   end Protected_Association_Map;
+   --  Because Ada.Containers.Hashed_Maps are not thread-safe, we need to wrap
+   --  our map in a protected object. There shouldn't be any noticeable
+   --  performance penalty because of this. Multiple readers are allowed to
+   --  use the Get function, and the object is only locked when Set is called,
+   --  which only happens as many times as there are active AWS tasks running.
 
 end Connect_To_DB;
