@@ -21,8 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with GNATCOLL.SQL.Exec;
-
 generic
 
    These_Credentials : Credentials;
