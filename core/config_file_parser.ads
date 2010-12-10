@@ -60,8 +60,6 @@ generic
 
 package Config_File_Parser is
 
-   --  use Ada.Strings.Unbounded;
-
    Unknown_Ini_Key            : exception;
    --  Is raised when an unknown KEY has been found in the config file.
    Cannot_Create_Ini_File     : exception;
