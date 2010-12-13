@@ -42,23 +42,28 @@ package body Rotating_Log is
 
    begin
 
-      if Exists (Name => Get (GNATCOLL_Traces_Ini_File)) then
+      if Exists (Name => Config.Get (GNATCOLL_Traces_Ini_File)) then
          Register_Rotating_Log_Stream;
-         Parse_Config_File (Get (GNATCOLL_Traces_Ini_File));
+         Parse_Config_File (Config.Get (GNATCOLL_Traces_Ini_File));
       end if;
 
       for Handle in Trace_Handles loop
          A_Handle := Handle;
          Log_Objects_List (Handle) := new Log_Object;
          Log_Objects_List (Handle).Set_File_Access;
-         Create (File => Log_Objects_List (Handle).Get_File_Access.all,
-                 Mode => Out_File,
-                 Name =>
-                   Get (Log_File_Path) & Trace_Handles'Image (Handle) & "-" &
-                 Log_Objects_List (Handle).Get_Slot & ".log");
+         Create
+           (File => Log_Objects_List (Handle).Get_File_Access.all,
+            Mode => Out_File,
+            Name =>
+              Config.Get (Log_File_Path) & Trace_Handles'Image (Handle) & "-" &
+            Log_Objects_List (Handle).Get_Slot & ".log");
       end loop;
 
    exception
+      when Config.Conversion_Error =>
+         raise;
+      when Config.Empty_Key =>
+         raise;
       when others =>
          Process_Control.Stop;
          raise Cannot_Create_Log_File with
@@ -175,17 +180,18 @@ package body Rotating_Log is
 
    begin
 
-      if Log.Get_Size > Get (Max_Logged_Characters) then
+      if Log.Get_Size > Config.Get (Max_Logged_Characters) then
          if Is_Open (File => Log.Get_File_Access.all) then
             Close (File => Log.Get_File_Access.all);
          end if;
 
          Log.Move_To_Next_Slot;
 
-         Create (File => Log.Get_File_Access.all,
-                 Mode => Out_File,
-                 Name => Get (Log_File_Path) & Trace_Handles'Image (Handle) &
-                 "-" & Log.Get_Slot & ".log");
+         Create
+           (File => Log.Get_File_Access.all,
+            Mode => Out_File,
+            Name => Config.Get (Log_File_Path) & Trace_Handles'Image (Handle) &
+            "-" & Log.Get_Slot & ".log");
       end if;
 
       Put (File => Log.Get_File_Access.all,
@@ -207,13 +213,17 @@ package body Rotating_Log is
       Put_Line (File => Log.Get_File_Access.all,
                 Item => Log_String);
 
-      if Get (Immediate_Flush) then
+      if Config.Get (Immediate_Flush) then
          Flush (File => Log.Get_File_Access.all);
       end if;
 
       Log.Set_Size (Length => Circa_Length);
 
    exception
+      when Config.Conversion_Error =>
+         raise;
+      when Config.Empty_Key =>
+         raise;
       when others =>
          Process_Control.Stop;
          raise Cannot_Write_To_Log_File with
@@ -273,7 +283,7 @@ package body Rotating_Log is
       is
       begin
 
-         if Current_Slot = Get (Max_Slot_Count) then
+         if Current_Slot = Config.Get (Max_Slot_Count) then
             Current_Slot := 1;
          else
             Current_Slot := Current_Slot + 1;

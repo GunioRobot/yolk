@@ -30,7 +30,7 @@ with Rotating_Log;      use Rotating_Log;
 
 procedure Yolk is
 
-   Sessions          : constant String := Get (Session_Data_File);
+   Sessions          : constant String := Config.Get (Session_Data_File);
    --  Path to the sessions data file.
 
    Web_Server        : AWS.Server.HTTP;

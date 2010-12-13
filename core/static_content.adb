@@ -35,7 +35,8 @@ package body Static_Content is
    function CSS (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      CSS_File : constant String := Get (CSS_Path) & AWS.Status.URI (Request);
+      CSS_File : constant String :=
+                   Config.Get (CSS_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -55,7 +56,8 @@ package body Static_Content is
    function GIF (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      GIF_File : constant String := Get (GIF_Path) & AWS.Status.URI (Request);
+      GIF_File : constant String :=
+                   Config.Get (GIF_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -76,7 +78,7 @@ package body Static_Content is
    is
 
       HTML_File : constant String :=
-                    Get (HTML_Path) & AWS.Status.URI (Request);
+                    Config.Get (HTML_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -96,7 +98,8 @@ package body Static_Content is
    function ICO (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      ICO_File : constant String := Get (ICO_Path) & AWS.Status.URI (Request);
+      ICO_File : constant String :=
+                   Config.Get (ICO_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -116,7 +119,8 @@ package body Static_Content is
    function JPG (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      JPG_File : constant String := Get (JPG_Path) & AWS.Status.URI (Request);
+      JPG_File : constant String :=
+                   Config.Get (JPG_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -136,7 +140,8 @@ package body Static_Content is
    function JS (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      JS_File : constant String := Get (JS_Path) & AWS.Status.URI (Request);
+      JS_File : constant String :=
+                  Config.Get (JS_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -156,7 +161,8 @@ package body Static_Content is
    function PNG (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      PNG_File : constant String := Get (PNG_Path) & AWS.Status.URI (Request);
+      PNG_File : constant String :=
+                   Config.Get (PNG_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -176,7 +182,8 @@ package body Static_Content is
    function XML (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      XML_File : constant String := Get (XML_Path) & AWS.Status.URI (Request);
+      XML_File : constant String :=
+                   Config.Get (XML_Path) & AWS.Status.URI (Request);
 
    begin
 
@@ -196,7 +203,8 @@ package body Static_Content is
    function XSL (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      XSL_File : constant String := Get (XSL_Path) & AWS.Status.URI (Request);
+      XSL_File : constant String :=
+                   Config.Get (XSL_Path) & AWS.Status.URI (Request);
 
    begin
 

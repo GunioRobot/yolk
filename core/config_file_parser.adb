@@ -28,22 +28,38 @@ with Ada.Text_IO;
 
 package body Config_File_Parser is
 
-   -----------
-   --  Get  --
-   -----------
+   -------------------------
+   --  Check_And_Convert  --
+   -------------------------
 
-   function Get (Key : in Keys) return Boolean
+   function Check_And_Convert (Key : in Keys) return String
    is
 
       use Ada.Strings.Unbounded;
 
    begin
 
-      return Boolean'Value (To_String (Parameters (Key)));
+      if Defaults (Key) = Null_Unbounded_String then
+         raise Empty_Key with Keys'Image (Key);
+      end if;
+
+      return To_String (Defaults (Key));
+
+   end Check_And_Convert;
+
+   -----------
+   --  Get  --
+   -----------
+
+   function Get (Key : in Keys) return Boolean
+   is
+   begin
+
+      return Boolean'Value (Check_And_Convert (Key));
 
    exception
       when Constraint_Error =>
-         raise Cannot_Convert_To_Boolean with Keys'Image (Key);
+         raise Conversion_Error with Keys'Image (Key);
 
    end Get;
 
@@ -53,16 +69,13 @@ package body Config_File_Parser is
 
    function Get (Key : in Keys) return Float
    is
-
-      use Ada.Strings.Unbounded;
-
    begin
 
-      return Float'Value (To_String (Parameters (Key)));
+      return Float'Value (Check_And_Convert (Key));
 
    exception
       when Constraint_Error =>
-         raise Cannot_Convert_To_Float with Keys'Image (Key);
+         raise Conversion_Error with Keys'Image (Key);
 
    end Get;
 
@@ -72,16 +85,13 @@ package body Config_File_Parser is
 
    function Get (Key : in Keys) return Integer
    is
-
-      use Ada.Strings.Unbounded;
-
    begin
 
-      return Integer'Value (To_String (Parameters (Key)));
+      return Integer'Value (Check_And_Convert (Key));
 
    exception
       when Constraint_Error =>
-         raise Cannot_Convert_To_Integer with Keys'Image (Key);
+         raise Conversion_Error with Keys'Image (Key);
 
    end Get;
 
@@ -96,7 +106,7 @@ package body Config_File_Parser is
 
    begin
 
-      return To_String (Parameters (Key));
+      return To_String (Defaults (Key));
 
    end Get;
 
@@ -104,14 +114,12 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String
+   function Get (Key : in Keys)
+                 return Ada.Strings.Unbounded.Unbounded_String
    is
-
-      use Ada.Strings.Unbounded;
-
    begin
 
-      return Parameters (Key);
+      return Defaults (Key);
 
    end Get;
 
@@ -188,15 +196,19 @@ package body Config_File_Parser is
 
          begin
 
-            --  Ignore empty lines and comments.
-            if Line /= "" and then Line (1 .. 1) /= "#" then
-               Parameters (Keys'Value (Key)) := Trim (Value, Left);
+            --  Ignore empty lines, comments and empty values.
+            if Line /= ""
+              and then Line (1 .. 1) /= "#"
+              and then Line (1 .. 2) /= "--"
+              and then Value /= "" then
+               Defaults (Keys'Value (Key)) := Trim (Value, Left);
             end if;
 
          exception
             when Constraint_Error =>
-               raise Unknown_Ini_Key with
-                 "Unknown ini key '" & Key & "' in file " & Config_File;
+               raise Unknown_Key with
+                 "Unknown configuration key '" & Key & "' in file "
+                   & Config_File;
 
          end;
       end loop;
@@ -205,124 +217,12 @@ package body Config_File_Parser is
 
    exception
       when Name_Error | Use_Error | Device_Error =>
-         raise Cannot_Open_Ini_File with Config_File;
+         raise Cannot_Open_Config_File with Config_File;
 
    end Load_File;
 
-   ------------------------
-   --  Save_Config_File  --
-   ------------------------
+begin
 
-   procedure Save_Config_File (Config_File : in String)
-   is
-
-      use Ada.Strings;
-      use Ada.Strings.Unbounded;
-      use Ada.Text_IO;
-
-      package Enum_IO is new Ada.Text_IO.Enumeration_IO (Keys);
-
-      File : File_Type;
-
-   begin
-
-      Create (File => File,
-              Name => Config_File);
-
-      for Key in Keys loop
-         Enum_IO.Put (File, Key);
-         Put (File, Space);
-         Put (File, To_String (Parameters (Key)));
-         New_Line (File);
-      end loop;
-
-      Close (File => File);
-
-   exception
-      when Name_Error | Use_Error | Device_Error =>
-         raise Cannot_Create_Ini_File with Config_File;
-
-   end Save_Config_File;
-
-   -----------
-   --  Set  --
-   -----------
-
-   procedure Set (Key   : in Keys;
-                  Value : in Boolean)
-   is
-
-      use Ada.Strings.Unbounded;
-
-   begin
-
-      Parameters (Key) := To_Unbounded_String (Boolean'Image (Value));
-
-   end Set;
-
-   -----------
-   --  Set  --
-   -----------
-
-   procedure Set (Key   : in Keys;
-                  Value : in Float)
-   is
-
-      use Ada.Strings;
-      use Ada.Strings.Unbounded;
-
-   begin
-
-      Parameters (Key) := To_Unbounded_String
-        (Fixed.Trim (Float'Image (Value), Left));
-
-   end Set;
-
-   -----------
-   --  Set  --
-   -----------
-
-   procedure Set (Key   : in Keys;
-                  Value : in Integer)
-   is
-
-      use Ada.Strings;
-      use Ada.Strings.Unbounded;
-
-   begin
-
-      Parameters (Key) := To_Unbounded_String
-        (Fixed.Trim (Integer'Image (Value), Left));
-
-   end Set;
-
-   -----------
-   --  Set  --
-   -----------
-
-   procedure Set (Key   : in Keys;
-                  Value : in String)
-   is
-
-      use Ada.Strings.Unbounded;
-
-   begin
-
-      Parameters (Key) := To_Unbounded_String (Value);
-
-   end Set;
-
-   -----------
-   --  Set  --
-   -----------
-
-   procedure Set (Key   : in Keys;
-                  Value : in Ada.Strings.Unbounded.Unbounded_String)
-   is
-   begin
-
-      Parameters (Key) := Value;
-
-   end Set;
+   Load_File (Config_File => Config_File);
 
 end Config_File_Parser;

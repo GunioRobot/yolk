@@ -83,14 +83,19 @@ private
 
       function Get_File_Access return Access_File;
       --  Return access to an Ada.Text_IO.File_Type.
+
       function Get_Size return Natural;
       --  Return the amount of characters added to the log. See Set_Size.
+
       function Get_Slot return String;
       --  Return the Current_Slot value as a String.
+
       procedure Move_To_Next_Slot;
       --  Move to the next slot. Basically we just cycle 1 .. Max_Slot_Count
+
       procedure Set_File_Access;
       --  Allocate a new Ada.Text_IO.File_Type.
+
       procedure Set_Size (Length : Natural);
       --  Add Length to Log_Object.Size. We use this to decide when to cycle
       --  the logfiles. If Size > Max_Logged_Characters, then we cycle to the
@@ -99,6 +104,7 @@ private
       --  going to disk on every call to Track. It's not as accurate, but it
       --  will probably not be off by much.
       --  Max_Logged_Characters is defined in configuration/config.ini.
+
       procedure Write_To (Log_String : in String);
       --  Write Log_String to file.
 
@@ -106,7 +112,7 @@ private
 
       File           : Access_File;
       Current_Slot   : Positive := 1;
-      Slot_Max       : Positive := Get (Max_Slot_Count);
+      Slot_Max       : Positive := Config.Get (Max_Slot_Count);
       Size           : Natural := 0;
 
    end Log_Object;
@@ -114,7 +120,7 @@ private
    type Access_Log_Object is access all Log_Object;
    type Log_Objects_Array is array (Trace_Handles) of Access_Log_Object;
 
-   Log_Objects_List         : Log_Objects_Array;
+   Log_Objects_List : Log_Objects_Array;
    --  This array holds access to the individual Log_Objects, one for each
    --  value defined in Trace_Handles.
 

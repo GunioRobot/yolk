@@ -57,47 +57,47 @@ package body Handlers is
       --    the request.
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_CSS),
+         URI         => Config.Get (Handler_CSS),
          Action      => Static_Content.CSS'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_GIF),
+         URI         => Config.Get (Handler_GIF),
          Action      => Static_Content.GIF'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_HTML),
+         URI         => Config.Get (Handler_HTML),
          Action      => Static_Content.HTML'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_ICO),
+         URI         => Config.Get (Handler_ICO),
          Action      => Static_Content.ICO'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_JPG),
+         URI         => Config.Get (Handler_JPG),
          Action      => Static_Content.JPG'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_JS),
+         URI         => Config.Get (Handler_JS),
          Action      => Static_Content.JS'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_PNG),
+         URI         => Config.Get (Handler_PNG),
          Action      => Static_Content.PNG'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_XML),
+         URI         => Config.Get (Handler_XML),
          Action      => Static_Content.XML'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_XSL),
+         URI         => Config.Get (Handler_XSL),
          Action      => Static_Content.XSL'Access);
 
       -----------------------------------------
@@ -111,7 +111,7 @@ package body Handlers is
       --  found in templates/system.
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => Resource_Handlers,
-         URI         => Get (Handler_Unknown),
+         URI         => Config.Get (Handler_Unknown),
          Action      => Unknown_Content.Generate'Access);
 
    end Initialize;

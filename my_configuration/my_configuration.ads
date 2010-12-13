@@ -24,8 +24,9 @@
 --  Define your application specific keys in the Keys type and set their
 --  default values in the Defaults_Array array.
 
-with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded;
 with Config_File_Parser;
+with Utilities; use Utilities;
 
 package My_Configuration is
 
@@ -40,34 +41,23 @@ package My_Configuration is
    --  as  keys in the Config_File configuration file.
    --  These configuration keys are for application specific configuration.
 
-   function Get (Key : in Keys) return Boolean;
-   function Get (Key : in Keys) return Float;
-   function Get (Key : in Keys) return Integer;
-   function Get (Key : in Keys) return String;
-   function Get (Key : in Keys) return Unbounded_String;
-   --  Return the value of Key as the appropriate type.
+   type Defaults_Array is array (Keys) of
+     Ada.Strings.Unbounded.Unbounded_String;
 
-private
-
-   Config_File : constant String := "configuration/my_config.ini";
-   --  The path to the config file.
-
-   type Defaults is array (Keys) of Unbounded_String;
-   function TUS (S : String) return Unbounded_String renames
-     To_Unbounded_String;
-   Defaults_Array : constant Defaults :=
-                      (DB_Host        => TUS (""),
-                       DB_Name        => TUS (""),
-                       DB_User        => TUS (""),
-                       DB_Password    => TUS (""),
-                       Handler_Index  => TUS ("/|/[Ii]ndex"),
-                       SMTP           => TUS (""),
-                       Template_Index => TUS ("templates/website/index.tmpl"));
+   Defaults : Defaults_Array :=
+                (DB_Host        => TUS (""),
+                 DB_Name        => TUS (""),
+                 DB_User        => TUS (""),
+                 DB_Password    => TUS (""),
+                 Handler_Index  => TUS ("/|/[Ii]ndex"),
+                 SMTP           => TUS (""),
+                 Template_Index => TUS ("templates/website/index.tmpl"));
    --  Default values for the configuration Keys.
 
-   package Ini is new Config_File_Parser (Keys => Keys);
-
-   procedure Initialize;
-   --  Load and parse the Config_File configuration file.
+   package Config is new Config_File_Parser
+     (Keys => Keys,
+      Defaults_Array => Defaults_Array,
+      Defaults => Defaults,
+      Config_File => "configuration/my_config.ini");
 
 end My_Configuration;

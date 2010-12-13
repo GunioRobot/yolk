@@ -21,7 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with My_Configuration;  use My_Configuration;
+with My_Configuration;
 with View.Index;
 
 package body My_Handlers is
@@ -44,6 +44,9 @@ package body My_Handlers is
 
    procedure Initialize
    is
+
+      use My_Configuration;
+
    begin
 
       -----------------------------------
@@ -56,7 +59,7 @@ package body My_Handlers is
       --    the request.
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher => Resource_Handlers,
-         URI        => Get (Handler_Index),
+         URI        => Config.Get (Handler_Index),
          Action     => View.Index.Generate'Access);
 
    end Initialize;

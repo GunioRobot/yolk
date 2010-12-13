@@ -21,13 +21,14 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  This package provides simple access to ini files.
---  The ini format is:
+--  This package provides simple access to configuration files.
+--  The format is:
 --       KEY VALUE
 --
---  Comments are prefixed with a #:
+--  Comments are prefixed with a # or a --:
 --
 --  # This is a comment
+--  -- This is also a comment
 --
 --  Blank lines and comments are ignored and so is pre-/postfixed whitespace,
 --  so this:
@@ -52,28 +53,30 @@
 --  Conversions from VALUE to other types, such as Integer or Float, will raise
 --  an exception on failure. It will NOT return some dummy value.
 
-private with Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded;
 
 generic
 
    type Keys is (<>);
+   type Defaults_Array is array (Keys) of
+     Ada.Strings.Unbounded.Unbounded_String;
+   Defaults : in out Defaults_Array;
+   Config_File : in String;
 
 package Config_File_Parser is
 
-   Unknown_Ini_Key            : exception;
+   Unknown_Key             : exception;
    --  Is raised when an unknown KEY has been found in the config file.
-   Cannot_Create_Ini_File     : exception;
-   --  Is raised when the config data cannot be saved to a given file, eg. due
-   --  to a bad path or missing user credentials.
-   Cannot_Open_Ini_File       : exception;
+   Cannot_Open_Config_File : exception;
    --  Is raised when the given config file cannot be opened, eg. due to bad
-   --  path or missing user credentials.
-   Cannot_Convert_To_Boolean  : exception;
-   Cannot_Convert_To_Float    : exception;
-   Cannot_Convert_To_Integer  : exception;
-   --  These Cannot_Convert_To_xxx exceptions are raised if conversion from the
-   --  String VALUE to the target type cannot be done, eg. converting the value
-   --  "foo" to Integer or the value "bleh" to Boolean.
+   --  path.
+   Conversion_Error        : exception;
+   --  Is raised when a value cannot be converted to a specific type.
+   Empty_Key               : exception;
+   --  Is raised when a key with the element Null_Unbounded_String is called.
+
+   --  type Elements_List is array (Keys) of
+   --    Ada.Strings.Unbounded.Unbounded_String;
 
    function Get (Key : in Keys) return Boolean;
    function Get (Key : in Keys) return Float;
@@ -82,36 +85,21 @@ package Config_File_Parser is
    function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String;
    --  Get the VALUE for Key and convert it to target type.
    --  Exceptions:
-   --    Cannot_Convert_To_xxx (depends on target type)
+   --    Conversion_Error
 
    procedure Load_File (Config_File : in String);
    --  Load the config file Config_File.
    --  Exceptions:
    --    Cannot_Open_Ini_File
-
-   procedure Save_Config_File (Config_File : in String);
-   --  Save the current config data into the file Config_File. This is NOT an
-   --  append operation. If the file exists, it is overwritten. If it does not
-   --  exist, it is created.
-   --  Exceptions:
-   --    Cannot_Create_Ini_File
-
-   procedure Set (Key   : in Keys;
-                  Value : in Boolean);
-   procedure Set (Key   : in Keys;
-                  Value : in Float);
-   procedure Set (Key   : in Keys;
-                  Value : in Integer);
-   procedure Set (Key   : in Keys;
-                  Value : in String);
-   procedure Set (Key   : in Keys;
-                  Value : in Ada.Strings.Unbounded.Unbounded_String);
-   --  Set Key to Value. Whitespace (left and right) is trimmed
+   --    Unknown_Key
 
 private
 
-   type Parameters_Array is array (Keys) of
-     Ada.Strings.Unbounded.Unbounded_String;
-   Parameters : Parameters_Array;
+   function Check_And_Convert (Key : in Keys) return String;
+   --  Check if Key contains Null_Unbounded_String. If so, then raise the
+   --  Empty_Key exception.
+   --  This function is used when a Key must be converted to a numeric.
+   --  Exceptions:
+   --    Empty_Key
 
 end Config_File_Parser;

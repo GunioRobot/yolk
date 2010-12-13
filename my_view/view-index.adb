@@ -84,8 +84,8 @@ package body View.Index is
       Track (Handle     => Error,
              Log_String => "Testing the ERROR track");
 
-      Insert (T, Assoc ("HANDLER", String'(Get (Handler_Index))));
-      Insert (T, Assoc ("TEMPLATE", String'(Get (Template_Index))));
+      Insert (T, Assoc ("HANDLER", String'(Config.Get (Handler_Index))));
+      Insert (T, Assoc ("TEMPLATE", String'(Config.Get (Template_Index))));
       Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
 
       declare
@@ -646,7 +646,7 @@ package body View.Index is
 --
 --    end Multipart_Mixed_Attachment;
 
-      return Build_Response (Template_File => Get (Template_Index),
+      return Build_Response (Template_File => Config.Get (Template_Index),
                              Translations  => T);
 
    end Generate;

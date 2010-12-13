@@ -50,7 +50,7 @@ package body Not_Found is
       Content := AWS.Response.Build
         (Content_Type  => AWS.MIME.Text_HTML,
          Message_Body  => Parse
-           (Filename     => Get (System_Templates_Path) &  "/404.tmpl",
+           (Filename     => Config.Get (System_Templates_Path) &  "/404.tmpl",
             Translations => T,
             Cached       => True),
          Status_Code   => AWS.Messages.S404);
