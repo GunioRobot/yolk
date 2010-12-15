@@ -30,9 +30,11 @@ package body View is
    ----------------------
 
    function Build_Response (Template_File : in String;
-                            Translations  : in Translate_Set)
+                            Translations  : in AWS.Templates.Translate_Set)
                             return AWS.Response.Data
    is
+
+      use AWS.Templates;
 
       Content : AWS.Response.Data;
 

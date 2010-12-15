@@ -21,34 +21,36 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AWS.Config;
-with AWS.Response;
-with AWS.Templates;     use AWS.Templates;
-with My_Configuration;  use My_Configuration;
-with Connect_To_DB.PostgreSQL;
+private with AWS.Config;
+private with AWS.Response;
+private with AWS.Templates;
+private with My_Configuration;
+private with Connect_To_DB.PostgreSQL;
 
 package View is
 
 private
 
+   package My renames My_Configuration;
+
    package DB_12boo is new Connect_To_DB.PostgreSQL
      (Connect_To_DB.Set_Credentials
-        (Host          => Config.Get (DB_Host),
-         Database      => Config.Get (DB_Name),
-         User          => Config.Get (DB_User),
-         Password      => Config.Get (DB_Password),
+        (Host          => My.Config.Get (My.DB_Host),
+         Database      => My.Config.Get (My.DB_Name),
+         User          => My.Config.Get (My.DB_User),
+         Password      => My.Config.Get (My.DB_Password),
          Server_Config => AWS.Config.Get_Current));
 
    package DB_Wiki is new Connect_To_DB.PostgreSQL
      (Connect_To_DB.Set_Credentials
-        (Host          => Config.Get (DB_Host),
+        (Host          => My.Config.Get (My.DB_Host),
          Database      => "wikidb",
          User          => "wikiuser",
-         Password      => Config.Get (DB_Password),
+         Password      => My.Config.Get (My.DB_Password),
          Server_Config => AWS.Config.Get_Current));
 
    function Build_Response (Template_File : in String;
-                            Translations  : in Translate_Set)
+                            Translations  : in AWS.Templates.Translate_Set)
                             return AWS.Response.Data;
    --  Build the resource response.
    --  This is a convenience function that gets rid of a few with clauses in

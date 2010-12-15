@@ -33,10 +33,10 @@
 --  stuff (see DB_Connection) in your application, you can disable that
 --  specific trace in the configuration/GNATCOLL.SQL.Logs.Ini file.
 
-with Ada.Strings.Unbounded;   use Ada.Strings.Unbounded;
-with Ada.Text_IO;             use Ada.Text_IO;
-with Configuration;           use Configuration;
-with GNATCOLL.Traces;         use GNATCOLL.Traces;
+private with Ada.Strings.Unbounded;
+private with Ada.Text_IO;
+private with Configuration;
+private with GNATCOLL.Traces;
 
 package Rotating_Log is
 
@@ -71,7 +71,7 @@ package Rotating_Log is
 
 private
 
-   Stream_Rotating_Log        : constant String := "rotating_log";
+   Stream_Rotating_Log : constant String := "rotating_log";
    --  Name of the stream. This is used in the GNAT.Traces configuration files
    --  or calls to Create to send a stream to a rotating log.
    --  You must have called Register_Rotating_Log_Stream first.
@@ -112,7 +112,8 @@ private
 
       File           : Access_File;
       Current_Slot   : Positive := 1;
-      Slot_Max       : Positive := Config.Get (Max_Slot_Count);
+      Slot_Max       : Positive := Configuration.Config.Get
+        (Configuration.Max_Slot_Count);
       Size           : Natural := 0;
 
    end Log_Object;
@@ -136,23 +137,30 @@ private
    --  necessary to gain access to the GNATCOLL.SQL SQL, SQL.SELECT and
    --  SQL.ERROR traces.
    ----------------------------------------------------------------------------
-   type Factory is new Stream_Factory with null record;
-   type Rotating_Log_Record is new Trace_Stream_Record
+   type Factory is new GNATCOLL.Traces.Stream_Factory with null record;
+
+   type Rotating_Log_Record is new GNATCOLL.Traces.Trace_Stream_Record
    with
       record
          Handle : Trace_Handles;
-         Buffer : Unbounded_String;
+         Buffer : Ada.Strings.Unbounded.Unbounded_String;
       end record;
+
    type Access_Rotating_Log_Record is access all Rotating_Log_Record;
+
    overriding
-   function New_Stream (Fact : Factory; Args : String) return Trace_Stream;
+   function New_Stream (Fact : Factory; Args : String)
+                        return GNATCOLL.Traces.Trace_Stream;
    --  Create a rotating log stream
+
    overriding
    procedure Newline (Stream : in out Rotating_Log_Record);
    --  Write the Rotating_Log_Record.Buffer to Rotating_Log_Record.Handle.
+
    overriding
    procedure Put (Stream : in out Rotating_Log_Record; Log_String : String);
    --  Add Log_String to Rotating_Log_Record.Buffer.
+
    procedure Register_Rotating_Log_Stream;
    --  Register a GNAT.Traces stream that can send its output to a rotating
    --  log.
@@ -162,6 +170,7 @@ private
    function Supports_Color (Stream : Rotating_Log_Record) return Boolean;
    --  Does the stream support color output? For this specific package, no.
    --  Always return False.
+
    overriding
    function Supports_Time  (Stream : Rotating_Log_Record) return Boolean;
    --  Should we output time? No. Time is set in the Track procedure. Always

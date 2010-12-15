@@ -21,7 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Configuration;     use Configuration;
+with Configuration;
 with Static_Content;
 with Unknown_Content;
 
@@ -45,6 +45,9 @@ package body Handlers is
 
    procedure Initialize
    is
+
+      use Configuration;
+
    begin
 
       --------------------------

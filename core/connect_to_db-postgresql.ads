@@ -32,7 +32,7 @@ package Connect_To_DB.PostgreSQL is
 
 private
 
-   Association    : Protected_Association_Map;
+   Association : Protected_Association_Map;
    --  The protected object that holds the hashed map in which the association
    --  between AWS and GNATCOLL.Database_Connection tasks are maintained.
 

@@ -21,7 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;
 
 package body Process_Control is
 
@@ -31,6 +31,9 @@ package body Process_Control is
 
    procedure Create_PID_File
    is
+
+      use Ada.Directories;
+      use Ada.Text_IO;
 
       package IIO is new Ada.Text_IO.Integer_IO (Natural);
       File  : File_Type;
@@ -62,6 +65,10 @@ package body Process_Control is
 
    procedure Delete_PID_File
    is
+
+      use Ada.Directories;
+      use Ada.Text_IO;
+
    begin
 
       if Exists (PID) then

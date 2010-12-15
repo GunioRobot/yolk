@@ -26,7 +26,7 @@
 --  my_handlers/my_handlers.ad[sb] package, which you can see it "with'ed" in
 --  this package.
 
-with My_Handlers;
+private with My_Handlers;
 with AWS.Services.Dispatchers.URI;
 
 package Handlers is

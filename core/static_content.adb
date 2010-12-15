@@ -21,9 +21,9 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Directories;   use Ada.Directories;
+with Ada.Directories;
 with AWS.MIME;
-with Configuration;     use Configuration;
+with Configuration;
 with Not_Found;
 
 package body Static_Content is
@@ -34,6 +34,9 @@ package body Static_Content is
 
    function CSS (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use Ada.Directories;
+      use Configuration;
 
       CSS_File : constant String :=
                    Config.Get (CSS_Path) & AWS.Status.URI (Request);
@@ -56,6 +59,9 @@ package body Static_Content is
    function GIF (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
+      use Ada.Directories;
+      use Configuration;
+
       GIF_File : constant String :=
                    Config.Get (GIF_Path) & AWS.Status.URI (Request);
 
@@ -76,6 +82,9 @@ package body Static_Content is
 
    function HTML (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use Ada.Directories;
+      use Configuration;
 
       HTML_File : constant String :=
                     Config.Get (HTML_Path) & AWS.Status.URI (Request);
@@ -98,6 +107,9 @@ package body Static_Content is
    function ICO (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
+      use Ada.Directories;
+      use Configuration;
+
       ICO_File : constant String :=
                    Config.Get (ICO_Path) & AWS.Status.URI (Request);
 
@@ -118,6 +130,9 @@ package body Static_Content is
 
    function JPG (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use Ada.Directories;
+      use Configuration;
 
       JPG_File : constant String :=
                    Config.Get (JPG_Path) & AWS.Status.URI (Request);
@@ -140,6 +155,9 @@ package body Static_Content is
    function JS (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
+      use Ada.Directories;
+      use Configuration;
+
       JS_File : constant String :=
                   Config.Get (JS_Path) & AWS.Status.URI (Request);
 
@@ -160,6 +178,9 @@ package body Static_Content is
 
    function PNG (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use Ada.Directories;
+      use Configuration;
 
       PNG_File : constant String :=
                    Config.Get (PNG_Path) & AWS.Status.URI (Request);
@@ -182,6 +203,9 @@ package body Static_Content is
    function XML (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
+      use Ada.Directories;
+      use Configuration;
+
       XML_File : constant String :=
                    Config.Get (XML_Path) & AWS.Status.URI (Request);
 
@@ -202,6 +226,9 @@ package body Static_Content is
 
    function XSL (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use Ada.Directories;
+      use Configuration;
 
       XSL_File : constant String :=
                    Config.Get (XSL_Path) & AWS.Status.URI (Request);

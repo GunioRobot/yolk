@@ -1,11 +1,11 @@
 
-with Rotating_Log;      use Rotating_Log;
-with Simple_Email;      use Simple_Email;
-with GNATCOLL.Email;    use GNATCOLL.Email;
-with GNATCOLL.Email.Utils; use GNATCOLL.Email.Utils;
+with Rotating_Log;
+with Simple_Email;
+with GNATCOLL.Email;
+with GNATCOLL.Email.Utils;
 
 with GNATCOLL.SQL.Exec;
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
 
 --  with Ada.Text_IO; use Ada.Text_IO;
@@ -25,6 +25,13 @@ package body View.Index is
 
    function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use Ada.Text_IO;
+      use AWS.Templates;
+      use GNATCOLL.Email;
+      use GNATCOLL.Email.Utils;
+      use Simple_Email;
+      use Rotating_Log;
 
       C_12boo : constant
         GNATCOLL.SQL.Exec.Database_Connection := DB_12boo.Connection;
@@ -83,8 +90,9 @@ package body View.Index is
       Track (Handle     => Error,
              Log_String => "Testing the ERROR track");
 
-      Insert (T, Assoc ("HANDLER", String'(Config.Get (Handler_Index))));
-      Insert (T, Assoc ("TEMPLATE", String'(Config.Get (Template_Index))));
+      Insert (T, Assoc ("HANDLER", String'(My.Config.Get (My.Handler_Index))));
+      Insert (T, Assoc ("TEMPLATE",
+        String'(My.Config.Get (My.Template_Index))));
       Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
 
       declare
@@ -104,7 +112,7 @@ package body View.Index is
          Add_File_Attachment (ES           => An_Email,
                               Path_To_File => "../../test.txt");
          Add_SMTP_Server (ES     => An_Email,
-                          Host   => Config.Get (SMTP));
+                          Host   => My.Config.Get (My.SMTP));
 
          Set_Text_Part (ES       => An_Email,
                         Part     => "Text ÆØÅ æøå");
@@ -645,8 +653,9 @@ package body View.Index is
 --
 --    end Multipart_Mixed_Attachment;
 
-      return Build_Response (Template_File => Config.Get (Template_Index),
-                             Translations  => T);
+      return Build_Response
+        (Template_File => My.Config.Get (My.Template_Index),
+         Translations  => T);
 
    end Generate;
 

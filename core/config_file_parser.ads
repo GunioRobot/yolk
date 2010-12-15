@@ -88,7 +88,9 @@ package Config_File_Parser is
    --    Conversion_Error
 
    procedure Load_File (Config_File : in String);
-   --  Load the config file Config_File.
+   --  Load the config file Config_File. This can be done over and over as many
+   --  times as necessary. The values from the latest file overwrites the
+   --  previous values.
    --  Exceptions:
    --    Cannot_Open_Ini_File
    --    Unknown_Key

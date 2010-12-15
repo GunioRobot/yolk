@@ -28,9 +28,9 @@
 --  which by default is always placed in the same directory as the executable.
 --  Change the PID constant if you want/need it placed elsewhere.
 
-with Ada.Command_Line;     use Ada.Command_Line;
-with Ada.Directories;      use Ada.Directories;
-with Ada.Interrupts.Names; use Ada.Interrupts.Names;
+with Ada.Command_Line;
+with Ada.Directories;
+with Ada.Interrupts.Names;
 
 package Process_Control is
 
@@ -60,9 +60,11 @@ private
 
    type State is (Running, Shutdown, Stopped);
 
-   PID : constant String   := Compose
-     (Containing_Directory => Current_Directory,
-      Name                 => Simple_Name (Command_Name & ".pid"));
+   PID : constant String   :=
+           Ada.Directories.Compose
+             (Containing_Directory => Ada.Directories.Current_Directory,
+              Name                 => Ada.Directories.Simple_Name
+                (Ada.Command_Line.Command_Name & ".pid"));
    --  Path to the PID file. Is set to /path/to/executable/<programname>.pid
    Wait_Called             : Boolean := False;
    --  Is set to True when Wait is called the first time. This is used to test
@@ -86,10 +88,10 @@ private
       --  Delete_PID_File is called and the Wait procedure completes as it is
       --  no longer waiting for Check to complete.
       procedure Handle_Kill;
-      pragma Attach_Handler (Handle_Kill, SIGHUP);
-      pragma Attach_Handler (Handle_Kill, SIGINT);
-      pragma Attach_Handler (Handle_Kill, SIGTERM);
-      pragma Attach_Handler (Handle_Kill, SIGPWR);
+      pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGHUP);
+      pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGINT);
+      pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGTERM);
+      pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGPWR);
       --  Handles the SIGHUP, SIGINT, SIGTERM and SIGPWR signals. This
       --  signalhandler stops the AWS server and subsequently the entire
       --  server.

@@ -59,16 +59,15 @@ package body Connect_To_DB.PostgreSQL is
    procedure Initialize
    is
 
-      use Ada.Strings.Unbounded;
       use GNATCOLL.SQL.Exec;
 
    begin
 
       Setup_Database (Description => DB_Description,
-                      Database    => To_String (These_Credentials.Database),
-                      User        => To_String (These_Credentials.User),
-                      Host        => To_String (These_Credentials.Host),
-                      Password    => To_String (These_Credentials.Password),
+                      Database    => These_Credentials.Database,
+                      User        => These_Credentials.User,
+                      Host        => These_Credentials.Host,
+                      Password    => These_Credentials.Password,
                       DBMS        => DBMS_Postgresql);
       --  Populate the DB_Description variable.
 

@@ -22,14 +22,16 @@
 -------------------------------------------------------------------------------
 
 private with Ada.Containers.Hashed_Maps;
-private with Ada.Strings.Unbounded;
 private with Ada.Task_Identification;
 with AWS.Config;
 with GNATCOLL.SQL.Exec;
 
 package Connect_To_DB is
 
-   type Credentials is private;
+   type Credentials (Host_Length     : Positive;
+                     Database_Length : Positive;
+                     User_Length     : Positive;
+                     Password_Length : Positive) is private;
 
    function Set_Credentials (Host          : in String;
                              Database      : in String;
@@ -38,7 +40,7 @@ package Connect_To_DB is
                              Server_Config : in AWS.Config.Object)
                              return Credentials;
    --  Define the credentials necessary to connect to the database. The actual
-   --  DBMS used is decided when the relevant child package (generic) is
+   --  DBMS used is decided when the relevant generic child package is
    --  instantiated, for example like this:
    --
    --    package DB is new Connect_To_DB.PostgreSQL
@@ -63,13 +65,17 @@ private
    Null_DB_Conn_Access : DB_Conn_Access := null;
    --  Access to the DB_Conn tasks.
 
-   type Credentials is record
-      Host     : Ada.Strings.Unbounded.Unbounded_String;
-      Database : Ada.Strings.Unbounded.Unbounded_String;
-      User     : Ada.Strings.Unbounded.Unbounded_String;
-      Password : Ada.Strings.Unbounded.Unbounded_String;
-      Threads  : Positive;
-   end record;
+   type Credentials (Host_Length     : Positive;
+                     Database_Length : Positive;
+                     User_Length     : Positive;
+                     Password_Length : Positive) is
+      record
+         Host     : String (1 .. Host_Length);
+         Database : String (1 .. Database_Length);
+         User     : String (1 .. User_Length);
+         Password : String (1 .. Password_Length);
+         Threads  : Positive;
+      end record;
 
    function Database_Connection_Factory
      (Desc : GNATCOLL.SQL.Exec.Database_Description)
@@ -79,11 +85,11 @@ private
 
    function Equivalent_Tasks (Left, Right : in Ada.Task_Identification.Task_Id)
                               return Boolean;
-   --  Equivalence function used by the Task_Assocition_Map.
+   --  Equivalence function used by the Task_Assocition_Map hashed map.
 
    function Task_ID_Hash (ID : in Ada.Task_Identification.Task_Id)
                           return Ada.Containers.Hash_Type;
-   --  Hash function used by the Task_Association_Map.
+   --  Hash function used by the Task_Association_Map hashed map.
 
    package Task_Association_Map is new Ada.Containers.Hashed_Maps
      (Key_Type        => Ada.Task_Identification.Task_Id,
@@ -98,14 +104,12 @@ private
 
       function Get (AWS_Task_ID : in Ada.Task_Identification.Task_Id)
                     return DB_Conn_Access;
-      --  Return the DB_Conn_Access object that matches the AWS_Task_ID,
-      --  according to the Task_Store.
+      --  Return the DB_Conn_Access object that matches the AWS_Task_ID.
 
       procedure Set (DB_Task     : out DB_Conn_Access;
                      AWS_Task_ID : in Ada.Task_Identification.Task_Id);
       --  Add a new AWS_Task_ID to the Task_Association_Map. This also entails
-      --  starting a new DB_Conn task, and adding access to this to the
-      --  Task_Store.
+      --  starting a new DB_Conn task, and adding access to this to Task_Store.
 
    private
 
@@ -117,6 +121,6 @@ private
    --  our map in a protected object. There shouldn't be any noticeable
    --  performance penalty because of this. Multiple readers are allowed to
    --  use the Get function, and the object is only locked when Set is called,
-   --  which only happens as many times as there are active AWS tasks running.
+   --  which only happens as many times as there are AWS tasks.
 
 end Connect_To_DB;

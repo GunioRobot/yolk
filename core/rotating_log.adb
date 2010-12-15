@@ -21,12 +21,12 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Calendar;            use Ada.Calendar;
-with Ada.Calendar.Formatting; use Ada.Calendar.Formatting;
-with Ada.Calendar.Time_Zones; use Ada.Calendar.Time_Zones;
-with Ada.Directories;         use Ada.Directories;
-with Ada.Strings;             use Ada.Strings;
-with Ada.Strings.Fixed;       use Ada.Strings.Fixed;
+with Ada.Calendar;
+with Ada.Calendar.Formatting;
+with Ada.Calendar.Time_Zones;
+with Ada.Directories;
+with Ada.Strings;
+with Ada.Strings.Fixed;
 with Process_Control;
 
 package body Rotating_Log is
@@ -37,6 +37,11 @@ package body Rotating_Log is
 
    procedure Initialize
    is
+
+      use Ada.Directories;
+      use Ada.Text_IO;
+      use Configuration;
+      use GNATCOLL.Traces;
 
       A_Handle : Trace_Handles := Trace_Handles'First;
 
@@ -77,11 +82,14 @@ package body Rotating_Log is
    ------------------
 
    function New_Stream (Fact : in Factory;
-                        Args : in String) return Trace_Stream
+                        Args : in String) return GNATCOLL.Traces.Trace_Stream
    is
+
+      use GNATCOLL.Traces;
 
       pragma Unreferenced (Fact);
       pragma Unreferenced (Args);
+
       Self : Access_Rotating_Log_Record;
 
    begin
@@ -97,6 +105,9 @@ package body Rotating_Log is
 
    procedure Newline (Stream : in out Rotating_Log_Record)
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       Track (Handle     => GNATCOLL_SQL,
@@ -113,6 +124,9 @@ package body Rotating_Log is
    procedure Put (Stream      : in out Rotating_Log_Record;
                   Log_String  : in     String)
    is
+
+      use Ada.Strings.Unbounded;
+
    begin
 
       Append (Stream.Buffer, Log_String);
@@ -125,6 +139,8 @@ package body Rotating_Log is
 
    procedure Register_Rotating_Log_Stream
    is
+
+      use GNATCOLL.Traces;
 
       Fact : constant Stream_Factory_Access := new Factory;
 
@@ -172,7 +188,14 @@ package body Rotating_Log is
                     Log_String   : in String)
    is
 
+      use Ada.Calendar;
+      use Ada.Calendar.Formatting;
+      use Ada.Calendar.Time_Zones;
+      use Ada.Text_IO;
+      use Configuration;
+
       package EIO is new Ada.Text_IO.Enumeration_IO (Trace_Handles);
+
       Log            : constant Access_Log_Object := Log_Objects_List (Handle);
       Circa_Length   : Natural := Log_String'Length;
       Now            : constant Time := Clock;
@@ -268,6 +291,10 @@ package body Rotating_Log is
 
       function Get_Slot return String
       is
+
+         use Ada.Strings;
+         use Ada.Strings.Fixed;
+
       begin
 
          return Trim (Source => Current_Slot'Img,
@@ -281,6 +308,9 @@ package body Rotating_Log is
 
       procedure Move_To_Next_Slot
       is
+
+         use Configuration;
+
       begin
 
          if Current_Slot = Config.Get (Max_Slot_Count) then
@@ -299,6 +329,9 @@ package body Rotating_Log is
 
       procedure Set_File_Access
       is
+
+         use Ada.Text_IO;
+
       begin
 
          File := new File_Type;
@@ -323,6 +356,9 @@ package body Rotating_Log is
 
       procedure Write_To (Log_String : in String)
       is
+
+         use Ada.Text_IO;
+
       begin
 
          Put_Line (File.all, Log_String);

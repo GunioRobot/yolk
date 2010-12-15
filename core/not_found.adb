@@ -25,8 +25,8 @@ with AWS;
 with AWS.Config;
 with AWS.Messages;
 with AWS.MIME;
-with AWS.Templates;  use AWS.Templates;
-with Configuration;  use Configuration;
+with AWS.Templates;
+with Configuration;
 
 package body Not_Found is
 
@@ -36,6 +36,9 @@ package body Not_Found is
 
    function Output (Request : in AWS.Status.Data) return AWS.Response.Data
    is
+
+      use AWS.Templates;
+      use Configuration;
 
       WS_Config   : constant AWS.Config.Object := AWS.Config.Get_Current;
       Content     : AWS.Response.Data;

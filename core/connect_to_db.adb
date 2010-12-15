@@ -150,16 +150,17 @@ package body Connect_To_DB is
                              return Credentials
    is
 
-      use Ada.Strings.Unbounded;
-
-      C : Credentials;
+      C : Credentials (Host_Length     => Host'Length,
+                       Database_Length => Database'Length,
+                       User_Length     => User'Length,
+                       Password_Length => Password'Length);
 
    begin
 
-      C.Host       := To_Unbounded_String (Host);
-      C.Database   := To_Unbounded_String (Database);
-      C.User       := To_Unbounded_String (User);
-      C.Password   := To_Unbounded_String (Password);
+      C.Host       := Host;
+      C.Database   := Database;
+      C.User       := User;
+      C.Password   := Password;
       C.Threads    := AWS.Config.Max_Connection (Server_Config);
 
       return C;

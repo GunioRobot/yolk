@@ -57,9 +57,8 @@ package Configuration is
                  XML_Path,
                  XSL_Path);
    --  The valid configuration keys.
-   --  These configuration keys are essential for other core parts of this
-   --  software, so you should not change them, unless you know what you're
-   --  doing.
+   --  These configuration keys are essential for core parts of Yolk, so you
+   --  should not change them, unless you know what you're doing.
 
    type Defaults_Array is array (Keys) of
      Ada.Strings.Unbounded.Unbounded_String;
