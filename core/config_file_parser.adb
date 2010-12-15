@@ -190,7 +190,7 @@ package body Config_File_Parser is
             return To_Unbounded_String (Line (Key'Last + 2 .. Line'Last));
          end if;
 
-         return To_Unbounded_String ("");
+         return Null_Unbounded_String;
 
       end Value_UString;
 
@@ -214,8 +214,7 @@ package body Config_File_Parser is
             --  Ignore empty lines, comments and empty values.
             if Line /= ""
               and then Line (1 .. 1) /= "#"
-              and then Line (1 .. 2) /= "--"
-              and then Value /= "" then
+              and then Line (1 .. 2) /= "--" then
                Defaults (Keys'Value (Key)) := Trim (Value, Left);
             end if;
 
