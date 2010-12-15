@@ -21,8 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  Define your application specific keys in the Keys type and set their
---  default values in the Defaults_Array array.
+--  Application specific configuration.
 
 with Ada.Strings.Unbounded;
 with Config_File_Parser;
@@ -37,22 +36,22 @@ package My_Configuration is
                  Handler_Index,
                  SMTP,
                  Template_Index);
-   --  The valid configuration keys. Only keys found in the Keys type are valid
-   --  as  keys in the Config_File configuration file.
-   --  These configuration keys are for application specific configuration.
+   --  The valid configuration keys.
 
    type Defaults_Array is array (Keys) of
      Ada.Strings.Unbounded.Unbounded_String;
 
    Defaults : Defaults_Array :=
-                (DB_Host        => TUS (""),
-                 DB_Name        => TUS (""),
-                 DB_User        => TUS (""),
-                 DB_Password    => TUS (""),
+                (DB_Host        => TUS ("freja.serverbox.dk"),
+                 DB_Name        => TUS ("12boo"),
+                 DB_User        => TUS ("thomas"),
+                 DB_Password    => TUS ("respsltl16117994"),
                  Handler_Index  => TUS ("/|/[Ii]ndex"),
-                 SMTP           => TUS (""),
+                 SMTP           => TUS ("freja.serverbox.dk"),
                  Template_Index => TUS ("templates/website/index.tmpl"));
-   --  Default values for the configuration Keys.
+   --  Default values for the configuration Keys. These values can be over-
+   --  written by the configuration file given when instantiating a new
+   --  Config_File_Parser object.
 
    package Config is new Config_File_Parser
      (Keys => Keys,

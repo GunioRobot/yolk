@@ -1,5 +1,4 @@
 
-with My_Configuration;  use My_Configuration;
 with Rotating_Log;      use Rotating_Log;
 with Simple_Email;      use Simple_Email;
 with GNATCOLL.Email;    use GNATCOLL.Email;
@@ -105,7 +104,7 @@ package body View.Index is
          Add_File_Attachment (ES           => An_Email,
                               Path_To_File => "../../test.txt");
          Add_SMTP_Server (ES     => An_Email,
-                          Host   => "freja.serverbox.dk");
+                          Host   => Config.Get (SMTP));
 
          Set_Text_Part (ES       => An_Email,
                         Part     => "Text ֶ״ֵ זרו");

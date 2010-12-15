@@ -21,7 +21,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  Default configuration settings for a Yolk application.
+--  Default configuration settings for a Yolk application. For resource related
+--  configuration, take a look at the My_Configuration package.
 
 with Ada.Strings.Unbounded;
 with Config_File_Parser;
@@ -55,8 +56,7 @@ package Configuration is
                  System_Templates_Path,
                  XML_Path,
                  XSL_Path);
-   --  The valid configuration keys. Only keys found in the Keys type are valid
-   --  as keys in the Config_File configuration file.
+   --  The valid configuration keys.
    --  These configuration keys are essential for other core parts of this
    --  software, so you should not change them, unless you know what you're
    --  doing.
@@ -93,7 +93,9 @@ package Configuration is
                  System_Templates_Path    => TUS ("templates/system"),
                  XML_Path                 => TUS ("static_content/xml"),
                  XSL_Path                 => TUS ("static_content/xsl"));
-   --  Default values for the configuration Keys.
+   --  Default values for the configuration Keys. These values can be over-
+   --  written by the configuration file given when instantiating a new
+   --  Config_File_Parser object.
 
    package Config is new Config_File_Parser
      (Keys => Keys,

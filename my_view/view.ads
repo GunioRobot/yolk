@@ -23,7 +23,8 @@
 
 with AWS.Config;
 with AWS.Response;
-with AWS.Templates; use AWS.Templates;
+with AWS.Templates;     use AWS.Templates;
+with My_Configuration;  use My_Configuration;
 with Connect_To_DB.PostgreSQL;
 
 package View is
@@ -32,18 +33,18 @@ private
 
    package DB_12boo is new Connect_To_DB.PostgreSQL
      (Connect_To_DB.Set_Credentials
-        (Host          => "freja.serverbox.dk",
-         Database      => "12boo",
-         User          => "thomas",
-         Password      => "respsltl16117994",
+        (Host          => Config.Get (DB_Host),
+         Database      => Config.Get (DB_Name),
+         User          => Config.Get (DB_User),
+         Password      => Config.Get (DB_Password),
          Server_Config => AWS.Config.Get_Current));
 
    package DB_Wiki is new Connect_To_DB.PostgreSQL
      (Connect_To_DB.Set_Credentials
-        (Host          => "freja.serverbox.dk",
+        (Host          => Config.Get (DB_Host),
          Database      => "wikidb",
          User          => "wikiuser",
-         Password      => "respsltl16117994",
+         Password      => Config.Get (DB_Password),
          Server_Config => AWS.Config.Get_Current));
 
    function Build_Response (Template_File : in String;
