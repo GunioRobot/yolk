@@ -18,17 +18,22 @@
 -------------------------------------------------------------------------------
 
 with Ada.Directories;
-with Ada.Exceptions;    use Ada.Exceptions;
+with Ada.Exceptions;
 with AWS.Config;
 with AWS.Server;
 with AWS.Server.Log;
 with AWS.Session;
-with Configuration;     use Configuration;
+with Configuration;
 with Handlers;
 with Process_Control;
-with Rotating_Log;      use Rotating_Log;
+with Rotating_Log;
 
-procedure Yolk is
+procedure Yolk
+is
+
+   use Ada.Exceptions;
+   use Configuration;
+   use Rotating_Log;
 
    Sessions          : constant String := Config.Get (Session_Data_File);
    --  Path to the sessions data file.

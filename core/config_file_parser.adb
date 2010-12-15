@@ -151,8 +151,8 @@ package body Config_File_Parser is
 
          if Line /= "" then
             Key_End := Fixed.Index (Source => Line,
-                              Set    => Maps.To_Set (Space),
-                              Going  => Forward);
+                                    Set    => Maps.To_Set (Space),
+                                    Going  => Forward);
             if Key_End > Line'First then
                return Line (Line'First .. Key_End - 1);
             end if;
