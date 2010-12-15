@@ -124,6 +124,21 @@ package body Config_File_Parser is
    end Get;
 
    -----------------
+   --  Has_Value  --
+   -----------------
+
+   function Has_Value (Key : in Keys) return Boolean
+   is
+
+      use Ada.Strings.Unbounded;
+
+   begin
+
+      return Defaults (Key) /= Null_Unbounded_String;
+
+   end Has_Value;
+
+   -----------------
    --  Load_File  --
    -----------------
 

@@ -75,9 +75,6 @@ package Config_File_Parser is
    Empty_Key               : exception;
    --  Is raised when a key with the element Null_Unbounded_String is called.
 
-   --  type Elements_List is array (Keys) of
-   --    Ada.Strings.Unbounded.Unbounded_String;
-
    function Get (Key : in Keys) return Boolean;
    function Get (Key : in Keys) return Float;
    function Get (Key : in Keys) return Integer;
@@ -86,6 +83,9 @@ package Config_File_Parser is
    --  Get the VALUE for Key and convert it to target type.
    --  Exceptions:
    --    Conversion_Error
+
+   function Has_Value (Key : in Keys) return Boolean;
+   --  Return True if Key is not a Null_Unbounded_String.
 
    procedure Load_File (Config_File : in String);
    --  Load the config file Config_File. This can be done over and over as many
