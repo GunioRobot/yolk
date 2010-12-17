@@ -52,6 +52,10 @@
 --  as both a String or as a Boolean.
 --  Conversions from VALUE to other types, such as Integer or Float, will raise
 --  an exception on failure. It will NOT return some dummy value.
+--
+--  To clear a default value, simply add the key to the configuration file,
+--  with no value set. Conversely, you must omit (or comment) keys for whích
+--  you want to use the default value.
 
 with Ada.Strings.Unbounded;
 

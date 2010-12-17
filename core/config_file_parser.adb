@@ -215,6 +215,9 @@ package body Config_File_Parser is
             if Line /= ""
               and then Line (1 .. 1) /= "#"
               and then Line (1 .. 2) /= "--" then
+               --  Note that if a valid key is found in the file, and it has no
+               --  value set, then the default value is overwritten with
+               --  Null_Unbounded_String.
                Defaults (Keys'Value (Key)) := Trim (Value, Left);
             end if;
 
