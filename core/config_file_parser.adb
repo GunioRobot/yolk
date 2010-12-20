@@ -211,7 +211,7 @@ package body Config_File_Parser is
 
          begin
 
-            --  Ignore empty lines, comments and empty values.
+            --  Ignore empty lines and comments.
             if Line /= ""
               and then Line (1 .. 1) /= "#"
               and then Line (1 .. 2) /= "--" then
