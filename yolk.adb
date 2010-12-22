@@ -25,6 +25,7 @@ with AWS.Server.Log;
 with AWS.Session;
 with Configuration;
 with Handlers;
+with Logfile_Cleanup;
 with Process_Control;
 with Rotating_Log;
 
@@ -39,6 +40,7 @@ is
    --  Path to the sessions data file.
 
    Web_Server        : AWS.Server.HTTP;
+
    Web_Server_Config : constant AWS.Config.Object := AWS.Config.Get_Current;
    --  Set the AWS config object. First look for a file called aws.ini in the
    --  current directory, and if found, then override the default configuration
@@ -77,7 +79,7 @@ is
       --  Session_Data_File exists.
 
       AWS.Server.Log.Start (Web_Server => Web_Server,
-                            Auto_Flush => True);
+                            Auto_Flush => False);
       AWS.Server.Log.Start_Error (Web_Server);
       AWS.Server.Start (Web_Server => Web_Server,
                         Dispatcher => Handlers.Get,
@@ -111,6 +113,53 @@ is
 
    end Stop_Server;
 
+   ---------------------
+   -- Logfile_Monitor --
+   ---------------------
+
+   Task_Stop : exception;
+
+   task Logfile_Monitor is
+      entry Start;
+      entry Stop;
+   end Logfile_Monitor;
+
+   task body Logfile_Monitor
+   is
+
+      use AWS.Config;
+      use Logfile_Cleanup;
+
+      Good_To_Go : Boolean := False;
+
+   begin
+
+      loop
+         select
+            accept Start do
+               Good_To_Go := True;
+
+               Track (Handle     => Info,
+                      Log_String => "Logfile monitor started.");
+            end Start;
+         or
+            accept Stop do
+               raise Task_Stop;
+            end Stop;
+         or
+            delay 60.0;
+            if Good_To_Go then
+               Clean_Up (Config_Object => Web_Server_Config,
+                         Web_Server    => Web_Server);
+            else
+               Track (Handle     => Error,
+                      Log_String => "Logfile_Monitor.Start not called.");
+            end if;
+         end select;
+      end loop;
+
+   end Logfile_Monitor;
+
 begin
 
    Track (Handle     => Info,
@@ -118,6 +167,9 @@ begin
           AWS.Config.Server_Name (Web_Server_Config) &
           ". Listening on port" &
           AWS.Config.Server_Port (Web_Server_Config)'Img);
+
+   Logfile_Monitor.Start;
+   --  Start the logfile monitor.
 
    Start_Server (Sessions);
    --  Start the server.
@@ -130,12 +182,27 @@ begin
    --  Shutdown requested in Process_Control.Controller, so we will attempt to
    --  shutdown the server.
 
+   Logfile_Monitor_Block :
+   declare
+   begin
+
+      Logfile_Monitor.Stop;
+      --  Shut down the Logfile_Monitor task.
+
+   exception
+      when Task_Stop =>
+         Track (Handle     => Info,
+                Log_String => "Logfile monitor stopped.");
+
+   end Logfile_Monitor_Block;
+
 exception
    when Event : others =>
       Track (Handle     => Error,
              Log_String => Exception_Information (Event));
       Stop_Server (Sessions);
+      Logfile_Monitor.Stop;
       --  If an exception is caught, write its contents to the Error trace,
-      --  attempt to stop the server.
+      --  attempt to stop the server and the logfile monitor task.
 
 end Yolk;
