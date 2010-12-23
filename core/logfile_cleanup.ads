@@ -31,7 +31,10 @@ package Logfile_Cleanup is
 
    procedure Clean_Up (Config_Object   : in AWS.Config.Object;
                        Web_Server      : in AWS.Server.HTTP);
-   --  TODO: Write comment
+   --  Search and delete old and excess logfiles in the Log_File_Directory
+   --  defined in aws.ini.
+   --  The amount of files to keep is set in Amount_Of_Files_To_Keep in the
+   --  private part of this spec.
 
 private
 
@@ -42,10 +45,13 @@ private
       end record;
 
    Amount_Of_Files_To_Keep : constant Ada.Containers.Count_Type := 30;
+   --  How many files to keep. If more than this amount is found, the delete
+   --  the oldest.
 
    function "<" (Left, Right : in File_Info) return Boolean;
-   --  TODO: Write comment
+   --  Used by the Ordered_File_Set package to order the File_Info elements.
 
    package Ordered_File_Set is new Ada.Containers.Ordered_Sets (File_Info);
+   --  A new ordered set package instantiated with File_Info as Element_Type.
 
 end Logfile_Cleanup;

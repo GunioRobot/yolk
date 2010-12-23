@@ -37,6 +37,9 @@ is
    use Configuration;
    use Rotating_Log;
 
+   Logfile_Monitor_Stop : exception;
+   --  Is raised when Logfile_Monitor.Stop is called.
+
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
    --  The various resource handlers. These are defined in the Handlers and
    --  My_Handlers packages.
@@ -62,9 +65,18 @@ is
    procedure Start_Server (Session_Data_File : in String);
    --  Start the AWS server. A short message is written to the Info trace
    --  whenever the server is started.
+
    procedure Stop_Server (Session_Data_File : in String);
    --  Stop the AWS server. A short message is written to the Info trace
    --  whenever the server is stopped.
+
+   task Logfile_Monitor is
+      entry Start;
+      entry Stop;
+   end Logfile_Monitor;
+   --  This task monitor the aws.ini Log_File_Directory and deletes excess
+   --  logfiles. The amount of logfiles kept are defined by the
+   --  Logfile_Cleanup.Amount_Of_Files_To_Keep constant.
 
    --------------------
    --  Start_Server  --
@@ -78,7 +90,8 @@ is
    begin
 
       if AWS.Config.Session (Web_Server_Config)
-        and then Exists (Session_Data_File) then
+        and then Exists (Session_Data_File)
+      then
          AWS.Session.Load (Session_Data_File);
       end if;
       --  Load the old sessions data, if sessions are enabled and the
@@ -86,10 +99,17 @@ is
 
       AWS.Server.Log.Start (Web_Server => Web_Server,
                             Auto_Flush => False);
+      --  Start the access log.
+      --  Set Auto_Flush to True if you want access data to be written to file
+      --  instantly. Doing to incurs a performance hit if the server is very
+      --  busy.
+
       AWS.Server.Log.Start_Error (Web_Server);
+
       AWS.Server.Start (Web_Server => Web_Server,
                         Dispatcher => Resource_Handlers,
                         Config     => Web_Server_Config);
+
       Track (Handle     => Info,
              Log_String => "Started " &
              AWS.Config.Server_Name (Web_Server_Config));
@@ -111,8 +131,11 @@ is
       --  enabled.
 
       AWS.Server.Shutdown (Web_Server);
+
       AWS.Server.Log.Stop (Web_Server);
+
       AWS.Server.Log.Stop_Error (Web_Server);
+
       Track (Handle     => Info,
              Log_String => "Stopped " &
              AWS.Config.Server_Name (Web_Server_Config));
@@ -123,20 +146,16 @@ is
    -- Logfile_Monitor --
    ---------------------
 
-   Task_Stop : exception;
-
-   task Logfile_Monitor is
-      entry Start;
-      entry Stop;
-   end Logfile_Monitor;
-
    task body Logfile_Monitor
    is
 
       use AWS.Config;
       use Logfile_Cleanup;
 
-      Good_To_Go : Boolean := False;
+      Interval    : constant Duration := 60.0;
+      --  How often do we check for excess/old logfiles?
+
+      Good_To_Go  : Boolean := False;
 
    begin
 
@@ -150,10 +169,10 @@ is
             end Start;
          or
             accept Stop do
-               raise Task_Stop;
+               raise Logfile_Monitor_Stop;
             end Stop;
          or
-            delay 60.0;
+            delay Interval;
             if Good_To_Go then
                Clean_Up (Config_Object => Web_Server_Config,
                          Web_Server    => Web_Server);
@@ -197,10 +216,12 @@ begin
    begin
 
       Logfile_Monitor.Stop;
-      --  Shut down the Logfile_Monitor task.
+      --  This call raises the Logfile_Monitor_Stop exception, which we then
+      --  catch below. This is the only way I've been able to come up with that
+      --  can handle closing down the Logfile_Monitor task cleanly.
 
    exception
-      when Task_Stop =>
+      when Logfile_Monitor_Stop =>
          Track (Handle     => Info,
                 Log_String => "Logfile monitor stopped.");
 

@@ -1,3 +1,25 @@
+-------------------------------------------------------------------------------
+--                                                                           --
+--                                  Yolk                                     --
+--                                                                           --
+--                            logfile_cleanup                                --
+--                                                                           --
+--                                  BODY                                     --
+--                                                                           --
+--                     Copyright (C) 2010, Thomas Løcke                      --
+--                                                                           --
+--  Yolk is free software;  you can  redistribute it  and/or modify it under --
+--  terms of the  GNU General Public License as published  by the Free Soft- --
+--  ware  Foundation;  either version 2,  or (at your option) any later ver- --
+--  sion.  Yolk is distributed in the hope that it will be useful, but WITH- --
+--  OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
+--  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
+--  for  more details.  You should have  received  a copy of the GNU General --
+--  Public License  distributed with Yolk.  If not, write  to  the  Free     --
+--  Software Foundation,  51  Franklin  Street,  Fifth  Floor, Boston,       --
+--  MA 02110 - 1301, USA.                                                    --
+--                                                                           --
+-------------------------------------------------------------------------------
 
 with Ada.Directories;
 with AWS.Server.Log;
@@ -38,33 +60,32 @@ package body Logfile_Cleanup is
                     Web_Server      : in AWS.Server.HTTP)
    is
 
-      use Ada.Calendar;
-      use Ada.Containers;
       use Ada.Directories;
-      use Ada.Strings.Unbounded;
-      use Ordered_File_Set;
-      use Rotating_Log;
-      use Utilities;
 
       File_Set : Ordered_File_Set.Set;
-      Filter : constant Filter_Type := (Ordinary_File => True,
-                                        Special_File  => False,
-                                        Directory     => False);
+      --  Our File_Info container.
+
+      -----------------------
+      --  Add_File_To_Set  --
+      -----------------------
 
       procedure Add_File_To_Set (Search_Item : in Directory_Entry_Type);
-      procedure Do_It (Prefix : in String;
-                       Kind   : in String);
+      --  Add found files to the File_Set container. This procedure is called
+      --  by the Ada.Directories.Search procedure in Do_It.
 
       procedure Add_File_To_Set (Search_Item : in Directory_Entry_Type)
       is
 
-         A_File : File_Info;
-         Found_File : constant String :=
-                        Full_Name (Directory_Entry => Search_Item);
-         Current_Log_File : constant String :=
-                              AWS.Server.Log.Name (Web_Server);
-         Current_Error_Log_File : constant String :=
-                                    AWS.Server.Log.Error_Name (Web_Server);
+         use Ada.Calendar;
+         use Utilities;
+
+         A_File                  : File_Info;
+         Found_File              : constant String
+           := Full_Name (Directory_Entry => Search_Item);
+         Current_Log_File        : constant String
+           := AWS.Server.Log.Name (Web_Server);
+         Current_Error_Log_File  : constant String
+           := AWS.Server.Log.Error_Name (Web_Server);
 
       begin
 
@@ -81,9 +102,29 @@ package body Logfile_Cleanup is
 
       end Add_File_To_Set;
 
+      -------------
+      --  Do_It  --
+      -------------
+
+      procedure Do_It (Prefix : in String;
+                       Kind   : in String);
+      --  Find and delete logfiles.
+      --  A search is done in the directory where the logfiles are kept, and if
+      --  more than Amount_Of_Files_To_Keep logfiles are found, then delete the
+      --  oldest.
+
       procedure Do_It (Prefix : in String;
                        Kind   : in String)
       is
+
+         use Ada.Containers;
+         use Ada.Strings.Unbounded;
+         use Rotating_Log;
+
+         Filter : constant Filter_Type := (Ordinary_File => True,
+                                           Special_File  => False,
+                                           Directory     => False);
+
       begin
 
          Track (Handle     => Info,
@@ -98,20 +139,25 @@ package body Logfile_Cleanup is
             loop
                exit when File_Set.Length = Amount_Of_Files_To_Keep;
 
+               Delete_File_Block :
                declare
                begin
+
                   Delete_File
                     (Name => To_String (File_Set.Last_Element.File_Name));
-                  --  TODO: Write comment
+                  --  Delete the actual file.
+
                exception
                   when others =>
                      Track
                        (Handle     => Error,
                         Log_String => "Cannot delete file " & To_String
                           (File_Set.Last_Element.File_Name));
-               end;
+
+               end Delete_File_Block;
 
                File_Set.Delete_Last;
+               --  Delete the last File_Info element from the set.
 
                Track
                  (Handle     => Info,
