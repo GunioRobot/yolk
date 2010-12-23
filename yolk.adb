@@ -22,6 +22,7 @@ with Ada.Exceptions;
 with AWS.Config;
 with AWS.Server;
 with AWS.Server.Log;
+with AWS.Services.Dispatchers.URI;
 with AWS.Session;
 with Configuration;
 with Handlers;
@@ -36,10 +37,15 @@ is
    use Configuration;
    use Rotating_Log;
 
+   Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
+   --  The various resource handlers. These are defined in the Handlers and
+   --  My_Handlers packages.
+
    Sessions          : constant String := Config.Get (Session_Data_File);
    --  Path to the sessions data file.
 
    Web_Server        : AWS.Server.HTTP;
+   --  The main webserver object.
 
    Web_Server_Config : constant AWS.Config.Object := AWS.Config.Get_Current;
    --  Set the AWS config object. First look for a file called aws.ini in the
@@ -82,7 +88,7 @@ is
                             Auto_Flush => False);
       AWS.Server.Log.Start_Error (Web_Server);
       AWS.Server.Start (Web_Server => Web_Server,
-                        Dispatcher => Handlers.Get,
+                        Dispatcher => Resource_Handlers,
                         Config     => Web_Server_Config);
       Track (Handle     => Info,
              Log_String => "Started " &
@@ -167,6 +173,10 @@ begin
           AWS.Config.Server_Name (Web_Server_Config) &
           ". Listening on port" &
           AWS.Config.Server_Port (Web_Server_Config)'Img);
+   --  We're alive! Log this fact to the Info track.
+
+   Handlers.Set (RH => Resource_Handlers);
+   --  Populate the Resource_Handlers object.
 
    Logfile_Monitor.Start;
    --  Start the logfile monitor.

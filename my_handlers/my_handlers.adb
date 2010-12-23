@@ -27,22 +27,10 @@ with View.Index;
 package body My_Handlers is
 
    -----------
-   --  Get  --
+   --  Set  --
    -----------
 
-   function Get return AWS.Services.Dispatchers.URI.Handler
-   is
-   begin
-
-      return Resource_Handlers;
-
-   end Get;
-
-   ------------------
-   --  Initialize  --
-   ------------------
-
-   procedure Initialize
+   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler)
    is
 
       package My renames My_Configuration;
@@ -56,16 +44,13 @@ package body My_Handlers is
       --  These dispatchers handle the "page" content.
       --  NOTE:
       --    Order matters. The first handler that matches a resource handles
-      --    the request.
+      --    the request, hence this Set procedure is called  at the beginning
+      --    of the Handlers.Set procedure in the Handlers package.
       AWS.Services.Dispatchers.URI.Register_Regexp
-        (Dispatcher => Resource_Handlers,
+        (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),
          Action     => View.Index.Generate'Access);
 
-   end Initialize;
-
-begin
-
-   Initialize;
+   end Set;
 
 end My_Handlers;

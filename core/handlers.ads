@@ -23,29 +23,17 @@
 
 --  In this package we define the content/resource handlers for static content.
 --  Content not handled in this package should be added to the
---  my_handlers/my_handlers.ad[sb] package, which you can see it "with'ed" in
---  this package.
+--  my_handlers/my_handlers.ad[sb] package.
 
-private with My_Handlers;
 with AWS.Services.Dispatchers.URI;
 
 package Handlers is
 
-   function Get return AWS.Services.Dispatchers.URI.Handler;
-   --  Return the initialized Resource_Handlers object.
-
-private
-
-   Resource_Handlers : AWS.Services.Dispatchers.URI.Handler := My_Handlers.Get;
+   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler);
    --  The Handlers package define a set of default handlers for static content
    --  such as HTML, images and ICO files.
    --  The My_Handlers package define application specific handlers, so it is
    --  in this package that such handlers should be placed.
    --  See my_handlers/my_handlers.ad[sb] for more information.
-
-   procedure Initialize;
-   --  Setup dispatchers for the server. Here we register further content
-   --  handlers to the Resource_Handlers object, which should already be
-   --  partially populated by the My_Handlers.Get function.
 
 end Handlers;

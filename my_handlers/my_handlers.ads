@@ -25,18 +25,10 @@ with AWS.Services.Dispatchers.URI;
 
 package My_Handlers is
 
-   function Get return AWS.Services.Dispatchers.URI.Handler;
-   --  Return the initialized Resource_Handlers object.
-
-private
-
-   Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
-
-   procedure Initialize;
+   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler);
    --  Setup content dispatchers for the server. Basically this initializes the
-   --  Resource_Handlers object declared above. The handlers registered here
-   --  should be those specific to this application. Generic content handlers,
-   --  such as 404 errors, images and similar, are registered in the
-   --  core/handlers.adb file.
+   --  Resource_Handlers object declared in yold.adb. The handlers registered
+   --  here are specific to this application. Generic content handlers, such as
+   --  404 errors, images and similar, are registered in the Handlers package.
 
 end My_Handlers;
