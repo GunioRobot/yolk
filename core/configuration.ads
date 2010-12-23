@@ -85,7 +85,7 @@ package Configuration is
                  JS_Path                  => TUS ("static_content/js"),
                  Log_File_Path            => TUS ("logs/"),
                  Max_Slot_Count           => TUS ("3"),
-                 Max_Logged_Characters    => TUS ("100_000"),
+                 Max_Logged_Characters    => TUS ("1_000_000"),
                  PNG_Path                 => TUS ("static_content/png"),
                  Session_Data_File        =>
                    TUS ("session/session.data"),
