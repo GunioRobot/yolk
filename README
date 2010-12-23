@@ -127,6 +127,8 @@ My usual modus operandi for setting up these 5 things goes something like this:
             DEMOS=false
             TARGET=native
             
+        Finally run "$ make build install".
+            
     5.  Add /usr/gnat/bin to your PATH environment variable.
     
     6.  Add /usr/gnat/lib/gnat to your ADA_PROJECT_PATH environment variable.
