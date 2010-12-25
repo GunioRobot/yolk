@@ -29,12 +29,11 @@ with AWS.Server;
 
 package Logfile_Cleanup is
 
-   procedure Clean_Up (Config_Object   : in AWS.Config.Object;
-                       Web_Server      : in AWS.Server.HTTP);
+   procedure Clean_Up (Config_Object           : in AWS.Config.Object;
+                       Web_Server              : in AWS.Server.HTTP;
+                       Amount_Of_Files_To_Keep : in Positive);
    --  Search and delete old and excess logfiles in the Log_File_Directory
    --  defined in aws.ini.
-   --  The amount of files to keep is set in Amount_Of_Files_To_Keep in the
-   --  private part of this spec.
 
 private
 
@@ -43,10 +42,6 @@ private
          File_Name   : Ada.Strings.Unbounded.Unbounded_String;
          Mod_Time    : Ada.Calendar.Time;
       end record;
-
-   Amount_Of_Files_To_Keep : constant Ada.Containers.Count_Type := 30;
-   --  How many files to keep. If more than this amount is found, the delete
-   --  the oldest.
 
    function "<" (Left, Right : in File_Info) return Boolean;
    --  Used by the Ordered_File_Set package to order the File_Info elements.

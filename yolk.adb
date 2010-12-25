@@ -37,36 +37,24 @@ is
    use Configuration;
    use Rotating_Log;
 
-   Logfile_Monitor_Stop : exception;
-   --  Is raised when Logfile_Monitor.Stop is called.
-
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
    --  The various resource handlers. These are defined in the Handlers and
    --  My_Handlers packages.
 
-   Sessions          : constant String := Config.Get (Session_Data_File);
-   --  Path to the sessions data file.
-
    Web_Server        : AWS.Server.HTTP;
    --  The main webserver object.
 
-   Web_Server_Config : constant AWS.Config.Object := AWS.Config.Get_Current;
-   --  Set the AWS config object. First look for a file called aws.ini in the
-   --  current directory, and if found, then override the default configuration
-   --  with the values found herein.
-   --  Second look for a file called <program name>.ini in the current
-   --  directory, and if found, override whatever configuration settings found
-   --  herein.
-   --  Neither of these files are necessary, if the default AWS configuration
-   --  is sufficient for this application.
-   --  See the AWS manual for more information on the possible configuration
-   --  settings.
+   Web_Server_Config : constant AWS.Config.Object := Get_AWS_Configuration;
+   --  Set the AWS config object.
+   --  All AWS related configuration parameters can be found in the
+   --  configuration/config.ini file. They are marked with:
+   --    Used by AWS: Yes
 
-   procedure Start_Server (Session_Data_File : in String);
+   procedure Start_Server;
    --  Start the AWS server. A short message is written to the Info trace
    --  whenever the server is started.
 
-   procedure Stop_Server (Session_Data_File : in String);
+   procedure Stop_Server;
    --  Stop the AWS server. A short message is written to the Info trace
    --  whenever the server is stopped.
 
@@ -82,7 +70,7 @@ is
    --  Start_Server  --
    --------------------
 
-   procedure Start_Server (Session_Data_File : in String)
+   procedure Start_Server
    is
 
       use Ada.Directories;
@@ -90,25 +78,29 @@ is
    begin
 
       if AWS.Config.Session (Web_Server_Config)
-        and then Exists (Session_Data_File)
+        and then Exists (Config.Get (Session_Data_File))
       then
-         AWS.Session.Load (Session_Data_File);
+         AWS.Session.Load (Config.Get (Session_Data_File));
       end if;
       --  Load the old sessions data, if sessions are enabled and the
       --  Session_Data_File exists.
 
-      AWS.Server.Log.Start (Web_Server => Web_Server,
-                            Auto_Flush => False);
-      --  Start the access log.
-      --  Set Auto_Flush to True if you want access data to be written to file
-      --  instantly. Doing to incurs a performance hit if the server is very
-      --  busy.
-
-      AWS.Server.Log.Start_Error (Web_Server);
-
       AWS.Server.Start (Web_Server => Web_Server,
                         Dispatcher => Resource_Handlers,
                         Config     => Web_Server_Config);
+      --  Unfortunately we have to start the server BEFORE we start the logs.
+      --  If we start the logs first, then they aren't written to the
+      --  Log_File_Directory parameter set in the configuration file, but
+      --  instead they are written to the same directory as where the
+      --  executable is.
+
+      AWS.Server.Log.Start (Web_Server => Web_Server,
+                            Auto_Flush => False);
+      AWS.Server.Log.Start_Error (Web_Server);
+      --  Start the access and error log.
+      --  Set Auto_Flush to True if you want access data to be written to file
+      --  instantly. Doing to incurs a performance hit if the server is very
+      --  busy.
 
       Track (Handle     => Info,
              Log_String => "Started " &
@@ -120,12 +112,12 @@ is
    --  Stop_Server  --
    -------------------
 
-   procedure Stop_Server (Session_Data_File : in String)
+   procedure Stop_Server
    is
    begin
 
       if AWS.Config.Session (Web_Server_Config) then
-         AWS.Session.Save (Session_Data_File);
+         AWS.Session.Save (Config.Get (Session_Data_File));
       end if;
       --  Save the sessions data to the Session_Data_File, if sessions are
       --  enabled.
@@ -152,14 +144,25 @@ is
       use AWS.Config;
       use Logfile_Cleanup;
 
-      Interval    : constant Duration := 60.0;
-      --  How often do we check for excess/old logfiles?
+      Files_To_Keep : constant Positive
+        := Config.Get (Amount_Of_Files_To_Keep);
+      --  How many log files to keep. If more than this amount is found, then
+      --  delete the oldest.
+
+      Exit_Loop   : Boolean := False;
 
       Good_To_Go  : Boolean := False;
+
+      Interval    : constant Duration
+        := Config.Get (Log_File_Cleanup_Interval);
+      --  How often do we check for excess/old logfiles?
 
    begin
 
       loop
+
+         exit when Exit_Loop;
+
          select
             accept Start do
                Good_To_Go := True;
@@ -169,16 +172,20 @@ is
             end Start;
          or
             accept Stop do
-               raise Logfile_Monitor_Stop;
+               Exit_Loop := True;
+
+               Track (Handle     => Info,
+                      Log_String => "Logfile monitor stopped.");
             end Stop;
          or
             delay Interval;
             if Good_To_Go then
-               Clean_Up (Config_Object => Web_Server_Config,
-                         Web_Server    => Web_Server);
+               Clean_Up (Config_Object             => Web_Server_Config,
+                         Web_Server                => Web_Server,
+                         Amount_Of_Files_To_Keep   => Files_To_Keep);
             else
                Track (Handle     => Error,
-                      Log_String => "Logfile_Monitor.Start not called.");
+                      Log_String => "Logfile_Monitor. Start not called.");
             end if;
          end select;
       end loop;
@@ -187,6 +194,15 @@ is
 
 begin
 
+   Handlers.Set (RH => Resource_Handlers);
+   --  Populate the Resource_Handlers object.
+
+   Logfile_Monitor.Start;
+   --  Start the logfile monitor.
+
+   Start_Server;
+   --  Start the server.
+
    Track (Handle     => Info,
           Log_String => "Starting " &
           AWS.Config.Server_Name (Web_Server_Config) &
@@ -194,44 +210,22 @@ begin
           AWS.Config.Server_Port (Web_Server_Config)'Img);
    --  We're alive! Log this fact to the Info track.
 
-   Handlers.Set (RH => Resource_Handlers);
-   --  Populate the Resource_Handlers object.
-
-   Logfile_Monitor.Start;
-   --  Start the logfile monitor.
-
-   Start_Server (Sessions);
-   --  Start the server.
-
    Process_Control.Wait;
    --  This is the main "loop". We will wait here as long as the
    --  Process_Control.Controller.Check entry barrier is False.
 
-   Stop_Server (Sessions);
+   Stop_Server;
    --  Shutdown requested in Process_Control.Controller, so we will attempt to
    --  shutdown the server.
 
-   Logfile_Monitor_Block :
-   declare
-   begin
-
-      Logfile_Monitor.Stop;
-      --  This call raises the Logfile_Monitor_Stop exception, which we then
-      --  catch below. This is the only way I've been able to come up with that
-      --  can handle closing down the Logfile_Monitor task cleanly.
-
-   exception
-      when Logfile_Monitor_Stop =>
-         Track (Handle     => Info,
-                Log_String => "Logfile monitor stopped.");
-
-   end Logfile_Monitor_Block;
+   Logfile_Monitor.Stop;
+   --  Stop the logfile monitor.
 
 exception
    when Event : others =>
       Track (Handle     => Error,
              Log_String => Exception_Information (Event));
-      Stop_Server (Sessions);
+      Stop_Server;
       Logfile_Monitor.Stop;
       --  If an exception is caught, write its contents to the Error trace,
       --  attempt to stop the server and the logfile monitor task.

@@ -59,8 +59,9 @@ package body Rotating_Log is
          Create
            (File => Log_Objects_List (Handle).Get_File_Access.all,
             Mode => Out_File,
-            Name =>
-              Config.Get (Log_File_Path) & Trace_Handles'Image (Handle) & "-" &
+            Name => Config.Get (Log_File_Directory) &
+            Config.Get (Server_Name) & "-rotating-" &
+            Trace_Handles'Image (Handle) & "-" &
             Log_Objects_List (Handle).Get_Slot & ".log");
       end loop;
 
@@ -213,8 +214,10 @@ package body Rotating_Log is
          Create
            (File => Log.Get_File_Access.all,
             Mode => Out_File,
-            Name => Config.Get (Log_File_Path) & Trace_Handles'Image (Handle) &
-            "-" & Log.Get_Slot & ".log");
+            Name => Config.Get (Log_File_Directory) &
+            Config.Get (Server_Name) & "-rotating-" &
+            Trace_Handles'Image (Handle) & "-" &
+            Log.Get_Slot & ".log");
       end if;
 
       Put (File => Log.Get_File_Access.all,

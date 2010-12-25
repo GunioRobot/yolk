@@ -25,14 +25,25 @@
 --  configuration, take a look at the My_Configuration package.
 
 with Ada.Strings.Unbounded;
+with AWS.Config;
 with Config_File_Parser;
 with Utilities; use Utilities;
 
 package Configuration is
 
-   type Keys is (CSS_Path,
+   type Keys is (Admin_Password,
+                 Admin_URI,
+                 Amount_Of_Files_To_Keep,
+                 Certificate,
+                 CSS_Path,
+                 Error_Log_Filename_Prefix,
+                 Error_Log_Split_Mode,
                  GIF_Path,
                  GNATCOLL_Traces_Ini_File,
+                 Log_File_Cleanup_Interval,
+                 Log_Filename_Prefix,
+                 Log_Size_Limit,
+                 Log_Split_Mode,
                  Handler_CSS,
                  Handler_GIF,
                  Handler_HTML,
@@ -48,11 +59,22 @@ package Configuration is
                  Immediate_Flush,
                  JPG_Path,
                  JS_Path,
-                 Log_File_Path,
+                 Log_File_Directory,
+                 Max_Connection,
                  Max_Slot_Count,
                  Max_Logged_Characters,
+                 MIME_Types,
                  PNG_Path,
+                 Reuse_Address,
+                 Security,
+                 Security_Mode,
+                 Server_Name,
+                 Server_Port,
+                 Session,
                  Session_Data_File,
+                 Session_Lifetime,
+                 Session_Name,
+                 Status_Page,
                  System_Templates_Path,
                  XML_Path,
                  XSL_Path);
@@ -64,34 +86,100 @@ package Configuration is
      Ada.Strings.Unbounded.Unbounded_String;
 
    Defaults : Defaults_Array :=
-                (CSS_Path                 => TUS ("static_content/css"),
-                 GIF_Path                 => TUS ("static_content/gif"),
-                 GNATCOLL_Traces_Ini_File =>
-                   TUS ("configuration/GNATCOLL.SQL.Logs.ini"),
-                 Handler_CSS              => TUS (".*\.css"),
-                 Handler_GIF              => TUS (".*\.gif"),
-                 Handler_HTML             => TUS (".*\.html"),
-                 Handler_ICO              => TUS (".*\.ico"),
-                 Handler_JPG              => TUS (".*\.jpg"),
-                 Handler_JS               => TUS (".*\.js"),
-                 Handler_PNG              => TUS (".*\.png"),
-                 Handler_XML              => TUS (".*\.xml"),
-                 Handler_XSL              => TUS (".*\.xsl"),
-                 Handler_Unknown          => TUS ("[^status].*"),
-                 HTML_Path                => TUS ("static_content/html"),
-                 ICO_Path                 => TUS ("static_content/ico"),
-                 Immediate_Flush          => TUS ("False"),
-                 JPG_Path                 => TUS ("static_content/jpg"),
-                 JS_Path                  => TUS ("static_content/js"),
-                 Log_File_Path            => TUS ("logs/"),
-                 Max_Slot_Count           => TUS ("3"),
-                 Max_Logged_Characters    => TUS ("1_000_000"),
-                 PNG_Path                 => TUS ("static_content/png"),
-                 Session_Data_File        =>
-                   TUS ("session/session.data"),
-                 System_Templates_Path    => TUS ("templates/system"),
-                 XML_Path                 => TUS ("static_content/xml"),
-                 XSL_Path                 => TUS ("static_content/xsl"));
+                (Admin_Password
+                 => TUS ("0ac9c9d0c0b1ee058b65ae70c9aeb3a7"),
+                 Admin_URI
+                 => TUS ("/status"),
+                 Amount_Of_Files_To_Keep
+                 => TUS ("30"),
+                 Certificate
+                 => TUS ("certificates/aws.pem"),
+                 CSS_Path
+                 => TUS ("static_content/css"),
+                 Error_Log_Filename_Prefix
+                 => TUS ("yolk_error"),
+                 Error_Log_Split_Mode
+                 => TUS ("Daily"),
+                 GIF_Path
+                 => TUS ("static_content/gif"),
+                 GNATCOLL_Traces_Ini_File
+                 => TUS ("configuration/GNATCOLL.SQL.Logs.ini"),
+                 Log_File_Cleanup_Interval
+                 => TUS ("60"),
+                 Log_Filename_Prefix
+                 => TUS ("yolk_access"),
+                 Log_Size_Limit
+                 => TUS ("10_000_000"),
+                 Log_Split_Mode
+                 => TUS ("Daily"),
+                 Handler_CSS
+                 => TUS (".*\.css"),
+                 Handler_GIF
+                 => TUS (".*\.gif"),
+                 Handler_HTML
+                 => TUS (".*\.html"),
+                 Handler_ICO
+                 => TUS (".*\.ico"),
+                 Handler_JPG
+                 => TUS (".*\.jpg"),
+                 Handler_JS
+                 => TUS (".*\.js"),
+                 Handler_PNG
+                 => TUS (".*\.png"),
+                 Handler_XML
+                 => TUS (".*\.xml"),
+                 Handler_XSL
+                 => TUS (".*\.xsl"),
+                 Handler_Unknown
+                 => TUS ("[^status].*"),
+                 HTML_Path
+                 => TUS ("static_content/html"),
+                 ICO_Path
+                 => TUS ("static_content/ico"),
+                 Immediate_Flush
+                 => TUS ("False"),
+                 JPG_Path
+                 => TUS ("static_content/jpg"),
+                 JS_Path
+                 => TUS ("static_content/js"),
+                 Log_File_Directory
+                 => TUS ("logs/"),
+                 Max_Connection
+                 => TUS ("5"),
+                 Max_Slot_Count
+                 => TUS ("3"),
+                 Max_Logged_Characters
+                 => TUS ("1_000_000"),
+                 MIME_Types
+                 => TUS ("configuration/aws.mime"),
+                 PNG_Path
+                 => TUS ("static_content/png"),
+                 Reuse_Address
+                 => TUS ("False"),
+                 Security
+                 => TUS ("False"),
+                 Security_Mode
+                 => TUS ("SSLv23"),
+                 Server_Name
+                 => TUS ("Yolk"),
+                 Server_Port
+                 => TUS ("4242"),
+                 Session
+                 => TUS ("False"),
+                 Session_Data_File
+                 => TUS ("session/session.data"),
+                 Session_Lifetime
+                 => TUS ("1200"),
+                 Session_Name
+                 => TUS ("Yolk"),
+                 Status_Page
+                 => TUS ("status/aws_status.thtml"),
+                 System_Templates_Path
+                 => TUS ("templates/system"),
+                 XML_Path
+                 => TUS ("static_content/xml"),
+                 XSL_Path
+                 => TUS ("static_content/xsl"));
    --  Default values for the configuration Keys. These values can be over-
    --  written by the configuration file given when instantiating a new
    --  Config_File_Parser object.
@@ -101,5 +189,8 @@ package Configuration is
       Defaults_Array => Defaults_Array,
       Defaults => Defaults,
       Config_File    => "configuration/config.ini");
+
+   function Get_AWS_Configuration return AWS.Config.Object;
+   --  Load the AWS relevant configuration settings from the config.ini file.
 
 end Configuration;

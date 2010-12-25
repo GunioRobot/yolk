@@ -22,7 +22,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Directories;
-with Ada.Text_IO;
+--  with Ada.Text_IO;
 --  with AWS.Headers;
 --  with AWS.MIME;
 --  with AWS.Utils;
@@ -163,7 +163,7 @@ package body Simple_Email is
    procedure Send (ES : in out Email_Structure)
    is
 
-      use Ada.Text_IO;
+      --  use Ada.Text_IO;
 
    begin
 
@@ -171,13 +171,17 @@ package body Simple_Email is
 
       case ES.Type_Of_Email is
          when Text =>
-            Put_Line ("Text type");
+            null;
+            --  Put_Line ("Text type");
          when Text_With_Attachment =>
-            Put_Line ("Text_With_Attachment type");
+            null;
+            --  Put_Line ("Text_With_Attachment type");
          when Text_And_HTML =>
-            Put_Line ("Text_And_HTML type");
+            null;
+            --  Put_Line ("Text_And_HTML type");
          when Text_And_HTML_With_Attachment =>
-            Put_Line ("Text_And_HTML_With_Attachment type");
+            null;
+            --  Put_Line ("Text_And_HTML_With_Attachment type");
       end case;
 
    end Send;

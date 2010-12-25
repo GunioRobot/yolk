@@ -56,11 +56,15 @@ package body Logfile_Cleanup is
    --  Clean_Up  --
    ----------------
 
-   procedure Clean_Up (Config_Object   : in AWS.Config.Object;
-                    Web_Server      : in AWS.Server.HTTP)
+   procedure Clean_Up (Config_Object            : in AWS.Config.Object;
+                       Web_Server               : in AWS.Server.HTTP;
+                       Amount_Of_Files_To_Keep  : in Positive)
    is
 
+      use Ada.Containers;
       use Ada.Directories;
+
+      Keep : constant Count_Type := Count_Type (Amount_Of_Files_To_Keep);
 
       File_Set : Ordered_File_Set.Set;
       --  Our File_Info container.
@@ -117,7 +121,6 @@ package body Logfile_Cleanup is
                        Kind   : in String)
       is
 
-         use Ada.Containers;
          use Ada.Strings.Unbounded;
          use Rotating_Log;
 
@@ -135,9 +138,9 @@ package body Logfile_Cleanup is
                  Filter    => Filter,
                  Process   => Add_File_To_Set'Access);
 
-         if File_Set.Length > Amount_Of_Files_To_Keep then
+         if File_Set.Length > Keep then
             loop
-               exit when File_Set.Length = Amount_Of_Files_To_Keep;
+               exit when File_Set.Length = Keep;
 
                Delete_File_Block :
                declare

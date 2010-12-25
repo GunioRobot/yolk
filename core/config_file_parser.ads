@@ -80,6 +80,7 @@ package Config_File_Parser is
    --  Is raised when a key with the element Null_Unbounded_String is called.
 
    function Get (Key : in Keys) return Boolean;
+   function Get (Key : in Keys) return Duration;
    function Get (Key : in Keys) return Float;
    function Get (Key : in Keys) return Integer;
    function Get (Key : in Keys) return String;

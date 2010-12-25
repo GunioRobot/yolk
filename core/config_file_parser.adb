@@ -67,6 +67,22 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
+   function Get (Key : in Keys) return Duration
+   is
+   begin
+
+      return Duration'Value (Check_And_Convert (Key));
+
+   exception
+      when Constraint_Error =>
+         raise Conversion_Error with Keys'Image (Key);
+
+   end Get;
+
+   -----------
+   --  Get  --
+   -----------
+
    function Get (Key : in Keys) return Float
    is
    begin

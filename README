@@ -190,11 +190,10 @@ docs/
 
 exe/
     This directory contains the finished Yolk application. Here you will find
-    configuration files relevant to the application, the logs/ directory where
-    log files are kept, a session directory to hold session data between server
-    restarts, the status/ directory where the server status template is located
-    and finally the static content directories and the templates used by the
-    application.
+    the configuration/ directory, the logs/ directory, a session directory that 
+    holds the session data between server restarts, the status/ directory where 
+    the server status template is located and finally the static content 
+    directories and the templates used by the application.
     The entire exe/ directory is self-contained, meaning that it can be copied/
     moved to another place and the application will then run from there.
     
@@ -244,10 +243,10 @@ application:
     1. Clone the latest Yolk from the official repository.
     2. Verify that the default Yolk application works by visiting the demo website.
     3. Adjust the my_configuration.ad[bs] files to suit your needs.
-    4. Adjust the my_handlers.ad[bs] to account for your content.
-    5. Add my_view/view.xxx files for all your resources.
+    4. Add my_view/view.xxx files for all your resources.
+    5. Adjust the my_handlers.ad[bs] to account for your content.
     
-You should of course read all configuration files and make sure you understand what
+You should of course read the configuration files and make sure you understand what
 the different settings do.
 
 When starting a Yolk application, a PID file is placed in the exe/ directory. The
@@ -255,6 +254,17 @@ process ID of the running application can be found in this file. The PID file is
 destroyed when the application exits. The Yolk application does _not_ fork to 
 background, so if you want to avoid blocking the shell, use the & character to send
 it into the background:
+
+########################
+########################
+#
+#
+#  TODO! TODO! TODO!
+#  Write something about the rc script
+#
+#
+#######################
+#######################
 
     $ yolk &
 

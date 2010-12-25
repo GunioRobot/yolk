@@ -17,6 +17,17 @@ When you're certain all is well, all you need to do is follow these 5 steps:
     4. ./yolk
     5. Using your browser, visit http://localhost:4242
 
+########################
+########################
+#
+#
+#  TODO! TODO! TODO!
+#  Write something about the rc script
+#
+#
+#######################
+#######################
+
 To see the status page for the application, go to http://localhost:4242/status
 and enter "admin" as username and "changemenow" as password. Please make sure 
 that this password is changed before you go public with your application. See

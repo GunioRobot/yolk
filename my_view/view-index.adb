@@ -5,7 +5,7 @@ with GNATCOLL.Email;
 with GNATCOLL.Email.Utils;
 
 with GNATCOLL.SQL.Exec;
-with Ada.Text_IO;
+--  with Ada.Text_IO;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
 
 --  with Ada.Text_IO; use Ada.Text_IO;
@@ -26,7 +26,7 @@ package body View.Index is
    function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
    is
 
-      use Ada.Text_IO;
+      --  use Ada.Text_IO;
       use AWS.Templates;
       use GNATCOLL.Email;
       use GNATCOLL.Email.Utils;
@@ -44,9 +44,11 @@ package body View.Index is
 
       --  DB_12boo tests
       if GNATCOLL.SQL.Exec.Check_Connection (C_12boo) then
-         Put_Line ("DB_12boo up!");
+         Track (Handle     => Info,
+                Log_String => "DB_12boo up!");
       else
-         Put_Line ("DB_12boo down!");
+         Track (Handle     => Info,
+                Log_String => "DB_12boo down!");
       end if;
 
       GNATCOLL.SQL.Exec.Fetch (Result     => Cursor,
@@ -59,15 +61,18 @@ package body View.Index is
             GNATCOLL.SQL.Exec.Next (Cursor);
          end loop;
       else
-         Put_Line ("DB_12boo not success!");
+         Track (Handle     => Info,
+                Log_String => "DB_12boo not success!");
       end if;
       GNATCOLL.SQL.Exec.Commit_Or_Rollback (C_12boo);
 
       --  DB_Wiki tests
       if GNATCOLL.SQL.Exec.Check_Connection (C_Wiki) then
-         Put_Line ("DB_Wiki up!");
+         Track (Handle     => Info,
+                Log_String => "DB_Wiki up!");
       else
-         Put_Line ("DB_Wiki down!");
+         Track (Handle     => Info,
+                Log_String => "DB_Wiki down!");
       end if;
 
       GNATCOLL.SQL.Exec.Fetch (Result     => Cursor,
@@ -80,7 +85,8 @@ package body View.Index is
             GNATCOLL.SQL.Exec.Next (Cursor);
          end loop;
       else
-         Put_Line ("DB_Wiki not success!");
+         Track (Handle     => Info,
+                Log_String => "DB_Wiki not success!");
       end if;
       GNATCOLL.SQL.Exec.Commit_Or_Rollback (C_Wiki);
 
