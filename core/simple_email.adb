@@ -22,6 +22,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Directories;
+with Utilities;
 --  with Ada.Text_IO;
 --  with AWS.Headers;
 --  with AWS.MIME;
@@ -41,6 +42,8 @@ package body Simple_Email is
       Charset       : in     Character_Set := ISO_8859_1)
    is
 
+      use Utilities;
+
       New_Attachment : Attachment_Data;
 
    begin
@@ -57,11 +60,14 @@ package body Simple_Email is
    --  Add_From  --
    ----------------
 
-   procedure Add_From (ES        : in out Email_Structure;
-                       Address   : in     String;
-                       Name      : in     String := "";
-                       Charset   : in     Character_Set := ISO_8859_1)
+   procedure Add_From
+     (ES        : in out Email_Structure;
+      Address   : in     String;
+      Name      : in     String := "";
+      Charset   : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
 
       New_From : Email_Data;
 
@@ -78,12 +84,15 @@ package body Simple_Email is
    --  Add_Recipient  --
    ---------------------
 
-   procedure Add_Recipient (ES       : in out Email_Structure;
-                            Address  : in     String;
-                            Name     : in     String := "";
-                            Kind     : in     Recipient_Kind := To;
-                            Charset  : in     Character_Set := ISO_8859_1)
+   procedure Add_Recipient
+     (ES       : in out Email_Structure;
+      Address  : in     String;
+      Name     : in     String := "";
+      Kind     : in     Recipient_Kind := To;
+      Charset  : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
 
       New_Recipient : Email_Data;
 
@@ -108,11 +117,14 @@ package body Simple_Email is
    --  Add_Reply_To  --
    --------------------
 
-   procedure Add_Reply_To (ES       : in out Email_Structure;
-                           Address  : in     String;
-                           Name     : in     String := "";
-                           Charset  : in     Character_Set := ISO_8859_1)
+   procedure Add_Reply_To
+     (ES       : in out Email_Structure;
+      Address  : in     String;
+      Name     : in     String := "";
+      Charset  : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
 
       New_Reply_To : Email_Data;
 
@@ -129,10 +141,13 @@ package body Simple_Email is
    --  Add_SMTP_Server  --
    -----------------------
 
-   procedure Add_SMTP_Server (ES    : in out Email_Structure;
-                              Host  : in     String;
-                              Port  : in     Positive := 25)
+   procedure Add_SMTP_Server
+     (ES    : in out Email_Structure;
+      Host  : in     String;
+      Port  : in     Positive := 25)
    is
+
+      use Utilities;
 
       New_SMTP : SMTP_Server;
 
@@ -148,7 +163,9 @@ package body Simple_Email is
    --  Is_Send  --
    ---------------
 
-   function Is_Send (ES : in Email_Structure) return Boolean
+   function Is_Send
+     (ES : in Email_Structure)
+      return Boolean
    is
    begin
 
@@ -160,7 +177,8 @@ package body Simple_Email is
    --  Send  --
    ------------
 
-   procedure Send (ES : in out Email_Structure)
+   procedure Send
+     (ES : in out Email_Structure)
    is
 
       --  use Ada.Text_IO;
@@ -290,6 +308,9 @@ package body Simple_Email is
       Part       : in     String;
       Charset    : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
+
    begin
 
       ES.HTML_Part.Content := TUS (Part);
@@ -303,11 +324,15 @@ package body Simple_Email is
    --  Set_Sender  --
    ------------------
 
-   procedure Set_Sender (ES         : in out Email_Structure;
-                         Address    : in     String;
-                         Name       : in     String := "";
-                         Charset    : in     Character_Set := ISO_8859_1)
+   procedure Set_Sender
+     (ES         : in out Email_Structure;
+      Address    : in     String;
+      Name       : in     String := "";
+      Charset    : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
+
    begin
 
       ES.Sender.Address := TUS (Address);
@@ -320,10 +345,14 @@ package body Simple_Email is
    --  Set_Subject  --
    -------------------
 
-   procedure Set_Subject (ES        : in out Email_Structure;
-                          Subject   : in     String;
-                          Charset   : in     Character_Set := ISO_8859_1)
+   procedure Set_Subject
+     (ES        : in out Email_Structure;
+      Subject   : in     String;
+      Charset   : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
+
    begin
 
       ES.Subject.Content := TUS (Subject);
@@ -340,6 +369,9 @@ package body Simple_Email is
       Part       : in     String;
       Charset    : in     Character_Set := ISO_8859_1)
    is
+
+      use Utilities;
+
    begin
 
       ES.Text_Part.Content := TUS (Part);
@@ -353,7 +385,8 @@ package body Simple_Email is
    --  Set_Type_Of_Email  --
    -------------------------
 
-   procedure Set_Type_Of_Email (ES : in out Email_Structure)
+   procedure Set_Type_Of_Email
+     (ES : in out Email_Structure)
    is
    begin
 
@@ -381,7 +414,9 @@ package body Simple_Email is
    --  Status_Code  --
    -------------------
 
-   function Status_Code (ES : in Email_Structure) return Positive
+   function Status_Code
+     (ES : in Email_Structure)
+      return Positive
    is
    begin
 
@@ -393,7 +428,9 @@ package body Simple_Email is
    --  Status_Message  --
    ----------------------
 
-   function Status_Message (ES : in Email_Structure) return String
+   function Status_Message
+     (ES : in Email_Structure)
+      return String
    is
    begin
 
@@ -405,10 +442,14 @@ package body Simple_Email is
    --  To_Virtual_File  --
    -----------------------
 
-   function To_Virtual_File (Item : in Attachment_Data) return Virtual_File
+   function To_Virtual_File
+     (Item : in Attachment_Data)
+      return Virtual_File
    is
 
       use Ada.Directories;
+      use Utilities;
+
       Path_To_File : constant String := TS (Item.Path_To_File);
 
    begin

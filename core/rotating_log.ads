@@ -63,8 +63,9 @@ package Rotating_Log is
    --    value defined and a valid GNATCOLL_Traces_Ini_File value.
    --    See comments for Register_Rotating_Log_Stream for more info.
 
-   procedure Track (Handle       : in Trace_Handles;
-                    Log_String   : in String);
+   procedure Track
+     (Handle       : in Trace_Handles;
+      Log_String   : in String);
    --  Add Log_String to Handle.
    --  Exception:
    --    Cannot_Write_To_Log_File
@@ -96,7 +97,8 @@ private
       procedure Set_File_Access;
       --  Allocate a new Ada.Text_IO.File_Type.
 
-      procedure Set_Size (Length : Natural);
+      procedure Set_Size
+        (Length : Natural);
       --  Add Length to Log_Object.Size. We use this to decide when to cycle
       --  the logfiles. If Size > Max_Logged_Characters, then we cycle to the
       --  next slot.
@@ -105,7 +107,8 @@ private
       --  will probably not be off by much.
       --  Max_Logged_Characters is defined in configuration/config.ini.
 
-      procedure Write_To (Log_String : in String);
+      procedure Write_To
+        (Log_String : in String);
       --  Write Log_String to file.
 
    private
@@ -149,16 +152,19 @@ private
    type Access_Rotating_Log_Record is access all Rotating_Log_Record;
 
    overriding
-   function New_Stream (Fact : Factory; Args : String)
-                        return GNATCOLL.Traces.Trace_Stream;
+   function New_Stream
+     (Fact : Factory; Args : String)
+      return GNATCOLL.Traces.Trace_Stream;
    --  Create a rotating log stream
 
    overriding
-   procedure Newline (Stream : in out Rotating_Log_Record);
+   procedure Newline
+     (Stream : in out Rotating_Log_Record);
    --  Write the Rotating_Log_Record.Buffer to Rotating_Log_Record.Handle.
 
    overriding
-   procedure Put (Stream : in out Rotating_Log_Record; Log_String : String);
+   procedure Put
+     (Stream : in out Rotating_Log_Record; Log_String : String);
    --  Add Log_String to Rotating_Log_Record.Buffer.
 
    procedure Register_Rotating_Log_Stream;
@@ -167,12 +173,16 @@ private
    --  See the configuration/GNATCOLL.SQL.Logs.ini file for more information.
 
    overriding
-   function Supports_Color (Stream : Rotating_Log_Record) return Boolean;
+   function Supports_Color
+     (Stream : Rotating_Log_Record)
+      return Boolean;
    --  Does the stream support color output? For this specific package, no.
    --  Always return False.
 
    overriding
-   function Supports_Time  (Stream : Rotating_Log_Record) return Boolean;
+   function Supports_Time
+     (Stream : Rotating_Log_Record)
+      return Boolean;
    --  Should we output time? No. Time is set in the Track procedure. Always
    --  return False.
 

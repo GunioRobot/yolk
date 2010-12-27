@@ -43,14 +43,14 @@ package My_Configuration is
    type Defaults_Array is array (Keys) of
      Ada.Strings.Unbounded.Unbounded_String;
 
-   Defaults : Defaults_Array :=
-                (DB_Host        => TUS ("freja.serverbox.dk"),
-                 DB_Name        => TUS ("12boo"),
-                 DB_User        => TUS ("thomas"),
-                 DB_Password    => TUS ("respsltl16117994"),
-                 Handler_Index  => TUS ("/|/[Ii]ndex"),
-                 SMTP           => TUS ("freja.serverbox.dk"),
-                 Template_Index => TUS ("templates/website/index.tmpl"));
+   Default_Values : constant Defaults_Array :=
+                      (DB_Host        => TUS ("freja.serverbox.dk"),
+                       DB_Name        => TUS ("12boo"),
+                       DB_User        => TUS ("thomas"),
+                       DB_Password    => TUS ("respsltl16117994"),
+                       Handler_Index  => TUS ("/|/[Ii]ndex"),
+                       SMTP           => TUS ("freja.serverbox.dk"),
+                       Template_Index => TUS ("templates/website/index.tmpl"));
    --  Default values for the configuration Keys. These values can be over-
    --  written by the configuration file given when instantiating the
    --  Config_File_Parser generic.
@@ -58,7 +58,7 @@ package My_Configuration is
    package Config is new Config_File_Parser
      (Keys => Keys,
       Defaults_Array => Defaults_Array,
-      Defaults => Defaults,
+      Default_Values => Default_Values,
       Config_File => "configuration/my_config.ini");
 
 end My_Configuration;

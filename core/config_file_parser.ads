@@ -25,7 +25,7 @@
 --  The format is:
 --       KEY VALUE
 --
---  Comments are prefixed with a # or a --:
+--  Comments are prefixed with a # or a --
 --
 --  # This is a comment
 --  -- This is also a comment
@@ -64,8 +64,8 @@ generic
    type Keys is (<>);
    type Defaults_Array is array (Keys) of
      Ada.Strings.Unbounded.Unbounded_String;
-   Defaults : in out Defaults_Array;
-   Config_File : in String;
+   Default_Values : in Defaults_Array;
+   Config_File    : in String;
 
 package Config_File_Parser is
 
@@ -79,20 +79,35 @@ package Config_File_Parser is
    Empty_Key               : exception;
    --  Is raised when a key with the element Null_Unbounded_String is called.
 
-   function Get (Key : in Keys) return Boolean;
-   function Get (Key : in Keys) return Duration;
-   function Get (Key : in Keys) return Float;
-   function Get (Key : in Keys) return Integer;
-   function Get (Key : in Keys) return String;
-   function Get (Key : in Keys) return Ada.Strings.Unbounded.Unbounded_String;
+   function Get
+     (Key : in Keys)
+      return Boolean;
+   function Get
+     (Key : in Keys)
+      return Duration;
+   function Get
+     (Key : in Keys)
+      return Float;
+   function Get
+     (Key : in Keys)
+      return Integer;
+   function Get
+     (Key : in Keys)
+      return String;
+   function Get
+     (Key : in Keys)
+      return Ada.Strings.Unbounded.Unbounded_String;
    --  Get the VALUE for Key and convert it to target type.
    --  Exceptions:
    --    Conversion_Error
 
-   function Has_Value (Key : in Keys) return Boolean;
+   function Has_Value
+     (Key : in Keys)
+      return Boolean;
    --  Return True if Key is not a Null_Unbounded_String.
 
-   procedure Load_File (Config_File : in String);
+   procedure Load_File
+     (Config_File : in String);
    --  Load the config file Config_File. This can be done over and over as many
    --  times as necessary. The values from the latest file overwrites the
    --  previous values.
@@ -102,7 +117,14 @@ package Config_File_Parser is
 
 private
 
-   function Check_And_Convert (Key : in Keys) return String;
+   Defaults : Defaults_Array := Default_Values;
+   --  Copy of the Default_Values array supplied when this generic was
+   --  instantiated. We do this to avoid overwriting the original
+   --  Defaults_Array with the values found in Config_File.
+
+   function Check_And_Convert
+     (Key : in Keys)
+      return String;
    --  Check if Key contains Null_Unbounded_String. If so, then raise the
    --  Empty_Key exception.
    --  This function is used when a Key must be converted to a numeric.

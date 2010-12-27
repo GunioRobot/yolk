@@ -28,17 +28,19 @@ with GNATCOLL.SQL.Exec;
 
 package Connect_To_DB is
 
-   type Credentials (Host_Length     : Positive;
-                     Database_Length : Positive;
-                     User_Length     : Positive;
-                     Password_Length : Positive) is private;
+   type Credentials
+     (Host_Length     : Positive;
+      Database_Length : Positive;
+      User_Length     : Positive;
+      Password_Length : Positive) is private;
 
-   function Set_Credentials (Host          : in String;
-                             Database      : in String;
-                             User          : in String;
-                             Password      : in String;
-                             Server_Config : in AWS.Config.Object)
-                             return Credentials;
+   function Set_Credentials
+     (Host          : in String;
+      Database      : in String;
+      User          : in String;
+      Password      : in String;
+      Server_Config : in AWS.Config.Object)
+      return Credentials;
    --  Define the credentials necessary to connect to the database. The actual
    --  DBMS used is decided when the relevant generic child package is
    --  instantiated, for example like this:
@@ -54,8 +56,9 @@ package Connect_To_DB is
 private
 
    task type DB_Conn is
-      entry Fetch (Conn : out GNATCOLL.SQL.Exec.Database_Connection;
-                   Desc : in GNATCOLL.SQL.Exec.Database_Description);
+      entry Fetch
+        (Conn : out GNATCOLL.SQL.Exec.Database_Connection;
+         Desc : in GNATCOLL.SQL.Exec.Database_Description);
    end DB_Conn;
    --  Here we fetch a thread specific database connection. If a connection
    --  has not yet been made for the calling thread, a new one is established
@@ -83,12 +86,14 @@ private
    --  Return a GNATCOLL.SQL.Exec.Database_Connection object. This function
    --  is called whenever a task is missing a dedicated database connection.
 
-   function Equivalent_Tasks (Left, Right : in Ada.Task_Identification.Task_Id)
-                              return Boolean;
+   function Equivalent_Tasks
+     (Left, Right : in Ada.Task_Identification.Task_Id)
+      return Boolean;
    --  Equivalence function used by the Task_Assocition_Map hashed map.
 
-   function Task_ID_Hash (ID : in Ada.Task_Identification.Task_Id)
-                          return Ada.Containers.Hash_Type;
+   function Task_ID_Hash
+     (ID : in Ada.Task_Identification.Task_Id)
+      return Ada.Containers.Hash_Type;
    --  Hash function used by the Task_Association_Map hashed map.
 
    package Task_Association_Map is new Ada.Containers.Hashed_Maps
@@ -102,12 +107,14 @@ private
 
    protected type Protected_Association_Map is
 
-      function Get (AWS_Task_ID : in Ada.Task_Identification.Task_Id)
-                    return DB_Conn_Access;
+      function Get
+        (AWS_Task_ID : in Ada.Task_Identification.Task_Id)
+         return DB_Conn_Access;
       --  Return the DB_Conn_Access object that matches the AWS_Task_ID.
 
-      procedure Set (DB_Task     : out DB_Conn_Access;
-                     AWS_Task_ID : in Ada.Task_Identification.Task_Id);
+      procedure Set
+        (DB_Task     : out DB_Conn_Access;
+         AWS_Task_ID : in Ada.Task_Identification.Task_Id);
       --  Add a new AWS_Task_ID to the Task_Association_Map. This also entails
       --  starting a new DB_Conn task, and adding access to this to Task_Store.
 

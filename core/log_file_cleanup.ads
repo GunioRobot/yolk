@@ -29,11 +29,12 @@ with AWS.Server;
 
 package Log_File_Cleanup is
 
-   procedure Clean_Up (Config_Object           : in AWS.Config.Object;
-                       Web_Server              : in AWS.Server.HTTP;
-                       Amount_Of_Files_To_Keep : in Positive);
-   --  Search and delete old and excess logfiles in the Log_File_Directory
-   --  defined in aws.ini.
+   procedure Clean_Up
+     (Config_Object           : in AWS.Config.Object;
+      Web_Server              : in AWS.Server.HTTP;
+      Amount_Of_Files_To_Keep : in Positive);
+   --  Search for and delete old and excess logfiles in the Log_File_Directory
+   --  defined in the server configuration file.
 
 private
 
@@ -43,7 +44,9 @@ private
          Mod_Time    : Ada.Calendar.Time;
       end record;
 
-   function "<" (Left, Right : in File_Info) return Boolean;
+   function "<"
+     (Left, Right : in File_Info)
+      return Boolean;
    --  Used by the Ordered_File_Set package to order the File_Info elements.
 
    package Ordered_File_Set is new Ada.Containers.Ordered_Sets (File_Info);

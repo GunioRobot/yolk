@@ -30,7 +30,8 @@ package body My_Handlers is
    --  Set  --
    -----------
 
-   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler)
+   procedure Set
+     (RH : out AWS.Services.Dispatchers.URI.Handler)
    is
 
       package My renames My_Configuration;

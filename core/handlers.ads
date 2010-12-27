@@ -21,15 +21,16 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  In this package we define the content/resource handlers for static content.
+--  In this package we define the core content/resource handlers.
 --  Content not handled in this package should be added to the
---  my_handlers/my_handlers.ad[sb] package.
+--  My_Handlers package.
 
 with AWS.Services.Dispatchers.URI;
 
 package Handlers is
 
-   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler);
+   procedure Set
+     (RH : out AWS.Services.Dispatchers.URI.Handler);
    --  The Handlers package define a set of default handlers for static content
    --  such as HTML, images and ICO files.
    --  The My_Handlers package define application specific handlers, so it is

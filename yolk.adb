@@ -45,29 +45,24 @@ is
    --  The main webserver object.
 
    Web_Server_Config : constant AWS.Config.Object := Get_AWS_Configuration;
-   --  Set the AWS config object.
+   --  Set the AWS configuration object.
    --  All AWS related configuration parameters can be found in the
    --  configuration/config.ini file. They are marked with:
    --    Used by AWS: Yes
-
-   procedure Start_Server;
-   --  Start the AWS server. A short message is written to the Info trace
-   --  whenever the server is started.
-
-   procedure Stop_Server;
-   --  Stop the AWS server. A short message is written to the Info trace
-   --  whenever the server is stopped.
 
    task Log_File_Monitor is
       entry Start;
       entry Stop;
    end Log_File_Monitor;
-   --  This task monitor the aws.ini Log_File_Directory and deletes excess
-   --  log files.
+   --  This task monitor the Log_File_Directory and deletes excess log files.
 
    --------------------
    --  Start_Server  --
    --------------------
+
+   procedure Start_Server;
+   --  Start the AWS server. A short message is written to the Info trace
+   --  whenever the server is started.
 
    procedure Start_Server
    is
@@ -80,26 +75,22 @@ is
         and then Exists (Config.Get (Session_Data_File))
       then
          AWS.Session.Load (Config.Get (Session_Data_File));
+         --  If sessions are enabled and the Session_Data_File exists, then
+         --  load the old sessions data.
       end if;
-      --  Load the old sessions data, if sessions are enabled and the
-      --  Session_Data_File exists.
 
       AWS.Server.Start (Web_Server => Web_Server,
                         Dispatcher => Resource_Handlers,
                         Config     => Web_Server_Config);
       --  Unfortunately we have to start the server BEFORE we start the logs.
-      --  If we start the logs first, then they aren't written to the
-      --  Log_File_Directory parameter set in the configuration file, but
-      --  instead they are written to the same directory as where the
-      --  executable is.
+      --  If we start the logs first, then the log files aren't created in the
+      --  Log_File_Directory directory, but instead they are created in the
+      --  same directory as where the executable is.
 
       AWS.Server.Log.Start (Web_Server => Web_Server,
                             Auto_Flush => Config.Get (Immediate_Flush));
       AWS.Server.Log.Start_Error (Web_Server);
       --  Start the access and error log.
-      --  Set Auto_Flush to True if you want access data to be written to file
-      --  instantly. Doing to incurs a performance hit if the server is very
-      --  busy.
 
       Track (Handle     => Info,
              Log_String => "Started " &
@@ -111,20 +102,23 @@ is
    --  Stop_Server  --
    -------------------
 
+   procedure Stop_Server;
+   --  Stop the AWS server. A short message is written to the Info trace
+   --  whenever the server is stopped.
+
    procedure Stop_Server
    is
    begin
 
       if AWS.Config.Session (Web_Server_Config) then
          AWS.Session.Save (Config.Get (Session_Data_File));
+         --  If sessions are enabled, then save the sessions data to the
+         --  Session_Data_File.
       end if;
-      --  Save the sessions data to the Session_Data_File, if sessions are
-      --  enabled.
 
       AWS.Server.Shutdown (Web_Server);
 
       AWS.Server.Log.Stop (Web_Server);
-
       AWS.Server.Log.Stop_Error (Web_Server);
 
       Track (Handle     => Info,
@@ -143,15 +137,12 @@ is
       use AWS.Config;
       use Log_File_Cleanup;
 
+      Exit_Loop   : Boolean := False;
       Files_To_Keep : constant Positive
         := Config.Get (Amount_Of_Log_Files_To_Keep);
       --  How many log files to keep. If more than this amount is found, then
       --  delete the oldest.
-
-      Exit_Loop   : Boolean := False;
-
       Good_To_Go  : Boolean := False;
-
       Interval    : constant Duration
         := Config.Get (Log_File_Cleanup_Interval);
       --  How often do we check for excess/old logfiles?
@@ -168,6 +159,10 @@ is
 
                Track (Handle     => Info,
                       Log_String => "Logfile monitor started.");
+
+               Clean_Up (Config_Object             => Web_Server_Config,
+                         Web_Server                => Web_Server,
+                         Amount_Of_Files_To_Keep   => Files_To_Keep);
             end Start;
          or
             accept Stop do

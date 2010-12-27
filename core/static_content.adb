@@ -32,7 +32,9 @@ package body Static_Content is
    --  CSS  --
    -----------
 
-   function CSS (Request : in AWS.Status.Data) return AWS.Response.Data
+   function CSS
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -56,7 +58,9 @@ package body Static_Content is
    --  GIF  --
    -----------
 
-   function GIF (Request : in AWS.Status.Data) return AWS.Response.Data
+   function GIF
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -80,7 +84,9 @@ package body Static_Content is
    --  HTML  --
    ------------
 
-   function HTML (Request : in AWS.Status.Data) return AWS.Response.Data
+   function HTML
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -104,7 +110,9 @@ package body Static_Content is
    --  ICO  --
    -----------
 
-   function ICO (Request : in AWS.Status.Data) return AWS.Response.Data
+   function ICO
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -128,7 +136,9 @@ package body Static_Content is
    --  JPG  --
    -----------
 
-   function JPG (Request : in AWS.Status.Data) return AWS.Response.Data
+   function JPG
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -152,7 +162,9 @@ package body Static_Content is
    --  JS  --
    ----------
 
-   function JS (Request : in AWS.Status.Data) return AWS.Response.Data
+   function JS
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -176,7 +188,9 @@ package body Static_Content is
    --  PNG  --
    -----------
 
-   function PNG (Request : in AWS.Status.Data) return AWS.Response.Data
+   function PNG
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -200,7 +214,9 @@ package body Static_Content is
    --  XML  --
    -----------
 
-   function XML (Request : in AWS.Status.Data) return AWS.Response.Data
+   function XML
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;
@@ -224,7 +240,9 @@ package body Static_Content is
    --  XSL  --
    -----------
 
-   function XSL (Request : in AWS.Status.Data) return AWS.Response.Data
+   function XSL
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use Ada.Directories;

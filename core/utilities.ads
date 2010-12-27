@@ -25,9 +25,19 @@ with Ada.Strings.Unbounded;
 
 package Utilities is
 
-   function TUS (S : String) return Ada.Strings.Unbounded.Unbounded_String
-                 renames Ada.Strings.Unbounded.To_Unbounded_String;
+   function TS
+     (US : in Ada.Strings.Unbounded.Unbounded_String)
+      return String
+      renames Ada.Strings.Unbounded.To_String;
 
-   function Is_Empty (S : in String) return Boolean;
+   function TUS
+     (S : in String)
+      return Ada.Strings.Unbounded.Unbounded_String
+      renames Ada.Strings.Unbounded.To_Unbounded_String;
+
+   function Is_Empty
+     (S : in String)
+      return Boolean;
+   --  Return True if a trimmed string is empty.
 
 end Utilities;

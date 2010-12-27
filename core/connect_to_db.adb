@@ -106,8 +106,9 @@ package body Connect_To_DB is
       --  Get  --
       -----------
 
-      function Get (AWS_Task_ID : in Ada.Task_Identification.Task_Id)
-                    return DB_Conn_Access
+      function Get
+        (AWS_Task_ID : in Ada.Task_Identification.Task_Id)
+         return DB_Conn_Access
       is
       begin
 
@@ -123,8 +124,9 @@ package body Connect_To_DB is
       --  Set  --
       -----------
 
-      procedure Set (DB_Task     : out DB_Conn_Access;
-                     AWS_Task_ID : in Ada.Task_Identification.Task_Id)
+      procedure Set
+        (DB_Task     : out DB_Conn_Access;
+         AWS_Task_ID : in Ada.Task_Identification.Task_Id)
       is
       begin
 
@@ -142,12 +144,13 @@ package body Connect_To_DB is
    --  Set_Credentials  --
    -----------------------
 
-   function Set_Credentials (Host          : in String;
-                             Database      : in String;
-                             User          : in String;
-                             Password      : in String;
-                             Server_Config : in AWS.Config.Object)
-                             return Credentials
+   function Set_Credentials
+     (Host          : in String;
+      Database      : in String;
+      User          : in String;
+      Password      : in String;
+      Server_Config : in AWS.Config.Object)
+      return Credentials
    is
 
       C : Credentials (Host_Length     => Host'Length,
@@ -171,8 +174,9 @@ package body Connect_To_DB is
    --  Task_ID_Hash  --
    --------------------
 
-   function Task_ID_Hash (ID : in Ada.Task_Identification.Task_Id)
-                          return Ada.Containers.Hash_Type
+   function Task_ID_Hash
+     (ID : in Ada.Task_Identification.Task_Id)
+      return Ada.Containers.Hash_Type
    is
 
       use Ada.Strings;

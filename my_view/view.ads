@@ -49,9 +49,10 @@ private
          Password      => My.Config.Get (My.DB_Password),
          Server_Config => AWS.Config.Get_Current));
 
-   function Build_Response (Template_File : in String;
-                            Translations  : in AWS.Templates.Translate_Set)
-                            return AWS.Response.Data;
+   function Build_Response
+     (Template_File : in String;
+      Translations  : in AWS.Templates.Translate_Set)
+      return AWS.Response.Data;
    --  Build the resource response.
    --  This is a convenience function that gets rid of a few with clauses in
    --  the files for the individual resources. Also since we need to create the

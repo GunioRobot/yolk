@@ -29,9 +29,10 @@ package body View is
    --  Build_Response  --
    ----------------------
 
-   function Build_Response (Template_File : in String;
-                            Translations  : in AWS.Templates.Translate_Set)
-                            return AWS.Response.Data
+   function Build_Response
+     (Template_File : in String;
+      Translations  : in AWS.Templates.Translate_Set)
+      return AWS.Response.Data
    is
 
       use AWS.Templates;

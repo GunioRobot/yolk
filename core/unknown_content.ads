@@ -21,15 +21,16 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  This is the handler for unknown content. It simply calls the
---  Not_Found.Output function whenever a resource is requested for which there
---  is no handler.
-
 with AWS.Response;
 with AWS.Status;
 
 package Unknown_Content is
 
-   function Generate (Request : in AWS.Status.Data) return AWS.Response.Data;
+   function Generate
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data;
+   --  This is the handler for unknown content. It simply calls the
+   --  Not_Found.Output function whenever a resource is requested for which
+   --  there is no handler.
 
 end Unknown_Content;

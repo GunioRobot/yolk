@@ -32,7 +32,8 @@ package body Handlers is
    --  Set  --
    -----------
 
-   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler)
+   procedure Set
+     (RH : out AWS.Services.Dispatchers.URI.Handler)
    is
 
       use Configuration;
@@ -42,7 +43,7 @@ package body Handlers is
       My_Handlers.Set (RH => RH);
       --  Start by setting the application specific handlers. Resources are
       --  matched on a "first hit" basis, so the application specific resource
-      --  handlers should be set prior to the more general static content
+      --  handlers should be set prior to the more general core content
       --  handlers below.
 
       AWS.Services.Dispatchers.URI.Register_Regexp

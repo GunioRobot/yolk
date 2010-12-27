@@ -31,7 +31,9 @@ with AWS.Status;
 
 package Not_Found is
 
-   function Output (Request : in AWS.Status.Data) return AWS.Response.Data;
+   function Output
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data;
    --  Outputs a generic 404 not found HTML.
 
 end Not_Found;

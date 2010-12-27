@@ -25,7 +25,8 @@ with AWS.Services.Dispatchers.URI;
 
 package My_Handlers is
 
-   procedure Set (RH : in out AWS.Services.Dispatchers.URI.Handler);
+   procedure Set
+     (RH : out AWS.Services.Dispatchers.URI.Handler);
    --  Setup content dispatchers for the server. Basically this initializes the
    --  Resource_Handlers object declared in yold.adb. The handlers registered
    --  here are specific to this application. Generic content handlers, such as

@@ -32,7 +32,9 @@ package body Config_File_Parser is
    --  Check_And_Convert  --
    -------------------------
 
-   function Check_And_Convert (Key : in Keys) return String
+   function Check_And_Convert
+     (Key : in Keys)
+      return String
    is
 
       use Ada.Strings.Unbounded;
@@ -51,7 +53,9 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Boolean
+   function Get
+     (Key : in Keys)
+      return Boolean
    is
    begin
 
@@ -67,7 +71,9 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Duration
+   function Get
+     (Key : in Keys)
+      return Duration
    is
    begin
 
@@ -83,7 +89,9 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Float
+   function Get
+     (Key : in Keys)
+      return Float
    is
    begin
 
@@ -99,7 +107,9 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return Integer
+   function Get
+     (Key : in Keys)
+      return Integer
    is
    begin
 
@@ -115,7 +125,9 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys) return String
+   function Get
+     (Key : in Keys)
+      return String
    is
 
       use Ada.Strings.Unbounded;
@@ -130,8 +142,9 @@ package body Config_File_Parser is
    --  Get  --
    -----------
 
-   function Get (Key : in Keys)
-                 return Ada.Strings.Unbounded.Unbounded_String
+   function Get
+     (Key : in Keys)
+      return Ada.Strings.Unbounded.Unbounded_String
    is
    begin
 
@@ -143,7 +156,9 @@ package body Config_File_Parser is
    --  Has_Value  --
    -----------------
 
-   function Has_Value (Key : in Keys) return Boolean
+   function Has_Value
+     (Key : in Keys)
+      return Boolean
    is
 
       use Ada.Strings.Unbounded;
@@ -158,22 +173,29 @@ package body Config_File_Parser is
    --  Load_File  --
    -----------------
 
-   procedure Load_File (Config_File : in String)
+   procedure Load_File
+     (Config_File : in String)
    is
 
       use Ada.Strings;
       use Ada.Strings.Unbounded;
       use Ada.Text_IO;
 
-      function Key_String (Line : in String) return String;
-      function Value_UString (Key   : in String;
-                              Line  : in String) return Unbounded_String;
+      File : File_Type;
 
-      ------------------
-      --  Key_String  --
-      ------------------
+      ---------------
+      --  Get_Key  --
+      ---------------
 
-      function Key_String (Line : in String) return String
+      function Get_Key
+        (Line : in String)
+         return String;
+      --  Find and return the Key part of the Line string. If no Key part is
+      --  found, then return an empty string.
+
+      function Get_Key
+        (Line : in String)
+         return String
       is
 
          Key_End : Natural;
@@ -191,26 +213,67 @@ package body Config_File_Parser is
 
          return Line;
 
-      end Key_String;
+      end Get_Key;
 
-      ---------------------
-      --  Value_UString  --
-      ---------------------
+      -----------------
+      --  Get_Value  --
+      -----------------
 
-      function Value_UString (Key   : in String;
-                              Line  : in String) return Unbounded_String
+      function Get_Value
+        (Key   : in String;
+         Line  : in String)
+         return Unbounded_String;
+      --  Find and return the value part of Line as an Unbounded_String. If no
+      --  Value part is found, return Null_Unbounded_String.
+
+      function Get_Value
+        (Key   : in String;
+         Line  : in String)
+         return Unbounded_String
       is
       begin
 
-         if Line /= "" and then Key /= Line then
+         if Key /= Line then
             return To_Unbounded_String (Line (Key'Last + 2 .. Line'Last));
          end if;
 
          return Null_Unbounded_String;
 
-      end Value_UString;
+      end Get_Value;
 
-      File : File_Type;
+      -------------------------------
+      --  Is_Not_Empty_Or_Comment  --
+      -------------------------------
+
+      function Is_Not_Empty_Or_Comment
+        (Line : in String)
+         return Boolean;
+      --  Return True if Line contains an actual Key/Value pair, and not just
+      --  an empty line or a comment.
+
+      function Is_Not_Empty_Or_Comment
+        (Line : in String)
+         return Boolean
+      is
+      begin
+
+         if Line'Length = 0 then
+            return False;
+         end if;
+
+         if  Line (Line'First .. Line'First) = "#" then
+            return False;
+         end if;
+
+         if Line'Length > 1
+           and then Line (Line'First .. Line'First + 1) = "--"
+         then
+            return False;
+         end if;
+
+         return True;
+
+      end Is_Not_Empty_Or_Comment;
 
    begin
 
@@ -221,27 +284,28 @@ package body Config_File_Parser is
       while not End_Of_File (File => File) loop
          declare
 
-            Line     : constant String := Fixed.Trim (Get_Line (File), Both);
-            Key      : constant String := Key_String (Line);
-            Value    : constant Unbounded_String := Value_UString (Key, Line);
+            Line  : constant String := Fixed.Trim (Get_Line (File), Both);
 
          begin
 
-            --  Ignore empty lines and comments.
-            if Line /= ""
-              and then Line (1 .. 1) /= "#"
-              and then Line (1 .. 2) /= "--" then
-               --  Note that if a valid key is found in the file, and it has no
-               --  value set, then the default value is overwritten with
-               --  Null_Unbounded_String.
-               Defaults (Keys'Value (Key)) := Trim (Value, Left);
-            end if;
+            if Is_Not_Empty_Or_Comment (Line) then
+               declare
 
-         exception
-            when Constraint_Error =>
-               raise Unknown_Key with
-                 "Unknown configuration key '" & Key & "' in file "
-                   & Config_File;
+                  Key   : constant String := Get_Key (Line);
+                  Value : constant Unbounded_String := Get_Value (Key, Line);
+
+               begin
+
+                  Defaults (Keys'Value (Key)) := Value;
+
+               exception
+                  when Constraint_Error =>
+                     raise Unknown_Key with
+                       "Unknown configuration key '" & Key & "' in file "
+                         & Config_File;
+
+               end;
+            end if;
 
          end;
       end loop;

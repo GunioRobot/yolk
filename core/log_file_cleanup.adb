@@ -32,7 +32,9 @@ package body Log_File_Cleanup is
    --  <  --
    ---------
 
-   function "<" (Left, Right : in File_Info) return Boolean
+   function "<"
+     (Left, Right : in File_Info)
+      return Boolean
    is
 
       use Ada.Calendar;
@@ -44,10 +46,10 @@ package body Log_File_Cleanup is
          --  Put the newest files at the top of the set.
       else
          return True;
-         --  Modification time is the same for both files. Just return True
+         --  If modification time is the same for both files, just return True
          --  and let Left be < then right. The only log files that will have
          --  matching modification time are the two currently running AWS
-         --  log files.
+         --  log files. I hope.
       end if;
 
    end "<";
@@ -56,9 +58,10 @@ package body Log_File_Cleanup is
    --  Clean_Up  --
    ----------------
 
-   procedure Clean_Up (Config_Object            : in AWS.Config.Object;
-                       Web_Server               : in AWS.Server.HTTP;
-                       Amount_Of_Files_To_Keep  : in Positive)
+   procedure Clean_Up
+     (Config_Object            : in AWS.Config.Object;
+      Web_Server               : in AWS.Server.HTTP;
+      Amount_Of_Files_To_Keep  : in Positive)
    is
 
       use Ada.Containers;
@@ -73,11 +76,13 @@ package body Log_File_Cleanup is
       --  Add_File_To_Set  --
       -----------------------
 
-      procedure Add_File_To_Set (Search_Item : in Directory_Entry_Type);
+      procedure Add_File_To_Set
+        (Search_Item : in Directory_Entry_Type);
       --  Add found files to the File_Set container. This procedure is called
       --  by the Ada.Directories.Search procedure in Do_It.
 
-      procedure Add_File_To_Set (Search_Item : in Directory_Entry_Type)
+      procedure Add_File_To_Set
+        (Search_Item : in Directory_Entry_Type)
       is
 
          use Ada.Calendar;
@@ -110,15 +115,17 @@ package body Log_File_Cleanup is
       --  Do_It  --
       -------------
 
-      procedure Do_It (Prefix : in String;
-                       Kind   : in String);
+      procedure Do_It
+        (Prefix : in String;
+         Kind   : in String);
       --  Find and delete logfiles.
       --  A search is done in the directory where the logfiles are kept, and if
       --  more than Amount_Of_Files_To_Keep logfiles are found, then delete the
       --  oldest.
 
-      procedure Do_It (Prefix : in String;
-                       Kind   : in String)
+      procedure Do_It
+        (Prefix : in String;
+         Kind   : in String)
       is
 
          use Ada.Strings.Unbounded;

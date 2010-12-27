@@ -29,7 +29,9 @@ package body Utilities is
    -- Is_Empty --
    --------------
 
-   function Is_Empty (S : in String) return Boolean
+   function Is_Empty
+     (S : in String)
+      return Boolean
    is
    begin
 

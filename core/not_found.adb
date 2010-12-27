@@ -34,7 +34,9 @@ package body Not_Found is
    --  Output  --
    --------------
 
-   function Output (Request : in AWS.Status.Data) return AWS.Response.Data
+   function Output
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
 
       use AWS.Templates;

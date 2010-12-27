@@ -65,10 +65,11 @@ package Simple_Email is
    --  encoded. At this point we do not check whether the file actually exists,
    --  so anything can be added, even an empty String Path_To_File.
 
-   procedure Add_From (ES        : in out Email_Structure;
-                       Address   : in     String;
-                       Name      : in     String := "";
-                       Charset   : in     Character_Set := ISO_8859_1);
+   procedure Add_From
+     (ES        : in out Email_Structure;
+      Address   : in     String;
+      Name      : in     String := "";
+      Charset   : in     Character_Set := ISO_8859_1);
    --  Add a From mailbox to the email. If multiple From mailboxes are added,
    --  then a subsequent call to Set_Sender is required, as per RFC 5322.
 
@@ -80,27 +81,32 @@ package Simple_Email is
       Charset    : in     Character_Set := ISO_8859_1);
    --  Add a recipient to the email.
 
-   procedure Add_Reply_To (ES       : in out Email_Structure;
-                           Address  : in     String;
-                           Name     : in     String := "";
-                           Charset  : in     Character_Set := ISO_8859_1);
+   procedure Add_Reply_To
+     (ES       : in out Email_Structure;
+      Address  : in     String;
+      Name     : in     String := "";
+      Charset  : in     Character_Set := ISO_8859_1);
    --  Reply-To indicates the address(es) to which the author of the message
    --  suggests that replies be sent. In the absence of Reply-To, the default
    --  is to send replies to the From mailboxes.
 
-   procedure Add_SMTP_Server (ES    : in out Email_Structure;
-                              Host  : in     String;
-                              Port  : in     Positive := 25);
+   procedure Add_SMTP_Server
+     (ES    : in out Email_Structure;
+      Host  : in     String;
+      Port  : in     Positive := 25);
    --  Set the SMTP servers to use when sending an email. The first server
    --  added is the first server tried. If the first server fails, then the
    --  system moves on to the next server, until it either runs out of SMTP
    --  servers to try, or it manages to send the email.
 
-   function Is_Send (ES : in Email_Structure) return Boolean;
+   function Is_Send
+     (ES : in Email_Structure)
+      return Boolean;
    --  Return True if the email has been successfully delivered to one of the
    --  set SMTP servers. False otherwise.
 
-   procedure Send (ES : in out Email_Structure);
+   procedure Send
+     (ES : in out Email_Structure);
    --  Process the ES object. This entails composing the email source and
    --  sending it via one of the set SMTP servers.
    --  Exceptions:
@@ -150,16 +156,18 @@ package Simple_Email is
    --  a multipart message. If no Text part is added, an empty one will be
    --  created automatically.
 
-   procedure Set_Sender (ES         : in out Email_Structure;
-                         Address    : in     String;
-                         Name       : in     String := "";
-                         Charset    : in     Character_Set := ISO_8859_1);
+   procedure Set_Sender
+     (ES         : in out Email_Structure;
+      Address    : in     String;
+      Name       : in     String := "";
+      Charset    : in     Character_Set := ISO_8859_1);
    --  If an email has multiple From addresses, then it is required, as per
    --  RFC 5322, to set a single Sender.
 
-   procedure Set_Subject (ES        : in out Email_Structure;
-                          Subject   : in     String;
-                          Charset   : in     Character_Set := ISO_8859_1);
+   procedure Set_Subject
+     (ES        : in out Email_Structure;
+      Subject   : in     String;
+      Charset   : in     Character_Set := ISO_8859_1);
    --  Add a Subject to the email.
 
    procedure Set_Text_Part
@@ -168,11 +176,15 @@ package Simple_Email is
       Charset    : in     Character_Set := ISO_8859_1);
    --  Add the Text part to an email.
 
-   function Status_Code (ES : in Email_Structure) return Positive;
+   function Status_Code
+     (ES : in Email_Structure)
+      return Positive;
    --  The SMTP status code. See AWS.SMTP.Reply_Code for the range of possible
    --  values.
 
-   function Status_Message (ES : in Email_Structure) return String;
+   function Status_Message
+     (ES : in Email_Structure)
+      return String;
    --  The SMTP error message if Is_Send is False.
 
 private
@@ -182,14 +194,11 @@ private
    --  use GNATCOLL.Email;
    use GNATCOLL.VFS;
 
-   function TS (US : Unbounded_String) return String renames To_String;
-   function TUS (S : String) return Unbounded_String
-                 renames To_Unbounded_String;
-
-   type Attachment_Data is record
-      Charset        : Character_Set;
-      Path_To_File   : Unbounded_String;
-   end record;
+   type Attachment_Data is
+      record
+         Charset        : Character_Set;
+         Path_To_File   : Unbounded_String;
+      end record;
 
    type Email_Data is record
       Address  : Unbounded_String;
@@ -202,10 +211,11 @@ private
                        Text_And_HTML,
                        Text_And_HTML_With_Attachment);
 
-   type SMTP_Server is record
-      Host : Unbounded_String;
-      Port : Positive;
-   end record;
+   type SMTP_Server is
+      record
+         Host : Unbounded_String;
+         Port : Positive;
+      end record;
 
    type Subject_Data is record
       Content : Unbounded_String;
@@ -295,10 +305,13 @@ private
    --    Type_Of_Email:
    --       The kind of email we're dealing with.
 
-   procedure Set_Type_Of_Email (ES : in out Email_Structure);
+   procedure Set_Type_Of_Email
+     (ES : in out Email_Structure);
    --  Figure out the kind of email ES is.
 
-   function To_Virtual_File (Item : in Attachment_Data) return Virtual_File;
+   function To_Virtual_File
+     (Item : in Attachment_Data)
+      return Virtual_File;
    --  Convert an Attachment_Data.Path_To_File to a GNATCOLL.VFS Virtual_File.
    --  Exceptions:
    --    Attachment_File_Not_Found

@@ -29,7 +29,9 @@ package body Unknown_Content is
    --  Generate  --
    ----------------
 
-   function Generate (Request : in AWS.Status.Data) return AWS.Response.Data
+   function Generate
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
    is
    begin
 

@@ -82,8 +82,10 @@ package body Rotating_Log is
    --  New_Stream  --
    ------------------
 
-   function New_Stream (Fact : in Factory;
-                        Args : in String) return GNATCOLL.Traces.Trace_Stream
+   function New_Stream
+     (Fact : in Factory;
+      Args : in String)
+      return GNATCOLL.Traces.Trace_Stream
    is
 
       use GNATCOLL.Traces;
@@ -104,7 +106,8 @@ package body Rotating_Log is
    --  Newline  --
    ---------------
 
-   procedure Newline (Stream : in out Rotating_Log_Record)
+   procedure Newline
+     (Stream : in out Rotating_Log_Record)
    is
 
       use Ada.Strings.Unbounded;
@@ -122,8 +125,9 @@ package body Rotating_Log is
    -----------
 
    overriding
-   procedure Put (Stream      : in out Rotating_Log_Record;
-                  Log_String  : in     String)
+   procedure Put
+     (Stream      : in out Rotating_Log_Record;
+      Log_String  : in     String)
    is
 
       use Ada.Strings.Unbounded;
@@ -155,7 +159,9 @@ package body Rotating_Log is
    --  Supports_Color  --
    ----------------------
 
-   function Supports_Color (Stream : Rotating_Log_Record) return Boolean
+   function Supports_Color
+     (Stream : Rotating_Log_Record)
+      return Boolean
    is
 
       pragma Unreferenced (Stream);
@@ -170,7 +176,9 @@ package body Rotating_Log is
    --  Supports_Time  --
    ---------------------
 
-   function Supports_Time (Stream : Rotating_Log_Record) return Boolean
+   function Supports_Time
+     (Stream : Rotating_Log_Record)
+      return Boolean
    is
 
       pragma Unreferenced (Stream);
@@ -185,8 +193,9 @@ package body Rotating_Log is
    --  Track  --
    -------------
 
-   procedure Track (Handle       : in Trace_Handles;
-                    Log_String   : in String)
+   procedure Track
+     (Handle       : in Trace_Handles;
+      Log_String   : in String)
    is
 
       use Ada.Calendar;
@@ -345,7 +354,8 @@ package body Rotating_Log is
       --  Set_Size  --
       ----------------
 
-      procedure Set_Size (Length : Natural)
+      procedure Set_Size
+        (Length : Natural)
       is
       begin
 
@@ -357,7 +367,8 @@ package body Rotating_Log is
       --  Write_To  --
       ----------------
 
-      procedure Write_To (Log_String : in String)
+      procedure Write_To
+        (Log_String : in String)
       is
 
          use Ada.Text_IO;
