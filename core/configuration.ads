@@ -6,7 +6,7 @@
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
---                     Copyright (C) 2010, Thomas Løcke                      --
+--                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
 --  Yolk is free software;  you can  redistribute it  and/or modify it under --
 --  terms of the  GNU General Public License as published  by the Free Soft- --
@@ -181,8 +181,8 @@ package Configuration is
                  XSL_Path
                  => TUS ("static_content/xsl"));
    --  Default values for the configuration Keys. These values can be over-
-   --  written by the configuration file given when instantiating a new
-   --  Config_File_Parser object.
+   --  written by the configuration file given when instantiating the
+   --  Config_File_Parser generic.
 
    package Config is new Config_File_Parser
      (Keys => Keys,

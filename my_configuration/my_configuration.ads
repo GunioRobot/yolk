@@ -6,7 +6,7 @@
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
---                     Copyright (C) 2010, Thomas Løcke                      --
+--                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
 --  Yolk is free software;  you can  redistribute it  and/or modify it under --
 --  terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,9 +25,11 @@
 
 with Ada.Strings.Unbounded;
 with Config_File_Parser;
-with Utilities; use Utilities;
+with Utilities;
 
 package My_Configuration is
+
+   use Utilities;
 
    type Keys is (DB_Host,
                  DB_Name,
@@ -50,8 +52,8 @@ package My_Configuration is
                  SMTP           => TUS ("freja.serverbox.dk"),
                  Template_Index => TUS ("templates/website/index.tmpl"));
    --  Default values for the configuration Keys. These values can be over-
-   --  written by the configuration file given when instantiating a new
-   --  Config_File_Parser object.
+   --  written by the configuration file given when instantiating the
+   --  Config_File_Parser generic.
 
    package Config is new Config_File_Parser
      (Keys => Keys,
