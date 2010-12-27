@@ -63,7 +63,7 @@ project Yolk is
                           "-gnat05",
                           "-g");
 
-     for Default_Switches ("Ada") use Valgrind_Options;
+     for Default_Switches ("Ada") use Common_Options;
 
    end Compiler;
 
