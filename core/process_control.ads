@@ -39,16 +39,17 @@ package Process_Control is
 
    Cannot_Create_PID_File  : exception;
    --  Is raised if the PID file cannot be created, eg. the server lacks
-   --  permissions to write to ./
+   --  permissions to write to the current directory.
    Cannot_Delete_PID_File  : exception;
    --  Is raised if the PID file cannot be deleted, eg. the server lacks
-   --  permissions to write to ./ or to the PID file itself.
+   --  permissions to write to the current directory or to the PID file itself.
    PID_File_Exists         : exception;
    --  Is raised when the PID file already exists, ie. the server is already
    --  running, or it was shutdown incorrectly.
 
    procedure Stop;
    --  Shutdown the server.
+
    procedure Wait;
    --  Wait until either Stop or Controller.Handle_Kill is called. This
    --  procedure is basically what keeps the application running. It's a
@@ -87,7 +88,10 @@ private
       --  If AWS_State is Shutdown the entry barrier is True then
       --  Delete_PID_File is called and the Wait procedure completes as it is
       --  no longer waiting for Check to complete.
+
       procedure Handle_Kill;
+      --  Set AWS_State to Shutdown.
+
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGHUP);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGINT);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGTERM);
@@ -95,6 +99,7 @@ private
       --  Handles the SIGHUP, SIGINT, SIGTERM and SIGPWR signals. This
       --  signalhandler stops the AWS server and subsequently the entire
       --  server.
+
       entry Start;
       --  Called by Wait. Set AWS_State to Running and calls Create_PID_File.
 

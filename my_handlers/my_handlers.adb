@@ -47,6 +47,7 @@ package body My_Handlers is
       --    Order matters. The first handler that matches a resource handles
       --    the request, hence this Set procedure is called  at the beginning
       --    of the Handlers.Set procedure in the Handlers package.
+
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),

@@ -44,6 +44,8 @@ package body Rotating_Log is
       use GNATCOLL.Traces;
 
       A_Handle : Trace_Handles := Trace_Handles'First;
+      --  Set A_Handle to Trace_Handles'First to avoid a "'A_Handle' may be
+      --  used uninitialized in this function" warning.
 
    begin
 
@@ -245,6 +247,7 @@ package body Rotating_Log is
               Item => "] ");
          Circa_Length := Circa_Length + 3;
       end if;
+
       Put_Line (File => Log.Get_File_Access.all,
                 Item => Log_String);
 
