@@ -30,6 +30,7 @@ convenience. Some of things that Yolk make very easy are:
     * Loading configuration files
     * Handling the most common static content types (HTML, PNG, ICO and so on)
     * Easy RSS 2.0 generation
+    * Connecting to one or more PostgreSQL databases
 
 Yolk is not a magic bullet though. If your needs are very complex, you might
 be better off using plain AWS.
@@ -47,7 +48,7 @@ optional:
     4. XML/Ada (optional - AWS requires this for SOAP support)
     5. PostgreSQL (optional - only necessary if you need access to a database)
 
-In the following I'll assume that both XML/Ada and PostgreSQL is necessary.
+In the following I'll assume that both XML/Ada and PostgreSQL are necessary.
 
 The path to the AWS, GNATcoll and XML/Ada project files must be added to the
 ADA_PROJECT_PATH environment variable, or else your Yolk project wont
@@ -83,13 +84,13 @@ My usual modus operandi for setting up these 5 things goes something like this:
 
     3.  Install GNATcoll in /usr/gnat:
     
-            ./configure --prefix=/usr/gnat \
-            --disable-gtk \
-            --disable-pygtk \
-            --without-python \
-            --with-postgresql \
-            --without-sqlite \
-            --disable-syslog
+            $ ./configure --prefix=/usr/gnat \
+                                --disable-gtk \
+                                --disable-pygtk \
+                                --without-python \
+                                --with-postgresql \
+                                --without-sqlite \
+                                --disable-syslog
         
         You should of course adjust the above configuration options to fit your
         needs.
@@ -99,12 +100,13 @@ My usual modus operandi for setting up these 5 things goes something like this:
             $ PROCESSORS=4 make
             $ make install
 
-        Of course adjusting the PROCESSORS number to what is suitable on your
-        own system.
+        You should of course adjust the PROCESSORS number to what is suitable on 
+        your own system.
         
     4.  Install XML/Ada in /usr/gnat:
     
-            ./configure --prefix=/usr/gnat
+            $ ./configure --prefix=/usr/gnat
+            $ make all install
             
     5.  Install AWS in its default location. See makefile.conf for further
         information. After having run "$ make setup", be sure to check that 
@@ -167,7 +169,7 @@ GNATcoll with PostgreSQL support and you have PostgreSQL installed.
 
 In the main Yolk directory you'll find some directories and files. Knowing what
 each of these do is crucial to using Yolk properly, so I'm going to meticulously
-describe it all. If you're an adventurous type you can skip this section, but
+describe them all. If you're an adventurous type you can skip this section, but
 for the rest of us, it's worth reading.
 
 Paths and files described in the following are relative to the directory where
@@ -180,7 +182,7 @@ build/
     change the "for Object_Dir use" option in yolk.gpr.
    
 core/
-    This directory contains the Yolk source code. In general you should not
+    This directory contains the core Yolk packages. In general you should not
     have to mess around in core/ at all. If you need to add new functionality
     to Yolk, you should use the my_core directory instead.
 
@@ -255,6 +257,8 @@ destroyed when the application exits. The Yolk application does _not_ fork to
 background, so if you want to avoid blocking the shell, use the & character to send
 it into the background:
 
+    $ yolk &
+    
 ########################
 ########################
 #
@@ -265,8 +269,6 @@ it into the background:
 #
 #######################
 #######################
-
-    $ yolk &
 
 The application can be properly shutdown using the following four signals:
 
@@ -279,11 +281,6 @@ Or you can simply bring it to the foreground and click CTRL+c.
 
 Managing the log files is done auto-magically. You do not have to worry about his,
 as long as your log file configuration settings are sane.
-
-The source files are self-documenting, meaning that they are commented in a way 
-that makes it easy to "get" what is going on, so if you want to know how to send
-and email using Yolk, just open the two core/simple_email.ad[bs] files and read the
-source. In some cases there will even be usage examples in the source code.
 
 The official AWS, GNATcoll and XMLAda documentation is handy to have nearby when
 building web applications using Yolk, as much of the functionality is bound to 

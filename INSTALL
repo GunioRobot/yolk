@@ -9,9 +9,10 @@ installed:
     1. AWS
     2. GNATcoll
 
-When you're certain all is well, all you need to do is follow these 5 steps:
+When you're certain that the dependencies are met, then all you need to do is 
+follow these 5 steps:
 
-    1. cd /path/to/yolk.gpr
+    1. cd /path/to/Yolk
     2. gnatmake -P yolk.gpr
     3. cd exe/
     4. ./yolk
@@ -31,7 +32,8 @@ When you're certain all is well, all you need to do is follow these 5 steps:
 To see the status page for the application, go to http://localhost:4242/status
 and enter "admin" as username and "changemenow" as password. Please make sure 
 that this password is changed before you go public with your application. See
-exe/aws.ini for how to do this. Look for the Admin_Password option.
+exe/configuration/config.ini for how to do this. Look for the Admin_Password 
+option.
 
 You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
 found in the yolk.pid file.
@@ -49,4 +51,4 @@ If Yolk isn't working, then it's worth checking that:
       adjusted accordingly.
     * That you're not already using port 4242 for something else.
     
-See the README file for more information on how to use Yolk.
+See the README file and the docs/ for more information on how to use Yolk.
