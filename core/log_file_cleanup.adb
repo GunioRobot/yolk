@@ -26,7 +26,7 @@ with AWS.Server.Log;
 with Rotating_Log;
 with Utilities;
 
-package body Logfile_Cleanup is
+package body Log_File_Cleanup is
 
    ---------
    --  <  --
@@ -186,4 +186,4 @@ package body Logfile_Cleanup is
 
    end Clean_Up;
 
-end Logfile_Cleanup;
+end Log_File_Cleanup;

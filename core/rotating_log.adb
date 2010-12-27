@@ -204,7 +204,7 @@ package body Rotating_Log is
 
    begin
 
-      if Log.Get_Size > Config.Get (Max_Logged_Characters) then
+      if Log.Get_Size > Config.Get (Rotating_Log_Size_Limit) then
          if Is_Open (File => Log.Get_File_Access.all) then
             Close (File => Log.Get_File_Access.all);
          end if;

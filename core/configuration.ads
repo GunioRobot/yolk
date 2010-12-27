@@ -31,19 +31,19 @@ with Utilities; use Utilities;
 
 package Configuration is
 
-   type Keys is (Admin_Password,
-                 Admin_URI,
-                 Amount_Of_Files_To_Keep,
-                 Certificate,
+   type Keys is (Admin_Password, -- AWS
+                 Admin_URI, -- AWS
+                 Amount_Of_Log_Files_To_Keep,
+                 Certificate, -- AWS
                  CSS_Path,
-                 Error_Log_Filename_Prefix,
-                 Error_Log_Split_Mode,
+                 Error_Log_Filename_Prefix, -- AWS
+                 Error_Log_Split_Mode, -- AWS
                  GIF_Path,
                  GNATCOLL_Traces_Ini_File,
                  Log_File_Cleanup_Interval,
-                 Log_Filename_Prefix,
-                 Log_Size_Limit,
-                 Log_Split_Mode,
+                 Log_Filename_Prefix, -- AWS
+                 Log_Size_Limit, -- AWS
+                 Log_Split_Mode, -- AWS
                  Handler_CSS,
                  Handler_GIF,
                  Handler_HTML,
@@ -59,22 +59,22 @@ package Configuration is
                  Immediate_Flush,
                  JPG_Path,
                  JS_Path,
-                 Log_File_Directory,
-                 Max_Connection,
+                 Log_File_Directory, -- AWS
+                 Max_Connection, -- AWS
                  Max_Slot_Count,
-                 Max_Logged_Characters,
-                 MIME_Types,
+                 MIME_Types, -- AWS
                  PNG_Path,
-                 Reuse_Address,
-                 Security,
-                 Security_Mode,
-                 Server_Name,
-                 Server_Port,
-                 Session,
-                 Session_Data_File,
-                 Session_Lifetime,
-                 Session_Name,
-                 Status_Page,
+                 Reuse_Address, -- AWS
+                 Rotating_Log_Size_Limit,
+                 Security, -- AWS
+                 Security_Mode, -- AWS
+                 Server_Name, -- AWS
+                 Server_Port, -- AWS
+                 Session, -- AWS
+                 Session_Data_File, -- AWS
+                 Session_Lifetime, -- AWS
+                 Session_Name, -- AWS
+                 Status_Page, -- AWS
                  System_Templates_Path,
                  XML_Path,
                  XSL_Path);
@@ -90,7 +90,7 @@ package Configuration is
                  => TUS ("0ac9c9d0c0b1ee058b65ae70c9aeb3a7"),
                  Admin_URI
                  => TUS ("/status"),
-                 Amount_Of_Files_To_Keep
+                 Amount_Of_Log_Files_To_Keep
                  => TUS ("30"),
                  Certificate
                  => TUS ("certificates/aws.pem"),
@@ -105,7 +105,7 @@ package Configuration is
                  GNATCOLL_Traces_Ini_File
                  => TUS ("configuration/GNATCOLL.SQL.Logs.ini"),
                  Log_File_Cleanup_Interval
-                 => TUS ("60"),
+                 => TUS ("3600"),
                  Log_Filename_Prefix
                  => TUS ("yolk_access"),
                  Log_Size_Limit
@@ -148,14 +148,14 @@ package Configuration is
                  => TUS ("5"),
                  Max_Slot_Count
                  => TUS ("3"),
-                 Max_Logged_Characters
-                 => TUS ("1_000_000"),
                  MIME_Types
                  => TUS ("configuration/aws.mime"),
                  PNG_Path
                  => TUS ("static_content/png"),
                  Reuse_Address
                  => TUS ("False"),
+                 Rotating_Log_Size_Limit
+                 => TUS ("1_000_000"),
                  Security
                  => TUS ("False"),
                  Security_Mode

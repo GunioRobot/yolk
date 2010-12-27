@@ -26,7 +26,7 @@ with AWS.Services.Dispatchers.URI;
 with AWS.Session;
 with Configuration;
 with Handlers;
-with Logfile_Cleanup;
+with Log_File_Cleanup;
 with Process_Control;
 with Rotating_Log;
 
@@ -58,13 +58,12 @@ is
    --  Stop the AWS server. A short message is written to the Info trace
    --  whenever the server is stopped.
 
-   task Logfile_Monitor is
+   task Log_File_Monitor is
       entry Start;
       entry Stop;
-   end Logfile_Monitor;
+   end Log_File_Monitor;
    --  This task monitor the aws.ini Log_File_Directory and deletes excess
-   --  logfiles. The amount of logfiles kept are defined by the
-   --  Logfile_Cleanup.Amount_Of_Files_To_Keep constant.
+   --  log files.
 
    --------------------
    --  Start_Server  --
@@ -95,7 +94,7 @@ is
       --  executable is.
 
       AWS.Server.Log.Start (Web_Server => Web_Server,
-                            Auto_Flush => False);
+                            Auto_Flush => Config.Get (Immediate_Flush));
       AWS.Server.Log.Start_Error (Web_Server);
       --  Start the access and error log.
       --  Set Auto_Flush to True if you want access data to be written to file
@@ -134,18 +133,18 @@ is
 
    end Stop_Server;
 
-   ---------------------
-   -- Logfile_Monitor --
-   ---------------------
+   ----------------------
+   -- Log_File_Monitor --
+   ----------------------
 
-   task body Logfile_Monitor
+   task body Log_File_Monitor
    is
 
       use AWS.Config;
-      use Logfile_Cleanup;
+      use Log_File_Cleanup;
 
       Files_To_Keep : constant Positive
-        := Config.Get (Amount_Of_Files_To_Keep);
+        := Config.Get (Amount_Of_Log_Files_To_Keep);
       --  How many log files to keep. If more than this amount is found, then
       --  delete the oldest.
 
@@ -190,14 +189,14 @@ is
          end select;
       end loop;
 
-   end Logfile_Monitor;
+   end Log_File_Monitor;
 
 begin
 
    Handlers.Set (RH => Resource_Handlers);
    --  Populate the Resource_Handlers object.
 
-   Logfile_Monitor.Start;
+   Log_File_Monitor.Start;
    --  Start the logfile monitor.
 
    Start_Server;
@@ -218,7 +217,7 @@ begin
    --  Shutdown requested in Process_Control.Controller, so we will attempt to
    --  shutdown the server.
 
-   Logfile_Monitor.Stop;
+   Log_File_Monitor.Stop;
    --  Stop the logfile monitor.
 
 exception
@@ -226,7 +225,7 @@ exception
       Track (Handle     => Error,
              Log_String => Exception_Information (Event));
       Stop_Server;
-      Logfile_Monitor.Stop;
+      Log_File_Monitor.Stop;
       --  If an exception is caught, write its contents to the Error trace,
       --  attempt to stop the server and the logfile monitor task.
 

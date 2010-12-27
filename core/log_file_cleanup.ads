@@ -27,7 +27,7 @@ with Ada.Strings.Unbounded;
 with AWS.Config;
 with AWS.Server;
 
-package Logfile_Cleanup is
+package Log_File_Cleanup is
 
    procedure Clean_Up (Config_Object           : in AWS.Config.Object;
                        Web_Server              : in AWS.Server.HTTP;
@@ -49,4 +49,4 @@ private
    package Ordered_File_Set is new Ada.Containers.Ordered_Sets (File_Info);
    --  A new ordered set package instantiated with File_Info as Element_Type.
 
-end Logfile_Cleanup;
+end Log_File_Cleanup;
