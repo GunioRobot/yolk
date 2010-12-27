@@ -33,6 +33,16 @@ private
 
    package My renames My_Configuration;
 
+   function Build_Response
+     (Template_File : in String;
+      Translations  : in AWS.Templates.Translate_Set)
+      return AWS.Response.Data;
+   --  Build the resource response.
+   --  This is a convenience function that gets rid of a few with clauses in
+   --  the files for the View child packages. Also since we need to create the
+   --  AWS.Response.Data object for each and every resource, we might as well
+   --  shorten the call a bit.
+
    package DB_12boo is new Connect_To_DB.PostgreSQL
      (Connect_To_DB.Set_Credentials
         (Host          => My.Config.Get (My.DB_Host),
@@ -48,15 +58,5 @@ private
          User          => "wikiuser",
          Password      => My.Config.Get (My.DB_Password),
          Server_Config => AWS.Config.Get_Current));
-
-   function Build_Response
-     (Template_File : in String;
-      Translations  : in AWS.Templates.Translate_Set)
-      return AWS.Response.Data;
-   --  Build the resource response.
-   --  This is a convenience function that gets rid of a few with clauses in
-   --  the files for the individual resources. Also since we need to create the
-   --  AWS.Response.Data object for each and every resource, we might as well
-   --  shorten the call a bit.
 
 end View;
