@@ -22,7 +22,6 @@
 -------------------------------------------------------------------------------
 
 with AWS;
-with AWS.Config;
 with AWS.Messages;
 with AWS.MIME;
 with AWS.Templates;
@@ -42,7 +41,6 @@ package body Not_Found is
       use AWS.Templates;
       use Configuration;
 
-      WS_Config   : constant AWS.Config.Object := AWS.Config.Get_Current;
       Content     : AWS.Response.Data;
       T           : Translate_Set;
 
@@ -50,7 +48,7 @@ package body Not_Found is
 
       Insert (T, Assoc ("RESOURCE", AWS.Status.URI (Request)));
       Insert (T, Assoc ("VERSION", AWS.Version));
-      Insert (T, Assoc ("DOMAIN", AWS.Config.Server_Name (WS_Config)));
+      Insert (T, Assoc ("DOMAIN", String'(Config.Get (Server_Name))));
 
       Content := AWS.Response.Build
         (Content_Type  => AWS.MIME.Text_HTML,
