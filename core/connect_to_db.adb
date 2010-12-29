@@ -22,6 +22,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Strings.Hash;
+with Configuration;
 with GNATCOLL.SQL.Postgres;
 
 package body Connect_To_DB is
@@ -148,10 +149,11 @@ package body Connect_To_DB is
      (Host          : in String;
       Database      : in String;
       User          : in String;
-      Password      : in String;
-      Server_Config : in AWS.Config.Object)
+      Password      : in String)
       return Credentials
    is
+
+      use Configuration;
 
       C : Credentials (Host_Length     => Host'Length,
                        Database_Length => Database'Length,
@@ -164,7 +166,7 @@ package body Connect_To_DB is
       C.Database   := Database;
       C.User       := User;
       C.Password   := Password;
-      C.Threads    := AWS.Config.Max_Connection (Server_Config);
+      C.Threads    := Config.Get (Max_Connection);
 
       return C;
 

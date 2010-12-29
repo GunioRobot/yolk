@@ -23,10 +23,35 @@
 
 private with Ada.Containers.Hashed_Maps;
 private with Ada.Task_Identification;
-with AWS.Config;
 with GNATCOLL.SQL.Exec;
 
 package Connect_To_DB is
+
+   type Connection_Mapping_Method is (AWS_Tasks_To_DB,
+                                      DB_Conn_Tasks_To_DB);
+   --  Specify how we connect to the database. This can be done in one of two
+   --  ways:
+   --
+   --  AWS_Tasks_To_DB:
+   --    Each AWS task is mapped to its own unique database connection. This
+   --    means that you can only connect to _one_ database per AWS task. This
+   --    is the fastest method, as we can call
+   --    GNATCOLL.SQL.Exec.Get_Task_Connection immediately.
+   --
+   --  DB_Conn_Tasks_To_DB:
+   --    A pool of DB_Conn tasks are created for each instantiation of a
+   --    Connect_To_DB child package and these then connect to the database.
+   --    The result is that your app can connect to several different databases
+   --    in the same AWS task.
+   --    This is slower than AWS_Tasks_To_DB because we have to access a
+   --    hashed map to decide the mapping from an AWS task to a DB_Conn task,
+   --    before we can call GNATCOLL.SQL.Exec.Get_Task_Connection.
+   --    Obviously this method also requires more memory, as we have more tasks
+   --    active in the application.
+   --
+   --  It is perfectly valid to instantiate all Connect_To_DB child packages
+   --  with DB_Conn_Tasks_To_DB, but it is only possible to instantiate once
+   --  with AWS_Tasks_To_DB.
 
    type Credentials
      (Host_Length     : Positive;
@@ -35,25 +60,34 @@ package Connect_To_DB is
       Password_Length : Positive) is private;
 
    function Set_Credentials
-     (Host          : in String;
-      Database      : in String;
-      User          : in String;
-      Password      : in String;
-      Server_Config : in AWS.Config.Object)
+     (Host              : in String;
+      Database          : in String;
+      User              : in String;
+      Password          : in String)
       return Credentials;
    --  Define the credentials necessary to connect to the database. The actual
    --  DBMS used is decided when the relevant generic child package is
    --  instantiated, for example like this:
    --
-   --    package DB is new Connect_To_DB.PostgreSQL
-   --      (Connect_To_DB.Set_Credentials
-   --       (Host          => "some-host",
-   --        Database      => "some-database",
-   --        User          => "some-user",
-   --        Password      => "some-password",
-   --        Server_Config => AWS.Config.Get_Current));
+   --  package My_DB is new Connect_To_DB.PostgreSQL
+   --    (DB_Credentials            => Connect_To_DB.Set_Credentials
+   --       (Host              => "host",
+   --        Database          => "database",
+   --        User              => "user",
+   --        Password          => "password",
+   --     Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
+   --
+   --  See the Connection_Mapping_Method type and the Connect_To_DB.PostgreSQL
+   --  package for more information about the Task_To_DB_Mapping_Method
+   --  parameter.
 
 private
+
+   AWS_Tasks_To_DB_Already_Used : Boolean := False;
+   --  This is set to True when the Connection_Mapping_Method AWS_Tasks_To_DB
+   --  is used the first time in an instantiation of a database generic.
+   --  A Program_Error is raised if an instantation is done with
+   --  AWS_Tasks_To_DB more than once.
 
    task type DB_Conn is
       entry Fetch

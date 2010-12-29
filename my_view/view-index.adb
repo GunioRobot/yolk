@@ -81,6 +81,8 @@ package body View.Index is
 
       if GNATCOLL.SQL.Exec.Success (C_12boo) then
          while GNATCOLL.SQL.Exec.Has_Row (Cursor) loop
+            Track (Handle     => Info,
+                   Log_String => GNATCOLL.SQL.Exec.Value (Cursor, 1));
             --  Put_Line (GNATCOLL.SQL.Exec.Value (Cursor, 1));
             GNATCOLL.SQL.Exec.Next (Cursor);
          end loop;
@@ -105,6 +107,8 @@ package body View.Index is
 
       if GNATCOLL.SQL.Exec.Success (C_Wiki) then
          while GNATCOLL.SQL.Exec.Has_Row (Cursor) loop
+            Track (Handle     => Info,
+                   Log_String => GNATCOLL.SQL.Exec.Value (Cursor, 2));
             --  Put_Line (GNATCOLL.SQL.Exec.Value (Cursor, 2));
             GNATCOLL.SQL.Exec.Next (Cursor);
          end loop;

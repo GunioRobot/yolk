@@ -21,7 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-private with AWS.Config;
 private with AWS.Response;
 private with AWS.Templates;
 private with My_Configuration;
@@ -44,19 +43,19 @@ private
    --  shorten the call a bit.
 
    package DB_12boo is new Connect_To_DB.PostgreSQL
-     (Connect_To_DB.Set_Credentials
-        (Host          => My.Config.Get (My.DB_Host),
-         Database      => My.Config.Get (My.DB_Name),
-         User          => My.Config.Get (My.DB_User),
-         Password      => My.Config.Get (My.DB_Password),
-         Server_Config => AWS.Config.Get_Current));
+     (DB_Credentials => Connect_To_DB.Set_Credentials
+        (Host              => My.Config.Get (My.DB_Host),
+         Database          => My.Config.Get (My.DB_Name),
+         User              => My.Config.Get (My.DB_User),
+         Password          => My.Config.Get (My.DB_Password)),
+      Task_To_DB_Mapping_Method => Connect_To_DB.DB_Conn_Tasks_To_DB);
 
    package DB_Wiki is new Connect_To_DB.PostgreSQL
-     (Connect_To_DB.Set_Credentials
-        (Host          => My.Config.Get (My.DB_Host),
-         Database      => "wikidb",
-         User          => "wikiuser",
-         Password      => My.Config.Get (My.DB_Password),
-         Server_Config => AWS.Config.Get_Current));
+     (DB_Credentials    => Connect_To_DB.Set_Credentials
+        (Host            => My.Config.Get (My.DB_Host),
+         Database        => "wikidb",
+         User            => "wikiuser",
+         Password        => My.Config.Get (My.DB_Password)),
+      Task_To_DB_Mapping_Method => Connect_To_DB.DB_Conn_Tasks_To_DB);
 
 end View;

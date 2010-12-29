@@ -38,15 +38,26 @@ package body Connect_To_DB.PostgreSQL is
 
    begin
 
-      A_DB_Task := Association.Get (AWS_Task_ID => Current_Task);
+      case Task_To_DB_Mapping_Method is
+         when AWS_Tasks_To_DB =>
+            --  We map AWS tasks directly to the GNATCOLL database connections.
+            A_Connection := Get_Task_Connection
+              (Description  => DB_Description,
+               Factory      => Database_Connection_Factory'Access);
+         when DB_Conn_Tasks_To_DB =>
+            --  We have a pool of DB_Conn tasks, and these are mapped to the
+            --  AWS tasks in the Association protected object. This is a hashed
+            --  map.
+            A_DB_Task := Association.Get (AWS_Task_ID => Current_Task);
 
-      if A_DB_Task = Null_DB_Conn_Access then
-         Association.Set (DB_Task     => A_DB_Task,
-                          AWS_Task_ID => Current_Task);
-      end if;
+            if A_DB_Task = Null_DB_Conn_Access then
+               Association.Set (DB_Task     => A_DB_Task,
+                                AWS_Task_ID => Current_Task);
+            end if;
 
-      A_DB_Task.Fetch (Conn => A_Connection,
-                       Desc => DB_Description);
+            A_DB_Task.Fetch (Conn => A_Connection,
+                             Desc => DB_Description);
+      end case;
 
       return A_Connection;
 
@@ -63,13 +74,25 @@ package body Connect_To_DB.PostgreSQL is
 
    begin
 
+      if Task_To_DB_Mapping_Method = AWS_Tasks_To_DB
+        and then Connect_To_DB.AWS_Tasks_To_DB_Already_Used
+      then
+         raise Program_Error with "AWS_Tasks_To_DB may only be used once.";
+      end if;
+
       Setup_Database (Description => DB_Description,
-                      Database    => These_Credentials.Database,
-                      User        => These_Credentials.User,
-                      Host        => These_Credentials.Host,
-                      Password    => These_Credentials.Password,
+                      Database    => DB_Credentials.Database,
+                      User        => DB_Credentials.User,
+                      Host        => DB_Credentials.Host,
+                      Password    => DB_Credentials.Password,
                       DBMS        => DBMS_Postgresql);
       --  Populate the DB_Description variable.
+
+      if Task_To_DB_Mapping_Method = AWS_Tasks_To_DB then
+         Connect_To_DB.AWS_Tasks_To_DB_Already_Used := True;
+         --  We only accept _one_ instantation using the AWS_Tasks_To_DB
+         --  method.
+      end if;
 
    end Initialize;
 

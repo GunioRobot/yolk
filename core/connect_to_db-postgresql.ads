@@ -23,7 +23,33 @@
 
 generic
 
-   These_Credentials : Credentials;
+   DB_Credentials : Credentials;
+   --  The database credentials, such as username, password, host and similar.
+
+   Task_To_DB_Mapping_Method : Connection_Mapping_Method;
+   --  Specify how we connect to the database. This can be done in one of two
+   --  ways:
+   --
+   --  AWS_Tasks_To_DB:
+   --    Each AWS task is mapped to its own unique database connection. This
+   --    means that you can only connect to _one_ database per AWS task. This
+   --    is the fastest method, as we can call
+   --    GNATCOLL.SQL.Exec.Get_Task_Connection immediately.
+   --
+   --  DB_Conn_Tasks_To_DB:
+   --    A pool of DB_Conn tasks are created for each instantiation of a
+   --    Connect_To_DB child package and these then connect to the database.
+   --    The result is that your app can connect to several different databases
+   --    in the same AWS task.
+   --    This is slower than AWS_Tasks_To_DB because we have to access a
+   --    hashed map to decide the mapping from an AWS task to a DB_Conn task,
+   --    before we can call GNATCOLL.SQL.Exec.Get_Task_Connection.
+   --    Obviously this method also requires more memory, as we have more tasks
+   --    active in the application.
+   --
+   --  It is perfectly valid to instantiate all Connect_To_DB child packages
+   --  with DB_Conn_Tasks_To_DB, but it is only possible to instantiate once
+   --  with AWS_Tasks_To_DB.
 
 package Connect_To_DB.PostgreSQL is
 
