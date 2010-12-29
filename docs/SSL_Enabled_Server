@@ -2,7 +2,7 @@ Enabling SSL in a Yolk application is a simple matter of:
 
     1. Having compiled AWS with SSL enabled.
     2. Having a valid certificate.
-    3. Alter three settings in aws.ini.
+    3. Alter three settings in configuration/config.ini.
     
 The first is simple to solve: Just make sure that you've set the SOCKET
 options in the AWS makefile.conf file to "openssl" instead of "std". You must
@@ -19,7 +19,7 @@ all you have to do is this:
     4. $ cp aws.pem /path/to/yolk/exe/certificates
 
 And that's it. Now all you have to do is take a closer look at these three
-aws.ini options:
+config.ini parameters:
 
     Certificates
     Security
