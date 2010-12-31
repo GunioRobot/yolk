@@ -23,6 +23,15 @@
 #
 # You can use this script to start, stop, restart and check the status of a
 # Yolk application.
+#
+# NOTE:
+#   When you start a Yolk application with this script, output from the app-
+#   lication is directed to /dev/null, meaning that regular Put_Line calls are
+#   _not_ shown anywhere.
+#   This is done to avoid crashing the application if it tries to write to STDOUT
+#   while not having an actual shell.
+#   So if you need output to STDOUT, for example for debugging purposes, you'll
+#   have to start the application by calling the executable directly.
 
 ###########################################################
 # Edit the following variables to match your environment. #
