@@ -56,14 +56,16 @@ project Yolk is
                          "-O2",
                          "-gnat05");
     
-     Valgrind_Options := ("-gnatwa",
-                          "-gnaty3abcdefhiklmnoprstux",
-                          "-Wall",
-                          "-O1",
-                          "-gnat05",
-                          "-g");
+      Valgrind_Options := ("-gnatwa",
+                           "-gnaty3abcdefhiklmnoprstux",
+                           "-Wall",
+                           "-O1",
+                           "-gnat05",
+                           "-g");
+      --  Use this option to check if your application is leaking memory.
+      --    $ valgrind -v --leak-check=full yolk
 
-     for Default_Switches ("Ada") use Common_Options;
+      for Default_Switches ("Ada") use Common_Options;
 
    end Compiler;
 
