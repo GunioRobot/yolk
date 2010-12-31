@@ -23,19 +23,32 @@
 #
 # You can use this script to start, stop, restart and check the status of a
 # Yolk application.
-#
-# Edit the following variables to match your environment.
 
+###########################################################
+# Edit the following variables to match your environment. #
+###########################################################
+
+# This is merely a name. You can write anything here, but the most sane thing
+# would probably be to write the same name as given in the config.ini parameter
+# Server_Name.
+# This name is used when the rc script output informative messages about the
+# application.
 NAME_OF_APPLICATION=Yolk
-PATH_TO_YOLK_EXE=/home/thomas/Yolk/exe
+
+# This is the actual filename of the Yolk application executable.
 NAME_OF_EXE_FILE=yolk
+
+# Path to where the NAME_OF_EXE_FILE lives. Do _not_ write the trailing /
+PATH_TO_YOLK_EXE_DIRECTORY=/home/thomas/Yolk/exe
+
+# The system user the process will run as.
 RUN_AS_THIS_USER=thomas
 
 ##############################################################
 # Do not edit below here, unless you know what you're doing. #
 ##############################################################
 
-PID=${PATH_TO_YOLK_EXE}/${NAME_OF_EXE_FILE}.pid
+PID=${PATH_TO_YOLK_EXE_DIRECTORY}/${NAME_OF_EXE_FILE}.pid
 
 ###########
 # cleanup #
@@ -67,9 +80,13 @@ yolk_start() {
     echo -n "Starting the ${NAME_OF_APPLICATION} daemon as user ${RUN_AS_THIS_USER}."
     
     # Start the application and send it to background.
-    su -l ${RUN_AS_THIS_USER} -c "cd ${PATH_TO_YOLK_EXE}; ./${NAME_OF_EXE_FILE} &"
-    echo ""
+    # NOTE:
+    #   We direct output to /dev/null. This is to avoid IO exceptions from the
+    #   application in case some part of AWS/GNATcoll produce unexpected
+    #   output on STDOUT.
+    su -l ${RUN_AS_THIS_USER} -c "cd ${PATH_TO_YOLK_EXE}; ./${NAME_OF_EXE_FILE} > /dev/null &"
     
+    echo ""    
     sleep 2
     
     if [ -f ${PID} ]
@@ -92,7 +109,9 @@ yolk_start() {
     
 }
 
-# Stop the Yolk application.
+#############
+# yolk_stop #
+#############
 yolk_stop() {
     
     if [ -f ${PID} ]
@@ -125,7 +144,9 @@ yolk_stop() {
   
 }
 
-# Restart the Yolk application.
+################
+# yolk_restart #
+################
 yolk_restart() {
 
     yolk_stop
@@ -137,7 +158,9 @@ yolk_restart() {
     
 }
 
-# Check if Yolk is running
+###############
+# yolk_status #
+###############
 yolk_status() {
         
     IS_RUNNING="false"
