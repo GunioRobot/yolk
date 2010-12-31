@@ -23,14 +23,10 @@
 
 private with AWS.Response;
 private with AWS.Templates;
-private with My_Configuration;
-private with Connect_To_DB.PostgreSQL;
 
 package View is
 
 private
-
-   package My renames My_Configuration;
 
    function Build_Response
      (Template_File : in String;
@@ -41,21 +37,5 @@ private
    --  the files for the View child packages. Also since we need to create the
    --  AWS.Response.Data object for each and every resource, we might as well
    --  shorten the call a bit.
-
-   package DB_12boo is new Connect_To_DB.PostgreSQL
-     (DB_Credentials => Connect_To_DB.Set_Credentials
-        (Host              => My.Config.Get (My.DB_Host),
-         Database          => My.Config.Get (My.DB_Name),
-         User              => My.Config.Get (My.DB_User),
-         Password          => My.Config.Get (My.DB_Password)),
-      Task_To_DB_Mapping_Method => Connect_To_DB.DB_Conn_Tasks_To_DB);
-
-   package DB_Wiki is new Connect_To_DB.PostgreSQL
-     (DB_Credentials    => Connect_To_DB.Set_Credentials
-        (Host            => My.Config.Get (My.DB_Host),
-         Database        => "wikidb",
-         User            => "wikiuser",
-         Password        => My.Config.Get (My.DB_Password)),
-      Task_To_DB_Mapping_Method => Connect_To_DB.DB_Conn_Tasks_To_DB);
 
 end View;
