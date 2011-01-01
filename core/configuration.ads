@@ -35,10 +35,8 @@ package Configuration is
                  Admin_URI, -- AWS
                  Amount_Of_Log_Files_To_Keep,
                  Certificate, -- AWS
-                 CSS_Path,
                  Error_Log_Filename_Prefix, -- AWS
                  Error_Log_Split_Mode, -- AWS
-                 GIF_Path,
                  GNATCOLL_Traces_Ini_File,
                  Log_File_Cleanup_Interval,
                  Log_Filename_Prefix, -- AWS
@@ -54,16 +52,11 @@ package Configuration is
                  Handler_XML,
                  Handler_XSL,
                  Handler_Unknown,
-                 HTML_Path,
-                 ICO_Path,
                  Immediate_Flush,
-                 JPG_Path,
-                 JS_Path,
                  Log_File_Directory, -- AWS
                  Max_Connection, -- AWS
                  Max_Slot_Count,
                  MIME_Types, -- AWS
-                 PNG_Path,
                  Reuse_Address, -- AWS
                  Rotating_Log_Size_Limit,
                  Security, -- AWS
@@ -74,10 +67,9 @@ package Configuration is
                  Session_Data_File, -- AWS
                  Session_Lifetime, -- AWS
                  Session_Name, -- AWS
+                 Static_Content_Path,
                  Status_Page, -- AWS
-                 System_Templates_Path,
-                 XML_Path,
-                 XSL_Path);
+                 System_Templates_Path);
    --  The valid configuration keys.
    --  These configuration keys are essential for core parts of Yolk, so you
    --  should not change them, unless you know what you're doing.
@@ -94,14 +86,10 @@ package Configuration is
                        => TUS ("30"),
                        Certificate
                        => TUS ("certificates/aws.pem"),
-                       CSS_Path
-                       => TUS ("static_content/css"),
                        Error_Log_Filename_Prefix
                        => TUS ("yolk_error"),
                        Error_Log_Split_Mode
                        => TUS ("Daily"),
-                       GIF_Path
-                       => TUS ("static_content/gif"),
                        GNATCOLL_Traces_Ini_File
                        => TUS ("configuration/GNATCOLL.SQL.Logs.ini"),
                        Log_File_Cleanup_Interval
@@ -132,16 +120,8 @@ package Configuration is
                        => TUS (".*\.xsl"),
                        Handler_Unknown
                        => TUS ("[^status].*"),
-                       HTML_Path
-                       => TUS ("static_content/html"),
-                       ICO_Path
-                       => TUS ("static_content/ico"),
                        Immediate_Flush
                        => TUS ("False"),
-                       JPG_Path
-                       => TUS ("static_content/jpg"),
-                       JS_Path
-                       => TUS ("static_content/js"),
                        Log_File_Directory
                        => TUS ("logs/"),
                        Max_Connection
@@ -150,8 +130,6 @@ package Configuration is
                        => TUS ("3"),
                        MIME_Types
                        => TUS ("configuration/aws.mime"),
-                       PNG_Path
-                       => TUS ("static_content/png"),
                        Reuse_Address
                        => TUS ("False"),
                        Rotating_Log_Size_Limit
@@ -172,14 +150,12 @@ package Configuration is
                        => TUS ("1200"),
                        Session_Name
                        => TUS ("Yolk"),
+                       Static_Content_Path
+                       => TUS ("static_content"),
                        Status_Page
                        => TUS ("status/aws_status.thtml"),
                        System_Templates_Path
-                       => TUS ("templates/system"),
-                       XML_Path
-                       => TUS ("static_content/xml"),
-                       XSL_Path
-                       => TUS ("static_content/xsl"));
+                       => TUS ("templates/system"));
    --  Default values for the configuration Keys. These values can be over-
    --  written by the configuration file given when instantiating the
    --  Config_File_Parser generic.

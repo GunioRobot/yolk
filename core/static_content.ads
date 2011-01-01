@@ -30,43 +30,10 @@ with AWS.Status;
 
 package Static_Content is
 
+   function File
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data;
    --  Load various static content. The regex'es and dispatchers for
    --  these files are defined in the Handlers package.
-
-   function CSS
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function GIF
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function HTML
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function ICO
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function JPG
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function JS
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function PNG
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function XML
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-
-   function XSL
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
 
 end Static_Content;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<?xml-stylesheet type="text/xsl" href="test.xsl"?>
+<?xml-stylesheet type="text/xsl" href="/xsl/test.xsl"?>
 
 <core>
     <title>Yolk XML/XSL Test</title>
     <headline>The Yolk XML/XSL content handlers is functional!</headline>
-    <goback url="Index">go back</goback>
+    <goback url="/Index">go back</goback>
 </core>

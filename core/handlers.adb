@@ -49,47 +49,47 @@ package body Handlers is
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_CSS),
-         Action      => Static_Content.CSS'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_GIF),
-         Action      => Static_Content.GIF'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_HTML),
-         Action      => Static_Content.HTML'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_ICO),
-         Action      => Static_Content.ICO'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JPG),
-         Action      => Static_Content.JPG'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JS),
-         Action      => Static_Content.JS'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_PNG),
-         Action      => Static_Content.PNG'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XML),
-         Action      => Static_Content.XML'Access);
+         Action      => Static_Content.File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XSL),
-         Action      => Static_Content.XSL'Access);
+         Action      => Static_Content.File'Access);
 
       -----------------------------------------
       --  Unknown Resource (404) Dispatcher  --

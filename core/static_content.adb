@@ -28,63 +28,11 @@ with Not_Found;
 
 package body Static_Content is
 
-   -----------
-   --  CSS  --
-   -----------
-
-   function CSS
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      CSS_File : constant String :=
-                   Config.Get (CSS_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (CSS_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type => AWS.MIME.Text_CSS,
-                                Filename     => CSS_File);
-
-   end CSS;
-
-   -----------
-   --  GIF  --
-   -----------
-
-   function GIF
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      GIF_File : constant String :=
-                   Config.Get (GIF_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (GIF_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Image_Gif,
-                                Filename      => GIF_File);
-
-   end GIF;
-
    ------------
-   --  HTML  --
+   --  File  --
    ------------
 
-   function HTML
+   function File
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
@@ -92,174 +40,19 @@ package body Static_Content is
       use Ada.Directories;
       use Configuration;
 
-      HTML_File : constant String :=
-                    Config.Get (HTML_Path) & AWS.Status.URI (Request);
+      File_Path : constant String
+        := Config.Get (Static_Content_Path) & AWS.Status.URI (Request);
 
    begin
 
-      if not Exists (HTML_File) then
+      if not Exists (File_Path) then
          return Not_Found.Output (Request);
       end if;
 
-      return AWS.Response.File (Content_Type  => AWS.MIME.Text_HTML,
-                                Filename      => HTML_File);
+      return AWS.Response.File
+        (Content_Type  => AWS.MIME.Content_Type (Filename => File_Path),
+         Filename      => File_Path);
 
-   end HTML;
-
-   -----------
-   --  ICO  --
-   -----------
-
-   function ICO
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      ICO_File : constant String :=
-                   Config.Get (ICO_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (ICO_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Image_Icon,
-                                Filename      => ICO_File);
-
-   end ICO;
-
-   -----------
-   --  JPG  --
-   -----------
-
-   function JPG
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      JPG_File : constant String :=
-                   Config.Get (JPG_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (JPG_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Image_Jpeg,
-                                Filename      => JPG_File);
-
-   end JPG;
-
-   ----------
-   --  JS  --
-   ----------
-
-   function JS
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      JS_File : constant String :=
-                  Config.Get (JS_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (JS_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Text_Javascript,
-                                Filename      => JS_File);
-
-   end JS;
-
-   -----------
-   --  PNG  --
-   -----------
-
-   function PNG
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      PNG_File : constant String :=
-                   Config.Get (PNG_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (PNG_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Image_Png,
-                                Filename      => PNG_File);
-
-   end PNG;
-
-   -----------
-   --  XML  --
-   -----------
-
-   function XML
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      XML_File : constant String :=
-                   Config.Get (XML_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (XML_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Application_XML,
-                                Filename      => XML_File);
-
-   end XML;
-
-   -----------
-   --  XSL  --
-   -----------
-
-   function XSL
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      XSL_File : constant String :=
-                   Config.Get (XSL_Path) & AWS.Status.URI (Request);
-
-   begin
-
-      if not Exists (XSL_File) then
-         return Not_Found.Output (Request);
-      end if;
-
-      return AWS.Response.File (Content_Type  => AWS.MIME.Application_XML,
-                                Filename      => XSL_File);
-
-   end XSL;
+   end File;
 
 end Static_Content;
