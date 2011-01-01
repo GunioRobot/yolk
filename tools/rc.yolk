@@ -93,7 +93,7 @@ yolk_start() {
     #   We direct output to /dev/null. This is to avoid IO exceptions from the
     #   application in case some part of AWS/GNATcoll produce unexpected
     #   output on STDOUT.
-    su -l ${RUN_AS_THIS_USER} -c "cd ${PATH_TO_YOLK_EXE}; ./${NAME_OF_EXE_FILE} > /dev/null &"
+    su -l ${RUN_AS_THIS_USER} -c "cd ${PATH_TO_YOLK_EXE_DIRECTORY}; ./${NAME_OF_EXE_FILE} > /dev/null &"
     
     echo ""    
     sleep 2
