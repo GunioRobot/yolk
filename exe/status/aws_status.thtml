@@ -25,9 +25,6 @@
 @@--  covered by the  GNU Public License.                                     --
 @@------------------------------------------------------------------------------
 @@--
-@@--  Author and design:    Trine Løcke
-@@--  Author:               Thomas Løcke
-@@--
 @@--  VARIOUS TEMPLATES_PARSER CONSTANTS
 @@--
 @@--  This constant controls the amount of session data to output.
@@ -58,7 +55,8 @@
 @@SET@@ TABLE_ROW_MODULUS_COLOR         = #fbfbf9
 @@SET@@ TABLE_TD_BORDER_COLOR           = #546b89
 @@--
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -67,7 +65,7 @@
     </title>
     <style type="text/css">
         body, div, table, a, tr, td, h3, h4, p {
-            padding: 0px;                         
+            padding: 0px;
             margin: 0px;
         }
 
@@ -92,7 +90,7 @@
             background-color: @_HEADLINE_BGCOLOR_@;
             text-align: center;
         }
-     
+
         .headline_server_name {
             margin: 10px 0px;
         }
@@ -121,12 +119,12 @@
         a:hover {
             color: @_LINK_HOVER_COLOR_@;
         }
-        
+
         .alert {
             padding-left: 5px;
             color: @_ALERT_FONT_COLOR_@
         }
-        
+
         table {
             margin-top: 15px;
             width: 100%;
@@ -292,7 +290,7 @@
                 Cleaner Client Data Timeout:
             </td>
             <td class="data_color">
-                @_CLEANER_CLIENT_HEADER_TIMEOUT_@ seconds
+                @_CLEANER_CLIENT_DATA_TIMEOUT_@ seconds
             </td>
         </tr>
         <tr class="background">
@@ -321,13 +319,37 @@
         </tr>
         <tr>
             <td class="key">
-                Force Client Data Timeout:
+                Context Lifetime:
             </td>
             <td class="data_color">
-                @_FORCE_CLIENT_HEADER_TIMEOUT_@ seconds
+                @_CONTEXT_LIFETIME_@ seconds
             </td>
         </tr>
         <tr class="background">
+            <td class="key">
+                Directory Browser Page:
+            </td>
+            <td class="data_color">
+                @_DIRECTORY_BROWSER_PAGE_@
+            </td>
+        </tr>
+        <tr>
+            <td class="key">
+                Exchange Certificate:
+            </td>
+            <td class="data_color">
+                @_YES_NO:EXCHANGE_CERTIFICATE_@
+            </td>
+        </tr>
+        <tr class="background">
+            <td class="key">
+                Force Client Data Timeout:
+            </td>
+            <td class="data_color">
+                @_FORCE_CLIENT_DATA_TIMEOUT_@ seconds
+            </td>
+        </tr>
+        <tr>
             <td class="key">
                 Force Client Header Timeout:
             </td>
@@ -335,7 +357,7 @@
                 @_FORCE_CLIENT_HEADER_TIMEOUT_@ seconds
             </td>
         </tr>
-        <tr>
+        <tr class="background">
             <td class="key">
                 Force Server Response Timeout:
             </td>
@@ -343,7 +365,7 @@
                 @_FORCE_SERVER_RESPONSE_TIMEOUT_@ seconds
             </td>
         </tr>
-        <tr class="background">
+        <tr>
             <td class="key">
                 Force Wait For Client Timeout:
             </td>
@@ -351,12 +373,48 @@
                 @_FORCE_WAIT_FOR_CLIENT_TIMEOUT_@ seconds
             </td>
         </tr>
-        <tr>
+        <tr class="background">
             <td class="key">
                 Free Slots Keep Alive Limit:
             </td>
             <td class="data_color">
                 @_FREE_SLOTS_KEEP_ALIVE_LIMIT_@
+            </td>
+        </tr>
+        <tr class="background">
+            <td class="key">
+                Hotplug Port:
+            </td>
+            <td class="data_color">
+                @_HOTPLUG_PORT_@
+            </td>
+        </tr>
+        <tr>
+            <td class="key">
+                Input Line Size Limit:
+            </td>
+            <td class="data_color">
+                @_INPUT_LINE_SIZE_LIMIT_@
+            </td>
+        </tr>
+        <tr class="background">
+            <td class="key">
+                Keep Alive Force Limit:
+            </td>
+            <td class="data_color">
+                @_KEEP_ALIVE_FORCE_LIMIT_@
+            </td>
+        </tr>
+        <tr>
+            <td class="key">
+                Key (RSA):
+            </td>
+            <td class="data_color">
+                @@IF@@ @_RSA_KEY_@ /= ""
+                    @_RSA_KEY_@
+                @@ELSE@@
+                    Not set
+                @@END_IF@@
             </td>
         </tr>
         <tr class="background">
@@ -509,8 +567,8 @@
                 @@IF@@ @_UPLOAD_DIRECTORY_@ /= ""
                     @_UPLOAD_DIRECTORY_@
                 @@ELSE@@
-                    Upload directory is not set.
-                @@END_IF@@               
+                    Not set
+                @@END_IF@@
             </td>
         </tr>
         <tr class="background">
@@ -577,8 +635,16 @@
                 @@--  @_FORMAT_DATE(%a %D %T):START_TIME_@ results in "Tue 04/27/10 10:42:13"
                 @@--  @_FORMAT_DATE(%d%m%y %H%M%S):START_TIME_@ results in "270410 133256"
                 @@--  @_FORMAT_DATE(%d-%m-%y %T):START_TIME_@ results in "27-04-10 13:32:56"
-                
+
                 @_FORMAT_DATE(%d-%m-%y %T):START_TIME_@
+            </td>
+        </tr>
+        <tr class="background">
+            <td class="key">
+                Resources Served:
+            </td>
+            <td class="data_color">
+                @_RESOURCES_SERVED_@
             </td>
         </tr>
     </table>
@@ -626,7 +692,7 @@
                 @@IF@@ @_ERROR_LOG_@
                     @_ERROR_LOG_FILE_@
                 @@ELSE@@
-                    No error logfile defined
+                    Not set
                 @@END_IF@@
             </td>
         </tr>
@@ -654,7 +720,19 @@
                 @@IF@@ @_LOG_@
                     @_LOG_FILE_@
                 @@ELSE@@
-                    No access logfile defined
+                    Not set
+                @@END_IF@@
+            </td>
+        </tr>
+        <tr class="background">
+            <td class="key">
+                Log Extended Fields:
+            </td>
+            <td class="data_color">
+                @@IF@@ @_LOG_EXTENDED_FIELDS_@ /= ""
+                    @_LOG_EXTENDED_FIELDS_@
+                @@ELSE@@
+                    Not set
                 @@END_IF@@
             </td>
         </tr>
@@ -665,7 +743,7 @@
     <table class="slots_information data_color">
         <tr>
             <th>
-                Slot no.   
+                Slot no.
             </th>
             <th>
                 Socket
@@ -752,7 +830,7 @@
                 </th>
             </tr>
             @@TABLE@@
-                @@IF@@ (@_TABLE_LINE_@ <= @_AMOUNT_OF_SESSIONS_TO_OUTPUT_@)            
+                @@IF@@ (@_TABLE_LINE_@ <= @_AMOUNT_OF_SESSIONS_TO_OUTPUT_@)
                     @@IF@@ @_MOD(2):TABLE_LINE_@ = 0
                     <tr>
                     @@ELSE@@
@@ -785,7 +863,7 @@
                 More session data is available. To see this, adjust the AMOUNT_OF_SESSIONS_TO_OUTPUT constant in this template.
             </p>
         @@END_IF@@
-    @@END_IF@@   
+    @@END_IF@@
     <h3 class="section_headline">
         Hotplug Modules
     </h3>
@@ -812,7 +890,7 @@
             @@TABLE@@
                 @@BEGIN@@
                 <tr class="background">
-                @@SECTION@@   
+                @@SECTION@@
                 <tr>
                 @@END@@
                     <td>
@@ -831,7 +909,7 @@
                 </tr>
             @@END_TABLE@@
         </table>
-    @@END_IF@@   
+    @@END_IF@@
     <div class="copyright">
         <p>
             AWS has been developed in Ada with the GNAT compiler (see the <a href="http://www.adacore.com">AdaCore</a> web site).
