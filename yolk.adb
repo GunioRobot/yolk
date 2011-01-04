@@ -20,6 +20,7 @@
 with Ada.Directories;
 with Ada.Exceptions;
 with AWS.Config;
+with AWS.MIME;
 with AWS.Server;
 with AWS.Server.Log;
 with AWS.Services.Dispatchers.URI;
@@ -187,6 +188,12 @@ is
    end Log_File_Monitor;
 
 begin
+
+   AWS.MIME.Load (MIME_File => Config.Get (MIME_Types));
+   --  Load the MIME type file. We need to do this here, because the AWS.MIME
+   --  has already been initialized with the default AWS configuration
+   --  parameters, and in these the aws.mime file is placed in ./, whereas our
+   --  aws.mime is in configuration/aws.mime.
 
    Handlers.Set (RH => Resource_Handlers);
    --  Populate the Resource_Handlers object.
