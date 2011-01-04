@@ -41,7 +41,7 @@ package body Static_Content is
       use Configuration;
 
       File_Path : constant String
-        := Config.Get (Static_Content_Path) & AWS.Status.URI (Request);
+        := Config.Get (WWW_Root) & AWS.Status.URI (Request);
 
    begin
 
