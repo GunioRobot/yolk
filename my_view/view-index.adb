@@ -27,7 +27,6 @@ with Simple_Email;
 with GNATCOLL.Email;
 with GNATCOLL.Email.Utils;
 
---  with Ada.Text_IO;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
 
 --  with Ada.Text_IO; use Ada.Text_IO;
