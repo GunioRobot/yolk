@@ -43,7 +43,7 @@ package body View is
       use AWS.Status;
       use AWS.Templates;
 
-      Encoding : Content_Encoding := GZip;
+      Encoding : Content_Encoding := Identity;
       --  Default to no encoding.
 
    begin
