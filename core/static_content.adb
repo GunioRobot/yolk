@@ -45,7 +45,8 @@ package body Static_Content is
 
    begin
 
-      if not Exists (File_Path) then
+      if not Exists (File_Path)
+        and then Kind (File_Path) /= Ordinary_File then
          return Not_Found.Output (Request);
       end if;
 
