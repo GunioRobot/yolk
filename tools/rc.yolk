@@ -4,7 +4,7 @@
 ##                                                                           ##
 ##                                  Yolk                                     ##
 ##                                                                           ##
-##                     rc script to start and stop Yolk                      ## 
+##                     rc script to start and stop Yolk                      ##
 ##                                                                           ##
 ##                   Copyright (C) 2010-2011, Thomas Løcke                   ##
 ##                                                                           ##
@@ -69,17 +69,28 @@ cleanup(){
         echo "Cleaning up PID file ${PID}."
         rm ${PID}
     fi
-    
+
 }
 
 ##############
 # yolk_start #
 ##############
 yolk_start() {
-    
+
+    # Check if we're already running
+    if [ -f ${PID} ]
+    then
+        PROCESS=`cat ${PID}`
+        if [ -d /proc/${PROCESS} ]
+        then
+            echo "${NAME_OF_APPLICATION} is already running with PID ${PROCESS}."
+            exit 1
+        fi
+    fi
+
     # Bail out if the user doesn't exist on the system.
     USER=`grep ^${RUN_AS_THIS_USER}: /etc/passwd`
-    if [ ! ${USER} ] 
+    if [ ! ${USER} ]
     then
         echo "User ${RUN_AS_THIS_USER} does not exist on the system."
         echo "Cannot start ${NAME_OF_APPLICATION}."
@@ -87,21 +98,25 @@ yolk_start() {
     fi
 
     echo -n "Starting the ${NAME_OF_APPLICATION} daemon as user ${RUN_AS_THIS_USER}."
-    
+
     # Start the application and send it to background.
     # NOTE:
     #   We direct output to /dev/null. This is to avoid IO exceptions from the
     #   application in case some part of AWS/GNATcoll produce unexpected
     #   output on STDOUT.
     su -l ${RUN_AS_THIS_USER} -c "cd ${PATH_TO_YOLK_EXE_DIRECTORY}; ./${NAME_OF_EXE_FILE} > /dev/null &"
-    
-    echo ""    
-    sleep 2
-    
+
+    echo ""
+    for i in 1 2 3 4
+    do
+        echo "."
+        sleep 0.5
+    done
+
     if [ -f ${PID} ]
     then
         PROCESS=`cat ${PID}`
-        
+
         if [ -d /proc/${PROCESS} ]
         then
             echo "${NAME_OF_APPLICATION} is running with PID ${PROCESS}."
@@ -113,16 +128,16 @@ yolk_start() {
         echo "Cannot find PID file ${PID}."
         echo "Starting ${NAME_OF_APPLICATION} failed."
     fi
-  
+
     exit 1
-    
+
 }
 
 #############
 # yolk_stop #
 #############
 yolk_stop() {
-    
+
     if [ -f ${PID} ]
     then
         PROCESS=`cat ${PID}`
@@ -131,26 +146,26 @@ yolk_stop() {
         echo "Is the application running?"
         exit 1
     fi
-  
+
     if [ -d /proc/${PROCESS} ]
     then
         echo -n "Stopping the ${NAME_OF_APPLICATION} daemon."
-        
+
         kill ${PROCESS}
-        
+
         while [ -d /proc/${PROCESS} ]
         do
             echo "."
             sleep 0.5
         done
-        
+
         echo "${NAME_OF_APPLICATION} stopped."
     else
         echo "No running process with PID ${PROCESS}"
-        
+
         cleanup
     fi
-  
+
 }
 
 ################
@@ -162,19 +177,19 @@ yolk_restart() {
     sleep 1
     echo "${NAME_OF_APPLICATION} stopped"
     yolk_start
-    
+
     exit 1
-    
+
 }
 
 ###############
 # yolk_status #
 ###############
 yolk_status() {
-        
+
     IS_RUNNING="false"
     echo "Process information:"
-    
+
     if [ -f ${PID} ]
     then
         PROCESS=`cat ${PID}`
@@ -183,27 +198,27 @@ yolk_status() {
             IS_RUNNING="true"
         fi
     fi
-  
+
     if [ ${IS_RUNNING} == "true" ]
     then
         echo "${NAME_OF_APPLICATION} is running with PID ${PROCESS}."
         echo ""
         echo "Disk I/O utilization stats:"
         pidstat -d -p ${PROCESS}
-        
+
         echo ""
         echo "CPU utilization stats:"
         pidstat -u -I -p ${PROCESS}
-        
+
         echo ""
         echo "Memory utilization stats:"
         pidstat -r -p ${PROCESS}
-        
+
         echo ""
     else
         echo "${NAME_OF_APPLICATION} is stopped."
     fi
-    
+
 }
 
 ###############
