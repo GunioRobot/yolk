@@ -82,6 +82,9 @@ private
 
    protected type Log_Object is
 
+      entry Seize;
+      --  Lock the object.
+
       function Get_File_Access return Access_File;
       --  Return access to an Ada.Text_IO.File_Type.
 
@@ -94,11 +97,14 @@ private
       procedure Move_To_Next_Slot;
       --  Move to the next slot. Basically we just cycle 1 .. Max_Slot_Count
 
+      procedure Release;
+      --  Unlock the object.
+
       procedure Set_File_Access;
       --  Allocate a new Ada.Text_IO.File_Type.
 
       procedure Set_Size
-        (Length : Natural);
+        (Length : in Natural);
       --  Add Length to Log_Object.Size. We use this to decide when to cycle
       --  the logfiles. If Size > Max_Logged_Characters, then we cycle to the
       --  next slot.
@@ -115,9 +121,10 @@ private
 
       File           : Access_File;
       Current_Slot   : Positive := 1;
+      Size           : Natural := 0;
       Slot_Max       : Positive := Configuration.Config.Get
         (Configuration.Max_Slot_Count);
-      Size           : Natural := 0;
+      Locked         : Boolean := False;
 
    end Log_Object;
 

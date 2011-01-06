@@ -215,6 +215,8 @@ package body Rotating_Log is
 
    begin
 
+      Log.Seize;
+
       if Log.Get_Size > Config.Get (Rotating_Log_Size_Limit) then
          if Is_Open (File => Log.Get_File_Access.all) then
             Close (File => Log.Get_File_Access.all);
@@ -257,6 +259,8 @@ package body Rotating_Log is
 
       Log.Set_Size (Length => Circa_Length);
 
+      Log.Release;
+
    exception
       when Config.Conversion_Error =>
          raise;
@@ -275,6 +279,18 @@ package body Rotating_Log is
    ------------------
 
    protected body Log_Object is
+
+      -------------
+      --  Seize  --
+      -------------
+
+      entry Seize when Locked = False
+      is
+      begin
+
+         Locked := True;
+
+      end Seize;
 
       -----------------------
       --  Get_File_Access  --
@@ -337,6 +353,18 @@ package body Rotating_Log is
          Size := 0;
 
       end Move_To_Next_Slot;
+
+      ---------------
+      --  Release  --
+      ---------------
+
+      procedure Release
+      is
+      begin
+
+         Locked := False;
+
+      end Release;
 
       -----------------------
       --  Set_File_Access  --
