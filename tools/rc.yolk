@@ -48,7 +48,7 @@ NAME_OF_APPLICATION=Yolk
 NAME_OF_EXE_FILE=yolk
 
 # Path to where the NAME_OF_EXE_FILE lives. Do _not_ write the trailing /
-PATH_TO_YOLK_EXE_DIRECTORY=/home/thomas/Yolk/exe
+PATH_TO_YOLK_EXE_DIRECTORY=/home/thomas/Ada/Yolk/exe
 
 # The system user the process will run as.
 RUN_AS_THIS_USER=thomas
