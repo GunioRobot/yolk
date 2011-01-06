@@ -21,6 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with AWS.Messages;
 with AWS.MIME;
 
 package body View is
@@ -30,24 +31,35 @@ package body View is
    ----------------------
 
    function Build_Response
-     (Template_File : in String;
+     (Status_Data   : in AWS.Status.Data;
+      Template_File : in String;
       Translations  : in AWS.Templates.Translate_Set)
       return AWS.Response.Data
    is
 
+      use AWS.Messages;
+      use AWS.MIME;
+      use AWS.Response;
+      use AWS.Status;
       use AWS.Templates;
 
-      Content : AWS.Response.Data;
+      Encoding : Content_Encoding := GZip;
+      --  Default to no encoding.
 
    begin
 
-      Content := AWS.Response.Build
-        (Content_Type => AWS.MIME.Text_HTML,
-         Message_Body => Parse
+      if Is_Supported (Status_Data, GZip) then
+         Encoding := GZip;
+         --  GZip is supported by the client.
+      end if;
+
+      return Build
+        (Content_Type   => Text_HTML,
+         Message_Body   => Parse
            (Filename     => Template_File,
             Translations => Translations,
-            Cached       => True));
-      return Content;
+            Cached       => True),
+         Encoding       => Encoding);
 
    end Build_Response;
 

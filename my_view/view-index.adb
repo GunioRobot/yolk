@@ -632,7 +632,8 @@ package body View.Index is
 --    end Multipart_Mixed_Attachment;
 
       return Build_Response
-        (Template_File => My.Config.Get (My.Template_Index),
+        (Status_Data   => Request,
+         Template_File => My.Config.Get (My.Template_Index),
          Translations  => T);
 
    end Generate;

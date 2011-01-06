@@ -21,6 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+private with AWS.Status;
 private with AWS.Response;
 private with AWS.Templates;
 
@@ -29,7 +30,8 @@ package View is
 private
 
    function Build_Response
-     (Template_File : in String;
+     (Status_Data   : in AWS.Status.Data;
+      Template_File : in String;
       Translations  : in AWS.Templates.Translate_Set)
       return AWS.Response.Data;
    --  Build the resource response.
