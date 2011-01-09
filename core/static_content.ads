@@ -24,6 +24,8 @@
 --  Static content such as images, HTML and XML files are handled here. The
 --  paths to where the server is supposed to look for the content is defined
 --  in the configuration/config.ini file.
+--  If enabled in the config.ini file, files with text content will be
+--  pre-compressed and saved in the Compressed_Cache_Directory.
 
 with AWS.Response;
 with AWS.Status;
@@ -33,7 +35,8 @@ package Static_Content is
    function File
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Load various static content. The regex'es and dispatchers for
-   --  these files are defined in the Handlers package.
+   --  Load various static content and compress/cache files with text content.
+   --  The regex'es and dispatchers for these files are defined in the Handlers
+   --  package.
 
 end Static_Content;
