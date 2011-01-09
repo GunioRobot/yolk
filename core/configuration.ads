@@ -42,6 +42,9 @@ package Configuration is
                  Cleaner_Client_Header_Timeout, --  AWS
                  Cleaner_Server_Response_Timeout, --  AWS
                  Cleaner_Wait_For_Client_Timeout, --  AWS
+                 Compressed_Cache_Directory,
+                 Compress_Minimum_File_Size,
+                 Compress_Static_Content,
                  Context_Lifetime, --  AWS
                  Error_Log_Filename_Prefix, -- AWS
                  Error_Log_Split_Mode, --  AWS
@@ -59,6 +62,7 @@ package Configuration is
                  Handler_JPG,
                  Handler_JS,
                  Handler_PNG,
+                 Handler_SVG,
                  Handler_XML,
                  Handler_XSL,
                  Handler_Unknown,
@@ -128,6 +132,12 @@ package Configuration is
                        => TUS ("28800.0"),
                        Cleaner_Wait_For_Client_Timeout
                        => TUS ("80.0"),
+                       Compressed_Cache_Directory
+                       => TUS ("static_content/compressed_cache"),
+                       Compress_Minimum_File_Size
+                       => TUS ("200"),
+                       Compress_Static_Content
+                       => TUS ("True"),
                        Context_Lifetime
                        => TUS ("28800.0"),
                        Error_Log_Filename_Prefix
@@ -162,6 +172,8 @@ package Configuration is
                        => TUS (".*\.js"),
                        Handler_PNG
                        => TUS (".*\.png"),
+                       Handler_SVG
+                       => TUS (".*\.svg"),
                        Handler_XML
                        => TUS (".*\.xml"),
                        Handler_XSL
