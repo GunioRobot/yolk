@@ -83,6 +83,11 @@ package body Handlers is
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
+         URI         => Config.Get (Handler_SVG),
+         Action      => Static_Content.File'Access);
+
+      AWS.Services.Dispatchers.URI.Register_Regexp
+        (Dispatcher  => RH,
          URI         => Config.Get (Handler_XML),
          Action      => Static_Content.File'Access);
 
