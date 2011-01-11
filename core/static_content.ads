@@ -29,14 +29,29 @@
 
 with AWS.Response;
 with AWS.Status;
+with AWS.Utils;
 
 package Static_Content is
 
-   function File
+   Lock : AWS.Utils.Semaphore;
+   --  This lock is used when the .gz files are created for the first time. We
+   --  don't want more than one task messing around with the Compress_And_Cache
+   --  procedure at the same time.
+
+   function Binary_File
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Load various static content and compress/cache files with text content.
-   --  The regex'es and dispatchers for these files are defined in the Handlers
-   --  package.
+   --  Load various binary static content. The regex'es and dispatchers for
+   --  these files are defined in the Handlers package.
+   --  NOTE:
+   --    Content handled by Binary_File will _not_ be pre-compressed.
+
+   function Text_File
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data;
+   --  Load various text static content and compress/cache files. The regex'es
+   --  and dispatchers for these files are defined in the Handlers package.
+   --  NOTE:
+   --    Content handled by Text_file will _always_ be pre-compressed.
 
 end Static_Content;

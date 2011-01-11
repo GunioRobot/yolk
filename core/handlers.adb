@@ -49,52 +49,52 @@ package body Handlers is
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_CSS),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Text_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_GIF),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Binary_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_HTML),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Text_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_ICO),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Binary_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JPG),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Binary_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JS),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Text_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_PNG),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Binary_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_SVG),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Text_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XML),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Text_File'Access);
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XSL),
-         Action      => Static_Content.File'Access);
+         Action      => Static_Content.Text_File'Access);
 
       -----------------------------------------
       --  Unknown Resource (404) Dispatcher  --

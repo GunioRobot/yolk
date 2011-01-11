@@ -27,19 +27,83 @@ with AWS.Messages;
 with AWS.MIME;
 with Configuration;
 with Not_Found;
+with Rotating_Log;
 with ZLib;
 
 package body Static_Content is
 
    procedure Initialize;
-   --  Initialize the Static_Content package. Basically just clear out the
-   --  compressed cache directory.
+   --  Initialize the Static_Content package. Basically just delete and
+   --  re-create the Compressed_Cache_Directory.'
 
-   ------------
-   --  File  --
-   ------------
+   -------------------
+   --  Binary_File  --
+   -------------------
 
-   function File
+   function Binary_File
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
+   is
+
+      use Ada.Directories;
+      use AWS.MIME;
+      use AWS.Status;
+      use Configuration;
+
+      Resource : constant String := Config.Get (WWW_Root) & URI (Request);
+      --  The path to the requested resource.
+
+   begin
+
+      if not Exists (Resource)
+        or else Kind (Resource) /= Ordinary_File
+      then
+         return Not_Found.Output (Request);
+      end if;
+
+      return AWS.Response.File
+        (Content_Type  => Content_Type (Resource),
+         Filename      => Resource);
+
+   end Binary_File;
+
+   ------------------
+   --  Initialize  --
+   ------------------
+
+   procedure Initialize
+   is
+
+      use Ada.Directories;
+      use Configuration;
+      use Rotating_Log;
+
+   begin
+
+      if Exists (Config.Get (Compressed_Cache_Directory))
+        and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
+      then
+         Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
+         Track
+           (Handle     => Info,
+            Log_String => Config.Get (Compressed_Cache_Directory)
+            & " deleted by Static_Content.Initialize");
+      end if;
+
+      Create_Path
+           (New_Directory => Config.Get (Compressed_Cache_Directory));
+      Track
+        (Handle     => Info,
+         Log_String => Config.Get (Compressed_Cache_Directory)
+         & " created by Static_Content.Initialize");
+
+   end Initialize;
+
+   -----------------
+   --  Text_File  --
+   -----------------
+
+   function Text_File
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
@@ -48,20 +112,18 @@ package body Static_Content is
       use AWS.Messages;
       use AWS.Status;
       use Configuration;
+      use Rotating_Log;
 
-      File_Path : constant String := Config.Get (WWW_Root) & URI (Request);
+      GZ_Resource           : constant String
+        := Config.Get (Compressed_Cache_Directory) & URI (Request) & ".gz";
+      Resource : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
+      MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
+      Minimum_File_Size : constant File_Size
+        := File_Size (Integer'(Config.Get (Compress_Minimum_File_Size)));
 
       procedure Compress_And_Cache;
       --  Compress and cache the requested static file.
-
-      function Compressed_File_Path return String;
-      --  Return the path to the .gz compressed file.
-
-      function Is_Compressable
-        (Content_Type : in String)
-      return Boolean;
-      --  Check if a content type is compressable, ie. text.
 
       --------------------------
       --  Compress_And_Cache  --
@@ -70,9 +132,7 @@ package body Static_Content is
       procedure Compress_And_Cache
       is
 
-         New_File : constant String := Config.Get
-           (Compressed_Cache_Directory) & URI (Request) & ".gz";
-         Cache_Dir : constant String := Containing_Directory (New_File);
+         Cache_Dir : constant String := Containing_Directory (GZ_Resource);
 
       begin
 
@@ -138,12 +198,12 @@ package body Static_Content is
             Ada.Streams.Stream_IO.Open
               (File => File_In,
                Mode => Ada.Streams.Stream_IO.In_File,
-               Name => File_Path);
+               Name => Resource);
 
             Ada.Streams.Stream_IO.Create
               (File => File_Out,
                Mode => Ada.Streams.Stream_IO.Out_File,
-               Name => New_File);
+               Name => GZ_Resource);
 
             ZLib.Deflate_Init
               (Filter => Filter,
@@ -161,142 +221,58 @@ package body Static_Content is
 
       end Compress_And_Cache;
 
-      ----------------------------
-      --  Compressed_File_Path  --
-      ----------------------------
-
-      function Compressed_File_Path return String
-      is
-      begin
-
-         return Config.Get (Compressed_Cache_Directory)
-           & URI (Request) & ".gz";
-
-      end Compressed_File_Path;
-
-      -----------------------
-      --  Is_Compressable  --
-      -----------------------
-
-      function Is_Compressable
-        (Content_Type : in String)
-      return Boolean
-      is
-      begin
-
-         if AWS.MIME.Is_Text (Content_Type) then
-            return True;
-         end if;
-
-         if Content_Type = "application/javascript"
-           or Content_Type = "application/xml"
-           or Content_Type = "image/svg+xml"
-         then
-            return True;
-         end if;
-
-         return False;
-
-      end Is_Compressable;
-
-      GZ_File           : constant String := Compressed_File_Path;
-      MIME_Type         : constant String := AWS.MIME.Content_Type (File_Path);
-      Minimum_File_Size : constant File_Size
-        := File_Size (Integer'(Config.Get (Compress_Minimum_File_Size)));
-
    begin
 
-      if not Exists (File_Path)
-        or else Kind (File_Path) /= Ordinary_File
+      if not Exists (Resource)
+        or else Kind (Resource) /= Ordinary_File
       then
          return Not_Found.Output (Request);
       end if;
 
-      if Exists (GZ_File)
-        and then Kind (GZ_File) = Ordinary_File
-      then
-         return AWS.Response.File
-           (Content_Type  => MIME_Type,
-            Filename      => GZ_File,
-            Encoding      => GZip);
-      end if;
+      if Is_Supported (Request, GZip) then
+         if Exists (GZ_Resource)
+           and then Kind (GZ_Resource) = Ordinary_File
+         then
+            return AWS.Response.File
+              (Content_Type  => MIME_Type,
+               Filename      => GZ_Resource,
+               Encoding      => GZip);
+         elsif Exists (GZ_Resource)
+           and then Kind (GZ_Resource) /= Ordinary_File
+         then
+            --  Not so good. Log to ERROR track and return un-compressed
+            --  content.
+            Track
+              (Handle     => Error,
+               Log_String => GZ_Resource
+               & " exists and is not an ordinary file");
 
-      if Config.Get (Compress_Static_Content)
-        and then Is_Compressable (MIME_Type)
-        and then Is_Supported (Request, GZip)
-        and then Size (File_Path) > Minimum_File_Size
-      then
-         Compress_And_Cache;
+            return AWS.Response.File
+              (Content_Type  => MIME_Type,
+               Filename      => Resource);
+         end if;
 
-         return AWS.Response.File
-           (Content_Type  => MIME_Type,
-            Filename      => GZ_File,
-            Encoding      => GZip);
+         if Config.Get (Compress_Static_Content)
+           and then Size (Resource) > Minimum_File_Size
+         then
+            Lock.Seize;
+            Compress_And_Cache;
+            Lock.Release;
+
+            --  WHAT THE HELL!! What to do here if Compress_And_Cache fail??
+
+            return AWS.Response.File
+              (Content_Type  => MIME_Type,
+               Filename      => GZ_Resource,
+               Encoding      => GZip);
+         end if;
       end if;
 
       return AWS.Response.File
         (Content_Type  => MIME_Type,
-         Filename      => File_Path);
+         Filename      => Resource);
 
-   end File;
-
-   ------------------
-   --  Initialize  --
-   ------------------
-
-   procedure Initialize
-   is
-
-      use Ada.Directories;
-      use Configuration;
-
-      procedure Delete_Item
-        (Search_Item : in Directory_Entry_Type);
-      --  Delete files and directories in the Compressed_Cache_Directory.
-
-      -------------------
-      --  Delete_Item  --
-      -------------------
-
-      procedure Delete_Item
-        (Search_Item : in Directory_Entry_Type)
-      is
-
-         Name : constant String := Simple_Name
-           (Directory_Entry => Search_Item);
-         Full : constant String := Full_Name (Directory_Entry => Search_Item);
-
-      begin
-
-         if Kind (Search_Item) = Directory
-           and then Name /= ".."
-           and then Name /= "."
-         then
-            Delete_Tree (Directory => Full);
-         end if;
-
-         if Kind (Search_Item) = Ordinary_File
-           and then Name /= ".."
-           and then Name /= "."
-           and then Name /= ".gitignore"
-         then
-            Delete_File (Name => Full);
-         end if;
-
-      end Delete_Item;
-
-      Filter : constant Filter_Type := (Ordinary_File => True,
-                                        Special_File  => False,
-                                        Directory     => True);
-
-   begin
-
-      Search (Directory => Config.Get (Compressed_Cache_Directory),
-              Pattern => "",
-              Filter => Filter,
-              Process => Delete_Item'Access);
-
-   end Initialize;
+   end Text_File;
 
 begin
 
