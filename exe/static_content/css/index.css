@@ -22,6 +22,12 @@ p {
     margin-top: 15px;
 }
 
+code {
+    display: block;
+    margin: 10px;
+    padding: 0px;
+}
+
 dl {
     margin: 20px 15px;
     padding: 0px 10px 10px 10px;
@@ -48,7 +54,7 @@ a {
 }
 
 a:hover {
-    color: #800000; 
+    color: #800000;
     background-color: inherit;
 }
 
@@ -68,7 +74,8 @@ a:hover {
 #content {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5%;
+    margin-top: 4%;
+    margin-bottom: 4%;
     border: solid 1px #d3d3d3;
     width: 600px;
     padding: 10px 25px;
@@ -103,18 +110,5 @@ a:hover {
     top: -16px;
     left: 15px;
     color: #808080;
-    background-color: inherit;    
-}
-
-#w3c {
-    margin-left: auto;
-    margin-right: auto;
-    width: 650px;
-    text-align: right;
-    padding-top: 5px;
-    padding-right: 0px;
-}
-
-#w3c img {
-    border: none;
+    background-color: inherit;
 }
