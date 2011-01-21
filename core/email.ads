@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                              simple_email                                 --
+--                                 email                                     --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -26,7 +26,7 @@ with Ada.Strings.Unbounded;
 with AWS.SMTP;
 with GNATCOLL.VFS;
 
-package Simple_Email is
+package Email is
 
    Attachment_File_Not_Found        : exception;
    --  Is raised if a file attachment is not found.
@@ -316,4 +316,4 @@ private
    --  Exceptions:
    --    Attachment_File_Not_Found
 
-end Simple_Email;
+end Email;

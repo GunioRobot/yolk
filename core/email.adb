@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                              simple_email                                 --
+--                                  email                                    --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -30,7 +30,7 @@ with Utilities;
 --  with AWS.SMTP.Client;
 --  with Utilities;         use Utilities;
 
-package body Simple_Email is
+package body Email is
 
    ---------------------------
    --  Add_File_Attachment  --
@@ -613,4 +613,4 @@ package body Simple_Email is
 --
 --     end Set_File_Attachments;
 
-end Simple_Email;
+end Email;

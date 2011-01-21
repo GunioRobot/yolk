@@ -23,7 +23,7 @@
 
 with My_Configuration;
 with Rotating_Log;
-with Simple_Email;
+with Email;
 with GNATCOLL.Email;
 with GNATCOLL.Email.Utils;
 
@@ -53,7 +53,7 @@ package body View.Index is
       use AWS.Templates;
       use GNATCOLL.Email;
       use GNATCOLL.Email.Utils;
-      use Simple_Email;
+      use Email;
       use Rotating_Log;
 
       package My renames My_Configuration;
