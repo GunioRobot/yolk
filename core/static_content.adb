@@ -116,6 +116,7 @@ package body Static_Content is
 
       GZ_Resource           : constant String
         := Config.Get (Compressed_Cache_Directory) & URI (Request) & ".gz";
+      --  The path to the GZipped resourc.
       Resource : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
       MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
@@ -258,8 +259,6 @@ package body Static_Content is
             Lock.Seize;
             Compress_And_Cache;
             Lock.Release;
-
-            --  WHAT THE HELL!! What to do here if Compress_And_Cache fail??
 
             return AWS.Response.File
               (Content_Type  => MIME_Type,
