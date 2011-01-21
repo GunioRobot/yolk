@@ -207,8 +207,7 @@ exe/
 
 my_configuration/
     The my_* directories is where you're supposed to place your application spe-
-    cific configuration code. In my_configuration/ you will find an example on
-    how to setup your own configuration system. See docs/ for more information.
+    cific configuration code. See docs/ for more information.
 
 my_core/
     The my_core/ directory is supposed to hold whatever packages your application
@@ -278,7 +277,7 @@ The application can be properly shutdown using the following three signals:
 
 Or you can simply bring it to the foreground and click CTRL+c.
 
-Or even better: User the tools/rc.yolk script to start/stop your application. Read
+Or even better: Use the tools/rc.yolk script to start/stop your application. Read
 the comments in the file, and adjust according to your needs. Using this will
 enable you to run a Yolk application like any other server-software.
 

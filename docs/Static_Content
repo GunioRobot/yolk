@@ -1,1 +1,37 @@
-Readme about the static content. 
+Yolk comes with support for some static content out of the box:
+
+    CSS
+    GIF
+    HTML
+    ICO
+    JPG
+    JS
+    PNG
+    SVG
+    XML
+    XSL
+
+If you need more, you can either add them to the my_handlers/my_handlers.adb file
+or the the core/handlers.adb file. The former is the preferred method.
+
+If you look at core/handlers.adb you'll notice that there are two different handlers:
+
+    package SC renames Static_Content;
+
+    AWS.Services.Dispatchers.URI.Register_Regexp
+      (Dispatcher  => RH,
+       URI         => Config.Get (Handler_CSS),
+       Action      => Create (Callback => SC.Text_File'Access));
+
+    AWS.Services.Dispatchers.URI.Register_Regexp
+      (Dispatcher  => RH,
+       URI         => Config.Get (Handler_GIF),
+       Action      => Create (Callback => SC.Binary_File'Access));
+
+The important distinction between these two are the callback used in Action. It's
+either Text_File or Binary_File. In the former case _all_ content is gzipped if
+Compress_Static_Content in configuration/config.ini is True. In the latter case
+content is never gzipped.
+
+Obviously this means that the Text_File function should never be used for stuff
+like PDF files, but only for files that contain actual plain text.

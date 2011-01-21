@@ -1,6 +1,6 @@
-When you clone Yolk from the offical Git repository, it comes setup with a 
-demo website that will run out of the box. 
-This makes it easy to check that everything is working as intended at the 
+When you clone Yolk from the offical Git repository, it comes setup with a
+demo website that will run out of the box.
+This makes it easy to check that everything is working as intended at the
 cost of a bit of cleaning up before you can get started on your own application.
 
 First order of business is checking that you have all the required dependencies
@@ -9,7 +9,7 @@ installed:
     1. AWS
     2. GNATcoll
 
-When you're certain that the dependencies are met, then all you need to do is 
+When you're certain that the dependencies are met, then all you need to do is
 follow these 5 steps:
 
     1. cd /path/to/Yolk
@@ -18,25 +18,20 @@ follow these 5 steps:
     4. ./yolk
     5. Using your browser, visit http://localhost:4242
 
-########################
-########################
-#
-#
-#  TODO! TODO! TODO!
-#  Write something about the rc script
-#
-#
-#######################
-#######################
-
-To see the status page for the application, go to http://localhost:4242/status
-and enter "admin" as username and "changemenow" as password. Please make sure 
-that this password is changed before you go public with your application. See
-exe/configuration/config.ini for how to do this. Look for the Admin_Password 
-option.
-
 You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
 found in the yolk.pid file.
+
+Instead of starting/stopping your application by calling the Yolk executable
+directly, you can use the tools/rc.yolk script. Using this will enable you to
+run a Yolk application like any other server-software. It is properly detached
+from the console. All you have to do is edit a few variables at the beginning of
+the script, so it fits your environment.
+
+To see the status page for the application, go to http://localhost:4242/status
+and enter "admin" as username and "changemenow" as password. Please make sure
+that this password is changed before you go public with your application. See
+exe/configuration/config.ini for how to do this. Look for the Admin_Password
+option.
 
 If the index page (with all the static content tests) are shown correctly and
 you can access the status page, then Yolk is ready to be used.
@@ -46,9 +41,9 @@ If Yolk isn't working, then it's worth checking that:
     * gnatmake is in your PATH
     * The ADA_PROJECT_PATH environment variable contains the paths to your AWS
       and GNATcoll project files.
-    * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin, 
-      then make sure that the "for Compiler_Command" option in yolk.gpr is 
+    * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin,
+      then make sure that the "for Compiler_Command" option in yolk.gpr is
       adjusted accordingly.
     * That you're not already using port 4242 for something else.
-    
+
 See the README file and the docs/ for more information on how to use Yolk.

@@ -1,1 +1,15 @@
-Readme about the AWS status page. 
+The AWS status page contains most of the AWS configuration settings, and some
+interesting runtime facts about your server, such as amount of resources
+served.
+
+The configuration for the status page is handled by these config.ini parameters:
+
+    Admin_Password
+    Admin_URI
+    Status_Page
+
+Especially the first is important to change on a live server. You should _not_
+run a live server with the default password set.
+
+You cannot disable the status page, but you can make it very inaccessible by
+setting both Admin_Password and Admin_URI to something completely insane.

@@ -1,1 +1,26 @@
-Readme about the GNATCOLL.SQL Database schema monitoring system. 
+One of the really nice things about the GNATcoll database interface is its
+ability to monitor your database schema via its gnatcoll_db2ada tool.
+
+Using this tool, you can generate Ada packages that reflect your database
+schema. These packages can then help you write SQL queries without having to
+embed literal SQL strings in your code. Instead you use Ada function calls.
+It helps to ensure syntactic validity of the queries, type safety and that
+the query only reference fields that actually exist in the database.
+
+An example:
+
+    Q : SQL_Query := SQL_Select
+                       (Fields => Table1.Field1 & Table2.Field2,
+                        From   => Table1 & Table2,
+                        Where  => Table1.Field3 = Table2.Field4);
+
+Which is obviously less error-prone than the SQL string equivalent.
+
+The gnatcoll_db2ada tool is documented in the GNATcoll documentation, which
+can be found here:
+
+https://www.adacore.com/wp-content/files/auto_update/gnatcoll-docs/gnatcoll.html
+
+As with my_core/, this directory is strictly a convenience. Where you put your
+database related code really doesn't matter, as long as the compiler can find
+it, but putting it in my_database/ might help with keeping things neat and tidy.
