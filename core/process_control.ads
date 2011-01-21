@@ -92,11 +92,10 @@ private
       procedure Handle_Kill;
       --  Set AWS_State to Shutdown.
 
-      pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGHUP);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGINT);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGTERM);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGPWR);
-      --  Handles the SIGHUP, SIGINT, SIGTERM and SIGPWR signals. This
+      --  Handles the SIGINT, SIGTERM and SIGPWR signals. This
       --  signalhandler stops the AWS server and subsequently the entire
       --  server.
 
