@@ -21,8 +21,10 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with AWS.Dispatchers.Callback;
 with My_Configuration;
 with View.Index;
+with Unknown_Content;
 
 package body My_Handlers is
 
@@ -34,9 +36,23 @@ package body My_Handlers is
      (RH : out AWS.Services.Dispatchers.URI.Handler)
    is
 
+      use AWS.Dispatchers.Callback;
+
       package My renames My_Configuration;
 
    begin
+
+      -----------------------------------------
+      --  Unknown Resource (404) Dispatcher  --
+      -----------------------------------------
+
+      --  This dispatcher is called if the requested resource doesn't match any
+      --  of the other dispatchers.
+      --  It returns a generic 404 HTML page. The template for this 404 can be
+      --  found in templates/system.
+      AWS.Services.Dispatchers.URI.Register_Default_Callback
+        (Dispatcher => RH,
+         Action     => Create (Callback => Unknown_Content.Generate'Access));
 
       -----------------------------------
       --  General Content Dispatchers  --
@@ -51,7 +67,7 @@ package body My_Handlers is
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),
-         Action     => View.Index.Generate'Access);
+         Action     => Create (Callback => View.Index.Generate'Access));
 
    end Set;
 

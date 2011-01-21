@@ -65,7 +65,6 @@ package Configuration is
                  Handler_SVG,
                  Handler_XML,
                  Handler_XSL,
-                 Handler_Unknown,
                  Hotplug_Port, --  AWS
                  Immediate_Flush,
                  Keep_Alive_Force_Limit, --  AWS
@@ -178,8 +177,6 @@ package Configuration is
                        => TUS (".*\.xml"),
                        Handler_XSL
                        => TUS (".*\.xsl"),
-                       Handler_Unknown
-                       => TUS ("[^status].*"),
                        Hotplug_Port
                        => TUS ("8888"),
                        Immediate_Flush

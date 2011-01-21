@@ -21,10 +21,10 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with AWS.Dispatchers.Callback;
 with Configuration;
 with My_Handlers;
 with Static_Content;
-with Unknown_Content;
 
 package body Handlers is
 
@@ -36,7 +36,10 @@ package body Handlers is
      (RH : out AWS.Services.Dispatchers.URI.Handler)
    is
 
+      use AWS.Dispatchers.Callback;
       use Configuration;
+
+      package SC renames Static_Content;
 
    begin
 
@@ -49,66 +52,52 @@ package body Handlers is
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_CSS),
-         Action      => Static_Content.Text_File'Access);
+         Action      => Create (Callback => SC.Text_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_GIF),
-         Action      => Static_Content.Binary_File'Access);
+         Action      => Create (Callback => SC.Binary_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_HTML),
-         Action      => Static_Content.Text_File'Access);
+         Action      => Create (Callback => SC.Text_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_ICO),
-         Action      => Static_Content.Binary_File'Access);
+         Action      => Create (Callback => SC.Binary_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JPG),
-         Action      => Static_Content.Binary_File'Access);
+         Action      => Create (Callback => SC.Binary_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JS),
-         Action      => Static_Content.Text_File'Access);
+         Action      => Create (Callback => SC.Text_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_PNG),
-         Action      => Static_Content.Binary_File'Access);
+         Action      => Create (Callback => SC.Binary_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_SVG),
-         Action      => Static_Content.Text_File'Access);
+         Action      => Create (Callback => SC.Text_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XML),
-         Action      => Static_Content.Text_File'Access);
+         Action      => Create (Callback => SC.Text_File'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XSL),
-         Action      => Static_Content.Text_File'Access);
-
-      -----------------------------------------
-      --  Unknown Resource (404) Dispatcher  --
-      -----------------------------------------
-
-      --  This dispatcher _must_ be placed last, or else it will overrule
-      --  all the other dispatchers. This dispatcher is called if the requested
-      --  resource doesn't match any of the other dispatchers.
-      --  It returns a generic 404 HTML page. The template for this 404 can be
-      --  found in templates/system.
-      AWS.Services.Dispatchers.URI.Register_Regexp
-        (Dispatcher  => RH,
-         URI         => Config.Get (Handler_Unknown),
-         Action      => Unknown_Content.Generate'Access);
+         Action      => Create (Callback => SC.Text_File'Access));
 
    end Set;
 

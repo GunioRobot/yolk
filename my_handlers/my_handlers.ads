@@ -28,8 +28,8 @@ package My_Handlers is
    procedure Set
      (RH : out AWS.Services.Dispatchers.URI.Handler);
    --  Setup content dispatchers for the server. Basically this initializes the
-   --  Resource_Handlers object declared in yolk.adb. The handlers registered
-   --  here are specific to this application. Generic content handlers, such as
-   --  404 errors, images and similar, are registered in the Handlers package.
+   --  RH object declared in yolk.adb. The handlers registered here are speci-
+   --  fic to this application. Generic content handlers, such as 404 errors,
+   --  images and similar, are registered in the core Handlers package.
 
 end My_Handlers;
