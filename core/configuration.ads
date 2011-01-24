@@ -232,7 +232,7 @@ package Configuration is
                        Session_Data_File
                        => TUS ("session/session.data"),
                        Session_Lifetime
-                       => TUS ("1200"),
+                       => TUS ("1200.0"),
                        Session_Name
                        => TUS ("Yolk"),
                        Status_Page
