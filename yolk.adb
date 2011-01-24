@@ -30,6 +30,7 @@ with Handlers;
 with Log_File_Cleanup;
 with Process_Control;
 with Rotating_Log;
+with Utilities;
 
 procedure Yolk
 is
@@ -37,6 +38,7 @@ is
    use Ada.Exceptions;
    use Configuration;
    use Rotating_Log;
+   use Utilities;
 
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
    --  The various resource handlers. These are defined in the Handlers and
@@ -188,6 +190,18 @@ is
    end Log_File_Monitor;
 
 begin
+
+   for Key in Keys'Range loop
+      if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then
+         Track (Handle     => Info,
+                Log_String => "Configuration key " &
+                Keys'Image (Key) & " is not default value.");
+         Track (Handle     => Info,
+                Log_String => "    Default is: " & TS (Default_Values (Key)));
+         Track (Handle     => Info,
+                Log_String => "    Set value is: " & TS (Config.Get (Key)));
+      end if;
+   end loop;
 
    AWS.MIME.Load (MIME_File => Config.Get (MIME_Types));
    --  Load the MIME type file. We need to do this here, because the AWS.MIME
