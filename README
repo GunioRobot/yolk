@@ -301,10 +301,12 @@ if you intend to use Git as your VCS.
 [1]
     Ada Web Server
     http://libre.adacore.com/libre/tools/aws/
+    SVN: svn co --ignore-externals http://svn.eu.adacore.com/anonsvn/Dev/trunk/AWS
 
 [2]
     GNAT Component Collection
     http://libre.adacore.com/libre/tools/gnat-component-collection/
+    SVN: svn co http://svn.eu.adacore.com/anonsvn/Dev/trunk/gps/gnatlib/
 
 [3]
     XML/Ada
