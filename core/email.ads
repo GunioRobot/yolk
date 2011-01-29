@@ -48,9 +48,13 @@ package Email is
                           ISO_8859_13,
                           ISO_8859_14,
                           ISO_8859_15,
-                          Windows_1252);
+                          Windows_1252,
+                          UTF8);
    --  The available character sets. We try to provide the same character sets
-   --  as defined in gnatcoll-emails.ads
+   --  as defined in gnatcoll-email.ads.
+   --  Note:
+   --    gnatcoll-email does not support UTF8, so this has been added by me
+   --    specifically.
 
    type Email_Structure is private;
 
@@ -60,7 +64,7 @@ package Email is
    procedure Add_File_Attachment
      (ES            : in out Email_Structure;
       Path_To_File  : in     String;
-      Charset       : in     Character_Set := ISO_8859_1);
+      Charset       : in     Character_Set := US_ASCII);
    --  Add a file attachment to the ES email object. These are _always_ BASE64
    --  encoded. At this point we do not check whether the file actually exists,
    --  so anything can be added, even an empty String Path_To_File.
@@ -69,7 +73,7 @@ package Email is
      (ES        : in out Email_Structure;
       Address   : in     String;
       Name      : in     String := "";
-      Charset   : in     Character_Set := ISO_8859_1);
+      Charset   : in     Character_Set := US_ASCII);
    --  Add a From mailbox to the email. If multiple From mailboxes are added,
    --  then a subsequent call to Set_Sender is required, as per RFC 5322.
 
@@ -78,14 +82,14 @@ package Email is
       Address    : in     String;
       Name       : in     String := "";
       Kind       : in     Recipient_Kind := To;
-      Charset    : in     Character_Set := ISO_8859_1);
+      Charset    : in     Character_Set := US_ASCII);
    --  Add a recipient to the email.
 
    procedure Add_Reply_To
      (ES       : in out Email_Structure;
       Address  : in     String;
       Name     : in     String := "";
-      Charset  : in     Character_Set := ISO_8859_1);
+      Charset  : in     Character_Set := US_ASCII);
    --  Reply-To indicates the address(es) to which the author of the message
    --  suggests that replies be sent. In the absence of Reply-To, the default
    --  is to send replies to the From mailboxes.
@@ -125,7 +129,7 @@ package Email is
       Text_Part      : in     String;
       SMTP_Server    : in     String;
       SMTP_Port      : in     Positive := 25;
-      Charset        : in     Character_Set := ISO_8859_1);
+      Charset        : in     Character_Set := US_ASCII);
    --  Convenience wrapper for Send (ES : in out Email_Structure) for Text only
    --  emails.
    --  Exceptions raised by the "parent" Send procdure are passively propagated
@@ -142,7 +146,7 @@ package Email is
       HTML_Part      : in     String;
       SMTP_Server    : in     String;
       SMTP_Port      : in     Positive := 25;
-      Charset        : in     Character_Set := ISO_8859_1);
+      Charset        : in     Character_Set := US_ASCII);
    --  Convenience wrapper for Send (ES : in out Email_Structure) for Text and
    --  HTML multipart emails.
    --  Exceptions raised by the "parent" Send procdure are passively propagated
@@ -151,7 +155,7 @@ package Email is
    procedure Set_HTML_Part
      (ES         : in out Email_Structure;
       Part       : in     String;
-      Charset    : in     Character_Set := ISO_8859_1);
+      Charset    : in     Character_Set := US_ASCII);
    --  When adding a HTML part to an email, it is automatically converted to
    --  a multipart message. If no Text part is added, an empty one will be
    --  created automatically.
@@ -160,20 +164,20 @@ package Email is
      (ES         : in out Email_Structure;
       Address    : in     String;
       Name       : in     String := "";
-      Charset    : in     Character_Set := ISO_8859_1);
+      Charset    : in     Character_Set := US_ASCII);
    --  If an email has multiple From addresses, then it is required, as per
    --  RFC 5322, to set a single Sender.
 
    procedure Set_Subject
      (ES        : in out Email_Structure;
       Subject   : in     String;
-      Charset   : in     Character_Set := ISO_8859_1);
+      Charset   : in     Character_Set := US_ASCII);
    --  Add a Subject to the email.
 
    procedure Set_Text_Part
      (ES         : in out Email_Structure;
       Part       : in     String;
-      Charset    : in     Character_Set := ISO_8859_1);
+      Charset    : in     Character_Set := US_ASCII);
    --  Add the Text part to an email.
 
    function Status_Code
@@ -205,6 +209,9 @@ private
       Charset  : Character_Set;
       Name     : Unbounded_String;
    end record;
+   Null_Email_Data : constant Email_Data := (Null_Unbounded_String,
+                                             US_ASCII,
+                                             Null_Unbounded_String);
 
    type Email_Kind is (Text,
                        Text_With_Attachment,
