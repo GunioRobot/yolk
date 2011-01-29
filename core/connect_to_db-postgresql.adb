@@ -21,7 +21,22 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Task_Attributes;
+
 package body Connect_To_DB.PostgreSQL is
+
+   package Task_Association is new Ada.Task_Attributes (DB_Conn_Access, null);
+   --  Associate AWS tasks with Connect_To_DB.DB_Conn tasks.
+   --  Yes, this package is completely redundant if we're using the
+   --  AWS_Tasks_To_DB Task_To_DB_Mapping_Method.
+   --  Can I do something about this?
+
+   DB_Description : GNATCOLL.SQL.Exec.Database_Description;
+   --  Describes access to the database, ie. user, host, password and such.
+
+   procedure Initialize;
+   --  Is called when this generic is instantiated. It populates the
+   --  DB_Description variable.
 
    ------------------
    --  Connection  --
@@ -30,36 +45,40 @@ package body Connect_To_DB.PostgreSQL is
    function Connection return GNATCOLL.SQL.Exec.Database_Connection
    is
 
-      use Ada.Task_Identification;
       use GNATCOLL.SQL.Exec;
-
-      A_Connection   : Database_Connection;
-      A_DB_Task      : DB_Conn_Access;
 
    begin
 
       case Task_To_DB_Mapping_Method is
          when AWS_Tasks_To_DB =>
             --  We map AWS tasks directly to the GNATCOLL database connections.
-            A_Connection := Get_Task_Connection
+            return Get_Task_Connection
               (Description  => DB_Description,
                Factory      => Database_Connection_Factory'Access);
          when DB_Conn_Tasks_To_DB =>
-            --  We have a pool of DB_Conn tasks, and these are mapped to the
-            --  AWS tasks in the Association protected object. This is a hashed
-            --  map.
-            A_DB_Task := Association.Get (AWS_Task_ID => Current_Task);
+            --  Map AWS tasks to DB_Conn tasks, and use the DB_Conn tasks to
+            --  fetch the database connection.
+            declare
 
-            if A_DB_Task = Null_DB_Conn_Access then
-               Association.Set (DB_Task     => A_DB_Task,
-                                AWS_Task_ID => Current_Task);
-            end if;
+               A_Connection   : Database_Connection;
+               A_DB_Task      : DB_Conn_Access;
 
-            A_DB_Task.Fetch (Conn => A_Connection,
-                             Desc => DB_Description);
+            begin
+
+               A_DB_Task := Task_Association.Value;
+
+               if A_DB_Task = Null_DB_Conn_Access then
+                  A_DB_Task := new DB_Conn;
+                  Task_Association.Set_Value (Val => A_DB_Task);
+               end if;
+
+               A_DB_Task.Fetch (Conn => A_Connection,
+                                Desc => DB_Description);
+
+               return A_Connection;
+
+            end;
       end case;
-
-      return A_Connection;
 
    end Connection;
 
@@ -75,21 +94,22 @@ package body Connect_To_DB.PostgreSQL is
    begin
 
       if Task_To_DB_Mapping_Method = AWS_Tasks_To_DB
-        and then Connect_To_DB.AWS_Tasks_To_DB_Already_Used
+        and then AWS_Tasks_To_DB_Already_Used
       then
          raise Program_Error with "AWS_Tasks_To_DB may only be used once.";
       end if;
 
-      Setup_Database (Description => DB_Description,
-                      Database    => DB_Credentials.Database,
-                      User        => DB_Credentials.User,
-                      Host        => DB_Credentials.Host,
-                      Password    => DB_Credentials.Password,
-                      DBMS        => DBMS_Postgresql);
+      Setup_Database (Description   => DB_Description,
+                      Database      => DB_Credentials.Database,
+                      User          => DB_Credentials.User,
+                      Host          => DB_Credentials.Host,
+                      Password      => DB_Credentials.Password,
+                      DBMS          => DBMS_Postgresql,
+                      SSL           => Prefer);
       --  Populate the DB_Description variable.
 
       if Task_To_DB_Mapping_Method = AWS_Tasks_To_DB then
-         Connect_To_DB.AWS_Tasks_To_DB_Already_Used := True;
+         AWS_Tasks_To_DB_Already_Used := True;
          --  We only accept _one_ instantation using the AWS_Tasks_To_DB
          --  method.
       end if;

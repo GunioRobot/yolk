@@ -25,6 +25,8 @@ generic
 
    DB_Credentials : Credentials;
    --  The database credentials, such as username, password, host and similar.
+   --  Note that if an SSL connection is available to the host, then SSL is
+   --  preferred over non-SSL.
 
    Task_To_DB_Mapping_Method : Connection_Mapping_Method;
    --  Specify how we connect to the database. This can be done in one of two
@@ -41,11 +43,9 @@ generic
    --    Connect_To_DB child package and these then connect to the database.
    --    The result is that your app can connect to several different databases
    --    in the same AWS task.
-   --    This is slower than AWS_Tasks_To_DB because we have to access a
-   --    hashed map to decide the mapping from an AWS task to a DB_Conn task,
-   --    before we can call GNATCOLL.SQL.Exec.Get_Task_Connection.
-   --    Obviously this method also requires more memory, as we have more tasks
-   --    active in the application.
+   --    This is slower than AWS_Tasks_To_DB because we have to maintain a map
+   --    between the AWS tasks and the DB_Conn tasks. This is done using the
+   --    Ada.Task_Attributes package.
    --
    --  It is perfectly valid to instantiate all Connect_To_DB child packages
    --  with DB_Conn_Tasks_To_DB, but it is only possible to instantiate once
@@ -55,18 +55,5 @@ package Connect_To_DB.PostgreSQL is
 
    function Connection return GNATCOLL.SQL.Exec.Database_Connection;
    --  Return a thread specific access to the database.
-
-private
-
-   Association : Protected_Association_Map;
-   --  The protected object that holds the hashed map in which the association
-   --  between AWS and GNATCOLL.Database_Connection tasks are maintained.
-
-   DB_Description : GNATCOLL.SQL.Exec.Database_Description;
-   --  Describes access to the database, ie. user, host, password and such.
-
-   procedure Initialize;
-   --  Is called when this generic is instantiated. It populates the
-   --  DB_Description variable.
 
 end Connect_To_DB.PostgreSQL;
