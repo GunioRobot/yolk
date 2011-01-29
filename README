@@ -302,6 +302,7 @@ if you intend to use Git as your VCS.
     Ada Web Server
     http://libre.adacore.com/libre/tools/aws/
     SVN: svn co --ignore-externals http://svn.eu.adacore.com/anonsvn/Dev/trunk/AWS
+    SVN: svn co http://svn.eu.adacore.com/anonsvn/Dev/trunk/templates_parser
 
 [2]
     GNAT Component Collection
