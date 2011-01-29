@@ -106,7 +106,9 @@ My usual modus operandi for setting up these 5 things goes something like this:
     4.  Install XML/Ada in /usr/gnat:
 
             $ ./configure --prefix=/usr/gnat
-            $ make all install
+            $ make all
+            $ make docs
+            $ make install
 
     5.  Install AWS in its default location. See makefile.conf for further
         information. After having run
@@ -135,6 +137,7 @@ My usual modus operandi for setting up these 5 things goes something like this:
         Finally run
 
             $ make build
+            $ make build_docs
             $ make install
 
     5.  Add /usr/gnat/bin to your PATH environment variable.
@@ -312,6 +315,7 @@ if you intend to use Git as your VCS.
 [3]
     XML/Ada
     http://libre.adacore.com/libre/tools/xmlada/
+    SVN: svn co http://svn.eu.adacore.com/anonsvn/Dev/trunk/xmlada/
 
 [4]
     PostgreSQL
