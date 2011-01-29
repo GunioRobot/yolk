@@ -24,10 +24,27 @@
 private with AWS.Status;
 private with AWS.Response;
 private with AWS.Templates;
+private with Connect_To_DB.PostgreSQL;
 
 package View is
 
 private
+
+   package DB_One is new Connect_To_DB.PostgreSQL
+     (DB_Credentials => Connect_To_DB.Set_Credentials
+        (Host                       => "freja.serverbox.dk",
+         Database                   => "12boo",
+         User                       => "thomas",
+         Password                   => "respsltl16117994"),
+        Task_To_DB_Mapping_Method  => Connect_To_DB.AWS_Tasks_To_DB);
+
+   package DB_Two is new Connect_To_DB.PostgreSQL
+     (DB_Credentials            => Connect_To_DB.Set_Credentials
+        (Host                      => "freja.serverbox.dk",
+         Database                  => "rmt",
+         User                      => "thomas",
+         Password                  => "respsltl16117994"),
+        Task_To_DB_Mapping_Method => Connect_To_DB.DB_Conn_Tasks_To_DB);
 
    function Build_Response
      (Status_Data   : in AWS.Status.Data;
