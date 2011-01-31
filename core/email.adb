@@ -24,8 +24,11 @@
 with Ada.Calendar;
 with Ada.Directories;
 with Ada.Text_IO;
+with AWS.MIME;
+with AWS.Utils;
 with GNATCOLL.Email;
 with GNATCOLL.Email.Utils;
+with GNATCOLL.VFS;
 with Utilities;
 --  with AWS.Headers;
 --  with AWS.MIME;
@@ -34,6 +37,73 @@ with Utilities;
 --  with Utilities;         use Utilities;
 
 package body Email is
+
+   procedure Build_Attachments
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Add attachments to Email.
+
+   procedure Build_Bcc_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Bcc header and add it to Email.
+
+   procedure Build_Cc_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Cc header and add it to Email.
+
+   procedure Build_Content_Transfer_Encoding_Header
+     (ES    : in Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Content-Transfer-Encoding header and add it to Email.
+
+   procedure Build_Content_Type_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message;
+      Kind  : in String);
+   --  Build the Content-Type header and add it to Email.
+
+   procedure Build_Date_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Date header and add it to Email.
+
+   procedure Build_Email_Data
+     (Header   : in out GNATCOLL.Email.Header;
+      List     : in     Email_Data_Container.Vector);
+   --  Construct the actual content for the sender/recipient headers, such as
+   --  To, Cc, Bcc, Reply-To and so on.
+
+   procedure Build_From_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the From header and add it to Email.
+
+   procedure Build_MIME_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the MIME-Version header and add it to Email.
+
+   procedure Build_Reply_To_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Reply-To header and add it to Email.
+
+   procedure Build_Sender_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Sender header and add it to Email.
+
+   procedure Build_Subject_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the Subject header and add it to Email.
+
+   procedure Build_To_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message);
+   --  Build the To header and add it to Email.
 
    function Generate_Text_And_HTML_Email
      (ES : in Email_Structure)
@@ -62,6 +132,17 @@ package body Email is
       return String;
    --  Return the GNATcoll.Email character set string constant that is
    --  equivalent to the given Email.Character_Set enum.
+
+   procedure Set_Type_Of_Email
+     (ES : in out Email_Structure);
+   --  Figure out the kind of email ES is.
+
+   function To_Virtual_File
+     (Item : in Attachment_Data)
+      return GNATCOLL.VFS.Virtual_File;
+   --  Convert an Attachment_Data.Path_To_File to a GNATCOLL.VFS Virtual_File.
+   --  Exceptions:
+   --    Attachment_File_Not_Found
 
    ---------------------------
    --  Add_File_Attachment  --
@@ -190,6 +271,364 @@ package body Email is
 
    end Add_SMTP_Server;
 
+   -------------------------
+   --  Build_Attachments  --
+   -------------------------
+
+   procedure Build_Attachments
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+   begin
+
+      for i in
+        ES.Attachment_List.First_Index .. ES.Attachment_List.Last_Index loop
+         declare
+
+            use GNATCOLL.VFS;
+            use Utilities;
+
+            Data : constant Attachment_Data := ES.Attachment_List.Element (i);
+            File : constant Virtual_File := To_Virtual_File (Item => Data);
+
+         begin
+
+            Email.Attach
+              (Path                 => File,
+               MIME_Type            => AWS.MIME.Content_Type
+                 (Filename => TS (Data.Path_To_File)),
+               Charset              => Get_Charset (Data.Charset));
+
+         end;
+      end loop;
+
+   end Build_Attachments;
+
+   ------------------------
+   --  Build_Bcc_Header  --
+   ------------------------
+
+   procedure Build_Bcc_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+   begin
+
+      if not ES.Bcc_List.Is_Empty then
+         declare
+
+            use GNATCOLL.Email;
+
+            Bcc : Header := Create (Name  => "Bcc",
+                                    Value => "");
+
+         begin
+
+            Build_Email_Data (Header => Bcc,
+                              List   => ES.Bcc_List);
+
+            Email.Add_Header (H => Bcc);
+
+         end;
+      end if;
+
+   end Build_Bcc_Header;
+
+   -----------------------
+   --  Build_Cc_Header  --
+   -----------------------
+
+   procedure Build_Cc_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+   begin
+
+      if not ES.Cc_List.Is_Empty then
+         declare
+
+            use GNATCOLL.Email;
+
+            Cc : Header := Create (Name   => "Cc",
+                                   Value  => "");
+
+         begin
+
+            Build_Email_Data (Header => Cc,
+                              List   => ES.Cc_List);
+
+            Email.Add_Header (H => Cc);
+
+         end;
+      end if;
+
+   end Build_Cc_Header;
+
+   ----------------------------------------------
+   --  Build_Content_Transfer_Encoding_Header  --
+   ----------------------------------------------
+
+   procedure Build_Content_Transfer_Encoding_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+
+      use GNATCOLL.Email;
+
+      CTE : constant Header := Create (Name  => Content_Transfer_Encoding,
+                                       Value => "8bit");
+
+   begin
+
+      Email.Add_Header (H => CTE);
+
+   end Build_Content_Transfer_Encoding_Header;
+
+   ---------------------------------
+   --  Build_Content_Type_Header  --
+   ---------------------------------
+
+   procedure Build_Content_Type_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message;
+      Kind  : in     String)
+   is
+
+      use GNATCOLL.Email;
+
+      CT : Header;
+
+   begin
+
+      CT := Create (Name   => Content_Type,
+                    Value  => Kind);
+      CT.Set_Param (Param_Name  => "charset",
+                    Param_Value => Get_Charset (ES.Text_Part.Charset));
+      Email.Add_Header (H => CT);
+
+   end Build_Content_Type_Header;
+
+   -------------------------
+   --  Build_Date_Header  --
+   -------------------------
+
+   procedure Build_Date_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+
+      use GNATCOLL.Email;
+      use GNATCOLL.Email.Utils;
+
+      Date : constant Header := Create
+        (Name  => "Date",
+         Value => Format_Date (Date => Ada.Calendar.Clock));
+
+   begin
+
+      Email.Add_Header (H => Date);
+
+   end Build_Date_Header;
+
+   ------------------------
+   --  Build_Email_Data  --
+   ------------------------
+
+   procedure Build_Email_Data
+     (Header   : in out GNATCOLL.Email.Header;
+      List     : in     Email_Data_Container.Vector)
+   is
+
+      use Utilities;
+
+      Data : Email_Data;
+
+   begin
+
+      for i in List.First_Index .. List.Last_Index loop
+         Data := List.Element (i);
+
+         if Is_Empty (Data.Address) then
+            raise No_Address_Set;
+         end if;
+
+         if Data.Name = "" then
+            Header.Append (Value   => TS (Data.Address));
+         else
+            Header.Append (Value   => TS (Data.Name),
+                           Charset => Get_Charset (Data.Charset));
+            Header.Append (Value => " <" & TS (Data.Address) & ">");
+         end if;
+
+         if i /= List.Last_Index then
+            Header.Append (Value => ", ");
+         end if;
+      end loop;
+
+   end Build_Email_Data;
+
+   -------------------------
+   --  Build_From_Header  --
+   -------------------------
+
+   procedure Build_From_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+
+      use GNATCOLL.Email;
+
+      From : Header := Create (Name    => "From",
+                               Value   => "");
+
+   begin
+
+      Build_Email_Data (Header => From,
+                        List   => ES.From_List);
+
+      Email.Add_Header (H => From);
+
+   end Build_From_Header;
+
+   -------------------------
+   --  Build_MIME_Header  --
+   -------------------------
+
+   procedure Build_MIME_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+
+      use GNATCOLL.Email;
+
+      MIME : constant Header := Create (Name  => MIME_Version,
+                                        Value => "1.0");
+
+   begin
+
+      Email.Add_Header (H => MIME);
+
+   end Build_MIME_Header;
+
+   -----------------------------
+   --  Build_Reply_To_Header  --
+   -----------------------------
+
+   procedure Build_Reply_To_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+   begin
+
+      if not ES.Reply_To_List.Is_Empty then
+         declare
+
+            use GNATCOLL.Email;
+
+            Reply_To : Header := Create (Name   => "Reply-To",
+                                         Value  => "");
+
+         begin
+
+            Build_Email_Data (Header => Reply_To,
+                              List   => ES.Reply_To_List);
+
+            Email.Add_Header (H => Reply_To);
+
+         end;
+      end if;
+
+   end Build_Reply_To_Header;
+
+   ---------------------------
+   --  Build_Sender_Header  --
+   ---------------------------
+
+   procedure Build_Sender_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+   begin
+
+      if ES.Sender.Address /= Null_Unbounded_String then
+         declare
+
+            use GNATCOLL.Email;
+            use Utilities;
+
+            Sender : Header;
+
+         begin
+
+            if ES.Sender.Name = "" then
+               Sender := Create (Name    => "Sender",
+                                 Value   => TS (ES.Sender.Address),
+                                 Charset => Get_Charset (ES.Sender.Charset));
+            else
+               Sender := Create (Name    => "Sender",
+                                 Value   => TS (ES.Sender.Name),
+                                 Charset => Get_Charset (ES.Sender.Charset));
+               Sender.Append
+                 (Value   => " <" & TS (ES.Sender.Address) & ">");
+            end if;
+
+            Email.Add_Header (H => Sender);
+
+         end;
+      else
+         if ES.From_List.Length > 1 then
+            raise No_Sender_Set_With_Multiple_From;
+         end if;
+      end if;
+
+   end Build_Sender_Header;
+
+   ----------------------------
+   --  Build_Subject_Header  --
+   ----------------------------
+
+   procedure Build_Subject_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+
+      use GNATCOLL.Email;
+      use Utilities;
+
+      Subject  : constant Header := Create
+        (Name    => "Subject",
+         Value   => TS (ES.Subject.Content),
+         Charset => Get_Charset (ES.Subject.Charset));
+
+   begin
+
+      Email.Add_Header (H => Subject);
+
+   end Build_Subject_Header;
+
+   -------------------------
+   --  Build_To_Header  --
+   -------------------------
+
+   procedure Build_To_Header
+     (ES    : in     Email_Structure;
+      Email : in out GNATCOLL.Email.Message)
+   is
+
+      use GNATCOLL.Email;
+
+      To : Header := Create (Name   => "To",
+                             Value  => "");
+
+   begin
+
+      Build_Email_Data (Header => To,
+                        List   => ES.To_List);
+
+      Email.Add_Header (H => To);
+
+   end Build_To_Header;
+
    ------------------------------------
    --  Generate_Text_And_HTML_Email  --
    ------------------------------------
@@ -199,12 +638,67 @@ package body Email is
       return Ada.Strings.Unbounded.Unbounded_String
    is
 
-      pragma Unreferenced (ES);
+      use GNATCOLL.Email;
       use Utilities;
+
+      Email          : Message := New_Message (MIME_Type => Multipart_Mixed);
+      HTML_Payload   : Message := New_Message (MIME_Type => Text_Html);
+      Text_Payload   : Message := New_Message (MIME_Type => Text_Plain);
+      US             : Unbounded_String := Null_Unbounded_String;
 
    begin
 
-      return TUS ("Text and HTML type");
+      --  Set multipart boundaries for Email.
+      Email.Set_Boundary (Boundary => AWS.Utils.Random_String (16));
+
+      --  set the text payload and then we clear all the pre-made headers.
+      Text_Payload.Set_Text_Payload
+        (Payload   => TS (ES.Text_Part.Content),
+         Charset   => Get_Charset (ES.Text_Part.Charset));
+
+      Text_Payload.Delete_Headers (Name => "");
+
+      --  Add the Content-Transfer-Encoding header to the text payload.
+      Build_Content_Transfer_Encoding_Header (ES    => ES,
+                                              Email => Text_Payload);
+
+      --  Add the Content-Type header to the text payload.
+      Build_Content_Type_Header (ES    => ES,
+                                 Email => Text_Payload,
+                                 Kind  => Text_Plain);
+
+      --  set the HTML payload and then we clear all the pre-made headers.
+      HTML_Payload.Set_Text_Payload
+        (Payload   => TS (ES.HTML_Part.Content),
+         Charset   => Get_Charset (ES.HTML_Part.Charset));
+
+      HTML_Payload.Delete_Headers (Name => "");
+
+      --  Add the Content-Transfer-Encoding header to the HTML payload.
+      Build_Content_Transfer_Encoding_Header (ES    => ES,
+                                              Email => HTML_Payload);
+
+      --  Add the Content-Type header to the HTML payload.
+      Build_Content_Type_Header (ES    => ES,
+                                 Email => HTML_Payload,
+                                 Kind  => Text_Html);
+
+      --  Add the text payload to Email.
+      Email.Add_Payload (Payload => Text_Payload,
+                         First   => True);
+
+      --  Add the HTML payload to Email.
+      Email.Add_Payload (Payload => HTML_Payload,
+                         First   => False);
+
+      --  Add the MIME preamble.
+      Email.Set_Preamble
+        (Preamble => "This is a multi-part message in MIME format.");
+
+      --  Finally we output the raw email.
+      Email.To_String (Result => US);
+
+      return US;
 
    end Generate_Text_And_HTML_Email;
 
@@ -236,221 +730,65 @@ package body Email is
    is
 
       use GNATCOLL.Email;
-      use GNATCOLL.Email.Utils;
       use Utilities;
 
-      Email    : Message := New_Message (Text_Plain);
-      Bcc      : Header;
-      Cc       : Header;
-      CT       : Header;
-      CTE      : Header;
-      Date     : Header;
-      From     : Header;
-      MIME     : Header;
-      Reply_To : Header;
-      Sender   : Header;
-      To       : Header;
-      Subject  : Header;
-      US       : Unbounded_String   := Null_Unbounded_String;
+      Email : Message := New_Message (MIME_Type => Text_Plain);
+      US    : Unbounded_String := Null_Unbounded_String;
 
    begin
 
-      --  First we set the text payload.
+      --  First we set the text payload and then we clear all the pre-made
+      --  headers.
       Email.Set_Text_Payload
         (Payload   => TS (ES.Text_Part.Content),
          Charset   => Get_Charset (ES.Text_Part.Charset));
 
-      --  Add the Bcc: header
-      if not ES.Bcc_List.Is_Empty then
-         Bcc := Create (Name    => "Bcc",
-                        Value   => "");
+      Email.Delete_Headers (Name => "");
 
-         for i in ES.Bcc_List.First_Index .. ES.Bcc_List.Last_Index loop
-            declare
+      --  Add the Bcc header
+      Build_Bcc_Header (ES    => ES,
+                        Email => Email);
 
-               Bcc_Data : constant Email_Data := ES.Bcc_List.Element (i);
+      --  Add the Cc header
+      Build_Cc_Header (ES    => ES,
+                       Email => Email);
 
-            begin
+      --  Add the Content-Transfer-Encoding header
+      Build_Content_Transfer_Encoding_Header (ES    => ES,
+                                              Email => Email);
 
-               if Bcc_Data.Name = "" then
-                  Bcc.Append (Value   => TS (Bcc_Data.Address));
-               else
-                  Bcc.Append (Value   => TS (Bcc_Data.Name),
-                              Charset => Get_Charset (Bcc_Data.Charset));
-                  Bcc.Append (Value => " <" & TS (Bcc_Data.Address) & ">");
-               end if;
+      --  Add the Content-Type header
+      Build_Content_Type_Header (ES    => ES,
+                                 Email => Email,
+                                 Kind  => Text_Plain);
 
-               if i /= ES.Bcc_List.Last_Index then
-                  Bcc.Append (Value => ", ");
-               end if;
+      --  Add the Date header
+      Build_Date_Header (ES    => ES,
+                         Email => Email);
 
-            end;
-         end loop;
+      --  Add the From header
+      Build_From_Header (ES    => ES,
+                         Email => Email);
 
-         Email.Add_Header (H => Bcc);
-      end if;
+      --  Add the MIME-Version header.
+      Build_MIME_Header (ES    => ES,
+                         Email => Email);
 
-      --  Add the Cc: header
-      if not ES.Cc_List.Is_Empty then
-         Cc := Create (Name    => "Cc",
-                       Value   => "");
+      --  Add the Reply-To header
+      Build_Reply_To_Header (ES    => ES,
+                             Email => Email);
 
-         for i in ES.Cc_List.First_Index .. ES.Cc_List.Last_Index loop
-            declare
+      --  Add the Sender header
+      Build_Sender_Header (ES    => ES,
+                           Email => Email);
 
-               Cc_Data : constant Email_Data := ES.Cc_List.Element (i);
+      --  Add the Subject header
+      Build_Subject_Header (ES    => ES,
+                            Email => Email);
 
-            begin
-
-               if Cc_Data.Name = "" then
-                  Cc.Append (Value   => TS (Cc_Data.Address));
-               else
-                  Cc.Append (Value   => TS (Cc_Data.Name),
-                             Charset => Get_Charset (Cc_Data.Charset));
-                  Cc.Append (Value => " <" & TS (Cc_Data.Address) & ">");
-               end if;
-
-               if i /= ES.Cc_List.Last_Index then
-                  Cc.Append (Value => ", ");
-               end if;
-
-            end;
-         end loop;
-
-         Email.Add_Header (H => Cc);
-      end if;
-
-      --  Add the Date: header
-      Date := Create (Name  => "Date",
-                      Value => Format_Date (Date => Ada.Calendar.Clock));
-      Email.Add_Header (H => Date);
-
-      --  Add the From: header
-      From := Create (Name    => "From",
-                      Value   => "");
-      for i in ES.From_List.First_Index .. ES.From_List.Last_Index loop
-         declare
-
-            From_Data : constant Email_Data := ES.From_List.Element (i);
-
-         begin
-
-            if From_Data.Name = "" then
-               From.Append (Value => TS (From_Data.Address));
-            else
-               From.Append (Value   => TS (From_Data.Name),
-                            Charset => Get_Charset (From_Data.Charset));
-               From.Append (Value => " <" & TS (From_Data.Address) & ">");
-            end if;
-
-            if i /= ES.From_List.Last_Index then
-               From.Append (Value => ", ");
-            end if;
-
-         end;
-      end loop;
-
-      Email.Add_Header (H => From);
-
-      --  Add the Reply-To: header
-      if not ES.Reply_To_List.Is_Empty then
-         Reply_To := Create (Name    => "Reply-To",
-                             Value   => "");
-         for i in
-           ES.Reply_To_List.First_Index .. ES.Reply_To_List.Last_Index loop
-            declare
-
-               Reply_To_Data : constant Email_Data
-                 := ES.Reply_To_List.Element (i);
-
-            begin
-
-               if Reply_To_Data.Name = "" then
-                  Reply_To.Append (Value => TS (Reply_To_Data.Address));
-               else
-                  Reply_To.Append
-                    (Value   => TS (Reply_To_Data.Name),
-                     Charset => Get_Charset (Reply_To_Data.Charset));
-                  Reply_To.Append
-                    (Value => " <" & TS (Reply_To_Data.Address) & ">");
-               end if;
-
-               if i /= ES.Reply_To_List.Last_Index then
-                  Reply_To.Append (Value => ", ");
-               end if;
-
-            end;
-         end loop;
-
-         Email.Add_Header (H => Reply_To);
-      end if;
-
-      --  Add the Sender: header
-      if ES.Sender.Address /= Null_Unbounded_String then
-         if ES.Sender.Name = "" then
-            Sender := Create (Name    => "Sender",
-                              Value   => TS (ES.Sender.Address),
-                              Charset => Get_Charset (ES.Sender.Charset));
-         else
-            Sender := Create (Name    => "Sender",
-                              Value   => TS (ES.Sender.Name),
-                              Charset => Get_Charset (ES.Sender.Charset));
-            Sender.Append
-              (Value   => " <" & TS (ES.Sender.Address) & ">");
-         end if;
-
-         Email.Add_Header (H => Sender);
-      end if;
-
-      --  Add the To: header
-      To := Create (Name    => "To",
-                    Value   => "");
-      for i in ES.To_List.First_Index .. ES.To_List.Last_Index loop
-         declare
-
-            To_Data : constant Email_Data := ES.To_List.Element (i);
-
-         begin
-
-            if To_Data.Name = "" then
-               To.Append (Value => TS (To_Data.Address));
-            else
-               To.Append (Value   => TS (To_Data.Name),
-                          Charset => Get_Charset (To_Data.Charset));
-               To.Append (Value => " <" & TS (To_Data.Address) & ">");
-            end if;
-
-            if i /= ES.To_List.Last_Index then
-               To.Append (Value => ", ");
-            end if;
-
-         end;
-      end loop;
-
-      Email.Add_Header (H => To);
-
-      --  Add the MIME-Version: header.
-      MIME := Create (Name    => MIME_Version,
-                      Value   => "1.0");
-      Email.Add_Header (H => MIME);
-
-      --  Add the Subject: header
-      Subject := Create (Name    => "Subject",
-                         Value   => TS (ES.Subject.Content),
-                         Charset => Get_Charset (ES.Subject.Charset));
-      Email.Add_Header (H => Subject);
-
-      --  Add the Content-Type: header
-      CT := Create (Name    => Content_Type,
-                    Value   => Text_Plain);
-      CT.Set_Param (Param_Name  => "charset",
-                    Param_Value => Get_Charset (ES.Text_Part.Charset));
-      Email.Add_Header (H => CT);
-
-      --  Add the Content-Transfer-Encoding: header
-      CTE := Create (Name    => Content_Transfer_Encoding,
-                     Value   => "8bit");
-      Email.Add_Header (H => CTE);
+      --  Add the To header
+      Build_To_Header (ES    => ES,
+                       Email => Email);
 
       --  Finally we output the raw email.
       Email.To_String (Result => US);
@@ -468,12 +806,86 @@ package body Email is
       return Ada.Strings.Unbounded.Unbounded_String
    is
 
-      pragma Unreferenced (ES);
+      use GNATCOLL.Email;
       use Utilities;
+
+      Email          : Message := New_Message (MIME_Type => Multipart_Mixed);
+      Text_Payload   : Message := New_Message (MIME_Type => Text_Plain);
+      US             : Unbounded_String := Null_Unbounded_String;
 
    begin
 
-      return TUS ("Text with attachment type");
+      --  Set multipart boundaries for Email.
+      Email.Set_Boundary (Boundary => AWS.Utils.Random_String (16));
+
+      --  set the text payload and then we clear all the pre-made headers.
+      Text_Payload.Set_Text_Payload
+        (Payload   => TS (ES.Text_Part.Content),
+         Charset   => Get_Charset (ES.Text_Part.Charset));
+
+      Text_Payload.Delete_Headers (Name => "");
+
+      --  Add the Content-Transfer-Encoding header to the text payload.
+      Build_Content_Transfer_Encoding_Header (ES    => ES,
+                                              Email => Text_Payload);
+
+      --  Add the Content-Type header to the text payload.
+      Build_Content_Type_Header (ES    => ES,
+                                 Email => Text_Payload,
+                                 Kind  => Text_Plain);
+
+      --  Add the text payload to Email.
+      Email.Add_Payload (Payload => Text_Payload,
+                         First   => True);
+
+      --  Add attachments to Email.
+      Build_Attachments (ES    => ES,
+                         Email => Email);
+
+      --  Add the MIME preamble.
+      Email.Set_Preamble
+        (Preamble => "This is a multi-part message in MIME format.");
+
+      --  Add the Bcc header to Email.
+      Build_Bcc_Header (ES    => ES,
+                        Email => Email);
+
+      --  Add the Cc header to Email.
+      Build_Cc_Header (ES    => ES,
+                       Email => Email);
+
+      --  Add the Date header to Email.
+      Build_Date_Header (ES    => ES,
+                         Email => Email);
+
+      --  Add the From header
+      Build_From_Header (ES    => ES,
+                         Email => Email);
+
+      --  Add the MIME-Version header.
+      Build_MIME_Header (ES    => ES,
+                         Email => Email);
+
+      --  Add the Reply-To header
+      Build_Reply_To_Header (ES    => ES,
+                             Email => Email);
+
+      --  Add the Sender header
+      Build_Sender_Header (ES    => ES,
+                           Email => Email);
+
+      --  Add the Subject header
+      Build_Subject_Header (ES    => ES,
+                            Email => Email);
+
+      --  Add the To header
+      Build_To_Header (ES    => ES,
+                       Email => Email);
+
+      --  Finally we output the raw email.
+      Email.To_String (Result => US);
+
+      return US;
 
    end Generate_Text_With_Attachment_Email;
 
@@ -790,10 +1202,11 @@ package body Email is
 
    function To_Virtual_File
      (Item : in Attachment_Data)
-      return Virtual_File
+      return GNATCOLL.VFS.Virtual_File
    is
 
       use Ada.Directories;
+      use GNATCOLL.VFS;
       use Utilities;
 
       Path_To_File : constant String := TS (Item.Path_To_File);

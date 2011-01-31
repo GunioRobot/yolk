@@ -24,14 +24,13 @@
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with AWS.SMTP;
-with GNATCOLL.VFS;
 
 package Email is
 
    Attachment_File_Not_Found        : exception;
    --  Is raised if a file attachment is not found.
    No_Address_Set                   : exception;
-   --  Is raised if the address component is missing for a sender/recipient.
+   --  Is raised if the address component is missing in an Email_Data record.
    No_Sender_Set_With_Multiple_From : exception;
    --  Is raised when an email contains multiple From headers but no Sender
    --  header, as per RFC-5322, 3.6.2. http://tools.ietf.org/html/rfc5322
@@ -195,23 +194,19 @@ private
 
    use Ada.Containers;
    use Ada.Strings.Unbounded;
-   --  use GNATCOLL.Email;
-   use GNATCOLL.VFS;
 
    type Attachment_Data is
       record
-         Charset        : Character_Set;
+         Charset        : Character_Set := US_ASCII;
          Path_To_File   : Unbounded_String;
       end record;
 
-   type Email_Data is record
-      Address  : Unbounded_String;
-      Charset  : Character_Set;
-      Name     : Unbounded_String;
+   type Email_Data is
+      record
+         Address  : Unbounded_String;
+         Charset  : Character_Set  := US_ASCII;
+         Name     : Unbounded_String;
    end record;
-   Null_Email_Data : constant Email_Data := (Null_Unbounded_String,
-                                             US_ASCII,
-                                             Null_Unbounded_String);
 
    type Email_Kind is (Text,
                        Text_With_Attachment,
@@ -224,15 +219,17 @@ private
          Port : Positive;
       end record;
 
-   type Subject_Data is record
-      Content : Unbounded_String;
-      Charset : Character_Set;
-   end record;
+   type Subject_Data is
+      record
+         Content : Unbounded_String;
+         Charset : Character_Set := US_ASCII;
+      end record;
 
-   type Text_Data is record
-      Content  : Unbounded_String;
-      Charset  : Character_Set;
-   end record;
+   type Text_Data is
+      record
+         Content  : Unbounded_String;
+         Charset  : Character_Set := US_ASCII;
+      end record;
    --  This type is used for both text and HTML parts, so the "Text" part of
    --  Text_Data simply refers to the fact that both text and HTML parts are
    --  essentially plain text data.
@@ -241,25 +238,26 @@ private
    package Email_Data_Container is new Vectors (Positive, Email_Data);
    package SMTP_Servers_Container is new Vectors (Positive, SMTP_Server);
 
-   type Email_Structure is record
-      Attachment_List   : Attachments_Container.Vector;
-      Bcc_List          : Email_Data_Container.Vector;
-      Cc_List           : Email_Data_Container.Vector;
-      Email_Is_Send     : Boolean := False;
-      From_List         : Email_Data_Container.Vector;
-      Has_Attachment    : Boolean := False;
-      Has_HTML_Part     : Boolean := False;
-      Has_Text_Part     : Boolean := False;
-      HTML_Part         : Text_Data;
-      Reply_To_List     : Email_Data_Container.Vector;
-      Sender            : Email_Data;
-      SMTP_List         : SMTP_Servers_Container.Vector;
-      Status            : AWS.SMTP.Status;
-      Subject           : Subject_Data;
-      Text_Part         : Text_Data;
-      To_List           : Email_Data_Container.Vector;
-      Type_Of_Email     : Email_Kind;
-   end record;
+   type Email_Structure is
+      record
+         Attachment_List   : Attachments_Container.Vector;
+         Bcc_List          : Email_Data_Container.Vector;
+         Cc_List           : Email_Data_Container.Vector;
+         Email_Is_Send     : Boolean := False;
+         From_List         : Email_Data_Container.Vector;
+         Has_Attachment    : Boolean := False;
+         Has_HTML_Part     : Boolean := False;
+         Has_Text_Part     : Boolean := False;
+         HTML_Part         : Text_Data;
+         Reply_To_List     : Email_Data_Container.Vector;
+         Sender            : Email_Data;
+         SMTP_List         : SMTP_Servers_Container.Vector;
+         Status            : AWS.SMTP.Status;
+         Subject           : Subject_Data;
+         Text_Part         : Text_Data;
+         To_List           : Email_Data_Container.Vector;
+         Type_Of_Email     : Email_Kind;
+      end record;
    --  The type used to hold describe an email.
    --    Attachment_List:
    --       A list of Attachment_Data records. The validity of the Path_To_File
@@ -311,16 +309,5 @@ private
    --       element is valid.
    --    Type_Of_Email:
    --       The kind of email we're dealing with.
-
-   procedure Set_Type_Of_Email
-     (ES : in out Email_Structure);
-   --  Figure out the kind of email ES is.
-
-   function To_Virtual_File
-     (Item : in Attachment_Data)
-      return Virtual_File;
-   --  Convert an Attachment_Data.Path_To_File to a GNATCOLL.VFS Virtual_File.
-   --  Exceptions:
-   --    Attachment_File_Not_Found
 
 end Email;
