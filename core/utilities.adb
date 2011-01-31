@@ -33,9 +33,34 @@ package body Utilities is
      (S : in String)
       return Boolean
    is
+
+      use Ada.Strings;
+
    begin
 
-      if Ada.Strings.Fixed.Trim (S, Ada.Strings.Both) = "" then
+      if Fixed.Trim (S, Both) = "" then
+         return True;
+      else
+         return False;
+      end if;
+
+   end Is_Empty;
+
+   --------------
+   -- Is_Empty --
+   --------------
+
+   function Is_Empty
+     (US : in Ada.Strings.Unbounded.Unbounded_String)
+      return Boolean
+   is
+
+      use Ada.Strings;
+      use Ada.Strings.Unbounded;
+
+   begin
+
+      if Unbounded.Trim (US, Both) = "" then
          return True;
       else
          return False;

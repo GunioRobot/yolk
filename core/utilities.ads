@@ -40,4 +40,9 @@ package Utilities is
       return Boolean;
    --  Return True if a trimmed string is empty.
 
+   function Is_Empty
+     (US : in Ada.Strings.Unbounded.Unbounded_String)
+      return Boolean;
+   --  Return True if a trimmed unbounded string is empty.
+
 end Utilities;
