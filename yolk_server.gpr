@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------------
+--                                                                           --
+--                               Yolk Server                                 --
+--                                                                           --
+--                        Yolk Server Project File                           --
+--                                                                           --
+--                   Copyright (C) 2010-2011, Thomas Løcke                   --
+--                                                                           --
+--  Yolk is free software;  you can  redistribute it  and/or modify it under --
+--  terms of the  GNU General Public License as published  by the Free Soft- --
+--  ware  Foundation;  either version 2,  or (at your option) any later ver- --
+--  sion.  Yolk is distributed in the hope that it will be useful, but WITH- --
+--  OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
+--  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
+--  for  more details.  You should have  received  a copy of the GNU General --
+--  Public License  distributed with Yolk.  If not, write  to  the  Free     --
+--  Software Foundation,  51  Franklin  Street,  Fifth  Floor, Boston,       --
+--  MA 02110 - 1301, USA.                                                    --
+--                                                                           --
+-------------------------------------------------------------------------------
+
+with "aws";
+with "gnatcoll";
+
+--  To add PostgreSQL support to Yolk, just uncomment the following
+--  with clause:
+with "gnatcoll_postgres";
+
+project Yolk_Server is
+
+   for Source_Dirs use (".",
+                        "core",
+                        "my_configuration",
+                        "my_core",
+                        "my_database",
+                        "my_handlers",
+                        "my_view");
+
+   for Main use ("yolk_server.adb");
+
+   for Exec_Dir use "exe";
+
+   for Object_Dir use "build";
+
+   package Ide is
+
+      for Compiler_Command ("ada") use "/usr/gnat/bin/gnatmake";
+
+   end Ide;
+
+   package Compiler is
+
+      Common_Options := ("-gnatwa",
+                         "-gnaty3abcdefhiklmnoprstux",
+                         "-Wall",
+                         "-O2",
+                         "-gnat05");
+
+      Valgrind_Options := ("-gnatwa",
+                           "-gnaty3abcdefhiklmnoprstux",
+                           "-Wall",
+                           "-O1",
+                           "-gnat05",
+                           "-g");
+      --  Use this option to check if your application is leaking memory.
+      --    $ valgrind -v --leak-check=full yolk
+
+      for Default_Switches ("Ada") use Common_Options;
+
+   end Compiler;
+
+end Yolk_Server;

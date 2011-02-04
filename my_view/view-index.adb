@@ -23,7 +23,7 @@
 
 with My_Configuration;
 with Rotating_Log;
-with Email;
+with Yolk.Email.Composer;
 --  with GNATCOLL.Email;
 --  with GNATCOLL.Email.Utils;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
@@ -32,6 +32,7 @@ with Email;
 --  with AWS.MIME;
 --  with AWS.Utils;
 --  with AWS.SMTP.Client;
+with Ada.Text_IO;
 
 package body View.Index is
 
@@ -45,7 +46,7 @@ package body View.Index is
    is
 
       use AWS.Templates;
-      use Email;
+      use Yolk.Email;
       use Rotating_Log;
 
       package My renames My_Configuration;
@@ -67,38 +68,25 @@ package body View.Index is
 
       declare
 
-         Email : Email_Structure;
-         --  Bn_Email : Email_Structure;
-         --  Cn_Email : Email_Structure;
+         Email : Structure;
 
       begin
 
-         --  Manually build and send an email.
-         Add_From (ES       => Email,
-                   Address  => "thomas@responsum.dk",
-                   Name     => "Thomas Løcke",
-                   Charset  => ISO_8859_1);
+         Composer.Send (ES           => Email,
+                        From_Address => "thomas@responsum.dk",
+                        From_Name    => "Thomas Løcke",
+                        To_Address   => "thomas@12boo.net",
+                        To_Name      => "Thomas Løcke",
+                        Subject      => "Test text/plain email med ÆØÅ æøå",
+                        Text_Part    => "Test text/plain email med ÆØÅ æøå",
+                        SMTP_Server  => "freja.serverbox.dk",
+                        Charset      => ISO_8859_1);
 
-         Add_Recipient (ES       => Email,
-                        Address  => "thomas.granvej6@gmail.com",
-                        Name     => "Thomas Løcke",
-                        Charset  => ISO_8859_1);
-
-         Add_SMTP_Server (ES     => Email,
-                          Host   => My.Config.Get (My.SMTP));
-
-         Set_Text_Part (ES       => Email,
-                        Part     => "Text with attachment ÆØÅ æøå",
-                        Charset  => ISO_8859_1);
-         Set_HTML_Part (ES      => Email,
-                        Part    => "HTML <b>Test</b> ÆØÅ æøå",
-                        Charset => ISO_8859_1);
-
-         Set_Subject (ES      => Email,
-                      Subject => "Some Subject with ÆØÅ and æøå",
-                      Charset => ISO_8859_1);
-
-         Send (ES => Email);
+         if Composer.Is_Send (ES => Email) then
+            Ada.Text_IO.Put_Line ("Email Send!");
+         else
+            Ada.Text_IO.Put_Line ("Email NOT Send!");
+         end if;
 
          --  Use a convenience procedure to build and send an email.
          --  Send (ES             => Bn_Email,
@@ -112,7 +100,7 @@ package body View.Index is
          --        Charset        => ISO_8859_1);
 
          --  Use a convenience procedure to build and send an email.
-         --  Send (ES             => Cn_Email,
+         --  Send (ES             => Email,
          --        From_Address   => "thomas@responsum.dk",
          --        From_Name      => "Thomas Løcke",
          --        To_Address     => "thomas@12boo.net",
@@ -123,317 +111,10 @@ package body View.Index is
          --        SMTP_Server    => "freja.serverbox.dk",
          --        Charset        => ISO_8859_1);
 
+      exception
+         when others =>
+            Ada.Text_IO.Put_Line ("EMAIL PROBLEM!");
       end;
-
-      ---------------------------------------
-      --  Text_HTML_Multipart_Alternative  --
-      ---------------------------------------
---    Text_HTML_Multipart_Alternative :
---    declare
---
---       Date     : Header;
---       From     : Header;
---       To       : Header;
---       MIME     : Header;
---       Subject  : Header;
---       CT       : Header;
---       CTE      : Header;
---       An_Email : Message := New_Message (Multipart_Alternative);
---       T_Payload : Message := New_Message (Text_Plain);
---       H_Payload : Message := New_Message (Text_Html);
---       US       : Unbounded_String := Null_Unbounded_String;
---
---    begin
---
---       --  Set multipart boundaries
---       Set_Boundary (Msg      => An_Email,
---                     Boundary => AWS.Utils.Random_String (16));
---
---       New_Line;
---       Put_Line ("--> Text_HTML_Multipart_Alternative Start <--");
---
---       --  First we set the text payload.
---       Set_Text_Payload (Msg       => T_Payload,
---                         Payload   => "Test ÆØÅ æøå",
---                         Charset   => Charset_ISO_8859_1);
---
---       --  Delete whatever headers the Set_Text_Payload procedure might've
---       --  added.
---       Delete_Headers (Msg  => T_Payload,
---                       Name => "");
---
---       --  Add Content-Type and Content-Transfer-Encoding headers to
---       --  T_Payload.
---       CT := Create (Name    => Content_Type,
---                     Value   => Text_Plain);
---       Set_Param (H           => CT,
---                  Param_Name  => "charset",
---                  Param_Value => Charset_ISO_8859_1);
---       Add_Header (Msg => T_Payload,
---                   H   => CT);
---
---       CTE := Create (Name    => Content_Transfer_Encoding,
---                      Value   => "8bit");
---       Add_Header (Msg => T_Payload,
---                   H   => CTE);
---
---       --  Next we set the HTML payload.
---       Set_Text_Payload (Msg       => H_Payload,
---                         Payload   => "<b>Test</b> ÆØÅ æøå",
---                         Charset   => Charset_ISO_8859_1);
---
---       --  Delete whatever headers the Set_Text_Payload procedure might've
---       --  added.
---       Delete_Headers (Msg  => H_Payload,
---                       Name => "");
---
---       --  Add Content-Type and Content-Transfer-Encoding headers to
---       --  H_Payload.
---       CT := Create (Name    => Content_Type,
---                     Value   => Text_Html);
---       Set_Param (H           => CT,
---                  Param_Name  => "charset",
---                  Param_Value => Charset_ISO_8859_1);
---       Add_Header (Msg => H_Payload,
---                   H   => CT);
---
---       CTE := Create (Name    => Content_Transfer_Encoding,
---                      Value   => "8bit");
---       Add_Header (Msg => H_Payload,
---                   H   => CTE);
---
---       --  Add T_Payload and H_Payload to the An_Email message.
---       Add_Payload (Msg     => An_Email,
---                    Payload => T_Payload,
---                    First   => True);
---       Add_Payload (Msg     => An_Email,
---                    Payload => H_Payload,
---                    First   => False);
---
---       --  Set the MIME preamble
---       Set_Preamble
---        (Msg      => An_Email,
---         Preamble => "This is a multi-part message in MIME format.");
---
---       --  Then we add the headers.
---       Date := Create (Name => "Date",
---                       Value => Format_Date (Date => Ada.Calendar.Clock));
---       Add_Header (Msg => An_Email,
---                   H   => Date);
---
---       From := Create (Name    => "From",
---                       Value   => "Thomas Løcke",
---                       Charset => Charset_ISO_8859_1);
---       Append (H       => From,
---              Value   => " <thomas@responsum.dk>");
---       Add_Header (Msg => An_Email,
---                   H   => From);
---
---       To := Create (Name    => "To",
---                     Value   => "Thomas Løcke",
---                     Charset => Charset_ISO_8859_1);
---       Append (H       => To,
---               Value   => " <tl@ada-dk-org>");
---       Add_Header (Msg => An_Email,
---                   H   => To);
---
---       MIME := Create (Name    => MIME_Version,
---                       Value   => "1.0");
---       Add_Header (Msg => An_Email,
---                   H   => MIME);
---
---       Subject := Create (Name    => "Subject",
---                          Value   => "Multipart_Alternative ÆØÅ æøå",
---                          Charset => Charset_ISO_8859_1);
---       Add_Header (Msg => An_Email,
---                   H   => Subject);
---
---       --  Finally we output the raw email.
---       To_String (Msg    => An_Email,
---                  Result => US);
---
---       Put_Line (To_String (US));
---
---       Put_Line ("--> Text_HTML_Multipart_Alternative End <--");
---
---    end Text_HTML_Multipart_Alternative;
-
-      ----------------------------------
-      --  Multipart_Mixed_Attachment  --
-      ----------------------------------
---    Multipart_Mixed_Attachment :
---    declare
---
---       SMTP              : constant AWS.SMTP.Receiver
---         := AWS.SMTP.Client.Initialize ("freja.serverbox.dk");
---       Status            : AWS.SMTP.Status;
---
---       A_File   : constant GNATCOLL.VFS.Virtual_File :=
---                    Locate_On_Path ("/home/thomas/test.txt");
---       B_File   : constant GNATCOLL.VFS.Virtual_File :=
---                    Locate_On_Path ("/home/thomas/test.odt");
---       Date     : Header;
---       From     : Header;
---       To       : Header;
---       MIME     : Header;
---       Subject  : Header;
---       CT       : Header;
---       CTE      : Header;
---       An_Email : Message := New_Message (Multipart_Mixed);
---       Alter    : Message := New_Message (Multipart_Alternative);
---       T_Payload : Message := New_Message (Text_Plain);
---       H_Payload : Message := New_Message (Text_Html);
---       US       : Unbounded_String := Null_Unbounded_String;
---
---    begin
---
---       --  Set multipart boundaries
---       Set_Boundary (Msg      => An_Email,
---                     Boundary => AWS.Utils.Random_String (16));
---       Set_Boundary (Msg      => Alter,
---                     Boundary => AWS.Utils.Random_String (16));
---
---       New_Line;
---       Put_Line ("--> Multipart_Mixed_Attachment Start <--");
---
---       --  First we set the text payload.
---       Set_Text_Payload (Msg       => T_Payload,
---                         Payload   => "Test ÆØÅ æøå",
---                         Charset   => Charset_ISO_8859_1);
---
---       --  Delete whatever headers the Set_Text_Payload procedure might've
---       --  added.
---       Delete_Headers (Msg  => T_Payload,
---                       Name => "");
---
---       --  Add Content-Type and Content-Transfer-Encoding headers to
---       --  T_Payload.
---       CT := Create (Name    => Content_Type,
---                     Value   => Text_Plain);
---       Set_Param (H           => CT,
---                  Param_Name  => "charset",
---                  Param_Value => Charset_ISO_8859_1);
---       Add_Header (Msg => T_Payload,
---                   H   => CT);
---
---       CTE := Create (Name    => Content_Transfer_Encoding,
---                      Value   => "8bit");
---       Add_Header (Msg => T_Payload,
---                   H   => CTE);
---
---       --  Next we set the HTML payload.
---       Set_Text_Payload (Msg       => H_Payload,
---                         Payload   => "<b>Test</b> ÆØÅ æøå",
---                         Charset   => Charset_ISO_8859_1);
---
---       --  Delete whatever headers the Set_Text_Payload procedure might've
---       --  added.
---       Delete_Headers (Msg  => H_Payload,
---                       Name => "");
---
---       --  Add Content-Type and Content-Transfer-Encoding headers to
---       --  H_Payload.
---       CT := Create (Name    => Content_Type,
---                     Value   => Text_Html);
---       Set_Param (H           => CT,
---                  Param_Name  => "charset",
---                  Param_Value => Charset_ISO_8859_1);
---       Add_Header (Msg => H_Payload,
---                   H   => CT);
---
---       CTE := Create (Name    => Content_Transfer_Encoding,
---                      Value   => "8bit");
---       Add_Header (Msg => H_Payload,
---                   H   => CTE);
---
---       --  Add T_Payload and H_Payload to the Alter message.
---       Add_Payload (Msg     => Alter,
---                    Payload => T_Payload,
---                    First   => True);
---       Add_Payload (Msg     => Alter,
---                    Payload => H_Payload,
---                    First   => False);
---
---           --  Add the Alter message to An_Email
---           Add_Payload (Msg     => An_Email,
---                        Payload => Alter,
---                        First   => True);
---
---       --  Then we add an attachment to An_Email
---       Attach (Msg                  => An_Email,
---               Path                 => A_File,
---               MIME_Type            => AWS.MIME.Content_Type ("test.txt"),
---               Description          => "A description of the file",
---               Charset              => Charset_ISO_8859_1);
---
---       --  And another attachment to An_Email
---       Attach (Msg                  => An_Email,
---               Path                 => B_File,
---               MIME_Type            => AWS.MIME.Content_Type ("test.odt"),
---               Description          => "An Openoffice file",
---               Charset              => Charset_ISO_8859_1);
---
---       --  Set the MIME preamble
---       Set_Preamble
---         (Msg      => An_Email,
---          Preamble => "This is a multi-part message in MIME format.");
---
---       --  Then we add the headers.
---       Date := Create (Name => "Date",
---                       Value => Format_Date (Date => Ada.Calendar.Clock));
---       Add_Header (Msg => An_Email,
---                   H   => Date);
---
---       From := Create (Name    => "From",
---                       Value   => "Thomas Løcke",
---                       Charset => Charset_ISO_8859_1);
---       Append (H       => From,
---               Value   => " <thomas@responsum.dk>");
---       Add_Header (Msg => An_Email,
---                   H   => From);
---
---       To := Create (Name    => "To",
---                     Value   => "Thomas Løcke",
---                     Charset => Charset_ISO_8859_1);
---       Append (H       => To,
---               Value   => " <tl@ada-dk-org>");
---       Add_Header (Msg => An_Email,
---                   H   => To);
---
---       MIME := Create (Name    => MIME_Version,
---                       Value   => "1.0");
---       Add_Header (Msg => An_Email,
---                   H   => MIME);
---
---       Subject := Create (Name    => "Subject",
---                          Value   => "Multipart_Mixed_Attachment ÆØÅ æøå",
---                          Charset => Charset_ISO_8859_1);
---       Add_Header (Msg => An_Email,
---                   H   => Subject);
---
---       --  Finally we output the raw email.
---       To_String (Msg    => An_Email,
---                  Result => US);
---
---       Put_Line (To_String (US));
---
---       Put_Line ("--> Multipart_Mixed_Attachment End <--");
---
---       AWS.SMTP.Client.Send
---         (Server  => SMTP,
---          From    => AWS.SMTP.E_Mail (Name    => "Thomas Løcke",
---                                      Address => "thomas@responsum.dk"),
---          To      => AWS.SMTP.E_Mail (Name    => "Thomas Løcke",
---                                      Address => "tl@ada-dk.org"),
---          Subject => "Stuff",
---          Message => To_String (US),
---          Status  => Status);
---
---       if AWS.SMTP.Is_Ok (Status) then
---          Put_Line ("Email send!");
---       end if;
---
---    end Multipart_Mixed_Attachment;
 
       return Build_Response
         (Status_Data   => Request,

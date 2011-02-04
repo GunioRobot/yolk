@@ -2,8 +2,6 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                            Yolk Project File                              --
---                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
 --  Yolk is free software;  you can  redistribute it  and/or modify it under --
@@ -19,54 +17,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with "aws";
-with "gnatcoll";
+package Yolk is
 
---  To add PostgreSQL support to Yolk, just uncomment the following
---  with clause:
-with "gnatcoll_postgres";
-
-project Yolk is
-
-   for Source_Dirs use (".",
-                        "core",
-                        "my_configuration",
-                        "my_core",
-                        "my_database",
-                        "my_handlers",
-                        "my_view");
-
-   for Main use ("yolk.adb");
-
-   for Exec_Dir use "exe";
-
-   for Object_Dir use "build";
-
-   package Ide is
-
-      for Compiler_Command ("ada") use "/usr/gnat/bin/gnatmake";
-
-   end Ide;
-
-   package Compiler is
-
-      Common_Options := ("-gnatwa",
-                         "-gnaty3abcdefhiklmnoprstux",
-                         "-Wall",
-                         "-O2",
-                         "-gnat05");
-
-      Valgrind_Options := ("-gnatwa",
-                           "-gnaty3abcdefhiklmnoprstux",
-                           "-Wall",
-                           "-O1",
-                           "-gnat05",
-                           "-g");
-      --  Use this option to check if your application is leaking memory.
-      --    $ valgrind -v --leak-check=full yolk
-
-      for Default_Switches ("Ada") use Common_Options;
-
-   end Compiler;
+   Version : String := "0.1";
 
 end Yolk;

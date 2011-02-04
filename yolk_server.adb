@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --                                                                           --
---                                  Yolk                                     --
+--                               Yolk Server                                 --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -31,8 +31,9 @@ with Log_File_Cleanup;
 with Process_Control;
 with Rotating_Log;
 with Utilities;
+with Yolk;
 
-procedure Yolk
+procedure Yolk_Server
 is
 
    use Ada.Exceptions;
@@ -98,6 +99,9 @@ is
       Track (Handle     => Info,
              Log_String => "Started " &
              AWS.Config.Server_Name (Web_Server_Config));
+
+      Track (Handle     => Info,
+             Log_String => "Yolk version " & Yolk.Version);
 
    end Start_Server;
 
@@ -245,4 +249,4 @@ exception
       --  If an exception is caught, write its contents to the Error trace,
       --  attempt to stop the server and the logfile monitor task.
 
-end Yolk;
+end Yolk_Server;
