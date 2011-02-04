@@ -3,7 +3,7 @@ build/*.o
 build/*.ali
 
 # Do not track pid files and the yolk executable in exe/
-exe/yolk
+exe/yolk_server
 exe/yolk.pid
 
 # Do not track .pem files in exe/certificates
