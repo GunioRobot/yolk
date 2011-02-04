@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                            logfile_cleanup                                --
+--                            Logfile Cleanup                                --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -23,10 +23,10 @@
 
 with Ada.Directories;
 with AWS.Server.Log;
-with Rotating_Log;
-with Utilities;
+with Yolk.Rotating_Log;
+with Yolk.Utilities;
 
-package body Log_File_Cleanup is
+package body Yolk.Log_File_Cleanup is
 
    ---------
    --  <  --
@@ -86,7 +86,7 @@ package body Log_File_Cleanup is
       is
 
          use Ada.Calendar;
-         use Utilities;
+         use Yolk.Utilities;
 
          A_File                  : File_Info;
          Found_File              : constant String
@@ -129,7 +129,7 @@ package body Log_File_Cleanup is
       is
 
          use Ada.Strings.Unbounded;
-         use Rotating_Log;
+         use Yolk.Rotating_Log;
 
          Filter : constant Filter_Type := (Ordinary_File => True,
                                            Special_File  => False,
@@ -193,4 +193,4 @@ package body Log_File_Cleanup is
 
    end Clean_Up;
 
-end Log_File_Cleanup;
+end Yolk.Log_File_Cleanup;

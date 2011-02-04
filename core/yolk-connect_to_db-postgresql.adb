@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                        DBMS_Connection.PostgreSQL                         --
+--                         Connect To DB PostgreSQL                          --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -23,7 +23,7 @@
 
 with Ada.Task_Attributes;
 
-package body Connect_To_DB.PostgreSQL is
+package body Yolk.Connect_To_DB.PostgreSQL is
 
    package Task_Association is new Ada.Task_Attributes (DB_Conn_Access, null);
    --  Associate AWS tasks with Connect_To_DB.DB_Conn tasks.
@@ -120,4 +120,4 @@ begin
 
    Initialize;
 
-end Connect_To_DB.PostgreSQL;
+end Yolk.Connect_To_DB.PostgreSQL;

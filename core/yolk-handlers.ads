@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                utilities                                  --
+--                                Handlers                                   --
 --                                                                           --
---                                  BODY                                     --
+--                                  SPEC                                     --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -21,51 +21,20 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Fixed;
+--  In this package we define the core content/resource handlers.
+--  Content not handled in this package should be added to the
+--  My_Handlers package.
 
-package body Utilities is
+with AWS.Services.Dispatchers.URI;
 
-   --------------
-   -- Is_Empty --
-   --------------
+package Yolk.Handlers is
 
-   function Is_Empty
-     (S : in String)
-      return Boolean
-   is
+   procedure Set
+     (RH : out AWS.Services.Dispatchers.URI.Handler);
+   --  The Handlers package define a set of default handlers for static content
+   --  such as HTML, images and ICO files.
+   --  The My_Handlers package define application specific handlers, so it is
+   --  in this package that such handlers should be placed.
+   --  See my_handlers/my_handlers.ad[sb] for more information.
 
-      use Ada.Strings;
-
-   begin
-
-      if Fixed.Trim (S, Both) = "" then
-         return True;
-      else
-         return False;
-      end if;
-
-   end Is_Empty;
-
-   --------------
-   -- Is_Empty --
-   --------------
-
-   function Is_Empty
-     (US : in Ada.Strings.Unbounded.Unbounded_String)
-      return Boolean
-   is
-
-      use Ada.Strings;
-      use Ada.Strings.Unbounded;
-
-   begin
-
-      if Unbounded.Trim (US, Both) = "" then
-         return True;
-      else
-         return False;
-      end if;
-
-   end Is_Empty;
-
-end Utilities;
+end Yolk.Handlers;

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             email.composer                                --
+--                             Email Composer                                --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -23,7 +23,7 @@
 
 with AWS.SMTP.Client;
 with GNATCOLL.Email.Utils;
-with Utilities;
+with Yolk.Utilities;
 
 package body Yolk.Email.Composer is
 
@@ -38,7 +38,7 @@ package body Yolk.Email.Composer is
       Charset : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       New_Header : Header_Data;
 
@@ -62,7 +62,7 @@ package body Yolk.Email.Composer is
       Charset       : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       New_Attachment : Attachment_Data;
 
@@ -87,7 +87,7 @@ package body Yolk.Email.Composer is
       Charset   : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       New_From : Email_Data;
 
@@ -112,7 +112,7 @@ package body Yolk.Email.Composer is
       Charset  : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       New_Recipient : Email_Data;
 
@@ -144,7 +144,7 @@ package body Yolk.Email.Composer is
       Charset  : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       New_Reply_To : Email_Data;
 
@@ -167,7 +167,7 @@ package body Yolk.Email.Composer is
       Port  : in     Positive := 25)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       New_SMTP : SMTP_Server;
 
@@ -446,7 +446,7 @@ package body Yolk.Email.Composer is
       Charset    : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
    begin
 
@@ -466,7 +466,7 @@ package body Yolk.Email.Composer is
       Charset   : in     Character_Set := US_ASCII)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
    begin
 

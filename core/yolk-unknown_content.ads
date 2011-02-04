@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             unknown_content                               --
+--                             Unknown Content                               --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -24,7 +24,7 @@
 with AWS.Response;
 with AWS.Status;
 
-package Unknown_Content is
+package Yolk.Unknown_Content is
 
    function Generate
      (Request : in AWS.Status.Data)
@@ -33,4 +33,4 @@ package Unknown_Content is
    --  Not_Found.Output function whenever a resource is requested for which
    --  there is no handler.
 
-end Unknown_Content;
+end Yolk.Unknown_Content;

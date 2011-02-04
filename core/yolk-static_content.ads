@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                            logfile_cleanup                                --
+--                             Static Content                                --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,35 +21,37 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Calendar;
-with Ada.Containers.Ordered_Sets;
-with Ada.Strings.Unbounded;
-with AWS.Config;
-with AWS.Server;
+--  Static content such as images, HTML and XML files are handled here. The
+--  paths to where the server is supposed to look for the content is defined
+--  in the configuration/config.ini file.
+--  If enabled in the config.ini file, files with text content will be
+--  pre-compressed and saved in the Compressed_Cache_Directory.
 
-package Log_File_Cleanup is
+with AWS.Response;
+with AWS.Status;
+with AWS.Utils;
 
-   procedure Clean_Up
-     (Config_Object           : in AWS.Config.Object;
-      Web_Server              : in AWS.Server.HTTP;
-      Amount_Of_Files_To_Keep : in Positive);
-   --  Search for and delete old and excess logfiles in the Log_File_Directory
-   --  defined in the server configuration file.
+package Yolk.Static_Content is
 
-private
+   Lock : AWS.Utils.Semaphore;
+   --  This lock is used when the .gz files are created for the first time. We
+   --  don't want more than one task messing around with the Compress_And_Cache
+   --  procedure at the same time.
 
-   type File_Info is
-      record
-         File_Name   : Ada.Strings.Unbounded.Unbounded_String;
-         Mod_Time    : Ada.Calendar.Time;
-      end record;
+   function Binary_File
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data;
+   --  Load various binary static content. The regex'es and dispatchers for
+   --  these files are defined in the Handlers package.
+   --  NOTE:
+   --    Content handled by Binary_File will _not_ be pre-compressed.
 
-   function "<"
-     (Left, Right : in File_Info)
-      return Boolean;
-   --  Used by the Ordered_File_Set package to order the File_Info elements.
+   function Text_File
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data;
+   --  Load various text static content and compress/cache files. The regex'es
+   --  and dispatchers for these files are defined in the Handlers package.
+   --  NOTE:
+   --    Content handled by Text_file will _always_ be pre-compressed.
 
-   package Ordered_File_Set is new Ada.Containers.Ordered_Sets (File_Info);
-   --  A new ordered set package instantiated with File_Info as Element_Type.
-
-end Log_File_Cleanup;
+end Yolk.Static_Content;

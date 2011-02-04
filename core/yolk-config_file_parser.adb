@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                           config_file_parser                              --
+--                           Config File Parser                              --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -26,7 +26,7 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Maps;
 with Ada.Text_IO;
 
-package body Config_File_Parser is
+package body Yolk.Config_File_Parser is
 
    -------------------------
    --  Check_And_Convert  --
@@ -322,4 +322,4 @@ begin
 
    Load_File (Config_File => Config_File);
 
-end Config_File_Parser;
+end Yolk.Config_File_Parser;

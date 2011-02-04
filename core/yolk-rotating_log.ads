@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               rotating_log                                --
+--                               Rotating Log                                --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -35,10 +35,10 @@
 
 private with Ada.Strings.Unbounded;
 private with Ada.Text_IO;
-private with Configuration;
 private with GNATCOLL.Traces;
+private with Yolk.Configuration;
 
-package Rotating_Log is
+package Yolk.Rotating_Log is
 
    Cannot_Create_Log_File   : exception;
    Cannot_Write_To_Log_File : exception;
@@ -71,6 +71,8 @@ package Rotating_Log is
    --    Cannot_Write_To_Log_File
 
 private
+
+   use Yolk.Configuration;
 
    Stream_Rotating_Log : constant String := "rotating_log";
    --  Name of the stream. This is used in the GNAT.Traces configuration files
@@ -122,8 +124,7 @@ private
       File           : Access_File;
       Current_Slot   : Positive := 1;
       Size           : Natural := 0;
-      Slot_Max       : Positive := Configuration.Config.Get
-        (Configuration.Max_Slot_Count);
+      Slot_Max       : Positive := Config.Get (Max_Slot_Count);
       Locked         : Boolean := False;
 
    end Log_Object;
@@ -193,4 +194,4 @@ private
    --  Should we output time? No. Time is set in the Track procedure. Always
    --  return False.
 
-end Rotating_Log;
+end Yolk.Rotating_Log;

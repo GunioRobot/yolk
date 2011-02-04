@@ -25,21 +25,20 @@ with AWS.Server;
 with AWS.Server.Log;
 with AWS.Services.Dispatchers.URI;
 with AWS.Session;
-with Configuration;
-with Handlers;
-with Log_File_Cleanup;
-with Process_Control;
-with Rotating_Log;
-with Utilities;
-with Yolk;
+with Yolk.Configuration;
+with Yolk.Handlers;
+with Yolk.Log_File_Cleanup;
+with Yolk.Process_Control;
+with Yolk.Rotating_Log;
+with Yolk.Utilities;
 
 procedure Yolk_Server
 is
 
    use Ada.Exceptions;
-   use Configuration;
-   use Rotating_Log;
-   use Utilities;
+   use Yolk.Rotating_Log;
+   use Yolk.Configuration;
+   use Yolk.Utilities;
 
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
    --  The various resource handlers. These are defined in the Handlers and
@@ -142,7 +141,7 @@ is
    is
 
       use AWS.Config;
-      use Log_File_Cleanup;
+      use Yolk.Log_File_Cleanup;
 
       Exit_Loop   : Boolean := False;
       Files_To_Keep : constant Positive
@@ -213,7 +212,7 @@ begin
    --  parameters, and in these the aws.mime file is placed in ./, whereas our
    --  aws.mime is in configuration/aws.mime.
 
-   Handlers.Set (RH => Resource_Handlers);
+   Yolk.Handlers.Set (RH => Resource_Handlers);
    --  Populate the Resource_Handlers object.
 
    Log_File_Monitor.Start;
@@ -229,7 +228,7 @@ begin
           AWS.Config.Server_Port (Web_Server_Config)'Img);
    --  We're alive! Log this fact to the Info track.
 
-   Process_Control.Wait;
+   Yolk.Process_Control.Wait;
    --  This is the main "loop". We will wait here as long as the
    --  Process_Control.Controller.Check entry barrier is False.
 

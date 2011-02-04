@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                          Database_Connection                              --
+--                          Database Connection                              --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -23,7 +23,7 @@
 
 with GNATCOLL.SQL.Postgres;
 
-package body Connect_To_DB is
+package body Yolk.Connect_To_DB is
 
    -----------------------------------
    --  Database_Connection_Factory  --
@@ -108,4 +108,4 @@ package body Connect_To_DB is
 
    end Set_Credentials;
 
-end Connect_To_DB;
+end Yolk.Connect_To_DB;

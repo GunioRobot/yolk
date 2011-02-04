@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                handlers                                   --
+--                            Logfile Cleanup                                --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,20 +21,35 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  In this package we define the core content/resource handlers.
---  Content not handled in this package should be added to the
---  My_Handlers package.
+with Ada.Calendar;
+with Ada.Containers.Ordered_Sets;
+with Ada.Strings.Unbounded;
+with AWS.Config;
+with AWS.Server;
 
-with AWS.Services.Dispatchers.URI;
+package Yolk.Log_File_Cleanup is
 
-package Handlers is
+   procedure Clean_Up
+     (Config_Object           : in AWS.Config.Object;
+      Web_Server              : in AWS.Server.HTTP;
+      Amount_Of_Files_To_Keep : in Positive);
+   --  Search for and delete old and excess logfiles in the Log_File_Directory
+   --  defined in the server configuration file.
 
-   procedure Set
-     (RH : out AWS.Services.Dispatchers.URI.Handler);
-   --  The Handlers package define a set of default handlers for static content
-   --  such as HTML, images and ICO files.
-   --  The My_Handlers package define application specific handlers, so it is
-   --  in this package that such handlers should be placed.
-   --  See my_handlers/my_handlers.ad[sb] for more information.
+private
 
-end Handlers;
+   type File_Info is
+      record
+         File_Name   : Ada.Strings.Unbounded.Unbounded_String;
+         Mod_Time    : Ada.Calendar.Time;
+      end record;
+
+   function "<"
+     (Left, Right : in File_Info)
+      return Boolean;
+   --  Used by the Ordered_File_Set package to order the File_Info elements.
+
+   package Ordered_File_Set is new Ada.Containers.Ordered_Sets (File_Info);
+   --  A new ordered set package instantiated with File_Info as Element_Type.
+
+end Yolk.Log_File_Cleanup;

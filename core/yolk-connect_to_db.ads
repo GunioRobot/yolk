@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                           Database_Connection                             --
+--                           Database Connection                             --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -23,7 +23,7 @@
 
 with GNATCOLL.SQL.Exec;
 
-package Connect_To_DB is
+package Yolk.Connect_To_DB is
 
    type Connection_Mapping_Method is (AWS_Tasks_To_DB,
                                       DB_Conn_Tasks_To_DB);
@@ -65,13 +65,13 @@ package Connect_To_DB is
    --  DBMS used is decided when the relevant generic child package is
    --  instantiated, for example like this:
    --
-   --  package My_DB is new Connect_To_DB.PostgreSQL
-   --    (DB_Credentials            => Connect_To_DB.Set_Credentials
+   --  package My_DB is new Yolk.Connect_To_DB.PostgreSQL
+   --    (DB_Credentials            => Yolk.Connect_To_DB.Set_Credentials
    --       (Host              => "host",
    --        Database          => "database",
    --        User              => "user",
    --        Password          => "password"),
-   --     Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
+   --     Task_To_DB_Mapping_Method => Yolk.Connect_To_DB.AWS_Tasks_To_DB);
 
 private
 
@@ -111,4 +111,4 @@ private
    --  Return a GNATCOLL.SQL.Exec.Database_Connection object. This function
    --  is called whenever a task is missing a dedicated database connection.
 
-end Connect_To_DB;
+end Yolk.Connect_To_DB;

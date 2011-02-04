@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                              process_control                              --
+--                              Process Control                              --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -23,7 +23,7 @@
 
 with Ada.Text_IO;
 
-package body Process_Control is
+package body Yolk.Process_Control is
 
    ----------------------
    -- Create_PID_File  --
@@ -156,4 +156,4 @@ package body Process_Control is
 
    end Controller;
 
-end Process_Control;
+end Yolk.Process_Control;

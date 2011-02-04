@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             configuration                                 --
+--                             Configuration                                 --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -26,10 +26,12 @@
 
 with Ada.Strings.Unbounded;
 with AWS.Config;
-with Config_File_Parser;
-with Utilities; use Utilities;
+with Yolk.Config_File_Parser;
+with Yolk.Utilities;
 
-package Configuration is
+package Yolk.Configuration is
+
+   use Yolk.Utilities;
 
    type Keys is (Accept_Queue_Size, --  AWS
                  Admin_Password, --  AWS
@@ -262,4 +264,4 @@ package Configuration is
    function Get_AWS_Configuration return AWS.Config.Object;
    --  Load the AWS relevant configuration settings from the config.ini file.
 
-end Configuration;
+end Yolk.Configuration;

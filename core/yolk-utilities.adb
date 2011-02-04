@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                utilities                                  --
+--                                Utilities                                  --
 --                                                                           --
---                                  SPEC                                     --
+--                                  BODY                                     --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -21,28 +21,51 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
+with Ada.Strings.Fixed;
 
-package Utilities is
+package body Yolk.Utilities is
 
-   function TS
-     (US : in Ada.Strings.Unbounded.Unbounded_String)
-      return String
-      renames Ada.Strings.Unbounded.To_String;
-
-   function TUS
-     (S : in String)
-      return Ada.Strings.Unbounded.Unbounded_String
-      renames Ada.Strings.Unbounded.To_Unbounded_String;
+   --------------
+   -- Is_Empty --
+   --------------
 
    function Is_Empty
      (S : in String)
-      return Boolean;
-   --  Return True if a trimmed string is empty.
+      return Boolean
+   is
+
+      use Ada.Strings;
+
+   begin
+
+      if Fixed.Trim (S, Both) = "" then
+         return True;
+      else
+         return False;
+      end if;
+
+   end Is_Empty;
+
+   --------------
+   -- Is_Empty --
+   --------------
 
    function Is_Empty
      (US : in Ada.Strings.Unbounded.Unbounded_String)
-      return Boolean;
-   --  Return True if a trimmed unbounded string is empty.
+      return Boolean
+   is
 
-end Utilities;
+      use Ada.Strings;
+      use Ada.Strings.Unbounded;
+
+   begin
+
+      if Unbounded.Trim (US, Both) = "" then
+         return True;
+      else
+         return False;
+      end if;
+
+   end Is_Empty;
+
+end Yolk.Utilities;

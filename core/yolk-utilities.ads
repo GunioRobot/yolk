@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             static_content                                --
+--                                Utilities                                  --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,37 +21,28 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  Static content such as images, HTML and XML files are handled here. The
---  paths to where the server is supposed to look for the content is defined
---  in the configuration/config.ini file.
---  If enabled in the config.ini file, files with text content will be
---  pre-compressed and saved in the Compressed_Cache_Directory.
+with Ada.Strings.Unbounded;
 
-with AWS.Response;
-with AWS.Status;
-with AWS.Utils;
+package Yolk.Utilities is
 
-package Static_Content is
+   function TS
+     (US : in Ada.Strings.Unbounded.Unbounded_String)
+      return String
+      renames Ada.Strings.Unbounded.To_String;
 
-   Lock : AWS.Utils.Semaphore;
-   --  This lock is used when the .gz files are created for the first time. We
-   --  don't want more than one task messing around with the Compress_And_Cache
-   --  procedure at the same time.
+   function TUS
+     (S : in String)
+      return Ada.Strings.Unbounded.Unbounded_String
+      renames Ada.Strings.Unbounded.To_Unbounded_String;
 
-   function Binary_File
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-   --  Load various binary static content. The regex'es and dispatchers for
-   --  these files are defined in the Handlers package.
-   --  NOTE:
-   --    Content handled by Binary_File will _not_ be pre-compressed.
+   function Is_Empty
+     (S : in String)
+      return Boolean;
+   --  Return True if a trimmed string is empty.
 
-   function Text_File
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-   --  Load various text static content and compress/cache files. The regex'es
-   --  and dispatchers for these files are defined in the Handlers package.
-   --  NOTE:
-   --    Content handled by Text_file will _always_ be pre-compressed.
+   function Is_Empty
+     (US : in Ada.Strings.Unbounded.Unbounded_String)
+      return Boolean;
+   --  Return True if a trimmed unbounded string is empty.
 
-end Static_Content;
+end Yolk.Utilities;

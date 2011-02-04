@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                not_found                                  --
+--                         Connect To DB PostgreSQL                          --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,19 +21,39 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  If a requested resource is not found, then we must return a 404 message to
---  the client. Not_Found.Output does exactly that and nothing else.
---  The template file for this 404 message is defined in the
---  configuration/config.ini file.
+generic
 
-with AWS.Response;
-with AWS.Status;
+   DB_Credentials : Credentials;
+   --  The database credentials, such as username, password, host and similar.
+   --  Note that if an SSL connection is available to the host, then SSL is
+   --  preferred over non-SSL.
 
-package Not_Found is
+   Task_To_DB_Mapping_Method : Connection_Mapping_Method;
+   --  Specify how we connect to the database. This can be done in one of two
+   --  ways:
+   --
+   --  AWS_Tasks_To_DB:
+   --    Each AWS task is mapped to its own unique database connection. This
+   --    means that you can only connect to _one_ database per AWS task. This
+   --    is the fastest method, as we can call
+   --    GNATCOLL.SQL.Exec.Get_Task_Connection immediately.
+   --
+   --  DB_Conn_Tasks_To_DB:
+   --    A pool of DB_Conn tasks are created for each instantiation of a
+   --    Connect_To_DB child package and these then connect to the database.
+   --    The result is that your app can connect to several different databases
+   --    in the same AWS task.
+   --    This is slower than AWS_Tasks_To_DB because we have to maintain a map
+   --    between the AWS tasks and the DB_Conn tasks. This is done using the
+   --    Ada.Task_Attributes package.
+   --
+   --  It is perfectly valid to instantiate all Connect_To_DB child packages
+   --  with DB_Conn_Tasks_To_DB, but it is only possible to instantiate once
+   --  with AWS_Tasks_To_DB.
 
-   function Output
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-   --  Outputs a generic 404 not found HTML.
+package Yolk.Connect_To_DB.PostgreSQL is
 
-end Not_Found;
+   function Connection return GNATCOLL.SQL.Exec.Database_Connection;
+   --  Return a thread specific access to the database.
+
+end Yolk.Connect_To_DB.PostgreSQL;

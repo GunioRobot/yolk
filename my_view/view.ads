@@ -24,10 +24,19 @@
 private with AWS.Status;
 private with AWS.Response;
 private with AWS.Templates;
+private with Yolk.Connect_To_DB.PostgreSQL;
 
 package View is
 
 private
+
+   package My_DB is new Yolk.Connect_To_DB.PostgreSQL
+     (DB_Credentials            => Yolk.Connect_To_DB.Set_Credentials
+        (Host              => "freja.serverbox.dk",
+         Database          => "12boo",
+         User              => "thomas",
+         Password          => "responsum.dk"),
+      Task_To_DB_Mapping_Method => Yolk.Connect_To_DB.AWS_Tasks_To_DB);
 
    function Build_Response
      (Status_Data   : in AWS.Status.Data;

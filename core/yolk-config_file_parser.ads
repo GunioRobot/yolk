@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                           config_file_parser                              --
+--                           Config File Parser                              --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -67,7 +67,7 @@ generic
    Default_Values : in Defaults_Array;
    Config_File    : in String;
 
-package Config_File_Parser is
+package Yolk.Config_File_Parser is
 
    Unknown_Key             : exception;
    --  Is raised when an unknown KEY has been found in the config file.
@@ -131,4 +131,4 @@ private
    --  Exceptions:
    --    Empty_Key
 
-end Config_File_Parser;
+end Yolk.Config_File_Parser;

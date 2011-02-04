@@ -24,7 +24,7 @@
 with AWS.Dispatchers.Callback;
 with My_Configuration;
 with View.Index;
-with Unknown_Content;
+with Yolk.Unknown_Content;
 
 package body My_Handlers is
 
@@ -37,6 +37,7 @@ package body My_Handlers is
    is
 
       use AWS.Dispatchers.Callback;
+      use Yolk;
 
       package My renames My_Configuration;
 

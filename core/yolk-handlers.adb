@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                handlers                                   --
+--                                Handlers                                   --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -22,11 +22,11 @@
 -------------------------------------------------------------------------------
 
 with AWS.Dispatchers.Callback;
-with Configuration;
 with My_Handlers;
-with Static_Content;
+with Yolk.Configuration;
+with Yolk.Static_Content;
 
-package body Handlers is
+package body Yolk.Handlers is
 
    -----------
    --  Set  --
@@ -37,9 +37,9 @@ package body Handlers is
    is
 
       use AWS.Dispatchers.Callback;
-      use Configuration;
+      use Yolk.Configuration;
 
-      package SC renames Static_Content;
+      package SC renames Yolk.Static_Content;
 
    begin
 
@@ -101,4 +101,4 @@ package body Handlers is
 
    end Set;
 
-end Handlers;
+end Yolk.Handlers;

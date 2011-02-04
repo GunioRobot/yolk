@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                not_found                                  --
+--                                Not Found                                  --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -25,9 +25,9 @@ with AWS;
 with AWS.Messages;
 with AWS.MIME;
 with AWS.Templates;
-with Configuration;
+with Yolk.Configuration;
 
-package body Not_Found is
+package body Yolk.Not_Found is
 
    --------------
    --  Output  --
@@ -39,7 +39,7 @@ package body Not_Found is
    is
 
       use AWS.Templates;
-      use Configuration;
+      use Yolk.Configuration;
 
       Content     : AWS.Response.Data;
       T           : Translate_Set;
@@ -62,4 +62,4 @@ package body Not_Found is
 
    end Output;
 
-end Not_Found;
+end Yolk.Not_Found;

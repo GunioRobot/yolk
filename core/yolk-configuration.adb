@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             configuration                                 --
+--                             Configuration                                 --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -23,7 +23,7 @@
 
 with AWS.Config.Set;
 
-package body Configuration is
+package body Yolk.Configuration is
 
    ---------------------------
    -- Get_AWS_Configuration --
@@ -234,4 +234,4 @@ package body Configuration is
 
    end Get_AWS_Configuration;
 
-end Configuration;
+end Yolk.Configuration;

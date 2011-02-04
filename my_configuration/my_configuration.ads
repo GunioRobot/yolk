@@ -24,12 +24,13 @@
 --  Application specific configuration.
 
 with Ada.Strings.Unbounded;
-with Config_File_Parser;
-with Utilities;
+with Yolk.Config_File_Parser;
+with Yolk.Utilities;
 
 package My_Configuration is
 
-   use Utilities;
+   use Yolk.Utilities;
+   use Yolk;
 
    type Keys is (DB_Host,
                  DB_Name,

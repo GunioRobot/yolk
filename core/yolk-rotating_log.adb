@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                              rotating_log                                 --
+--                              Rotating Log                                 --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -27,9 +27,9 @@ with Ada.Calendar.Time_Zones;
 with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
-with Process_Control;
+with Yolk.Process_Control;
 
-package body Rotating_Log is
+package body Yolk.Rotating_Log is
 
    ------------------
    --  Initialize  --
@@ -40,7 +40,6 @@ package body Rotating_Log is
 
       use Ada.Directories;
       use Ada.Text_IO;
-      use Configuration;
       use GNATCOLL.Traces;
 
       A_Handle : Trace_Handles := Trace_Handles'First;
@@ -204,7 +203,6 @@ package body Rotating_Log is
       use Ada.Calendar.Formatting;
       use Ada.Calendar.Time_Zones;
       use Ada.Text_IO;
-      use Configuration;
 
       package EIO is new Ada.Text_IO.Enumeration_IO (Trace_Handles);
 
@@ -339,9 +337,6 @@ package body Rotating_Log is
 
       procedure Move_To_Next_Slot
       is
-
-         use Configuration;
-
       begin
 
          if Current_Slot = Config.Get (Max_Slot_Count) then
@@ -417,4 +412,4 @@ begin
    Initialize;
    --  Start the logging system.
 
-end Rotating_Log;
+end Yolk.Rotating_Log;

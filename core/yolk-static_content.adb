@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                              static_content                               --
+--                              Static Content                               --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -25,12 +25,12 @@ with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with AWS.Messages;
 with AWS.MIME;
-with Configuration;
-with Not_Found;
-with Rotating_Log;
 with ZLib;
+with Yolk.Configuration;
+with Yolk.Not_Found;
+with Yolk.Rotating_Log;
 
-package body Static_Content is
+package body Yolk.Static_Content is
 
    procedure Initialize;
    --  Initialize the Static_Content package. Basically just delete and
@@ -48,7 +48,7 @@ package body Static_Content is
       use Ada.Directories;
       use AWS.MIME;
       use AWS.Status;
-      use Configuration;
+      use Yolk.Configuration;
 
       Resource : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
@@ -58,7 +58,7 @@ package body Static_Content is
       if not Exists (Resource)
         or else Kind (Resource) /= Ordinary_File
       then
-         return Not_Found.Output (Request);
+         return Yolk.Not_Found.Output (Request);
       end if;
 
       return AWS.Response.File
@@ -75,8 +75,8 @@ package body Static_Content is
    is
 
       use Ada.Directories;
-      use Configuration;
       use Rotating_Log;
+      use Yolk.Configuration;
 
    begin
 
@@ -111,8 +111,8 @@ package body Static_Content is
       use Ada.Directories;
       use AWS.Messages;
       use AWS.Status;
-      use Configuration;
       use Rotating_Log;
+      use Yolk.Configuration;
 
       GZ_Resource           : constant String
         := Config.Get (Compressed_Cache_Directory) & URI (Request) & ".gz";
@@ -227,7 +227,7 @@ package body Static_Content is
       if not Exists (Resource)
         or else Kind (Resource) /= Ordinary_File
       then
-         return Not_Found.Output (Request);
+         return Yolk.Not_Found.Output (Request);
       end if;
 
       if Is_Supported (Request, GZip) then
@@ -277,4 +277,4 @@ begin
 
    Initialize;
 
-end Static_Content;
+end Yolk.Static_Content;

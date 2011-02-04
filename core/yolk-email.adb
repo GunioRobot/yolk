@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  email                                    --
+--                                  Email                                    --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -26,7 +26,7 @@ with Ada.Directories;
 with AWS.MIME;
 with AWS.Utils;
 with GNATCOLL.Email.Utils;
-with Utilities;
+with Yolk.Utilities;
 
 package body Yolk.Email is
 
@@ -45,7 +45,7 @@ package body Yolk.Email is
          declare
 
             use GNATCOLL.VFS;
-            use Utilities;
+            use Yolk.Utilities;
 
             Data : constant Attachment_Data := ES.Attachment_List.Element (i);
             File : constant Virtual_File := To_Virtual_File (Item => Data);
@@ -188,7 +188,7 @@ package body Yolk.Email is
    is
 
       use GNATCOLL.Email;
-      use Utilities;
+      use Yolk.Utilities;
 
       Data     : Header_Data;
       Custom   : Header;
@@ -238,7 +238,7 @@ package body Yolk.Email is
       List     : in     Email_Data_Container.Vector)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
       Data : Email_Data;
 
@@ -392,7 +392,7 @@ package body Yolk.Email is
          declare
 
             use GNATCOLL.Email;
-            use Utilities;
+            use Yolk.Utilities;
 
             Sender : Header;
 
@@ -431,7 +431,7 @@ package body Yolk.Email is
    is
 
       use GNATCOLL.Email;
-      use Utilities;
+      use Yolk.Utilities;
 
       Subject  : constant Header := Create
         (Name    => "Subject",
@@ -476,7 +476,7 @@ package body Yolk.Email is
    is
 
       use GNATCOLL.Email;
-      use Utilities;
+      use Yolk.Utilities;
 
       Email          : Message := New_Message (Multipart_Alternative);
       HTML_Payload   : Message := New_Message (Text_Html);
@@ -537,7 +537,7 @@ package body Yolk.Email is
    is
 
       use GNATCOLL.Email;
-      use Utilities;
+      use Yolk.Utilities;
 
       Email_Alt      : Message := New_Message (Multipart_Alternative);
       Email_Mixed    : Message := New_Message (Multipart_Mixed);
@@ -606,7 +606,7 @@ package body Yolk.Email is
    is
 
       use GNATCOLL.Email;
-      use Utilities;
+      use Yolk.Utilities;
 
       Email : Message := New_Message (MIME_Type => Text_Plain);
 
@@ -641,7 +641,7 @@ package body Yolk.Email is
    is
 
       use GNATCOLL.Email;
-      use Utilities;
+      use Yolk.Utilities;
 
       Email          : Message := New_Message (MIME_Type => Multipart_Mixed);
       Text_Payload   : Message := New_Message (MIME_Type => Text_Plain);
@@ -714,7 +714,7 @@ package body Yolk.Email is
      (ES : in out Structure)
    is
 
-      use Utilities;
+      use Yolk.Utilities;
 
    begin
 
@@ -748,7 +748,7 @@ package body Yolk.Email is
 
       use Ada.Directories;
       use GNATCOLL.VFS;
-      use Utilities;
+      use Yolk.Utilities;
 
       Path_To_File : constant String := TS (Item.Path_To_File);
 

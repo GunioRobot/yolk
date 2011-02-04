@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             email.composer                                --
+--                             Email Composer                                --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

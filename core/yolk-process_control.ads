@@ -3,7 +3,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             process_control                               --
+--                             Process Control                               --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -32,7 +32,7 @@ with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Interrupts.Names;
 
-package Process_Control is
+package Yolk.Process_Control is
 
    pragma Unreserve_All_Interrupts;
    --  Make sure that GNAT does not handle any interrupts automatically.
@@ -109,4 +109,4 @@ private
 
    end Controller;
 
-end Process_Control;
+end Yolk.Process_Control;

@@ -22,8 +22,8 @@
 -------------------------------------------------------------------------------
 
 with My_Configuration;
-with Rotating_Log;
 with Yolk.Email.Composer;
+with Yolk.Rotating_Log;
 --  with GNATCOLL.Email;
 --  with GNATCOLL.Email.Utils;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
@@ -47,7 +47,7 @@ package body View.Index is
 
       use AWS.Templates;
       use Yolk.Email;
-      use Rotating_Log;
+      use Yolk.Rotating_Log;
 
       package My renames My_Configuration;
 

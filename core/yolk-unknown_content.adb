@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             unknown_content                               --
+--                             Unknown Content                               --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -21,9 +21,9 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Not_Found;
+with Yolk.Not_Found;
 
-package body Unknown_Content is
+package body Yolk.Unknown_Content is
 
    ----------------
    --  Generate  --
@@ -35,8 +35,8 @@ package body Unknown_Content is
    is
    begin
 
-      return Not_Found.Output (Request);
+      return Yolk.Not_Found.Output (Request);
 
    end Generate;
 
-end Unknown_Content;
+end Yolk.Unknown_Content;
