@@ -40,7 +40,7 @@ return a 404. This behavior is defined in the call to Register_Default_Callback:
 If you want to change this, simply either get rid of this call, or change the
 Callback parameter to something else.
 
-In regards to Register_Default_Callback there are probably to schools of thought:
+In regards to Register_Default_Callback there are probably two schools of thought:
 
     1.  The default is the primary website content, a frontpage or something to
         that effect.

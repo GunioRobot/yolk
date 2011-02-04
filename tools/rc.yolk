@@ -45,7 +45,7 @@
 NAME_OF_APPLICATION=Yolk
 
 # This is the actual filename of the Yolk application executable.
-NAME_OF_EXE_FILE=yolk
+NAME_OF_EXE_FILE=yolk_server
 
 # Path to where the NAME_OF_EXE_FILE lives. Do _not_ write the trailing /
 PATH_TO_YOLK_EXE_DIRECTORY=/home/thomas/Ada/Yolk/exe

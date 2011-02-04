@@ -5,4 +5,4 @@ directory, then it should be placed in my_core.
 
 Obviously you don't have to follow this convention, and getting rid
 of my_core is as simple as deleting it and removing the reference to
-it in the yolk.gpr file.
+it in the yolk_server.gpr file.

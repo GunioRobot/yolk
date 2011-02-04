@@ -13,15 +13,15 @@ When you're certain that the dependencies are met, then all you need to do is
 follow these 5 steps:
 
     1. cd /path/to/Yolk
-    2. gnatmake -P yolk.gpr
+    2. gnatmake -P yolk_server.gpr
     3. cd exe/
-    4. ./yolk
+    4. ./yolk_server
     5. Using your browser, visit http://localhost:4242
 
 You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
 found in the yolk.pid file.
 
-Instead of starting/stopping your application by calling the Yolk executable
+Instead of starting/stopping your application by calling the yolk_server executable
 directly, you can use the tools/rc.yolk script. Using this will enable you to
 run a Yolk application like any other server-software. It is properly detached
 from the console. All you have to do is edit a few variables at the beginning of
@@ -42,7 +42,7 @@ If Yolk isn't working, then it's worth checking that:
     * The ADA_PROJECT_PATH environment variable contains the paths to your AWS
       and GNATcoll project files.
     * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin,
-      then make sure that the "for Compiler_Command" option in yolk.gpr is
+      then make sure that the "for Compiler_Command" option in yolk_server.gpr is
       adjusted accordingly.
     * That you're not already using port 4242 for something else.
 
