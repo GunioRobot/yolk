@@ -143,7 +143,8 @@ private
    --  The type used to hold describe an email.
    --    Attachment_List:
    --       A list of Attachment_Data records. The validity of the Path_To_File
-   --       component is checked when Send is called.
+   --       component is checked when it is converted into a GNATcoll Virtual
+   --       file.
    --    Bcc_List:
    --       A list of Email_Data records. These are collapsed into a single
    --       Bcc: header when Send is called, and only then do we check if each

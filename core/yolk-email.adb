@@ -38,25 +38,26 @@ package body Yolk.Email is
      (ES    : in     Structure;
       Email : in out GNATCOLL.Email.Message)
    is
+
+      List : Attachments_Container.Vector renames ES.Attachment_List;
+
    begin
 
-      for i in
-        ES.Attachment_List.First_Index .. ES.Attachment_List.Last_Index loop
+      for i in List.First_Index .. List.Last_Index loop
          declare
 
             use GNATCOLL.VFS;
             use Yolk.Utilities;
 
-            Data : constant Attachment_Data := ES.Attachment_List.Element (i);
+            Data : constant Attachment_Data := List.Element (i);
             File : constant Virtual_File := To_Virtual_File (Item => Data);
 
          begin
 
-            Email.Attach
-              (Path                 => File,
-               MIME_Type            => AWS.MIME.Content_Type
-                 (Filename => TS (Data.Path_To_File)),
-               Charset              => Get_Charset (Data.Charset));
+            Email.Attach (Path        => File,
+                          MIME_Type   => AWS.MIME.Content_Type
+                            (Filename => TS (Data.Path_To_File)),
+                          Charset     => Get_Charset (Data.Charset));
 
          end;
       end loop;
@@ -193,11 +194,12 @@ package body Yolk.Email is
       Data     : Header_Data;
       Custom   : Header;
 
+      List : Custom_Headers_Container.Vector renames ES.Custom_Headers;
+
    begin
 
-      for i in ES.Custom_Headers.First_Index .. ES.Custom_Headers.Last_Index
-      loop
-         Data := ES.Custom_Headers.Element (i);
+      for i in List.First_Index .. List.Last_Index loop
+         Data := List.Element (i);
 
          Custom := Create (Name    => TS (Data.Name),
                            Value   => TS (Data.Value),
