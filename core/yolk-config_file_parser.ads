@@ -61,9 +61,10 @@ with Ada.Strings.Unbounded;
 
 generic
 
+   use Ada.Strings.Unbounded;
+
    type Keys is (<>);
-   type Defaults_Array is array (Keys) of
-     Ada.Strings.Unbounded.Unbounded_String;
+   type Defaults_Array is array (Keys) of Unbounded_String;
    Default_Values : in Defaults_Array;
    Config_File    : in String;
 
@@ -96,7 +97,7 @@ package Yolk.Config_File_Parser is
       return String;
    function Get
      (Key : in Keys)
-      return Ada.Strings.Unbounded.Unbounded_String;
+      return Unbounded_String;
    --  Get the VALUE for Key and convert it to target type.
    --  Exceptions:
    --    Conversion_Error

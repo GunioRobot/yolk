@@ -25,15 +25,17 @@ with Ada.Strings.Unbounded;
 
 package Yolk.Utilities is
 
+   use Ada.Strings.Unbounded;
+
    function TS
-     (US : in Ada.Strings.Unbounded.Unbounded_String)
+     (US : in Unbounded_String)
       return String
-      renames Ada.Strings.Unbounded.To_String;
+      renames To_String;
 
    function TUS
      (S : in String)
-      return Ada.Strings.Unbounded.Unbounded_String
-      renames Ada.Strings.Unbounded.To_Unbounded_String;
+      return Unbounded_String
+      renames To_Unbounded_String;
 
    function Is_Empty
      (S : in String)
@@ -41,7 +43,7 @@ package Yolk.Utilities is
    --  Return True if a trimmed string is empty.
 
    function Is_Empty
-     (US : in Ada.Strings.Unbounded.Unbounded_String)
+     (US : in Unbounded_String)
       return Boolean;
    --  Return True if a trimmed unbounded string is empty.
 

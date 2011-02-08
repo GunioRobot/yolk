@@ -36,9 +36,6 @@ package body Yolk.Config_File_Parser is
      (Key : in Keys)
       return String
    is
-
-      use Ada.Strings.Unbounded;
-
    begin
 
       if Defaults (Key) = Null_Unbounded_String then
@@ -129,9 +126,6 @@ package body Yolk.Config_File_Parser is
      (Key : in Keys)
       return String
    is
-
-      use Ada.Strings.Unbounded;
-
    begin
 
       return To_String (Defaults (Key));
@@ -144,7 +138,7 @@ package body Yolk.Config_File_Parser is
 
    function Get
      (Key : in Keys)
-      return Ada.Strings.Unbounded.Unbounded_String
+      return Unbounded_String
    is
    begin
 
@@ -160,9 +154,6 @@ package body Yolk.Config_File_Parser is
      (Key : in Keys)
       return Boolean
    is
-
-      use Ada.Strings.Unbounded;
-
    begin
 
       return Defaults (Key) /= Null_Unbounded_String;
@@ -178,7 +169,6 @@ package body Yolk.Config_File_Parser is
    is
 
       use Ada.Strings;
-      use Ada.Strings.Unbounded;
       use Ada.Text_IO;
 
       File : File_Type;

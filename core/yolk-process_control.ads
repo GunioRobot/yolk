@@ -59,13 +59,15 @@ package Yolk.Process_Control is
 
 private
 
+   use Ada.Command_Line;
+   use Ada.Directories;
+
    type State is (Running, Shutdown, Stopped);
 
    PID : constant String   :=
-           Ada.Directories.Compose
-             (Containing_Directory => Ada.Directories.Current_Directory,
-              Name                 => Ada.Directories.Simple_Name
-                (Ada.Command_Line.Command_Name & ".pid"));
+           Compose
+             (Containing_Directory => Current_Directory,
+              Name                 => Simple_Name (Command_Name & ".pid"));
    --  Path to the PID file. Is set to /path/to/executable/<programname>.pid
    Wait_Called             : Boolean := False;
    --  Is set to True when Wait is called the first time. This is used to test

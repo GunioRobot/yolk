@@ -30,7 +30,6 @@ with Yolk.Utilities;
 package My_Configuration is
 
    use Yolk.Utilities;
-   use Yolk;
 
    type Keys is (DB_Host,
                  DB_Name,
@@ -56,7 +55,7 @@ package My_Configuration is
    --  written by the configuration file given when instantiating the
    --  Config_File_Parser generic.
 
-   package Config is new Config_File_Parser
+   package Config is new Yolk.Config_File_Parser
      (Keys => Keys,
       Defaults_Array => Defaults_Array,
       Default_Values => Default_Values,

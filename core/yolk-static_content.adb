@@ -75,7 +75,7 @@ package body Yolk.Static_Content is
    is
 
       use Ada.Directories;
-      use Rotating_Log;
+      use Yolk.Rotating_Log;
       use Yolk.Configuration;
 
    begin
@@ -87,7 +87,7 @@ package body Yolk.Static_Content is
          Track
            (Handle     => Info,
             Log_String => Config.Get (Compressed_Cache_Directory)
-            & " deleted by Static_Content.Initialize");
+            & " deleted by Yolk.Static_Content.Initialize");
       end if;
 
       Create_Path
@@ -95,7 +95,7 @@ package body Yolk.Static_Content is
       Track
         (Handle     => Info,
          Log_String => Config.Get (Compressed_Cache_Directory)
-         & " created by Static_Content.Initialize");
+         & " created by Yolk.Static_Content.Initialize");
 
    end Initialize;
 
@@ -111,17 +111,19 @@ package body Yolk.Static_Content is
       use Ada.Directories;
       use AWS.Messages;
       use AWS.Status;
-      use Rotating_Log;
+      use Yolk.Rotating_Log;
       use Yolk.Configuration;
 
-      GZ_Resource           : constant String
-        := Config.Get (Compressed_Cache_Directory) & URI (Request) & ".gz";
+      GZ_Resource           : constant String :=
+                                Config.Get (Compressed_Cache_Directory)
+                                & URI (Request) & ".gz";
       --  The path to the GZipped resourc.
       Resource : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
       MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
-      Minimum_File_Size : constant File_Size
-        := File_Size (Integer'(Config.Get (Compress_Minimum_File_Size)));
+      Minimum_File_Size : constant File_Size :=
+                            File_Size (Integer'(Config.Get
+                              (Compress_Minimum_File_Size)));
 
       procedure Compress_And_Cache;
       --  Compress and cache the requested static file.

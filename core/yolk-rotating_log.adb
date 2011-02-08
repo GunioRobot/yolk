@@ -410,6 +410,5 @@ package body Yolk.Rotating_Log is
 begin
 
    Initialize;
-   --  Start the logging system.
 
 end Yolk.Rotating_Log;

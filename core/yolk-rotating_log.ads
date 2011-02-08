@@ -53,7 +53,7 @@ package Yolk.Rotating_Log is
    --  by calling the Track procedure.
    --
    --  IMPORTANT:
-   --    The Error and Info handles should _not_ be removed. They might be
+   --    The Error and Info handles should _not_ be removed. They are
    --    referenced in some of the core/ source files.
    --
    --  NOTE:

@@ -89,22 +89,23 @@ package body Yolk.Log_File_Cleanup is
          use Yolk.Utilities;
 
          A_File                  : File_Info;
-         Found_File              : constant String
-           := Full_Name (Directory_Entry => Search_Item);
-         Current_Log_File        : constant String
-           := AWS.Server.Log.Name (Web_Server);
-         Current_Error_Log_File  : constant String
-           := AWS.Server.Log.Error_Name (Web_Server);
+         Found_File              : constant String :=
+                                     Full_Name
+                                       (Directory_Entry => Search_Item);
+         Current_Log_File        : constant String :=
+                                     AWS.Server.Log.Name (Web_Server);
+         Current_Error_Log_File  : constant String :=
+                                     AWS.Server.Log.Error_Name (Web_Server);
 
       begin
 
          if Found_File /= Current_Log_File and
            Found_File /= Current_Error_Log_File
          then
-            A_File.File_Name := TUS
-              (Full_Name (Directory_Entry => Search_Item));
-            A_File.Mod_Time := Modification_Time
-              (Directory_Entry => Search_Item);
+            A_File.File_Name :=
+              TUS (Full_Name (Directory_Entry => Search_Item));
+            A_File.Mod_Time :=
+              Modification_Time (Directory_Entry => Search_Item);
 
             File_Set.Insert (New_Item => A_File);
          end if;
@@ -128,7 +129,6 @@ package body Yolk.Log_File_Cleanup is
          Kind   : in String)
       is
 
-         use Ada.Strings.Unbounded;
          use Yolk.Rotating_Log;
 
          Filter : constant Filter_Type := (Ordinary_File => True,

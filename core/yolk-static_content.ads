@@ -42,7 +42,7 @@ package Yolk.Static_Content is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
    --  Load various binary static content. The regex'es and dispatchers for
-   --  these files are defined in the Handlers package.
+   --  these files are defined in the Yolk.Handlers package.
    --  NOTE:
    --    Content handled by Binary_File will _not_ be pre-compressed.
 
@@ -50,7 +50,8 @@ package Yolk.Static_Content is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
    --  Load various text static content and compress/cache files. The regex'es
-   --  and dispatchers for these files are defined in the Handlers package.
+   --  and dispatchers for these files are defined in the Yolk.Handlers
+   --  package.
    --  NOTE:
    --    Content handled by Text_file will _always_ be pre-compressed.
 

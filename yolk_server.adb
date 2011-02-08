@@ -36,8 +36,10 @@ procedure Yolk_Server
 is
 
    use Ada.Exceptions;
-   use Yolk.Rotating_Log;
    use Yolk.Configuration;
+   use Yolk.Handlers;
+   use Yolk.Process_Control;
+   use Yolk.Rotating_Log;
    use Yolk.Utilities;
 
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
@@ -143,14 +145,14 @@ is
       use AWS.Config;
       use Yolk.Log_File_Cleanup;
 
-      Exit_Loop   : Boolean := False;
-      Files_To_Keep : constant Positive
-        := Config.Get (Amount_Of_Log_Files_To_Keep);
+      Exit_Loop      : Boolean := False;
+      Files_To_Keep  : constant Positive :=
+                         Config.Get (Amount_Of_Log_Files_To_Keep);
       --  How many log files to keep. If more than this amount is found, then
       --  delete the oldest.
-      Good_To_Go  : Boolean := False;
-      Interval    : constant Duration
-        := Config.Get (Log_File_Cleanup_Interval);
+      Good_To_Go     : Boolean := False;
+      Interval       : constant Duration :=
+                         Config.Get (Log_File_Cleanup_Interval);
       --  How often do we check for excess/old logfiles?
 
    begin
@@ -179,6 +181,7 @@ is
             end Stop;
          or
             delay Interval;
+
             if Good_To_Go then
                Clean_Up (Config_Object             => Web_Server_Config,
                          Web_Server                => Web_Server,
@@ -205,14 +208,16 @@ begin
                 Log_String => "    Set value is: " & TS (Config.Get (Key)));
       end if;
    end loop;
+   --  Check for configuration settings where the setting differ from the
+   --  default value, and notify the user of these on the Info trace.
 
    AWS.MIME.Load (MIME_File => Config.Get (MIME_Types));
    --  Load the MIME type file. We need to do this here, because the AWS.MIME
-   --  has already been initialized with the default AWS configuration
+   --  package has already been initialized with the default AWS configuration
    --  parameters, and in these the aws.mime file is placed in ./, whereas our
    --  aws.mime is in configuration/aws.mime.
 
-   Yolk.Handlers.Set (RH => Resource_Handlers);
+   Set (RH => Resource_Handlers);
    --  Populate the Resource_Handlers object.
 
    Log_File_Monitor.Start;
@@ -228,7 +233,7 @@ begin
           AWS.Config.Server_Port (Web_Server_Config)'Img);
    --  We're alive! Log this fact to the Info track.
 
-   Yolk.Process_Control.Wait;
+   Wait;
    --  This is the main "loop". We will wait here as long as the
    --  Process_Control.Controller.Check entry barrier is False.
 

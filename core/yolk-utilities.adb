@@ -38,11 +38,7 @@ package body Yolk.Utilities is
 
    begin
 
-      if Fixed.Trim (S, Both) = "" then
-         return True;
-      else
-         return False;
-      end if;
+      return Fixed.Trim (S, Both) = "";
 
    end Is_Empty;
 
@@ -51,20 +47,15 @@ package body Yolk.Utilities is
    --------------
 
    function Is_Empty
-     (US : in Ada.Strings.Unbounded.Unbounded_String)
+     (US : in Unbounded_String)
       return Boolean
    is
 
       use Ada.Strings;
-      use Ada.Strings.Unbounded;
 
    begin
 
-      if Unbounded.Trim (US, Both) = "" then
-         return True;
-      else
-         return False;
-      end if;
+      return Trim (US, Both) = "";
 
    end Is_Empty;
 

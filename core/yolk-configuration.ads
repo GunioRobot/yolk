@@ -31,6 +31,7 @@ with Yolk.Utilities;
 
 package Yolk.Configuration is
 
+   use Ada.Strings.Unbounded;
    use Yolk.Utilities;
 
    type Keys is (Accept_Queue_Size, --  AWS
@@ -107,8 +108,7 @@ package Yolk.Configuration is
    --  These configuration keys are essential for core parts of Yolk, so you
    --  should not change them, unless you know what you're doing.
 
-   type Defaults_Array is array (Keys) of
-     Ada.Strings.Unbounded.Unbounded_String;
+   type Defaults_Array is array (Keys) of Unbounded_String;
 
    Default_Values : constant Defaults_Array :=
                       (Accept_Queue_Size

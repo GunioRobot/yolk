@@ -38,9 +38,11 @@ package Yolk.Log_File_Cleanup is
 
 private
 
+   use Ada.Strings.Unbounded;
+
    type File_Info is
       record
-         File_Name   : Ada.Strings.Unbounded.Unbounded_String;
+         File_Name   : Unbounded_String;
          Mod_Time    : Ada.Calendar.Time;
       end record;
 

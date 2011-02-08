@@ -32,7 +32,6 @@ package body Yolk.Process_Control is
    procedure Create_PID_File
    is
 
-      use Ada.Directories;
       use Ada.Text_IO;
 
       package IIO is new Ada.Text_IO.Integer_IO (Natural);
@@ -66,7 +65,6 @@ package body Yolk.Process_Control is
    procedure Delete_PID_File
    is
 
-      use Ada.Directories;
       use Ada.Text_IO;
 
    begin
