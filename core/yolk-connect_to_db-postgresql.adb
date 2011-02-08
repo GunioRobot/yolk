@@ -29,7 +29,6 @@ package body Yolk.Connect_To_DB.PostgreSQL is
    --  Associate AWS tasks with Connect_To_DB.DB_Conn tasks.
    --  Yes, this package is completely redundant if we're using the
    --  AWS_Tasks_To_DB Task_To_DB_Mapping_Method.
-   --  Can I do something about this?
 
    DB_Description : GNATCOLL.SQL.Exec.Database_Description;
    --  Describes access to the database, ie. user, host, password and such.
