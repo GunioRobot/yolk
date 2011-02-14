@@ -31,7 +31,6 @@ with Yolk.Rotating_Log;
 --  with Ada.Calendar;
 --  with AWS.MIME;
 --  with AWS.Utils;
---  with AWS.SMTP.Client;
 with Ada.Text_IO;
 
 package body View.Index is
