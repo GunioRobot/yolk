@@ -10,15 +10,19 @@ done. This is the configuration package used by the Yolk demo application.
 So creating a configuration system with the single key Foo is a simple
 matter of doing this:
 
+    with Ada.Strings.Unbounded;
+    with Yolk.Config_File_Parser;
+
     type Keys is (Foo);
     type Defaults_Array is array (Keys) of Unbounded_String;
     Default_Values : constant Defaults_Array :=
                         (Foo => To_Unbounded_String ("Bar"));
+
     package Foo_Config is new Config_File_Parser
-     (Keys => Keys,
-      Defaults_Array => Defaults_Array,
-      Default_Values => Default_Values,
-      Config_File => "foo_config.ini");
+      (Keys => Keys,
+       Defaults_Array => Defaults_Array,
+       Default_Values => Default_Values,
+       Config_File => "foo_config.ini");
 
 Now all you need is the file foo_config.ini with the Foo key set:
 
