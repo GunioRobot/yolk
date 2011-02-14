@@ -13,4 +13,4 @@ exe/certificates/*.pem
 exe/logs/*.log
 
 # Do not track yolk_server.adb in the Yolk root directory
-./yolk_server.adb
+/yolk_server.adb
