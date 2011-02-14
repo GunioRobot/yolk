@@ -153,6 +153,10 @@ private
    --       A list of Email_Data records. These are collapsed into a single Cc:
    --       header when Send is called, and only then do we check if each
    --       element is valid.
+   --    Composed_Message:
+   --       The complete email in GNATCOLL.Email.Message format.
+   --    Custom_Headers:
+   --       A list of custom headers.
    --    Email_Is_Send:
    --       Is set to True if we succeed in sending the email.
    --    From_List:

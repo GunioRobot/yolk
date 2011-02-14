@@ -376,34 +376,20 @@ package body Yolk.Email.Composer is
    is
    begin
 
-      Add_From (ES      => ES,
-                Address => From_Address,
-                Name    => From_Name,
-                Charset => Charset);
-
-      Add_Recipient (ES      => ES,
-                     Address => To_Address,
-                     Name    => To_Name,
-                     Kind    => To,
-                     Charset => Charset);
-
-      Set_Subject (ES      => ES,
-                   Subject => Subject,
-                   Charset => Charset);
-
-      Set_Text_Part (ES      => ES,
-                     Part    => Text_Part,
-                     Charset => Charset);
-
       Set_HTML_Part (ES      => ES,
                      Part    => HTML_Part,
                      Charset => Charset);
 
-      Add_SMTP_Server (ES   => ES,
-                       Host => SMTP_Server,
-                       Port => SMTP_Port);
-
-      Send (ES => ES);
+      Send (ES           => ES,
+            From_Address => From_Address,
+            From_Name    => From_Name,
+            To_Address   => To_Address,
+            To_Name      => To_Name,
+            Subject      => Subject,
+            Text_Part    => Text_Part,
+            SMTP_Server  => SMTP_Server,
+            SMTP_Port    => SMTP_Port,
+            Charset      => Charset);
 
    end Send;
 
