@@ -21,6 +21,21 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+--                                                                           --
+--                            DEMO FILE                                      --
+--                                                                           --
+-------------------------------------------------------------------------------
+
+--  This is a DEMO file. You can either move this to the my_handlers/ directory
+--  and change it according to you own needs, or you can provide your own.
+--
+--  This package is required by Yolk. It is "with'ed" by the Yolk.Handlers
+--  package. You must provide a My_Handlers package, preferably placed in the
+--  my_handlers/ directory.
+
+--  Application specific resource handlers.
+
 with AWS.Dispatchers.Callback;
 with My_Configuration;
 with View.Index;
