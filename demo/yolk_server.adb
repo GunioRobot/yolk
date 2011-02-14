@@ -17,6 +17,18 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+--                                                                           --
+--                            DEMO FILE                                      --
+--                                                                           --
+-------------------------------------------------------------------------------
+
+--  This is a DEMO file. You can either move this to the Yolk root directory
+--  and change it according to you own needs, or you can provide your own.
+--  For most Yolk applications, using this file "as is" will work just fine.
+--  Usually you just have to change the name of environment task and  the name
+--  of the file itself to match whatever you want to call your application.
+
 with Ada.Directories;
 with Ada.Exceptions;
 with AWS.Config;
@@ -81,7 +93,7 @@ is
       then
          AWS.Session.Load (Config.Get (Session_Data_File));
          --  If sessions are enabled and the Session_Data_File exists, then
-         --  load the old sessions data.
+         --  load the old session data.
       end if;
 
       AWS.Server.Start (Web_Server => Web_Server,
@@ -120,7 +132,7 @@ is
 
       if AWS.Config.Session (Web_Server_Config) then
          AWS.Session.Save (Config.Get (Session_Data_File));
-         --  If sessions are enabled, then save the sessions data to the
+         --  If sessions are enabled, then save the session data to the
          --  Session_Data_File.
       end if;
 
