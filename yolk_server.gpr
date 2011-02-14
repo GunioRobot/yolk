@@ -28,15 +28,19 @@ with "gnatcoll_postgres";
 
 project Yolk_Server is
 
-   for Source_Dirs use (".",
-                        "core",
-                        "demo",
-                        "my_configuration",
-                        "my_core",
-                        "my_database",
-                        "my_handlers",
-                        "my_view");
+   --  Adjust the Source_Dirs to match your needs.
+   Core_Source_Options := (".",
+                           "core",
+                           "my_configuration",
+                           "my_core",
+                           "my_database",
+                           "my_handlers",
+                           "my_view");
+   Demo_Source_Options := ("demo");
 
+   for Source_Dirs use Core_Source_Options & Demo_Source_Options;
+
+   --  Adjust this to match the actual name of your application.
    for Main use ("yolk_server.adb");
 
    for Exec_Dir use "exe";
@@ -45,6 +49,7 @@ project Yolk_Server is
 
    package Ide is
 
+      --  Adjust this to point to the compiler you want to use.
       for Compiler_Command ("ada") use "/usr/gnat/bin/gnatmake";
 
    end Ide;

@@ -1,5 +1,5 @@
 When you clone Yolk from the offical Git repository, it comes setup with a
-demo website that will run out of the box.
+demo website that will run, almost, out of the box.
 This makes it easy to check that everything is working as intended at the
 cost of a bit of cleaning up before you can get started on your own application.
 
@@ -12,11 +12,12 @@ installed:
 When you're certain that the dependencies are met, then all you need to do is
 follow these 5 steps:
 
-    1. cd /path/to/Yolk
-    2. gnatmake -P yolk_server.gpr
-    3. cd exe/
-    4. ./yolk_server
-    5. Using your browser, visit http://localhost:4242
+    1. $ cd [path to Yolk root directory]
+    2. $ cp demo/yolk_server.adb .
+    3. gnatmake -P yolk_server.gpr
+    4. cd exe/
+    5. ./yolk_server
+    6. Using your browser, visit http://localhost:4242
 
 You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
 found in the yolk.pid file.
@@ -45,5 +46,27 @@ If Yolk isn't working, then it's worth checking that:
       then make sure that the "for Compiler_Command" option in yolk_server.gpr is
       adjusted accordingly.
     * That you're not already using port 4242 for something else.
+
+When you've verified that the demo website is working as intended, it's time to
+prepare for your own Yolk application:
+
+    1.  You probably want to rename the application from yolk_server to something
+        else. This requires you to:
+
+        A.  Rename the main procedure in yolk_server.adb.
+        B.  Rename the main yolk_server.* files.
+        C.  Adjust the .gpr file accordingly, renaming the "for Main use" file.
+
+    2.  Adjust the .gpr file to match your environment, for example changing the
+        "for Compiler_Command" setting, if necessary.
+
+    3.  Create your own My_Handlers package and place it in the my_handlers/
+        directory. You can use the demo/my_handlers.* files as inspiration.
+
+    4.  Create your own content handlers and place them in the my_view/
+        directory. See the demo/view* files for inspiration.
+
+    5.  Make sure that the .gitignore files used in Yolk doesn't conflict with
+        your own VCS setup.
 
 See the README file and the docs/ for more information on how to use Yolk.

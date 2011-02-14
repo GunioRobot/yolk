@@ -14,7 +14,7 @@ Contents of this README:
 --  Introduction --
 -------------------
 
-Yolk is an Ada based web-framework that sits on top of AWS[1], GNATcoll[2] and
+Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2] and
 optionally XML/Ada[3], and PostgreSQL[4].
 With Yolk some of the tasks involved in developing a web-application using Ada
 is made simpler and a specific style is "enforced" in regards to how the
@@ -195,6 +195,11 @@ core/
     have to mess around in core/ at all. If you need to add new functionality
     to Yolk, you should use the my_core directory instead.
 
+demo/
+    This directory contains a bunch of files needed to get the Yolk demo applica-
+    tion up and running. Simply copy the yolk_server.adb file to the Yolk root
+    directory and you should be good to go. Read the INSTALL file for more info.
+
 docs/
     Here you'll find documentation on how to setup, run and build your Yolk
     application.
@@ -210,7 +215,8 @@ exe/
 
 my_configuration/
     The my_* directories is where you're supposed to place your application spe-
-    cific configuration code. See docs/ for more information.
+    cific configuration code. You can use the My_Configuration package in the
+    demo/ directory as a basis for you own. See docs/ for more information.
 
 my_core/
     The my_core/ directory is supposed to hold whatever packages your application
@@ -223,15 +229,18 @@ my_database/
     for other database related code. See docs/ for more information.
 
 my_handlers/
-    The two my_handlers.ad[bs] files found here are required in order for the Yolk
-    application to function properly. You can freely add/remove handlers in these
-    files. See docs/ for more information.
+    Here you should place you resource handler package. You can use the My_Handlers
+    package found in demo/ as a foundation for your own My_Handlers package. This
+    package is required, as it is "with'ed" in the core Handlers package. See docs/
+    for more information.
 
 my_view/
     This is where you're supposed to place the meat of your application: The code
     where the actual content is generated. I usually go with a parent/child setup
     where each child represents a specific resource, and the parent holds whatever
-    data that needs to be shared among the children. See docs/ for more information.
+    data that needs to be shared among the children. The View packages found in the
+    demo/ directory can be used as inspiration for how to build your own setup.
+    See docs/ for more information.
 
 tools/
     Here you'll find various small tools designed to make life with Yolk easier.
@@ -239,14 +248,11 @@ tools/
     to be using to start/stop a Yolk application.
 
 ./
-    The main yolk_server.adb source file, the project file, an INSTALL file, this 
-    README and the license is found here.
+    The Yolk project file, an INSTALL file, this README and the license is found here.
 
 The most important thing to take away from all this is: You should only ever place
 your code in the my_* directories. Let the rest stay as they are, to ease the process
-of upgrading Yolk. It is _much_ easier to just grab a new main yolk_server.adb and the
-accompanying core/ files, without having to worry (too much) about overwriting your
-own code.
+of upgrading Yolk.
 
 ------------------
 --  Using Yolk  --
@@ -256,10 +262,13 @@ There's a short process you will have to go through before building a new Yolk
 application:
 
     1. Clone the latest Yolk from the official repository.
-    2. Verify that the default Yolk application works by visiting the demo website.
-    3. Adjust the my_configuration.ad[bs] files to suit your needs.
-    4. Add my_view/view.xxx files for all your resources.
-    5. Adjust the my_handlers.ad[bs] to account for your content.
+    2. Copy the demo/yolk_server.adb file to the Yolk root directory.
+    3. Adjust the yolk_server.gpr file to match your setup.
+    3. Compile.
+    4. Verify that the default Yolk application works by visiting the demo website.
+    5. Copy and adjust the my_configuration.ad[bs] files to suit your needs.
+    6. Copy and adjust the my_handlers.ad[bs] to account for your content.
+    7. Create your my_view/ packages.
 
 You should of course read the configuration files and make sure you understand what
 the different settings do.
