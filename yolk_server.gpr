@@ -30,6 +30,7 @@ project Yolk_Server is
 
    for Source_Dirs use (".",
                         "core",
+                        "demo",
                         "my_configuration",
                         "my_core",
                         "my_database",
