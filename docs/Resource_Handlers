@@ -1,15 +1,15 @@
 In Yolk vocabulary a Handler is procedure that handles a request for a
 specific kind of resource.
 
-The handlers defined in the core/handlers.ad* package take care of various
+The handlers defined in the core Handlers package take care of various
 kinds of static content (graphics, HTML, XML and so on), while the handlers
-defined in my_handlers/my_handlers.ad* deal with application specific content.
+defined in demo My_Handlers package deal with application specific content.
 
-Basically the idea is that a user requests a resource:
+Basically the idea is that a user request a resource:
 
     http://domain.tld/Foo
 
-And you then define a handler for Foo in my_handlers.adb:
+And you then define a handler for Foo in the My_Handlers package:
 
     AWS.Services.Dispatchers.URI.Register_Regexp
       (Dispatcher => RH,
@@ -28,8 +28,6 @@ If you don't want that functionality, you can go with plain Register instead:
        URI        => "/Foo",
        Action     => View.Foo.Generate'Access);
 
-You are of course allowed to mix those as you please.
-
 In Yolk if no handler match the requested resource, the default behavior is to
 return a 404. This behavior is defined in the call to Register_Default_Callback:
 
@@ -37,8 +35,8 @@ return a 404. This behavior is defined in the call to Register_Default_Callback:
       (Dispatcher => RH,
        Action     => Create (Callback => Unknown_Content.Generate'Access));
 
-If you want to change this, simply either get rid of this call, or change the
-Callback parameter to something else.
+If you want to change this, simply either get rid of this call in the My_Handlers
+package, or change the Callback parameter to something else.
 
 In regards to Register_Default_Callback there are probably two schools of thought:
 

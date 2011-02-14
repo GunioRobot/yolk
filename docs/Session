@@ -13,5 +13,5 @@ importance:
     Session_Cleanup_Interval
     Session_Lifetime
 
-Setting these to high could mean wasting a lot of resources if your
+Setting these too high could mean wasting a lot of resources if your
 server is very busy.

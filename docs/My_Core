@@ -1,8 +1,0 @@
-The my_core/ directory is for all intents and purposes a convenience
-directory. It serves no other role than that of a container for all
-your core application code, ie. if it doesn't fit in the my_view
-directory, then it should be placed in my_core.
-
-Obviously you don't have to follow this convention, and getting rid
-of my_core is as simple as deleting it and removing the reference to
-it in the yolk_server.gpr file.

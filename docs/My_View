@@ -1,9 +1,0 @@
-In the my_view/ directory we find the View package and its children. Together
-these packages are your application. It is these packages that are called when
-a resource is requested.
-
-I've opted for this solution because I like it. It makes sense to me with a
-parent package and a bunch of children, each representing a specific resource.
-
-You are of course free to do whatever you want. My method is just one way of
-doing things.
