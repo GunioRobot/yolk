@@ -33,9 +33,8 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-with My_Configuration;
-with Yolk.Email.Composer;
-with Yolk.Rotating_Log;
+--  with Yolk.Email.Composer;
+--  with Yolk.Rotating_Log;
 --  with GNATCOLL.Email;
 --  with GNATCOLL.Email.Utils;
 --  with GNATCOLL.VFS; use GNATCOLL.VFS;
@@ -43,7 +42,9 @@ with Yolk.Rotating_Log;
 --  with Ada.Calendar;
 --  with AWS.MIME;
 --  with AWS.Utils;
-with Ada.Text_IO;
+--  with Ada.Text_IO;
+with AWS.Services.Directory;
+--  with My_Configuration;
 
 package body View.Index is
 
@@ -57,79 +58,27 @@ package body View.Index is
    is
 
       use AWS.Templates;
-      use Yolk.Email;
-      use Yolk.Rotating_Log;
+      --  use Yolk.Rotating_Log;
 
-      package My renames My_Configuration;
+      --  package My renames My_Configuration;
 
       T : Translate_Set;
 
    begin
 
-      Track (Handle     => Info,
-             Log_String => "Testing the INFO track");
+      --  Insert (T, Assoc ("HANDLER",
+      --    String'(My.Config.Get (My.Handler_Index))));
+      --  Insert (T, Assoc ("TEMPLATE",
+      --    String'(My.Config.Get (My.Template_Index))));
+      --  Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
 
-      Track (Handle     => Error,
-             Log_String => "Testing the ERROR track");
-
-      Insert (T, Assoc ("HANDLER", String'(My.Config.Get (My.Handler_Index))));
-      Insert (T, Assoc ("TEMPLATE",
-        String'(My.Config.Get (My.Template_Index))));
-      Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
-
-      declare
-
-         Email : Structure;
-
-      begin
-
-         Composer.Send (ES           => Email,
-                        From_Address => "thomas@responsum.dk",
-                        From_Name    => "Thomas Løcke",
-                        To_Address   => "thomas@12boo.net",
-                        To_Name      => "Thomas Løcke",
-                        Subject      => "Test text/plain email med ÆØÅ æøå",
-                        Text_Part    => "Test text/plain email med ÆØÅ æøå",
-                        SMTP_Server  => "freja.serverbox.dk",
-                        Charset      => ISO_8859_1);
-
-         if Composer.Is_Send (ES => Email) then
-            Ada.Text_IO.Put_Line ("Email Send!");
-         else
-            Ada.Text_IO.Put_Line ("Email NOT Send!");
-         end if;
-
-         --  Use a convenience procedure to build and send an email.
-         --  Send (ES             => Bn_Email,
-         --        From_Address   => "thomas@responsum.dk",
-         --        From_Name      => "Thomas Løcke",
-         --        To_Address     => "thomas@12boo.net",
-         --        To_Name        => "Thomas Løcke",
-         --        Subject        => "Text Type Test ÆØÅ æøå",
-         --        Text_Part      => "Text Type Test ÆØÅ ÆØÅ",
-         --        SMTP_Server    => "freja.serverbox.dk",
-         --        Charset        => ISO_8859_1);
-
-         --  Use a convenience procedure to build and send an email.
-         --  Send (ES             => Email,
-         --        From_Address   => "thomas@responsum.dk",
-         --        From_Name      => "Thomas Løcke",
-         --        To_Address     => "thomas@12boo.net",
-         --        To_Name        => "Thomas Løcke",
-         --        Subject        => "Test ÆØÅ æøå",
-         --        Text_Part      => "Test ÆØÅ ÆØÅ",
-         --        HTML_Part      => "<b>Test</b> ÆØÅ æøå",
-         --        SMTP_Server    => "freja.serverbox.dk",
-         --        Charset        => ISO_8859_1);
-
-      exception
-         when others =>
-            Ada.Text_IO.Put_Line ("EMAIL PROBLEM!");
-      end;
+      T := AWS.Services.Directory.Browse
+        (Directory_Name => "/home/thomas/stuff",
+         Request        => Request);
 
       return Build_Response
         (Status_Data   => Request,
-         Template_File => My.Config.Get (My.Template_Index),
+         Template_File => "templates/system/aws_directory.tmpl",
          Translations  => T);
 
    end Generate;
