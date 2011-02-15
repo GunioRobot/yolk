@@ -73,7 +73,7 @@ package body View.Index is
       --  Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
 
       T := AWS.Services.Directory.Browse
-        (Directory_Name => "/home/thomas/stuff",
+        (Directory_Name => "static_content",
          Request        => Request);
 
       return Build_Response

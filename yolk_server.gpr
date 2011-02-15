@@ -30,7 +30,8 @@ project Yolk_Server is
 
    --  Adjust the Source_Dirs to match your needs.
    Core_Source_Options := (".",
-                           "core",
+                           "src/core",
+                           "src/extended",
                            "my_configuration",
                            "my_core",
                            "my_database",

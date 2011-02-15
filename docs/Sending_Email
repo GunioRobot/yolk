@@ -15,8 +15,9 @@ With this package you can create
 The package supports multiple SMTP servers, meaning you can add as many as you
 like, and the email will then be send via the first one that accepts it.
 
-See the file core/yolk-email-composer.ads for all the procedures available and
-core/yolk-email.ads for the exceptions and types used by the package.
+See the file src/extended/yolk-email-composer.ads for all the procedures
+available and src/extended/yolk-email.ads for the exceptions and types used by
+the package.
 
 When using Yolk.Email.Composer to send emails, you get two convenience
 procedures:

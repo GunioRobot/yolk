@@ -190,11 +190,6 @@ build/
     If you want to place the compiler objects somewhere else, then you have to
     change the "for Object_Dir use" option in yolk_server.gpr.
 
-core/
-    This directory contains the core Yolk packages. In general you should not
-    have to mess around in core/ at all. If you need to add new functionality
-    to Yolk, you should use the my_core directory instead.
-
 demo/
     This directory contains a bunch of files needed to get the Yolk demo applica-
     tion up and running. Simply copy the yolk_server.adb file to the Yolk root
@@ -241,6 +236,21 @@ my_view/
     data that needs to be shared among the children. The View packages found in the
     demo/ directory can be used as inspiration for how to build your own setup.
     See docs/ for more information.
+
+src/core/
+    This directory contains the core Yolk packages. These packages are required for
+    Yolk to function. You can of course also use them in your application, though
+    most of the packages found here offers little or no functionality relevant on an
+    application level.
+    In general you should not have to mess around in src/core/ at all. If you need to
+    add new functionality to Yolk, you should place such packages in the my_core/
+    directory.
+
+src/extended/
+    This directory contains packages that offer functionality that are relevant on
+    an application level, such as sending email, connecting to databases, generating
+    RSS feeds and similar. These packages are not used by Yolk itself.
+    You own packages should not be placed here. Use the my_core/ directory instead.
 
 tools/
     Here you'll find various small tools designed to make life with Yolk easier.
