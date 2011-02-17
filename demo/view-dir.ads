@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               view.index                                  --
+--                                view.dir                                   --
 --                                                                           --
---                                  BODY                                     --
+--                                  SPEC                                     --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -33,44 +33,14 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
---  with Yolk.Email.Composer;
---  with GNATCOLL.Email;
---  with GNATCOLL.Email.Utils;
---  with GNATCOLL.VFS; use GNATCOLL.VFS;
---  with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
---  with Ada.Calendar;
---  with AWS.MIME;
---  with AWS.Utils;
---  with Ada.Text_IO;
-with My_Configuration;
+with AWS.Response;
+with AWS.Status;
 
-package body View.Index is
-
-   ---------------
-   --  Generate --
-   ---------------
+package View.Dir is
 
    function Generate
      (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
+      return AWS.Response.Data;
+   --  Generate the content for the Index resource.
 
-      use AWS.Templates;
-      use My_Configuration;
-
-      T : Translate_Set;
-
-   begin
-
-      Insert (T, Assoc ("HANDLER", String'(Config.Get (Handler_Index))));
-      Insert (T, Assoc ("TEMPLATE", String'(Config.Get (Template_Index))));
-      Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
-
-      return Build_Response
-        (Status_Data   => Request,
-         Template_File => Config.Get (Template_Index),
-         Translations  => T);
-
-   end Generate;
-
-end View.Index;
+end View.Dir;

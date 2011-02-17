@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               view.index                                  --
+--                                view.dir                                   --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -33,18 +33,13 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
---  with Yolk.Email.Composer;
---  with GNATCOLL.Email;
---  with GNATCOLL.Email.Utils;
---  with GNATCOLL.VFS; use GNATCOLL.VFS;
---  with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
---  with Ada.Calendar;
---  with AWS.MIME;
---  with AWS.Utils;
---  with Ada.Text_IO;
-with My_Configuration;
+with Ada.Directories;
+with Ada.Strings.Fixed;
+with AWS.Services.Directory;
+with Yolk.Configuration;
+with Yolk.Not_Found;
 
-package body View.Index is
+package body View.Dir is
 
    ---------------
    --  Generate --
@@ -55,22 +50,55 @@ package body View.Index is
       return AWS.Response.Data
    is
 
-      use AWS.Templates;
-      use My_Configuration;
+      use Ada.Directories;
+      use Ada.Strings;
 
-      T : Translate_Set;
+      URL               : constant String := AWS.Status.URI (Request);
+      Resource          : String (1 .. (URL'Length - 4));
+      Parent_Directory  : constant String := "static_content";
 
    begin
 
-      Insert (T, Assoc ("HANDLER", String'(Config.Get (Handler_Index))));
-      Insert (T, Assoc ("TEMPLATE", String'(Config.Get (Template_Index))));
-      Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
+      Fixed.Move (Source  => URL,
+                  Target  => Resource,
+                  Drop    => Left);
 
-      return Build_Response
-        (Status_Data   => Request,
-         Template_File => Config.Get (Template_Index),
-         Translations  => T);
+      if not Exists (Parent_Directory & Resource) then
+         return Yolk.Not_Found.Output (Request);
+      end if;
+
+      case Kind (Parent_Directory & Resource) is
+         when Directory =>
+            declare
+
+               use AWS.Templates;
+               use Yolk.Configuration;
+
+               T : Translate_Set;
+
+            begin
+
+               T := AWS.Services.Directory.Browse
+                 (Directory_Name => Parent_Directory & Resource,
+                  Request        => Request);
+
+               Insert (T, Assoc ("YOLK_VERSION", Yolk.Version));
+
+               return Build_Response
+                 (Status_Data   => Request,
+                  Template_File =>
+                    Config.Get (System_Templates_Path) & "/directory.tmpl",
+                  Translations  => T);
+
+            end;
+         when Ordinary_File =>
+            return AWS.Response.File
+              (Content_Type  => AWS.Status.Content_Type (Request),
+               Filename      => Parent_Directory & Resource);
+         when others =>
+            return Yolk.Not_Found.Output (Request);
+      end case;
 
    end Generate;
 
-end View.Index;
+end View.Dir;

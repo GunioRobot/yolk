@@ -48,6 +48,7 @@ package My_Configuration is
                  DB_Name,
                  DB_User,
                  DB_Password,
+                 Handler_Dir,
                  Handler_Index,
                  SMTP,
                  Template_Index);
@@ -57,13 +58,22 @@ package My_Configuration is
      Ada.Strings.Unbounded.Unbounded_String;
 
    Default_Values : constant Defaults_Array :=
-                      (DB_Host        => TUS ("freja.serverbox.dk"),
-                       DB_Name        => TUS ("12boo"),
-                       DB_User        => TUS ("thomas"),
-                       DB_Password    => TUS ("respsltl16117994"),
-                       Handler_Index  => TUS ("/|/[Ii]ndex"),
-                       SMTP           => TUS ("freja.serverbox.dk"),
-                       Template_Index => TUS ("templates/website/index.tmpl"));
+                      (DB_Host
+                       => TUS ("freja.serverbox.dk"),
+                       DB_Name
+                       => TUS ("12boo"),
+                       DB_User
+                       => TUS ("thomas"),
+                       DB_Password
+                       => TUS ("respsltl16117994"),
+                       Handler_Dir
+                       => TUS ("/dir/.*"),
+                       Handler_Index
+                       => TUS ("/|/[Ii]ndex"),
+                       SMTP
+                       => TUS ("freja.serverbox.dk"),
+                       Template_Index
+                       => TUS ("templates/website/index.tmpl"));
    --  Default values for the configuration Keys. These values can be over-
    --  written by the configuration file given when instantiating the
    --  Config_File_Parser generic.

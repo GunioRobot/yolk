@@ -38,6 +38,7 @@
 
 with AWS.Dispatchers.Callback;
 with My_Configuration;
+with View.Dir;
 with View.Index;
 with Yolk.Unknown_Content;
 
@@ -84,6 +85,11 @@ package body My_Handlers is
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),
          Action     => Create (Callback => View.Index.Generate'Access));
+
+      AWS.Services.Dispatchers.URI.Register_Regexp
+        (Dispatcher => RH,
+         URI        => My.Config.Get (My.Handler_Dir),
+         Action     => Create (Callback => View.Dir.Generate'Access));
 
    end Set;
 
