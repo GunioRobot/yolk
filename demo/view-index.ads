@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               view.index                                  --
+--                               View.Index                                  --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -41,6 +41,6 @@ package View.Index is
    function Generate
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Generate the content for the Index resource.
+   --  Generate the content for the /index resource.
 
 end View.Index;

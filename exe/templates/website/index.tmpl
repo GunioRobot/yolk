@@ -6,90 +6,80 @@
         <link rel="stylesheet" type="text/css" href="/css/index.css"/>
         <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
         <title>
-            Yolk Web Framework
+            Yolk Web Toolbox
         </title>
     </head>
 <body>
-    <div id="content">
-        <div id="box1"></div>
-        <div id="box2"></div>
-        <div id="box3"></div>
-        <h3 id="headline">Yolk Web Framework</h3>
-        <p>
-            Congratulations! Your Yolk install is up and running.
-        </p>
-        <p>
-            You can visit the servers status page <a href="status">here</a>. Username is "admin" and password is "changemenow".
-        </p>
-        <p>
-            In the following we will verify that all the static content handlers are working as intended.
-        </p>
-        <dl>
-            <dt>CSS test</dt>
-            <dd>
-                If <span class="bold">bold</span>, <span class="strike">line-through</span> and <span class="italic">italic</span> work, then the CSS handler is functional.
-            </dd>
-            <dt>Javascript test</dt>
-            <dd>
-                <button type="button" onclick="works();">Click me!</button>
-                <br />
-                You must of course have Javascript enabled for this test to work. If you get a Javascript alert, then the Javascript handler is functional.
-            </dd>
-            <dt>GIF, JPG and PNG test:</dt>
-            <dd>
-                <img src="/images/test.gif" alt="Test GIF" />
-                <img src="/images/test.jpg" alt="Test JPG" />
-                <img src="/images/test.png" alt="Test PNG" />
-                <br />
-                If you can see three images, then the GIF/JPG/PNG handlers are functional.
-            </dd>
-            <dt>SVG test:</dt>
-            <dd>
-                SVG support in browsers are still somewhat flaky, especially IE. I've used the following two methods to show SVG's:
-                <code>
-                    &lt;img src="images/test.svg" alt="Test SVG"/&gt;<br />
-                    &lt;object type="image/svg+xml" name="Test SVG" data="images/test.svg" width="60" height="25"&gt;&lt;/object&gt;
-                </code>
-                Click <a href="/html/svg.html">here</a> to see the SVG images, and remember that if you don't see them, then it might be due to your browser not supporting SVG.
-            </dd>
-            <dt>ICO test:</dt>
-            <dd>
-                This page should have a a favourite icon that looks like this: <img src="/images/favicon.ico" alt="ICO file" />
-                <br />
-                If you can see the icon, then the ICO handler is functional.
-            </dd>
-            <dt>HTML test:</dt>
-            <dd>
-                To test the HTML handler <a href="/html/test.html">click here</a>.
-            </dd>
-            <dt>XML/XSL test:</dt>
-            <dd>
-                To test the XML/XSL handlers <a href="/xml/test.xml">click here</a>.
-            </dd>
-        </dl>
-        <p>
-            If all the content handlers are functional, then you're ready to start using Yolk. Don't forget to read all the README files. Also there are valuable comments in the various configuration files and in the source itself. Enjoy!
-        </p>
-        <p>
-            Lets end this with some basic stats for this page:
-        </p>
-        <dl>
-            <dt>URI called:</dt>
-            <dd>
-                @_URI_@
-            </dd>
-            <dt>Content Handler for this page:</dt>
-            <dd>
-                @_HANDLER_@
-            </dd>
-            <dt>Template used by this page:</dt>
-            <dd>
-                @_TEMPLATE_@
-            </dd>
-        </dl>
-        <p>
-            Yolk is created by Thomas Løcke.
-        </p>
-    </div>
+    <h3>Congratulations!</h3>
+    <p>
+        Your Yolk Web Toolbox version @_YOLK_VERSION_@ installation is up and running.
+    </p>
+    <p>
+        Lets do some tests:
+    </p>
+    <dl>
+        <dt>Status page test</dt>
+        <dd>
+            You can visit the status page <a href="/status">here</a>. Username is "admin" and password is "changemenow", unless of course you've already changed these in the configuration/config.ini file.
+        </dd>
+        <dt>Directory listing test</dt>
+        <dd>
+            Go <a href="/dir/">here</a> and verify that directory listing works. This specific directory listing is of the static_content/ directory.
+        </dd>
+        <dt>Email test</dt>
+        <dd>
+            Go <a href="/email">here</a> to check that sending emails via Yolk works. Remember to set SMTP_Host and SMTP_Port in configuration/my_config.ini.
+        </dd>
+        <dt>CSS test</dt>
+        <dd>
+            If <span class="bold">bold</span>, <span class="strike">line-through</span> and <span class="italic">italic</span> work, then the CSS handler is functional.
+        </dd>
+        <dt>Javascript test</dt>
+        <dd>
+            <button type="button" onclick="works();">Click me!</button>
+            <br />
+            You must of course have Javascript enabled for this test to work. If you get a Javascript alert, then the Javascript handler is functional.
+        </dd>
+        <dt>GIF, JPG and PNG test:</dt>
+        <dd>
+            <img src="/images/test.gif" alt="Test GIF" />
+            <img src="/images/test.jpg" alt="Test JPG" />
+            <img src="/images/test.png" alt="Test PNG" />
+            <br />
+            If you can see three images, then the GIF/JPG/PNG handlers are functional.
+        </dd>
+        <dt>SVG test:</dt>
+        <dd>
+            SVG support in browsers are still somewhat flaky, especially for IE. I've used the following two methods to show SVG's:
+            <code>
+                &lt;img src="images/test.svg" alt="Test SVG"/&gt;<br />
+                &lt;object type="image/svg+xml" name="Test SVG" data="images/test.svg" width="60" height="25"&gt;&lt;/object&gt;
+            </code>
+            Click <a href="/html/svg.html">here</a> to see the SVG images, and remember that if you don't see them, then it might be due to your browser not supporting SVG.
+        </dd>
+        <dt>ICO test:</dt>
+        <dd>
+            This page should have a a favourite icon that looks like this: <img src="/images/favicon.ico" alt="ICO file" />
+            <br />
+            If you can see the icon, then the ICO handler is functional.
+        </dd>
+        <dt>HTML test:</dt>
+        <dd>
+            To test the HTML handler <a href="/html/test.html">click here</a>.
+        </dd>
+        <dt>XML/XSL test:</dt>
+        <dd>
+            To test the XML/XSL handlers <a href="/xml/test.xml">click here</a>.
+        </dd>
+    </dl>
+    <p>
+        If everything is functional, then you're ready to start using Yolk.
+    </p>
+    <p>
+        Don't forget to read the documentation. Also there are valuable comments in the various configuration files and in the source itself. Enjoy!
+    </p>
+    <p>
+        Yolk is created by and copyright (C) 2010 - @_COPYRIGHT_YEAR_@ Thomas Løcke.
+    </p>
 </body>
 </html>

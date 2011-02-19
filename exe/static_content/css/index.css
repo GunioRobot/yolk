@@ -1,6 +1,6 @@
 html, body, div, span, h1, h2, h3, h4, h5, h6, p,
 blockquote, a, em, font, img, strong, dl, dt, dd,
-ol, ul, li, form, table, tr, th, td {
+ol, ul, li, form, table, tr, th, td, form {
     margin: 0px;
     padding: 0px;
 }
@@ -8,18 +8,34 @@ ol, ul, li, form, table, tr, th, td {
 
 body {
     height: 100%;
-    width: 100%;
+    width: 43em;
     font-family: "DejaVu Sans", Arial, sans-serif;
-    font-size: 14px;
+    font-size: 15px;
+    color: #444;
     background-color: #fffffa;
+    margin: 3% auto;
+    padding: 10px 25px;
+    border: solid 1px #d3d3d3;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px #bbb;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    padding: 5px 10px 5px 0px;
 }
 
 p {
-    font-size: 15px;
-    color: #444;
-    background-color: inherit;
     margin-bottom: 15px;
     margin-top: 15px;
+}
+
+input {
+    padding: 2px;
+    border: solid 2px #ddd;
 }
 
 code {
@@ -43,19 +59,16 @@ dt {
 
 dd {
     font-size: 13px;
-    color: #444;
     margin-top: 5px;
     margin-left: 20px;
 }
 
 a {
     color: #000080;
-    background-color: inherit;
 }
 
 a:hover {
     color: #800000;
-    background-color: inherit;
 }
 
 .bold {
@@ -68,47 +81,4 @@ a:hover {
 
 .strike {
     text-decoration: line-through;
-}
-
-
-#content {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 4%;
-    margin-bottom: 4%;
-    border: solid 1px #d3d3d3;
-    width: 600px;
-    padding: 10px 25px;
-    position: relative;
-}
-
-#content div {
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    top: -6px;
-}
-
-#box1 {
-    background-color: #d3d3d3;
-    left: 595px;
-}
-
-#box2 {
-    background-color: #800000;
-    left: 610px;
-}
-
-#box3 {
-    background-color: #808080;
-    left: 625px;
-}
-
-#headline {
-    position: absolute;
-    font-size: 16px;
-    top: -16px;
-    left: 15px;
-    color: #808080;
-    background-color: inherit;
 }

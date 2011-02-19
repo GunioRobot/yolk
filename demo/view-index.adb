@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               view.index                                  --
+--                               View.Index                                  --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -33,15 +33,7 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
---  with Yolk.Email.Composer;
---  with GNATCOLL.Email;
---  with GNATCOLL.Email.Utils;
---  with GNATCOLL.VFS; use GNATCOLL.VFS;
---  with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
---  with Ada.Calendar;
---  with AWS.MIME;
---  with AWS.Utils;
---  with Ada.Text_IO;
+with Ada.Calendar;
 with My_Configuration;
 
 package body View.Index is
@@ -55,16 +47,18 @@ package body View.Index is
       return AWS.Response.Data
    is
 
+      use Ada.Calendar;
       use AWS.Templates;
       use My_Configuration;
 
-      T : Translate_Set;
+      T     : Translate_Set;
+      Now   : constant Time := Clock;
 
    begin
 
-      Insert (T, Assoc ("HANDLER", String'(Config.Get (Handler_Index))));
-      Insert (T, Assoc ("TEMPLATE", String'(Config.Get (Template_Index))));
-      Insert (T, Assoc ("URI", AWS.Status.URI (Request)));
+      Insert (T, Assoc ("YOLK_VERSION", Yolk.Version));
+      Insert (Set  => T,
+              Item => Assoc ("COPYRIGHT_YEAR", Year (Now)));
 
       return Build_Response
         (Status_Data   => Request,
