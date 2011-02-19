@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             Email Composer                                --
+--                           Yolk.Email_Composer                             --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -189,7 +189,7 @@ package body Yolk.Email.Composer is
    is
    begin
 
-      return ES.Email_Is_Send;
+      return ES.Email_Is_Sent;
 
    end Is_Send;
 
@@ -226,10 +226,6 @@ package body Yolk.Email.Composer is
 
       GNATCOLL.Email.To_String (Msg    => ES.Composed_Message,
                                 Result => US);
-
-      for i in ES.SMTP_List.First_Index .. ES.SMTP_List.Last_Index loop
-         null;
-      end loop;
 
       Do_The_Actual_Sending :
       declare
@@ -302,7 +298,7 @@ package body Yolk.Email.Composer is
                Server_Failure := False;
             else
                if AWS.SMTP.Is_Ok (Status => Status) then
-                  ES.Email_Is_Send := True;
+                  ES.Email_Is_Sent := True;
                   exit;
                end if;
             end if;
@@ -324,7 +320,7 @@ package body Yolk.Email.Composer is
       To_Name        : in     String := "";
       Subject        : in     String;
       Text_Part      : in     String;
-      SMTP_Server    : in     String;
+      SMTP_Server    : in     String := "localhost";
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := US_ASCII)
    is
@@ -370,7 +366,7 @@ package body Yolk.Email.Composer is
       Subject        : in     String;
       Text_Part      : in     String;
       HTML_Part      : in     String;
-      SMTP_Server    : in     String;
+      SMTP_Server    : in     String := "localhost";
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := US_ASCII)
    is

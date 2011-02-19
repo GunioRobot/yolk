@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             Email Composer                                --
+--                           Yolk.Email_Composer                             --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -99,7 +99,7 @@ package Yolk.Email.Composer is
       To_Name        : in     String := "";
       Subject        : in     String;
       Text_Part      : in     String;
-      SMTP_Server    : in     String;
+      SMTP_Server    : in     String := "localhost";
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := US_ASCII);
    --  Convenience wrapper for Send (ES : in out Email_Structure) for Text only
@@ -116,7 +116,7 @@ package Yolk.Email.Composer is
       Subject        : in     String;
       Text_Part      : in     String;
       HTML_Part      : in     String;
-      SMTP_Server    : in     String;
+      SMTP_Server    : in     String := "localhost";
       SMTP_Port      : in     Positive := 25;
       Charset        : in     Character_Set := US_ASCII);
    --  Convenience wrapper for Send (ES : in out Email_Structure) for Text and
