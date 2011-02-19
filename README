@@ -192,8 +192,7 @@ build/
 
 demo/
     This directory contains a bunch of files needed to get the Yolk demo applica-
-    tion up and running. Simply copy the yolk_server.adb file to the Yolk root
-    directory and you should be good to go. Read the INSTALL file for more info.
+    tion up and running. Read the INSTALL file for more info.
 
 docs/
     Here you'll find documentation on how to setup, run and build your Yolk
@@ -272,8 +271,7 @@ There's a short process you will have to go through before building a new Yolk
 application:
 
     1. Clone the latest Yolk from the official repository.
-    2. Copy the demo/yolk_server.adb file to the Yolk root directory.
-    3. Adjust the yolk_server.gpr file to match your setup.
+    2. Adjust the yolk_server.gpr file to match your setup.
     3. Compile.
     4. Verify that the default Yolk application works by visiting the demo website.
     5. Copy and adjust the my_configuration.ad[bs] files to suit your needs.
