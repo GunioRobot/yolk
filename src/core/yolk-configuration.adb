@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             Configuration                                 --
+--                           Yolk.Configuration                              --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                           Database Connection                             --
+--                         Yolk.Database_Connection                          --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

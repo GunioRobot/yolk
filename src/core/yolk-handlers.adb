@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                Handlers                                   --
+--                              Yolk.Handlers                                --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  Email                                    --
+--                               Yolk.Email                                  --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --

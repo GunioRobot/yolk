@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                         Connect To DB PostgreSQL                          --
+--                      Yolk.Connect_To_DB_PostgreSQL                        --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --

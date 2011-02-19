@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             Static Content                                --
+--                           Yolk.Static_Content                             --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

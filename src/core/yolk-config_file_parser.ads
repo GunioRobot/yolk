@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                           Config File Parser                              --
+--                         Yolk.Config_File_Parser                           --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

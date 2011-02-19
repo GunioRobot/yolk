@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                Utilities                                  --
+--                             Yolk.Utilities                                --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

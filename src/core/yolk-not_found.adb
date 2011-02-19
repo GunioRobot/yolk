@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                Not Found                                  --
+--                             Yolk.Not_Found                                --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -41,8 +41,8 @@ package body Yolk.Not_Found is
       use AWS.Templates;
       use Yolk.Configuration;
 
-      Content     : AWS.Response.Data;
-      T           : Translate_Set;
+      Content  : AWS.Response.Data;
+      T        : Translate_Set;
 
    begin
 

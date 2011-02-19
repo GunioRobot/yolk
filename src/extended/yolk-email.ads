@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  Email                                    --
+--                               Yolk.Email                                  --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -126,7 +126,7 @@ private
          Cc_List           : Email_Data_Container.Vector;
          Composed_Message  : GNATCOLL.Email.Message;
          Custom_Headers    : Custom_Headers_Container.Vector;
-         Email_Is_Send     : Boolean := False;
+         Email_Is_Sent     : Boolean := False;
          From_List         : Email_Data_Container.Vector;
          Has_Attachment    : Boolean := False;
          Has_HTML_Part     : Boolean := False;

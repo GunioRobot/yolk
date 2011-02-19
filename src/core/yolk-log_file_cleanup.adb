@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                            Logfile Cleanup                                --
+--                          Yolk.Logfile_Cleanup                             --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --

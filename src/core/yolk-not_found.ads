@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                Not Found                                  --
+--                             Yolk.Not_Found                                --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

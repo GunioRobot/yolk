@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               Rotating Log                                --
+--                            Yolk.Rotating_Log                              --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

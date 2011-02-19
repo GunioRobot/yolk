@@ -3,7 +3,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             Process Control                               --
+--                           Yolk.Process_Control                            --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
