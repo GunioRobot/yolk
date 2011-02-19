@@ -43,6 +43,7 @@ with Yolk.Log_File_Cleanup;
 with Yolk.Process_Control;
 with Yolk.Rotating_Log;
 with Yolk.Utilities;
+with Yolk.Whoops;
 
 procedure Yolk_Server
 is
@@ -234,6 +235,11 @@ begin
 
    Log_File_Monitor.Start;
    --  Start the logfile monitor.
+
+   AWS.Server.Set_Unexpected_Exception_Handler
+     (Web_Server => Web_Server,
+      Handler    => Yolk.Whoops.Unexpected_Exception_Handler'Access);
+   --  Set the unexpected exception handler.
 
    Start_Server;
    --  Start the server.
