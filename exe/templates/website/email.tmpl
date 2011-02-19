@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="iso-8859-1"/>
+        <link rel="stylesheet" type="text/css" href="/css/index.css"/>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
+        <title>
+            Yolk Web Toolbox
+        </title>
+    </head>
+<body>
+    <h3>Email test</h3>
+    @@IF@@ @_IS_SEND_@
+        <p>
+            Email delivered to SMTP server '@_SMTP_HOST_@' successfully.
+        </p>
+        <p>
+            Go back to the <a href="/">main page</a> or <a href="/email">send another email</a>.
+        </p>
+    @@ELSE@@
+        <p>
+            Enter a valid recipient and click "Send".
+        </p>
+        <p>
+            Note that no validation is done on the entered data, so entering a bad emailaddress will probably result in the email getting stuck in the SMTP server queue.
+        </p>
+        <p>
+            The SMTP settings are defined in the configuration/my_config.ini file.
+        </p>
+        <form action="/email" method="post">
+            <table>
+                <tr>
+                    <td>
+                        SMTP Host
+                    </td>
+                    <td>
+                        @_SMTP_HOST_@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        SMTP Port
+                    </td>
+                    <td>
+                        @_SMTP_PORT_@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Recipient Name
+                    </td>
+                    <td>
+                        <input class="text_input" name="recip_name" value="@_RECIP_NAME_@" type="text"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Recipient Address
+                    </td>
+                    <td>
+                        <input class="text_input" name="recip_address" value="@_RECIP_ADDRESS_@" type="text"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button type="submit" class="button_input">Send</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        @@IF@@ @_EXIST:IS_SEND_@ and not @_IS_SEND_@
+            <p style="color: red">
+                Could not send email. Fix your data.
+            </p>
+        @@END_IF@@
+    @@END_IF@@
+</body>
+</html>
