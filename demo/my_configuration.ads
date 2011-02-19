@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                             my_configuration                              --
+--                             My_Configuration                              --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -49,8 +49,11 @@ package My_Configuration is
                  DB_User,
                  DB_Password,
                  Handler_Dir,
+                 Handler_Email,
                  Handler_Index,
-                 SMTP,
+                 SMTP_Host,
+                 SMTP_Port,
+                 Template_Email,
                  Template_Index);
    --  The valid configuration keys.
 
@@ -67,11 +70,17 @@ package My_Configuration is
                        DB_Password
                        => TUS ("respsltl16117994"),
                        Handler_Dir
-                       => TUS ("/dir/.*"),
+                       => TUS ("/[Dd]ir/.*"),
+                       Handler_Email
+                       => TUS ("/[Ee]mail"),
                        Handler_Index
                        => TUS ("/|/[Ii]ndex"),
-                       SMTP
-                       => TUS ("freja.serverbox.dk"),
+                       SMTP_Host
+                       => TUS ("localhost"),
+                       SMTP_Port
+                       => TUS ("25"),
+                       Template_Email
+                       => TUS ("templates/website/email.tmpl"),
                        Template_Index
                        => TUS ("templates/website/index.tmpl"));
    --  Default values for the configuration Keys. These values can be over-

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               my_handlers                                 --
+--                               My_Handlers                                 --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                view.dir                                   --
+--                                View.Dir                                   --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -41,6 +41,6 @@ package View.Dir is
    function Generate
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Generate the content for the Index resource.
+   --  Generate the content for the /dir/ resource.
 
 end View.Dir;

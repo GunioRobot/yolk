@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               my_handlers                                 --
+--                               My_Handlers                                 --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -39,6 +39,7 @@
 with AWS.Dispatchers.Callback;
 with My_Configuration;
 with View.Dir;
+with View.Email;
 with View.Index;
 with Yolk.Unknown_Content;
 
@@ -83,13 +84,18 @@ package body My_Handlers is
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher => RH,
-         URI        => My.Config.Get (My.Handler_Index),
-         Action     => Create (Callback => View.Index.Generate'Access));
+         URI        => My.Config.Get (My.Handler_Dir),
+         Action     => Create (Callback => View.Dir.Generate'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher => RH,
-         URI        => My.Config.Get (My.Handler_Dir),
-         Action     => Create (Callback => View.Dir.Generate'Access));
+         URI        => My.Config.Get (My.Handler_Email),
+         Action     => Create (Callback => View.Email.Generate'Access));
+
+      AWS.Services.Dispatchers.URI.Register_Regexp
+        (Dispatcher => RH,
+         URI        => My.Config.Get (My.Handler_Index),
+         Action     => Create (Callback => View.Index.Generate'Access));
 
    end Set;
 

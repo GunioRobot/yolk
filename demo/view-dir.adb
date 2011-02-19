@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                view.dir                                   --
+--                                View.Dir                                   --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
