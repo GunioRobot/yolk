@@ -56,8 +56,8 @@ prepare for your own Yolk application:
 
     1.  Adjust the Yolk project file to match your environment, for example changing
         the "for Compiler_Command" setting, if necessary. Also you should probably
-	get rid of the Demo_Source_Options and setup your own yolk_server.adb
-	file somewhere. Use the demo/yolk_server.adb file as a starting point.
+    get rid of the Demo_Source_Options and setup your own yolk_server.adb
+    file somewhere. Use the demo/yolk_server.adb file as a starting point.
 
     2.  You probably want to rename the application from yolk_server to something
         else. This requires you to:
@@ -72,7 +72,10 @@ prepare for your own Yolk application:
     4.  Create your own content handlers and place them in the my_view/
         directory. See the demo/view* files for inspiration.
 
-    5.  Make sure that the .gitignore files used in Yolk doesn't conflict with
+    5.  Create your own configuration setup. See the demo/configuration.ads file
+        for inspiration.
+
+    6.  Make sure that the .gitignore files used in Yolk doesn't conflict with
         your own VCS setup.
 
 See the README file and the docs/ for more information on how to use Yolk.

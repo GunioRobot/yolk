@@ -1,4 +1,4 @@
-Welcome to Yolk!
+Welcome to the Yolk Web Toolbox!
 
 Contents of this README:
 
@@ -196,10 +196,10 @@ demo/
 
 docs/
     Here you'll find documentation on how to setup, run and build your Yolk
-    application.
+    application, and some examples on how to use the various Yolk packages.
 
 exe/
-    This directory contains the finished Yolk application. Here you will find
+    This directory contains the compiled Yolk application. Here you will find
     the configuration/ directory, the logs/ directory, a session directory that
     holds the session data between server restarts, the status/ directory where
     the server status template is located and finally the static content
@@ -341,3 +341,6 @@ if you intend to use Git as your VCS.
 [5]
     I personally use the GNAT GPL compiler from AdaCore
     http://libre.adacore.com/libre/
+
+    But there's a good chance the latest GCC Ada compiler will work just fine.
+
