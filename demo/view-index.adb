@@ -35,6 +35,7 @@
 
 with Ada.Calendar;
 with My_Configuration;
+with Yolk;
 
 package body View.Index is
 
