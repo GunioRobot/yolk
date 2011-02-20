@@ -49,6 +49,7 @@ optional:
     5. PostgreSQL (optional - only necessary if you need access to a database)
 
 In the following I'll assume that both XML/Ada and PostgreSQL are necessary.
+Note that the demo Yolk application does _not_ require PostgreSQL.
 
 The path to the AWS, GNATcoll and XML/Ada project files must be added to the
 ADA_PROJECT_PATH environment variable, or else your Yolk project wont
