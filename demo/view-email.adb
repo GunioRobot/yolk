@@ -99,6 +99,9 @@ package body View.Email is
          begin
 
             if P_Recip_Address /= "" then
+               Composer.Add_Custom_Header (ES      => Email,
+                                           Name    => "User-Agent",
+                                           Value   => "Yolk " & Yolk.Version);
                Composer.Send (ES           => Email,
                               From_Address => "thomas@12boo.net",
                               From_Name    => "Thomas Løcke",
