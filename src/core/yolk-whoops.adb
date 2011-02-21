@@ -56,6 +56,8 @@ package body Yolk.Whoops is
 
       if Error.Fatal then
          Track (Handle     => Rotating_Log.Error,
+                Log_String => "");
+         Track (Handle     => Rotating_Log.Error,
                 Log_String => "-- FATAL Unexpected Exception Begin --");
          Track (Handle     => Yolk.Rotating_Log.Error,
                 Log_String => Exception_Information (E));
@@ -68,6 +70,8 @@ package body Yolk.Whoops is
          Track (Handle     => Rotating_Log.Error,
                 Log_String => "-- FATAL Unexpected Exception End --");
       else
+         Track (Handle     => Rotating_Log.Error,
+                Log_String => "");
          Track (Handle     => Rotating_Log.Error,
                 Log_String => "-- Unexpected Exception Begin --");
          Track (Handle     => Yolk.Rotating_Log.Error,
