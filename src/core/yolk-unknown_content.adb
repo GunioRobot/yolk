@@ -35,7 +35,7 @@ package body Yolk.Unknown_Content is
    is
    begin
 
-      return Yolk.Not_Found.Output (Request);
+      return Yolk.Not_Found.Generate (Request);
 
    end Generate;
 

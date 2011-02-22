@@ -58,7 +58,7 @@ package body Yolk.Static_Content is
       if not Exists (Resource)
         or else Kind (Resource) /= Ordinary_File
       then
-         return Yolk.Not_Found.Output (Request);
+         return Yolk.Not_Found.Generate (Request);
       end if;
 
       return AWS.Response.File
@@ -229,7 +229,7 @@ package body Yolk.Static_Content is
       if not Exists (Resource)
         or else Kind (Resource) /= Ordinary_File
       then
-         return Yolk.Not_Found.Output (Request);
+         return Yolk.Not_Found.Generate (Request);
       end if;
 
       if Is_Supported (Request, GZip) then

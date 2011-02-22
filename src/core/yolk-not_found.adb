@@ -33,7 +33,7 @@ package body Yolk.Not_Found is
    --  Output  --
    --------------
 
-   function Output
+   function Generate
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
@@ -60,6 +60,6 @@ package body Yolk.Not_Found is
 
       return Content;
 
-   end Output;
+   end Generate;
 
 end Yolk.Not_Found;

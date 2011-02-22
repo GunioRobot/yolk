@@ -31,7 +31,7 @@ with AWS.Status;
 
 package Yolk.Not_Found is
 
-   function Output
+   function Generate
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
    --  Outputs a generic 404 not found HTML.

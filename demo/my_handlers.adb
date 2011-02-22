@@ -41,7 +41,7 @@ with My_Configuration;
 with View.Dir;
 with View.Email;
 with View.Index;
-with Yolk.Unknown_Content;
+with Yolk.Not_Found;
 
 package body My_Handlers is
 
@@ -70,7 +70,7 @@ package body My_Handlers is
       --  found in templates/system.
       AWS.Services.Dispatchers.URI.Register_Default_Callback
         (Dispatcher => RH,
-         Action     => Create (Callback => Unknown_Content.Generate'Access));
+         Action     => Create (Callback => Not_Found.Generate'Access));
 
       -----------------------------------
       --  General Content Dispatchers  --

@@ -64,7 +64,7 @@ package body View.Dir is
                   Drop    => Left);
 
       if not Exists (Parent_Directory & Resource) then
-         return Yolk.Not_Found.Output (Request);
+         return Yolk.Not_Found.Generate (Request);
       end if;
 
       case Kind (Parent_Directory & Resource) is
@@ -96,7 +96,7 @@ package body View.Dir is
               (Content_Type  => AWS.Status.Content_Type (Request),
                Filename      => Parent_Directory & Resource);
          when others =>
-            return Yolk.Not_Found.Output (Request);
+            return Yolk.Not_Found.Generate (Request);
       end case;
 
    end Generate;
