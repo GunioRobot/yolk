@@ -34,8 +34,6 @@
 --  NOT required by Yolk in any way.
 
 with Ada.Calendar;
-with My_Configuration;
-with Yolk;
 
 package body View.Index is
 
@@ -50,20 +48,19 @@ package body View.Index is
 
       use Ada.Calendar;
       use AWS.Templates;
-      use My_Configuration;
 
       T     : Translate_Set;
       Now   : constant Time := Clock;
 
    begin
 
-      Insert (T, Assoc ("YOLK_VERSION", Yolk.Version));
+      Insert (T, Assoc ("YOLK_VERSION", Version));
       Insert (Set  => T,
               Item => Assoc ("COPYRIGHT_YEAR", Year (Now)));
 
       return Build_Response
         (Status_Data   => Request,
-         Template_File => Config.Get (Template_Index),
+         Template_File => My.Config.Get (My.Template_Index),
          Translations  => T);
 
    end Generate;

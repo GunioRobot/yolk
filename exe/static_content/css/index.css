@@ -33,6 +33,11 @@ p {
     margin-top: 15px;
 }
 
+ul {
+    margin: 0px 20px;
+    list-style-type: none;
+}
+
 input {
     padding: 2px;
     border: solid 2px #ddd;

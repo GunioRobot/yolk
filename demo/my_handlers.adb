@@ -38,6 +38,7 @@
 
 with AWS.Dispatchers.Callback;
 with My_Configuration;
+with View.DB_Test;
 with View.Dir;
 with View.Email;
 with View.Index;
@@ -81,6 +82,11 @@ package body My_Handlers is
       --    Order matters. The first handler that matches a resource handles
       --    the request, hence this Set procedure is called  at the beginning
       --    of the Handlers.Set procedure in the Handlers package.
+
+      AWS.Services.Dispatchers.URI.Register
+        (Dispatcher => RH,
+         URI        => My.Config.Get (My.Handler_DB_Test),
+         Action     => Create (Callback => View.DB_Test.Generate'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher => RH,

@@ -48,11 +48,13 @@ package My_Configuration is
                  DB_Name,
                  DB_User,
                  DB_Password,
+                 Handler_DB_Test,
                  Handler_Dir,
                  Handler_Email,
                  Handler_Index,
                  SMTP_Host,
                  SMTP_Port,
+                 Template_DB_Test,
                  Template_Email,
                  Template_Index);
    --  The valid configuration keys.
@@ -62,13 +64,15 @@ package My_Configuration is
 
    Default_Values : constant Defaults_Array :=
                       (DB_Host
-                       => TUS ("freja.serverbox.dk"),
+                       => TUS (""),
                        DB_Name
-                       => TUS ("12boo"),
+                       => TUS (""),
                        DB_User
-                       => TUS ("thomas"),
+                       => TUS (""),
                        DB_Password
-                       => TUS ("respsltl16117994"),
+                       => TUS (""),
+                       Handler_DB_Test
+                       => TUS ("/DB_Test"),
                        Handler_Dir
                        => TUS ("/[Dd]ir/.*"),
                        Handler_Email
@@ -79,6 +83,8 @@ package My_Configuration is
                        => TUS ("localhost"),
                        SMTP_Port
                        => TUS ("25"),
+                       Template_DB_Test
+                       => TUS ("templates/website/database.tmpl"),
                        Template_Email
                        => TUS ("templates/website/email.tmpl"),
                        Template_Index

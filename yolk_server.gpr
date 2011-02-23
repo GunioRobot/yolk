@@ -24,7 +24,7 @@ with "gnatcoll";
 
 --  To add PostgreSQL support to Yolk, just uncomment the following
 --  with clause:
---  with "gnatcoll_postgres";
+with "gnatcoll_postgres";
 
 project Yolk_Server is
 

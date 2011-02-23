@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="iso-8859-1"/>
+        <link rel="stylesheet" type="text/css" href="/css/index.css"/>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
+        <title>
+            Yolk Web Toolbox
+        </title>
+    </head>
+<body>
+    <h3>Database test</h3>
+    @@IF@@ @_DB_SETUP_@
+        <p>
+            Database test ready!
+        </p>
+    @@ELSE@@
+        <p>
+            In order to test if Yolk can connect and interact with a PostgreSQL database, you must create an empty PostgreSQL database and then set the four database parameters in configuration/my_config.ini accordingly:
+        </p>
+        <ul>
+            <li>DB_Host</li>
+            <li>DB_Name</li>
+            <li>DB_Password</li>
+            <li>DB_User</li>
+        </ul>
+        <p>
+           You do not need to create any tables in the DB_Name database.
+        </p>
+        <p>
+            When you've done this, simply refresh this page, or drop this test and go back to the <a href="/">main page</a>.
+        </p>
+    @@END_IF@@
+</body>
+</html>

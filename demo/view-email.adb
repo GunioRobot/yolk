@@ -36,7 +36,6 @@
 with Ada.Strings.Fixed;
 with AWS.Parameters;
 with AWS.Templates;
-with My_Configuration;
 with Yolk.Email.Composer;
 
 package body View.Email is
@@ -51,7 +50,6 @@ package body View.Email is
    is
 
       use AWS.Templates;
-      use My_Configuration;
 
       procedure Populate_Form
         (T             :    out Translate_Set;
@@ -72,8 +70,10 @@ package body View.Email is
 
          Insert (T, Assoc ("RECIP_NAME", Recip_Name));
          Insert (T, Assoc ("RECIP_ADDRESS", Recip_Address));
-         Insert (T, Assoc ("SMTP_HOST", String'(Config.Get (SMTP_Host))));
-         Insert (T, Assoc ("SMTP_PORT", String'(Config.Get (SMTP_Port))));
+         Insert
+           (T, Assoc ("SMTP_HOST", String'(My.Config.Get (My.SMTP_Host))));
+         Insert
+           (T, Assoc ("SMTP_PORT", String'(My.Config.Get (My.SMTP_Port))));
 
       end Populate_Form;
 
@@ -101,7 +101,7 @@ package body View.Email is
             if P_Recip_Address /= "" then
                Composer.Add_Custom_Header (ES      => Email,
                                            Name    => "User-Agent",
-                                           Value   => "Yolk " & Yolk.Version);
+                                           Value   => "Yolk " & Version);
                Composer.Send (ES           => Email,
                               From_Address => "thomas@12boo.net",
                               From_Name    => "Thomas Løcke",
@@ -109,14 +109,14 @@ package body View.Email is
                               To_Name      => P_Recip_Name,
                               Subject      => "Test email",
                               Text_Part    => "Test email from Yolk",
-                              SMTP_Server  => Config.Get (SMTP_Host),
-                              SMTP_Port    => Config.Get (SMTP_Port),
+                              SMTP_Server  => My.Config.Get (My.SMTP_Host),
+                              SMTP_Port    => My.Config.Get (My.SMTP_Port),
                               Charset      => ISO_8859_1);
 
                if Composer.Is_Send (Email) then
                   Insert (T, Assoc ("IS_SEND", True));
-                  Insert
-                    (T, Assoc ("SMTP_HOST", String'(Config.Get (SMTP_Host))));
+                  Insert (T, Assoc ("SMTP_HOST",
+                    String'(My.Config.Get (My.SMTP_Host))));
                else
                   Insert (T, Assoc ("IS_SEND", False));
                end if;
@@ -136,7 +136,7 @@ package body View.Email is
 
       return Build_Response
         (Status_Data   => Request,
-         Template_File => Config.Get (Template_Email),
+         Template_File => My.Config.Get (My.Template_Email),
          Translations  => T);
 
    end Generate;

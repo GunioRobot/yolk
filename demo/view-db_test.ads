@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                View.Dir                                   --
+--                              View.DB_Test                                 --
 --                                                                           --
---                                  BODY                                     --
+--                                  SPEC                                     --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -33,73 +33,14 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-with Ada.Directories;
-with Ada.Strings.Fixed;
-with AWS.Services.Directory;
-with Yolk.Configuration;
-with Yolk.Not_Found;
+with AWS.Response;
+with AWS.Status;
 
-package body View.Dir is
-
-   ---------------
-   --  Generate --
-   ---------------
+package View.DB_Test is
 
    function Generate
      (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
+      return AWS.Response.Data;
+   --  Generate the content for the /database resource.
 
-      use Ada.Directories;
-      use Ada.Strings;
-      use Yolk.Configuration;
-
-      URL               : constant String := AWS.Status.URI (Request);
-      Resource          : String (1 .. (URL'Length - 4));
-      Parent_Directory  : constant String := Config.Get (WWW_Root);
-
-   begin
-
-      Fixed.Move (Source  => URL,
-                  Target  => Resource,
-                  Drop    => Left);
-      --  Get rid of the /dir part of the URI
-
-      if not Exists (Parent_Directory & Resource) then
-         return Not_Found.Generate (Request);
-      end if;
-
-      case Kind (Parent_Directory & Resource) is
-         when Directory =>
-            declare
-
-               use AWS.Templates;
-
-               T : Translate_Set;
-
-            begin
-
-               T := AWS.Services.Directory.Browse
-                 (Directory_Name => Parent_Directory & Resource,
-                  Request        => Request);
-
-               Insert (T, Assoc ("YOLK_VERSION", Version));
-
-               return Build_Response
-                 (Status_Data   => Request,
-                  Template_File =>
-                    Config.Get (System_Templates_Path) & "/directory.tmpl",
-                  Translations  => T);
-
-            end;
-         when Ordinary_File =>
-            return AWS.Response.File
-              (Content_Type  => AWS.Status.Content_Type (Request),
-               Filename      => Parent_Directory & Resource);
-         when others =>
-            return Not_Found.Generate (Request);
-      end case;
-
-   end Generate;
-
-end View.Dir;
+end View.DB_Test;

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                View.Dir                                   --
+--                              View.DB_Test                                 --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -33,13 +33,12 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-with Ada.Directories;
-with Ada.Strings.Fixed;
-with AWS.Services.Directory;
-with Yolk.Configuration;
-with Yolk.Not_Found;
+with Ada.Text_IO;
+with AWS.Templates;
+with GNATCOLL.SQL;
+with GNATCOLL.SQL.Exec;
 
-package body View.Dir is
+package body View.DB_Test is
 
    ---------------
    --  Generate --
@@ -50,56 +49,75 @@ package body View.Dir is
       return AWS.Response.Data
    is
 
-      use Ada.Directories;
-      use Ada.Strings;
-      use Yolk.Configuration;
+      use AWS.Templates;
+      use GNATCOLL.SQL;
+      use GNATCOLL.SQL.Exec;
 
-      URL               : constant String := AWS.Status.URI (Request);
-      Resource          : String (1 .. (URL'Length - 4));
-      Parent_Directory  : constant String := Config.Get (WWW_Root);
+      Names : constant array (Integer range 1 .. 5) of String (1 .. 5) :=
+                (1 => "Arnie",
+                 2 => "David",
+                 3 => "Bobby",
+                 4 => "Tommy",
+                 5 => "Bruce");
+      Me : aliased String := "     ";
+
+      DB_Conn     : constant Database_Connection := My_DB.Connection;
+      DB_Cursor   : Forward_Cursor;
+      DB_STMT     : constant Prepared_Statement := Prepare
+        ("INSERT INTO tmp (id, name) VALUES ($1, $2)");
+
+      Has_Tmp_Table : Boolean := False;
+
+      T : Translate_Set;
 
    begin
 
-      Fixed.Move (Source  => URL,
-                  Target  => Resource,
-                  Drop    => Left);
-      --  Get rid of the /dir part of the URI
+      if DB_Conn.Check_Connection then
+         Insert (T, Assoc ("DB_SETUP", True));
 
-      if not Exists (Parent_Directory & Resource) then
-         return Not_Found.Generate (Request);
+         DB_Cursor.Fetch (DB_Conn,
+                          "SELECT tablename " &
+                          "FROM pg_tables " &
+                          "WHERE schemaname = 'public' " &
+                          "AND tablename = 'tmp'");
+
+         while DB_Cursor.Has_Row loop
+            Has_Tmp_Table := True;
+            exit;
+         end loop;
+
+         if not Has_Tmp_Table then
+            DB_Conn.Execute
+              ("CREATE TABLE tmp (id INTEGER, name TEXT)");
+         end if;
+
+         for i in Names'Range loop
+            Me := Names (i);
+            DB_Conn.Execute (Stmt   => DB_STMT,
+                             Params => (1 => +i,
+                                        2 => +Me'Access));
+         end loop;
+
+         DB_Cursor.Fetch (DB_Conn, "SELECT * FROM tmp");
+
+         while DB_Cursor.Has_Row loop
+            Ada.Text_IO.Put_Line ("id=" & Integer_Value (DB_Cursor, 0)'Img);
+            Ada.Text_IO.Put_Line ("name=" & Value (DB_Cursor, 1));
+            DB_Cursor.Next;
+         end loop;
+
+         --  DB_Conn.Execute ("DROP TABLE tmp");
+
+         DB_Conn.Commit_Or_Rollback;
+      else
+         Insert (T, Assoc ("DB_SETUP", False));
       end if;
 
-      case Kind (Parent_Directory & Resource) is
-         when Directory =>
-            declare
-
-               use AWS.Templates;
-
-               T : Translate_Set;
-
-            begin
-
-               T := AWS.Services.Directory.Browse
-                 (Directory_Name => Parent_Directory & Resource,
-                  Request        => Request);
-
-               Insert (T, Assoc ("YOLK_VERSION", Version));
-
-               return Build_Response
-                 (Status_Data   => Request,
-                  Template_File =>
-                    Config.Get (System_Templates_Path) & "/directory.tmpl",
-                  Translations  => T);
-
-            end;
-         when Ordinary_File =>
-            return AWS.Response.File
-              (Content_Type  => AWS.Status.Content_Type (Request),
-               Filename      => Parent_Directory & Resource);
-         when others =>
-            return Not_Found.Generate (Request);
-      end case;
+      return Build_Response
+        (Status_Data   => Request,
+         Template_File => My.Config.Get (My.Template_DB_Test),
+         Translations  => T);
 
    end Generate;
 
-end View.Dir;
+end View.DB_Test;
