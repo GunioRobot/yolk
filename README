@@ -322,9 +322,8 @@ if you intend to use Git as your VCS.
 [1]
     Ada Web Server
     http://libre.adacore.com/libre/tools/aws/
-    Git: git clone http://forge.open-do.org/anonscm/git/aws/aws.git
-    SVN: svn co http://svn.eu.adacore.com/anonsvn/Dev/trunk/templates_parser
-
+    Git: git clone --recursive http://forge.open-do.org/anonscm/git/aws/aws.git
+    
 [2]
     GNAT Component Collection
     http://libre.adacore.com/libre/tools/gnat-component-collection/
