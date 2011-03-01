@@ -38,6 +38,15 @@ with AWS.Status;
 
 package View.DB_Test is
 
+   type Str_Ptr is access all String;
+   Names : constant array (Integer range 1 .. 5) of Str_Ptr :=
+             (1 => new String'("Billy"),
+              2 => new String'("David"),
+              3 => new String'("Bobby"),
+              4 => new String'("Tommy"),
+              5 => new String'("Bruce"));
+   --  Test data to add to the database.
+
    function Generate
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;

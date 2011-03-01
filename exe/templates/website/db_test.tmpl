@@ -12,7 +12,24 @@
     <h3>Database test</h3>
     @@IF@@ @_DB_SETUP_@
         <p>
-            Database test ready!
+            It appears that I've been able to connect to the database set in configuration/my_config.ini.
+        </p>
+        <p>
+            The test will now proceed with creating a table, adding and querying some data and finally dropping the table.
+        </p>
+        <h4>Test output</h4>
+        <ul>
+            @@TABLE@@
+                <li>@_MESSAGES_@</li>
+            @@END_TABLE@@
+            @@IF@@ @_SUCCESS_@
+                <li class="green">Test successfully completed!</li>
+            @@ELSE@@
+                <li class="red">Test failed!</li>
+            @@END_IF@@
+        </ul>
+        <p>
+            If all went well, go back to the <a href="/">main page</a>. If you have some red output, check the log files, fix the error and try again.
         </p>
     @@ELSE@@
         <p>

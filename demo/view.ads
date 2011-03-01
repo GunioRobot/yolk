@@ -33,15 +33,14 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-private with AWS.Status;
-private with AWS.Response;
-private with AWS.Templates;
-private with My_Configuration;
-private with Yolk.Connect_To_DB.PostgreSQL;
+with AWS.Status;
+with AWS.Response;
+with AWS.Templates;
+with My_Configuration;
+with Yolk;
+with Yolk.Connect_To_DB.PostgreSQL;
 
 package View is
-
-private
 
    use Yolk;
 

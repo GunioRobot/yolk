@@ -33,8 +33,8 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-with Ada.Text_IO;
 with AWS.Templates;
+with Database;
 with GNATCOLL.SQL;
 with GNATCOLL.SQL.Exec;
 
@@ -50,68 +50,96 @@ package body View.DB_Test is
    is
 
       use AWS.Templates;
+      use Database;
       use GNATCOLL.SQL;
       use GNATCOLL.SQL.Exec;
 
-      Names : constant array (Integer range 1 .. 5) of String (1 .. 5) :=
-                (1 => "Arnie",
-                 2 => "David",
-                 3 => "Bobby",
-                 4 => "Tommy",
-                 5 => "Bruce");
-      Me : aliased String := "     ";
-
-      DB_Conn     : constant Database_Connection := My_DB.Connection;
-      DB_Cursor   : Forward_Cursor;
-      DB_STMT     : constant Prepared_Statement := Prepare
-        ("INSERT INTO tmp (id, name) VALUES ($1, $2)");
-
+      Billy : aliased String := "Billy";
       Has_Tmp_Table : Boolean := False;
 
-      T : Translate_Set;
+      DB_Conn     : constant Database_Connection := My_DB.Connection;
+      FC : Forward_Cursor;
+
+      Q1 : constant SQL_Query := SQL_Insert
+        ((Tmp.Id = Integer_Param (1)) &
+         (Tmp.Name = Text_Param (2)));
+      P1 : constant Prepared_Statement := Prepare
+        (Query       => Q1,
+         On_Server   => True);
+
+      Q2 : constant SQL_Query := SQL_Select
+        (Fields   => Tmp.Id & Tmp.Name,
+         From     => Tmp,
+         Where    => Tmp.Name = Text_Param (1));
+      P2 : constant Prepared_Statement := Prepare
+        (Query       => Q2,
+         On_Server   => True);
+
+      Messages : Vector_Tag;
+      T        : Translate_Set;
 
    begin
 
       if DB_Conn.Check_Connection then
          Insert (T, Assoc ("DB_SETUP", True));
 
-         DB_Cursor.Fetch (DB_Conn,
-                          "SELECT tablename " &
-                          "FROM pg_tables " &
-                          "WHERE schemaname = 'public' " &
-                          "AND tablename = 'tmp'");
+         FC.Fetch (DB_Conn,
+                   "SELECT tablename " &
+                   "FROM pg_tables " &
+                   "WHERE schemaname = 'public' " &
+                   "AND tablename = 'tmp'");
 
-         while DB_Cursor.Has_Row loop
+         Append (Messages, "Checking if table 'tmp' exists.");
+         while FC.Has_Row loop
             Has_Tmp_Table := True;
+            Append (Messages, "Table 'tmp' found.");
             exit;
          end loop;
 
          if not Has_Tmp_Table then
             DB_Conn.Execute
               ("CREATE TABLE tmp (id INTEGER, name TEXT)");
+            Append (Messages, "Table 'tmp' not found. Creating it.");
+            Append (Messages, "Table 'tmp' created.");
          end if;
 
          for i in Names'Range loop
-            Me := Names (i);
-            DB_Conn.Execute (Stmt   => DB_STMT,
+            DB_Conn.Execute (Stmt   => P1,
                              Params => (1 => +i,
-                                        2 => +Me'Access));
+                                        2 => +Names (i)));
+            Append (Messages, "Added " & i'Img & ":" & Names (i).all &
+                    " to 'tmp'.");
          end loop;
 
-         DB_Cursor.Fetch (DB_Conn, "SELECT * FROM tmp");
+         FC.Fetch (Connection => DB_Conn,
+                   Stmt       => P2,
+                   Params     => (1 => +Billy'Access));
 
-         while DB_Cursor.Has_Row loop
-            Ada.Text_IO.Put_Line ("id=" & Integer_Value (DB_Cursor, 0)'Img);
-            Ada.Text_IO.Put_Line ("name=" & Value (DB_Cursor, 1));
-            DB_Cursor.Next;
+         Append (Messages, "Querying 'tmp' for " & Billy & ".");
+
+         while FC.Has_Row loop
+            Append (Messages, "Found " & FC.Integer_Value (0)'Img & ":"
+              & FC.Value (1) & " pair.");
+            FC.Next;
          end loop;
 
-         --  DB_Conn.Execute ("DROP TABLE tmp");
+         DB_Conn.Execute ("DROP TABLE tmp");
+         Append (Messages, "Table 'tmp' dropped.");
 
          DB_Conn.Commit_Or_Rollback;
+
+         if DB_Conn.Success then
+            Insert (T, Assoc ("SUCCESS", True));
+            Append (Messages, "Transaction succesfully commited.");
+         else
+            Insert (T, Assoc ("SUCCESS", False));
+            Append (Messages, "Commit failed.");
+         end if;
       else
          Insert (T, Assoc ("DB_SETUP", False));
       end if;
+
+      Insert (T, Assoc ("MESSAGES", Messages));
 
       return Build_Response
         (Status_Data   => Request,

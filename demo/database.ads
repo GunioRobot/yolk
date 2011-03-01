@@ -1,4 +1,3 @@
---  Created by gnatcoll_db2ada
 with GNATCOLL.SQL; use GNATCOLL.SQL;
 with Database_Names; use Database_Names;
 package Database is

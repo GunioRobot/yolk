@@ -34,7 +34,7 @@ p {
 }
 
 ul {
-    margin: 0px 20px;
+    margin: 15px 20px;
     list-style-type: none;
 }
 
@@ -80,8 +80,18 @@ a:hover {
     font-weight: bold;
 }
 
+.green {
+    color: #009000;
+    font-weight: bold;
+}
+
 .italic {
     font-style: italic;
+}
+
+.red {
+    color: #900000;
+    font-weight: bold;
 }
 
 .strike {

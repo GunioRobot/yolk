@@ -1,4 +1,3 @@
---  Created by gnatcoll_db2ada
 with GNATCOLL.SQL; use GNATCOLL.SQL;
 package Database_Names is
    pragma Style_Checks (Off);
