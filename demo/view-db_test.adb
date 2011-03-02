@@ -60,19 +60,19 @@ package body View.DB_Test is
       DB_Conn     : constant Database_Connection := My_DB.Connection;
       FC : Forward_Cursor;
 
-      Q1 : constant SQL_Query := SQL_Insert
+      Query_Insert_Data : constant SQL_Query := SQL_Insert
         ((Tmp.Id = Integer_Param (1)) &
          (Tmp.Name = Text_Param (2)));
-      P1 : constant Prepared_Statement := Prepare
-        (Query       => Q1,
+      Prepared_Query_Insert_Data : constant Prepared_Statement := Prepare
+        (Query       => Query_Insert_Data,
          On_Server   => True);
 
-      Q2 : constant SQL_Query := SQL_Select
+      Query_Select_Data : constant SQL_Query := SQL_Select
         (Fields   => Tmp.Id & Tmp.Name,
          From     => Tmp,
          Where    => Tmp.Name = Text_Param (1));
-      P2 : constant Prepared_Statement := Prepare
-        (Query       => Q2,
+      Prepared_Query_Select_Data : constant Prepared_Statement := Prepare
+        (Query       => Query_Select_Data,
          On_Server   => True);
 
       Messages : Vector_Tag;
@@ -104,7 +104,7 @@ package body View.DB_Test is
          end if;
 
          for i in Names'Range loop
-            DB_Conn.Execute (Stmt   => P1,
+            DB_Conn.Execute (Stmt   => Prepared_Query_Insert_Data,
                              Params => (1 => +i,
                                         2 => +Names (i)));
             Append (Messages, "Added " & i'Img & ":" & Names (i).all &
@@ -112,14 +112,14 @@ package body View.DB_Test is
          end loop;
 
          FC.Fetch (Connection => DB_Conn,
-                   Stmt       => P2,
+                   Stmt       => Prepared_Query_Select_Data,
                    Params     => (1 => +Billy'Access));
 
          Append (Messages, "Querying 'tmp' for " & Billy & ".");
 
          while FC.Has_Row loop
             Append (Messages, "Found " & FC.Integer_Value (0)'Img & ":"
-              & FC.Value (1) & " pair.");
+                    & FC.Value (1) & " pair.");
             FC.Next;
          end loop;
 
