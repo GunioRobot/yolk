@@ -5,6 +5,7 @@
     <html>
     <head>
         <meta charset="iso-8859-1"/>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
         <title>
             <xsl:value-of select="title"/>
         </title>
