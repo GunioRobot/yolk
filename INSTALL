@@ -56,8 +56,8 @@ prepare for your own Yolk application:
 
     1.  Adjust the Yolk project file to match your environment, for example changing
         the "for Compiler_Command" setting, if necessary. Also you should probably
-    get rid of the Demo_Source_Options and setup your own yolk_server.adb
-    file somewhere. Use the demo/yolk_server.adb file as a starting point.
+        get rid of the Demo_Source_Options and setup your own yolk_server.adb
+        file somewhere. Use the demo/yolk_server.adb file as a starting point.
 
     2.  You probably want to rename the application from yolk_server to something
         else. This requires you to:
