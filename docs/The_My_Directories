@@ -3,6 +3,7 @@ Yolk comes with 5 pre-created my_* directories. These are:
     my_configuration/
     my_core/
     my_database/
+    my_handlers/
     my_view/
 
 They serve only one role: Convenience.

@@ -50,11 +50,6 @@ NAME_OF_EXE_FILE=yolk_server
 # Path to where the NAME_OF_EXE_FILE lives. Do _not_ write the trailing /
 PATH_TO_YOLK_EXE_DIRECTORY=/home/thomas/Ada/Yolk/exe
 
-# The system user the process will run as.
-#    NOTE:
-#      The executable is "chmod 4500 ${RUN_AS_THIS_USER}" by this script.
-RUN_AS_THIS_USER=yolk
-
 ##############################################################
 # Do not edit below here, unless you know what you're doing. #
 ##############################################################
@@ -106,11 +101,6 @@ yolk_start() {
     #   We direct output to /dev/null. This is to avoid IO exceptions from the
     #   application in case some part of AWS/GNATcoll produce unexpected
     #   output on STDOUT.
-    #
-    # Another option is to use "su -l ..." to start the application. In that case,
-    # user must have an actual shell.
-    #su -l ${RUN_AS_THIS_USER} -c "cd ${PATH_TO_YOLK_EXE_DIRECTORY}; ./${NAME_OF_EXE_FILE} > /dev/null &"
-    chmod 4500 ${PATH_TO_YOLK_EXE_DIRECTORY}/${NAME_OF_EXE_FILE}
     cd ${PATH_TO_YOLK_EXE_DIRECTORY};
     ./${NAME_OF_EXE_FILE} > /dev/null &
 

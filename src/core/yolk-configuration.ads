@@ -104,7 +104,8 @@ package Yolk.Configuration is
                  Transient_Lifetime, --  AWS
                  Upload_Directory, --  AWS
                  Upload_Size_Limit, --  AWS
-                 WWW_Root); --  AWS
+                 WWW_Root, --  AWS
+                 Yolk_User);
    --  The valid configuration keys.
    --  These configuration keys are essential for core parts of Yolk, so you
    --  should not change them, unless you know what you're doing.
@@ -253,7 +254,9 @@ package Yolk.Configuration is
                        Upload_Size_Limit
                        => TUS ("16#500_000#"),
                        WWW_Root
-                      => TUS ("static_content"));
+                       => TUS ("static_content"),
+                       Yolk_User
+                       => TUS ("thomas"));
    --  Default values for the configuration Keys. These values can be over-
    --  written by the configuration file given when instantiating the
    --  Config_File_Parser generic.

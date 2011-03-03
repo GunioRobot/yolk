@@ -14,15 +14,15 @@ Contents of this README:
 --  Introduction --
 -------------------
 
-Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2] and
-optionally XML/Ada[3], and PostgreSQL[4].
+Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2], Florist[3]
+and optionally XML/Ada[4], and PostgreSQL[5].
 With Yolk some of the tasks involved in developing a web-application using Ada
 is made simpler and a specific style is "enforced" in regards to how the
 application is put together.
 
 It is important to understand that Yolk itself does very little that cannot be
 accomplished using plain AWS and GNATcoll. It is, for lack of a better term, a
-convenience. Some of things that Yolk make very easy are:
+convenience. Some of things that Yolk offers are:
 
     * Sending emails from the application
     * Setting up rotating log files and handling basic log file management
@@ -31,6 +31,8 @@ convenience. Some of things that Yolk make very easy are:
     * Handling the most common static content types (HTML, PNG, ICO and so on)
     * Easy Atom RSS feed generation
     * Connecting to one or more PostgreSQL databases
+    * Switching to an un-privileged user.
+    * Start/stop as a "regular" daemon using the tools/rc.yolk script.
 
 Yolk is not a magic bullet though. If your needs are very complex, you might
 be better off using plain AWS.
@@ -39,23 +41,24 @@ be better off using plain AWS.
 --  Dependencies  --
 --------------------
 
-Yolk depends on 5 things out of the box. 3 of those are required, and 2 are
+Yolk depends on 6 things out of the box. 4 of those are required, and 2 are
 optional:
 
-    1. An Ada 2005 compiler[5] (required)
+    1. An Ada 2005 compiler[6] (required)
     2. AWS (required version >= 2.10.0)
     3. GNATcoll (required version >= 1.4w)
-    4. XML/Ada (optional - AWS requires this for SOAP support)
-    5. PostgreSQL (optional - only necessary if you need access to a database)
+    4. Florist (required version >= florist-gpl-2010)
+    5. XML/Ada (optional - AWS requires this for SOAP support)
+    6. PostgreSQL (optional - only necessary if you need access to a database)
 
 In the following I'll assume that both XML/Ada and PostgreSQL are necessary.
 Note that the demo Yolk application does _not_ require PostgreSQL.
 
-The path to the AWS, GNATcoll and XML/Ada project files must be added to the
-ADA_PROJECT_PATH environment variable, or else your Yolk project wont
+The path to the AWS, GNATcoll, Florist and XML/Ada project files must be added
+to the ADA_PROJECT_PATH environment variable, or else your Yolk project wont
 compile.
 
-My usual modus operandi for setting up these 5 things goes something like this:
+My usual modus operandi for setting up these 6 things goes something like this:
 
     1.  Install PostgreSQL by whatever means is fitting for your OS. If you don't
         need an RDBMS, ignore this step and adjust the following steps to get
@@ -104,14 +107,20 @@ My usual modus operandi for setting up these 5 things goes something like this:
         You should of course adjust the PROCESSORS number to what is suitable on
         your own system.
 
-    4.  Install XML/Ada in /usr/gnat:
+    4.  Install Florist in /usr/gnat:
+
+            $ ./configure --prefix=/usr/gnat
+            $ make
+            $ make install
+
+    5.  Install XML/Ada in /usr/gnat:
 
             $ ./configure --prefix=/usr/gnat
             $ make all
             $ make docs
             $ make install
 
-    5.  Install AWS in its default location. See makefile.conf for further
+    6.  Install AWS in its default location. See makefile.conf for further
         information. After having run
 
             $ make setup
@@ -162,16 +171,19 @@ My ADA_PROJECT_PATH environment variable hence contains this:
 If your distribution provides pre-made packages for all of this, you should
 probably use those instead.
 
----------------------------------
---  Adding PostgreSQL Support  --
----------------------------------
+-----------------------------------
+--  Removing PostgreSQL Support  --
+-----------------------------------
 
-Simply find and uncomment this line in the yolk_server.gpr file:
+Simply find and comment this line in the yolk_server.gpr file:
 
-    --  with "gnatcoll_postgresql"
+    with "gnatcoll_postgresql"
 
-Yes, it's that simple. This will of course only work if you have compiled
-GNATcoll with PostgreSQL support and you have PostgreSQL installed.
+Yes, it's that simple.
+
+Important note:
+    The demo Yolk website DB_Test resource will of course only work if you've
+    compiled PostgreSQL support into both GNATColl and your Yolk application.
 
 --------------------------
 --  The Yolk Structure  --
@@ -312,6 +324,7 @@ involve one or more of these projects. These docs are not included in Yolk.
 ----------------------------------
 --  Fixing The .gitignore File  --
 ----------------------------------
+
 In the top level Yolk directory there's a .gitignore file. You should adjust
 this so it matches your own needs. This is of course only necessary to worry about,
 if you intend to use Git as your VCS.
@@ -323,22 +336,28 @@ if you intend to use Git as your VCS.
     Ada Web Server
     http://libre.adacore.com/libre/tools/aws/
     Git: git clone --recursive http://forge.open-do.org/anonscm/git/aws/aws.git
-    
+
 [2]
     GNAT Component Collection
     http://libre.adacore.com/libre/tools/gnat-component-collection/
     SVN: svn co http://svn.eu.adacore.com/anonsvn/Dev/trunk/gps/gnatlib/
 
 [3]
+    Florist
+    http://libre.adacore.com/libre/download2
+    I've not been able to track down an VCS repository for Florist yet, so you're
+    going to have to just download the latest official package.
+
+[4]
     XML/Ada
     http://libre.adacore.com/libre/tools/xmlada/
     SVN: svn co http://svn.eu.adacore.com/anonsvn/Dev/trunk/xmlada/
 
-[4]
+[5]
     PostgreSQL
     http://www.postgresql.org/
 
-[5]
+[6]
     I personally use the GNAT GPL compiler from AdaCore
     http://libre.adacore.com/libre/
 

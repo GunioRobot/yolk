@@ -8,6 +8,7 @@ installed:
 
     1. AWS
     2. GNATcoll
+    3. Florist
 
 When you're certain that the dependencies are met, then all you need to do is
 follow these 5 steps:
@@ -44,8 +45,8 @@ you can access the status page, then Yolk is ready to be used.
 If Yolk isn't working, then it's worth checking that:
 
     * gnatmake is in your PATH
-    * The ADA_PROJECT_PATH environment variable contains the paths to your AWS
-      and GNATcoll project files.
+    * The ADA_PROJECT_PATH environment variable contains the paths to your AWS,
+      GNATcoll and Florist project files.
     * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin,
       then make sure that the "for Compiler_Command" option in yolk_server.gpr is
       adjusted accordingly.
