@@ -85,17 +85,6 @@ yolk_start() {
         fi
     fi
 
-    # Bail out if the user doesn't exist on the system.
-    USER=`grep ^${RUN_AS_THIS_USER}: /etc/passwd`
-    if [ ! ${USER} ]
-    then
-        echo "User ${RUN_AS_THIS_USER} does not exist on the system."
-        echo "Cannot start ${NAME_OF_APPLICATION}."
-        exit 1
-    fi
-
-    echo -n "Starting the ${NAME_OF_APPLICATION} daemon as user ${RUN_AS_THIS_USER}."
-
     # Start the application and send it to background.
     # NOTE:
     #   We direct output to /dev/null. This is to avoid IO exceptions from the
