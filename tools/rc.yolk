@@ -93,7 +93,6 @@ yolk_start() {
     cd ${PATH_TO_YOLK_EXE_DIRECTORY};
     ./${NAME_OF_EXE_FILE} > /dev/null &
 
-    echo ""
     for i in 1 2 3 4
     do
         echo "."
