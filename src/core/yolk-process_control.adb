@@ -22,8 +22,14 @@
 -------------------------------------------------------------------------------
 
 with Ada.Text_IO;
+with Yolk.Configuration;
+with Yolk.Process_Owner;
 
 package body Yolk.Process_Control is
+
+   procedure Initialize;
+   --  Call the Yolk.Process_Owner Set_User procedure to switch the process
+   --  owner to whatever user that might be set in the configuration file.
 
    ----------------------
    -- Create_PID_File  --
@@ -80,6 +86,22 @@ package body Yolk.Process_Control is
          raise Cannot_Delete_PID_File with PID;
 
    end Delete_PID_File;
+
+   ------------------
+   --  Initialize  --
+   ------------------
+
+   procedure Initialize
+   is
+
+      use Yolk.Configuration;
+      use Yolk.Process_Owner;
+
+   begin
+
+      Set_User (Username => Config.Get (Yolk_User));
+
+   end Initialize;
 
    ------------
    --  Stop  --
@@ -153,5 +175,9 @@ package body Yolk.Process_Control is
       end Handle_Kill;
 
    end Controller;
+
+begin
+
+   Initialize;
 
 end Yolk.Process_Control;

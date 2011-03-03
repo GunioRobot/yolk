@@ -25,7 +25,9 @@
 
 --  This is a DEMO file. You can either move this to the Yolk root directory
 --  and change it according to you own needs, or you can provide your own.
+--
 --  For most Yolk applications, using this file "as is" will work just fine.
+--
 --  Usually you just have to change the name of environment task and  the name
 --  of the file itself to match whatever you want to call your application.
 
@@ -41,7 +43,6 @@ with Yolk.Configuration;
 with Yolk.Handlers;
 with Yolk.Log_File_Cleanup;
 with Yolk.Process_Control;
-with Yolk.Process_Owner;
 with Yolk.Rotating_Log;
 with Yolk.Utilities;
 with Yolk.Whoops;
@@ -53,7 +54,6 @@ is
    use Yolk.Configuration;
    use Yolk.Handlers;
    use Yolk.Process_Control;
-   use Yolk.Process_Owner;
    use Yolk.Rotating_Log;
    use Yolk.Utilities;
 
@@ -215,9 +215,6 @@ is
    end Log_File_Monitor;
 
 begin
-
-   Set_User (Username => "thomas");
-   --  Set the process owner.
 
    for Key in Keys'Range loop
       if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then

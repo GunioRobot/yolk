@@ -24,9 +24,12 @@
 with POSIX;
 with POSIX.Process_Identification;
 with POSIX.User_Database;
-with Yolk.Rotating_Log;
 
 package body Yolk.Process_Owner is
+
+   ----------------
+   --  Set_User  --
+   ----------------
 
    procedure Set_User
      (Username : in String)
@@ -35,7 +38,6 @@ package body Yolk.Process_Owner is
       use POSIX;
       use POSIX.Process_Identification;
       use POSIX.User_Database;
-      use Yolk.Rotating_Log;
 
       User_DI     : User_Database_Item;
       P_Username  : constant POSIX_String := To_POSIX_String (Username);
@@ -44,13 +46,9 @@ package body Yolk.Process_Owner is
 
       User_DI := Get_User_Database_Item (Name => P_Username);
       Set_User_ID (ID => User_ID_Of (DB_Item => User_DI));
-      Track (Handle     => Info,
-             Log_String => "Switching user to '" & Username & "'");
 
    exception
       when others =>
-         Track (Handle     => Error,
-                Log_String => "Could not switch user to '" & Username & "'");
          raise Username_Does_Not_Exist with Username;
    end Set_User;
 
