@@ -105,8 +105,10 @@ is
       --  Log_File_Directory directory, but instead they are created in the
       --  same directory as where the executable is.
 
-      AWS.Server.Log.Start (Web_Server => Web_Server,
-                            Auto_Flush => Config.Get (Immediate_Flush));
+      if Config.Get (Enable_Access_Log) then
+         AWS.Server.Log.Start (Web_Server => Web_Server,
+                               Auto_Flush => Config.Get (Immediate_Flush));
+      end if;
       AWS.Server.Log.Start_Error (Web_Server);
       --  Start the access and error log.
 
@@ -139,7 +141,9 @@ is
 
       AWS.Server.Shutdown (Web_Server);
 
-      AWS.Server.Log.Stop (Web_Server);
+      if AWS.Server.Log.Is_Active (Web_Server) then
+         AWS.Server.Log.Stop (Web_Server);
+      end if;
       AWS.Server.Log.Stop_Error (Web_Server);
 
       Track (Handle     => Info,

@@ -49,6 +49,7 @@ package Yolk.Configuration is
                  Compress_Minimum_File_Size,
                  Compress_Static_Content,
                  Context_Lifetime, --  AWS
+                 Enable_Access_Log,
                  Error_Log_Filename_Prefix, -- AWS
                  Error_Log_Split_Mode, --  AWS
                  Exchange_Certificate, --  AWS
@@ -141,6 +142,8 @@ package Yolk.Configuration is
                        => TUS ("True"),
                        Context_Lifetime
                        => TUS ("28800.0"),
+                       Enable_Access_Log
+                       => TUS ("True"),
                        Error_Log_Filename_Prefix
                        => TUS ("yolk_error"),
                        Error_Log_Split_Mode
