@@ -33,11 +33,6 @@
 --  stuff (see DB_Connection) in your application, you can disable that
 --  specific trace in the configuration/GNATCOLL.SQL.Logs.Ini file.
 
-private with Ada.Strings.Unbounded;
-private with Ada.Text_IO;
-private with GNATCOLL.Traces;
-private with Yolk.Configuration;
-
 package Yolk.Rotating_Log is
 
    Cannot_Create_Log_File   : exception;
@@ -63,135 +58,21 @@ package Yolk.Rotating_Log is
    --    value defined and a valid GNATCOLL_Traces_Ini_File value.
    --    See comments for Register_Rotating_Log_Stream for more info.
 
-   procedure Track
-     (Handle       : in Trace_Handles;
-      Log_String   : in String);
-   --  Add Log_String to Handle.
-   --  Exception:
-   --    Cannot_Write_To_Log_File
-
-private
-
-   use Yolk.Configuration;
-
-   Stream_Rotating_Log : constant String := "rotating_log";
-   --  Name of the stream. This is used in the GNAT.Traces configuration files
-   --  or calls to Create to send a stream to a rotating log.
-   --  You must have called Register_Rotating_Log_Stream first.
-   --  See Register_Rotating_Log_Stream.
-
-   type Access_File is access all Ada.Text_IO.File_Type;
-
-   protected type Log_Object is
-
-      entry Seize;
-      --  Lock the object.
-
-      function Get_File_Access return Access_File;
-      --  Return access to an Ada.Text_IO.File_Type.
-
-      function Get_Size return Natural;
-      --  Return the amount of characters added to the log. See Set_Size.
-
-      function Get_Slot return String;
-      --  Return the Current_Slot value as a String.
-
-      procedure Move_To_Next_Slot;
-      --  Move to the next slot. Basically we just cycle 1 .. Max_Slot_Count
-
-      procedure Release;
-      --  Unlock the object.
-
-      procedure Set_File_Access;
-      --  Allocate a new Ada.Text_IO.File_Type.
-
-      procedure Set_Size
-        (Length : in Natural);
-      --  Add Length to Log_Object.Size. We use this to decide when to cycle
-      --  the logfiles. If Size > Max_Logged_Characters, then we cycle to the
-      --  next slot.
-      --  This is done instead of checking the size of the logfile, to avoid
-      --  going to disk on every call to Track. It's not as accurate, but it
-      --  will probably not be off by much.
-      --  Max_Logged_Characters is defined in configuration/config.ini.
-
-      procedure Write_To
-        (Log_String : in String);
-      --  Write Log_String to file.
-
-   private
-
-      File           : Access_File;
-      Current_Slot   : Positive := 1;
-      Size           : Natural := 0;
-      Slot_Max       : Positive := Config.Get (Max_Slot_Count);
-      Locked         : Boolean := False;
-
-   end Log_Object;
-
-   type Access_Log_Object is access all Log_Object;
-   type Log_Objects_Array is array (Trace_Handles) of Access_Log_Object;
-
-   Log_Objects_List : Log_Objects_Array;
-   --  This array holds access to the individual Log_Objects, one for each
-   --  value defined in Trace_Handles.
-
-   procedure Initialize;
+   procedure Start_Rotating_Logs
+     (Called_From_Main_Task_Exception_Handler : Boolean := False);
    --  Parse the GNATCOLL_Traces_Ini_File (if it exists) and setup the
    --  Log_Objects_List array according to the Trace_Handles type.
    --  The GNATCOLL_Traces_Ini_File is defined in configuration/config.ini.
+   --  Calling this more than once does nothing.
    --  Exceptions:
    --    Cannot_Create_Log_File
 
-   ----------------------------------------------------------------------------
-   --  Types and methods needed for a custom GNATCOLL.Traces stream. These are
-   --  necessary to gain access to the GNATCOLL.SQL SQL, SQL.SELECT and
-   --  SQL.ERROR traces.
-   ----------------------------------------------------------------------------
-   type Factory is new GNATCOLL.Traces.Stream_Factory with null record;
-
-   type Rotating_Log_Record is new GNATCOLL.Traces.Trace_Stream_Record
-   with
-      record
-         Handle : Trace_Handles;
-         Buffer : Ada.Strings.Unbounded.Unbounded_String;
-      end record;
-
-   type Access_Rotating_Log_Record is access all Rotating_Log_Record;
-
-   overriding
-   function New_Stream
-     (Fact : Factory; Args : String)
-      return GNATCOLL.Traces.Trace_Stream;
-   --  Create a rotating log stream
-
-   overriding
-   procedure Newline
-     (Stream : in out Rotating_Log_Record);
-   --  Write the Rotating_Log_Record.Buffer to Rotating_Log_Record.Handle.
-
-   overriding
-   procedure Put
-     (Stream : in out Rotating_Log_Record; Log_String : String);
-   --  Add Log_String to Rotating_Log_Record.Buffer.
-
-   procedure Register_Rotating_Log_Stream;
-   --  Register a GNAT.Traces stream that can send its output to a rotating
-   --  log.
-   --  See the configuration/GNATCOLL.SQL.Logs.ini file for more information.
-
-   overriding
-   function Supports_Color
-     (Stream : Rotating_Log_Record)
-      return Boolean;
-   --  Does the stream support color output? For this specific package, no.
-   --  Always return False.
-
-   overriding
-   function Supports_Time
-     (Stream : Rotating_Log_Record)
-      return Boolean;
-   --  Should we output time? No. Time is set in the Track procedure. Always
-   --  return False.
+   procedure Track
+     (Handle       : in Trace_Handles;
+      Log_String   : in String);
+   --  Add Log_String to Handle. Calling Track before having called
+   --  Start_Rotating_Logs will raise a Cannot_Write_To_Log_File exception.
+   --  Exception:
+   --    Cannot_Write_To_Log_File
 
 end Yolk.Rotating_Log;

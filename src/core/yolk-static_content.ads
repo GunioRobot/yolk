@@ -46,6 +46,10 @@ package Yolk.Static_Content is
    --  NOTE:
    --    Content handled by Binary_File will _not_ be pre-compressed.
 
+   procedure Initialize_Compressed_Cache_Directory;
+   --  Initialize the Static_Content package. Basically just delete and
+   --  re-create the Compressed_Cache_Directory.
+
    function Text_File
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;

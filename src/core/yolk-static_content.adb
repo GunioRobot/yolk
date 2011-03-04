@@ -32,9 +32,10 @@ with Yolk.Rotating_Log;
 
 package body Yolk.Static_Content is
 
-   procedure Initialize;
-   --  Initialize the Static_Content package. Basically just delete and
-   --  re-create the Compressed_Cache_Directory.'
+   Has_Been_Initialized : Boolean := False;
+   --  Is set to True when Initialize_Compressed_Cache_Directory is called the
+   --  first time. Subsequent calls to Initialize_Compressed_Cache_Directory
+   --  are ignored.
 
    -------------------
    --  Binary_File  --
@@ -67,11 +68,11 @@ package body Yolk.Static_Content is
 
    end Binary_File;
 
-   ------------------
-   --  Initialize  --
-   ------------------
+   ---------------------------------------------
+   --  Initialize_Compressed_Cache_Directory  --
+   ---------------------------------------------
 
-   procedure Initialize
+   procedure Initialize_Compressed_Cache_Directory
    is
 
       use Ada.Directories;
@@ -80,24 +81,32 @@ package body Yolk.Static_Content is
 
    begin
 
-      if Exists (Config.Get (Compressed_Cache_Directory))
-        and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
-      then
-         Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
+      if not Has_Been_Initialized then
+         Has_Been_Initialized := True;
+
+         if Exists (Config.Get (Compressed_Cache_Directory))
+           and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
+         then
+            Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
+            Track
+              (Handle     => Info,
+               Log_String => Config.Get (Compressed_Cache_Directory)
+               & " deleted by Yolk.Static_Content.Initialize");
+         end if;
+
+         Create_Path
+           (New_Directory => Config.Get (Compressed_Cache_Directory));
          Track
            (Handle     => Info,
             Log_String => Config.Get (Compressed_Cache_Directory)
-            & " deleted by Yolk.Static_Content.Initialize");
+            & " created by Yolk.Static_Content.Initialize");
+      else
+         Track
+           (Handle     => Error,
+            Log_String => "Static content compressed cache already " &
+            "initialized");
       end if;
-
-      Create_Path
-           (New_Directory => Config.Get (Compressed_Cache_Directory));
-      Track
-        (Handle     => Info,
-         Log_String => Config.Get (Compressed_Cache_Directory)
-         & " created by Yolk.Static_Content.Initialize");
-
-   end Initialize;
+   end Initialize_Compressed_Cache_Directory;
 
    -----------------
    --  Text_File  --
@@ -274,9 +283,5 @@ package body Yolk.Static_Content is
          Filename      => Resource);
 
    end Text_File;
-
-begin
-
-   Initialize;
 
 end Yolk.Static_Content;

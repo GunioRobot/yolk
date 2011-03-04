@@ -22,11 +22,7 @@
 --                            DEMO FILE                                      --
 --                                                                           --
 -------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the Yolk root directory
---  and change it according to you own needs, or you can provide your own.
---
---  For most Yolk applications, using this file "as is" will work just fine.
+--  For most Yolk applications, using this file "as is" will work fine.
 --
 --  Usually you just have to change the name of environment task and  the name
 --  of the file itself to match whatever you want to call your application.
@@ -43,7 +39,9 @@ with Yolk.Configuration;
 with Yolk.Handlers;
 with Yolk.Log_File_Cleanup;
 with Yolk.Process_Control;
+with Yolk.Process_Owner;
 with Yolk.Rotating_Log;
+with Yolk.Static_Content;
 with Yolk.Utilities;
 with Yolk.Whoops;
 
@@ -54,7 +52,9 @@ is
    use Yolk.Configuration;
    use Yolk.Handlers;
    use Yolk.Process_Control;
+   use Yolk.Process_Owner;
    use Yolk.Rotating_Log;
+   use Yolk.Static_Content;
    use Yolk.Utilities;
 
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
@@ -205,16 +205,25 @@ is
                Clean_Up (Config_Object             => Web_Server_Config,
                          Web_Server                => Web_Server,
                          Amount_Of_Files_To_Keep   => Files_To_Keep);
-            else
-               Track (Handle     => Error,
-                      Log_String => "Logfile_Monitor. Start not called.");
             end if;
          end select;
+
       end loop;
 
    end Log_File_Monitor;
 
 begin
+
+   Set_User (Username => Config.Get (Yolk_User));
+   --  Switch user.
+
+   Start_Rotating_Logs;
+   --  Fire up the rotating log system. Calls to Track up until this point
+   --  will fail, so please avoid those!
+
+   Initialize_Compressed_Cache_Directory;
+   --  Delete old compressed content and create a clean directory for compres-
+   --  sed static content.
 
    for Key in Keys'Range loop
       if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then
@@ -270,6 +279,7 @@ begin
 
 exception
    when Event : others =>
+      Start_Rotating_Logs (Called_From_Main_Task_Exception_Handler => True);
       Track (Handle     => Error,
              Log_String => Exception_Information (Event));
       Stop_Server;

@@ -46,6 +46,7 @@ package body Yolk.Process_Owner is
 
       User_DI := Get_User_Database_Item (Name => P_Username);
       Set_User_ID (ID => User_ID_Of (DB_Item => User_DI));
+      Set_Group_ID (ID => Group_ID_Of (DB_Item => User_DI));
 
    exception
       when others =>

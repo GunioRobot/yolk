@@ -27,57 +27,127 @@ with Ada.Calendar.Time_Zones;
 with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded;
+with Ada.Text_IO;
+with GNATCOLL.Traces;
 with Yolk.Process_Control;
+with Yolk.Configuration;
 
 package body Yolk.Rotating_Log is
 
-   ------------------
-   --  Initialize  --
-   ------------------
+   use Yolk.Configuration;
 
-   procedure Initialize
-   is
+   Is_Started : Boolean := False;
+   --  Is set to True when Start is called the first time.
 
-      use Ada.Directories;
-      use Ada.Text_IO;
-      use GNATCOLL.Traces;
+   Stream_Rotating_Log : constant String := "rotating_log";
+   --  Name of the stream. This is used in the GNAT.Traces configuration files
+   --  or calls to Create to send a stream to a rotating log.
+   --  You must have called Register_Rotating_Log_Stream first.
+   --  See Register_Rotating_Log_Stream.
 
-      A_Handle : Trace_Handles := Trace_Handles'First;
-      --  Set A_Handle to Trace_Handles'First to avoid a "'A_Handle' may be
-      --  used uninitialized in this function" warning.
+   type Access_File is access all Ada.Text_IO.File_Type;
 
-   begin
+   protected type Log_Object is
 
-      if Exists (Name => Config.Get (GNATCOLL_Traces_Ini_File)) then
-         Register_Rotating_Log_Stream;
-         Parse_Config_File (Config.Get (GNATCOLL_Traces_Ini_File));
-      end if;
+      entry Seize;
+      --  Lock the object.
 
-      for Handle in Trace_Handles loop
-         A_Handle := Handle;
-         Log_Objects_List (Handle) := new Log_Object;
-         Log_Objects_List (Handle).Set_File_Access;
-         Create
-           (File => Log_Objects_List (Handle).Get_File_Access.all,
-            Mode => Out_File,
-            Name => Config.Get (Log_File_Directory) &
-            Config.Get (Server_Name) & "-rotating-" &
-            Trace_Handles'Image (Handle) & "-" &
-            Log_Objects_List (Handle).Get_Slot & ".log");
-      end loop;
+      function Get_File_Access return Access_File;
+      --  Return access to an Ada.Text_IO.File_Type.
 
-   exception
-      when Config.Conversion_Error =>
-         raise;
-      when Config.Empty_Key =>
-         raise;
-      when others =>
-         Process_Control.Stop;
-         raise Cannot_Create_Log_File with
-           "Handle: " & Trace_Handles'Image (A_Handle) & " and slot: "
-           & Log_Objects_List (A_Handle).Get_Slot;
+      function Get_Size return Natural;
+      --  Return the amount of characters added to the log. See Set_Size.
 
-   end Initialize;
+      function Get_Slot return String;
+      --  Return the Current_Slot value as a String.
+
+      procedure Move_To_Next_Slot;
+      --  Move to the next slot. Basically we just cycle 1 .. Max_Slot_Count
+
+      procedure Release;
+      --  Unlock the object.
+
+      procedure Set_File_Access;
+      --  Allocate a new Ada.Text_IO.File_Type.
+
+      procedure Set_Size
+        (Length : in Natural);
+      --  Add Length to Log_Object.Size. We use this to decide when to cycle
+      --  the logfiles. If Size > Max_Logged_Characters, then we cycle to the
+      --  next slot.
+      --  This is done instead of checking the size of the logfile, to avoid
+      --  going to disk on every call to Track. It's not as accurate, but it
+      --  will probably not be off by much.
+      --  Max_Logged_Characters is defined in configuration/config.ini.
+
+   private
+
+      File           : Access_File;
+      Current_Slot   : Positive := 1;
+      Size           : Natural := 0;
+      Slot_Max       : Positive := Config.Get (Max_Slot_Count);
+      Locked         : Boolean := False;
+
+   end Log_Object;
+
+   type Access_Log_Object is access all Log_Object;
+   type Log_Objects_Array is array (Trace_Handles) of Access_Log_Object;
+
+   Log_Objects_List : Log_Objects_Array;
+   --  This array holds access to the individual Log_Objects, one for each
+   --  value defined in Trace_Handles.
+
+   ----------------------------------------------------------------------------
+   --  Types and methods needed for a custom GNATCOLL.Traces stream. These are
+   --  necessary to gain access to the GNATCOLL.SQL SQL, SQL.SELECT and
+   --  SQL.ERROR traces.
+   ----------------------------------------------------------------------------
+   type Factory is new GNATCOLL.Traces.Stream_Factory with null record;
+
+   type Rotating_Log_Record is new GNATCOLL.Traces.Trace_Stream_Record
+   with
+      record
+         Handle : Trace_Handles;
+         Buffer : Ada.Strings.Unbounded.Unbounded_String;
+      end record;
+
+   type Access_Rotating_Log_Record is access all Rotating_Log_Record;
+
+   overriding
+   function New_Stream
+     (Fact : Factory; Args : String)
+      return GNATCOLL.Traces.Trace_Stream;
+   --  Create a rotating log stream
+
+   overriding
+   procedure Newline
+     (Stream : in out Rotating_Log_Record);
+   --  Write the Rotating_Log_Record.Buffer to Rotating_Log_Record.Handle.
+
+   overriding
+   procedure Put
+     (Stream : in out Rotating_Log_Record; Log_String : String);
+   --  Add Log_String to Rotating_Log_Record.Buffer.
+
+   procedure Register_Rotating_Log_Stream;
+   --  Register a GNAT.Traces stream that can send its output to a rotating
+   --  log.
+   --  See the configuration/GNATCOLL.SQL.Logs.ini file for more information.
+
+   overriding
+   function Supports_Color
+     (Stream : Rotating_Log_Record)
+      return Boolean;
+   --  Does the stream support color output? For this specific package, no.
+   --  Always return False.
+
+   overriding
+   function Supports_Time
+     (Stream : Rotating_Log_Record)
+      return Boolean;
+   --  Should we output time? No. Time is set in the Track procedure. Always
+   --  return False.
 
    ------------------
    --  New_Stream  --
@@ -156,6 +226,66 @@ package body Yolk.Rotating_Log is
 
    end Register_Rotating_Log_Stream;
 
+   ---------------------------
+   --  Start_Rotating_Logs  --
+   ---------------------------
+
+   procedure Start_Rotating_Logs
+     (Called_From_Main_Task_Exception_Handler : Boolean := False)
+   is
+
+      use Ada.Directories;
+      use Ada.Text_IO;
+      use GNATCOLL.Traces;
+
+      A_Handle : Trace_Handles := Trace_Handles'First;
+      --  Set A_Handle to Trace_Handles'First to avoid a "'A_Handle' may be
+      --  used uninitialized in this function" warning.
+
+   begin
+
+      if not Is_Started then
+         Is_Started := True;
+
+         if Exists (Name => Config.Get (GNATCOLL_Traces_Ini_File)) then
+            Register_Rotating_Log_Stream;
+            Parse_Config_File (Config.Get (GNATCOLL_Traces_Ini_File));
+         end if;
+
+         for Handle in Trace_Handles loop
+            A_Handle := Handle;
+            Log_Objects_List (Handle) := new Log_Object;
+            Log_Objects_List (Handle).Set_File_Access;
+            Create
+              (File => Log_Objects_List (Handle).Get_File_Access.all,
+               Mode => Out_File,
+               Name => Config.Get (Log_File_Directory) &
+               Config.Get (Server_Name) & "-rotating-" &
+               Trace_Handles'Image (Handle) & "-" &
+               Log_Objects_List (Handle).Get_Slot & ".log");
+         end loop;
+      else
+         --  We've already started the rotating log system earlier. Lets log
+         --  This second call.
+         if not Called_From_Main_Task_Exception_Handler then
+            Track (Handle     => Error,
+                   Log_String => "Rotating log system already started.");
+         end if;
+      end if;
+
+   exception
+      when Config.Conversion_Error =>
+         raise;
+      when Config.Empty_Key =>
+         raise;
+      when others =>
+         Process_Control.Stop;
+         raise Cannot_Create_Log_File with
+           "Handle: " & Trace_Handles'Image (A_Handle) & " and slot: "
+           & Log_Objects_List (A_Handle).Get_Slot;
+
+   end Start_Rotating_Logs;
+
    ----------------------
    --  Supports_Color  --
    ----------------------
@@ -213,51 +343,55 @@ package body Yolk.Rotating_Log is
 
    begin
 
-      Log.Seize;
+      if Is_Started then
+         Log.Seize;
 
-      if Log.Get_Size > Config.Get (Rotating_Log_Size_Limit) then
-         if Is_Open (File => Log.Get_File_Access.all) then
-            Close (File => Log.Get_File_Access.all);
+         if Log.Get_Size > Config.Get (Rotating_Log_Size_Limit) then
+            if Is_Open (File => Log.Get_File_Access.all) then
+               Close (File => Log.Get_File_Access.all);
+            end if;
+
+            Log.Move_To_Next_Slot;
+
+            Create
+              (File => Log.Get_File_Access.all,
+               Mode => Out_File,
+               Name => Config.Get (Log_File_Directory) &
+               Config.Get (Server_Name) & "-rotating-" &
+               Trace_Handles'Image (Handle) & "-" &
+               Log.Get_Slot & ".log");
          end if;
 
-         Log.Move_To_Next_Slot;
-
-         Create
-           (File => Log.Get_File_Access.all,
-            Mode => Out_File,
-            Name => Config.Get (Log_File_Directory) &
-            Config.Get (Server_Name) & "-rotating-" &
-            Trace_Handles'Image (Handle) & "-" &
-            Log.Get_Slot & ".log");
-      end if;
-
-      Put (File => Log.Get_File_Access.all,
-           Item => Image (Date      => Now,
-                          Time_Zone => Offset));
-      Put (File => Log.Get_File_Access.all,
-           Item => " ");
-      Circa_Length := Circa_Length + 20;
-
-      if Handle /= GNATCOLL_SQL then
          Put (File => Log.Get_File_Access.all,
-              Item => "[");
-         EIO.Put (File => Log.Get_File_Access.all,
-                  Item => Handle);
+              Item => Image (Date      => Now,
+                             Time_Zone => Offset));
          Put (File => Log.Get_File_Access.all,
-              Item => "] ");
-         Circa_Length := Circa_Length + 3;
+              Item => " ");
+         Circa_Length := Circa_Length + 20;
+
+         if Handle /= GNATCOLL_SQL then
+            Put (File => Log.Get_File_Access.all,
+                 Item => "[");
+            EIO.Put (File => Log.Get_File_Access.all,
+                     Item => Handle);
+            Put (File => Log.Get_File_Access.all,
+                 Item => "] ");
+            Circa_Length := Circa_Length + 3;
+         end if;
+
+         Put_Line (File => Log.Get_File_Access.all,
+                   Item => Log_String);
+
+         if Config.Get (Immediate_Flush) then
+            Flush (File => Log.Get_File_Access.all);
+         end if;
+
+         Log.Set_Size (Length => Circa_Length);
+
+         Log.Release;
+      else
+         raise Cannot_Write_To_Log_File with "Rotating logs not started";
       end if;
-
-      Put_Line (File => Log.Get_File_Access.all,
-                Item => Log_String);
-
-      if Config.Get (Immediate_Flush) then
-         Flush (File => Log.Get_File_Access.all);
-      end if;
-
-      Log.Set_Size (Length => Circa_Length);
-
-      Log.Release;
 
    exception
       when Config.Conversion_Error =>
@@ -267,8 +401,8 @@ package body Yolk.Rotating_Log is
       when others =>
          Process_Control.Stop;
          raise Cannot_Write_To_Log_File with
-           "Handle: " & Trace_Handles'Image (Handle) & " and slot: "
-           & Log.Get_Slot;
+           "Handle: " & Trace_Handles'Image (Handle) & " and slot: ";
+         --  & Log.Get_Slot;
 
    end Track;
 
@@ -339,7 +473,7 @@ package body Yolk.Rotating_Log is
       is
       begin
 
-         if Current_Slot = Config.Get (Max_Slot_Count) then
+         if Current_Slot = Slot_Max then
             Current_Slot := 1;
          else
             Current_Slot := Current_Slot + 1;
@@ -389,26 +523,6 @@ package body Yolk.Rotating_Log is
 
       end Set_Size;
 
-      ----------------
-      --  Write_To  --
-      ----------------
-
-      procedure Write_To
-        (Log_String : in String)
-      is
-
-         use Ada.Text_IO;
-
-      begin
-
-         Put_Line (File.all, Log_String);
-
-      end Write_To;
-
    end Log_Object;
-
-begin
-
-   Initialize;
 
 end Yolk.Rotating_Log;
