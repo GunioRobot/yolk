@@ -272,7 +272,8 @@ tools/
     to be using to start/stop a Yolk application.
 
 ./
-    The Yolk project file, an INSTALL file, this README and the license is found here.
+    The Yolk .gpr and makefile, an INSTALL file, this README and the license is found
+    here.
 
 The most important thing to take away from all this is: You should only ever place
 your code in the my_* directories. Let the rest stay as they are, to ease the process
