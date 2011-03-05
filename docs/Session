@@ -14,4 +14,4 @@ importance:
     Session_Lifetime
 
 Setting these too high could mean wasting a lot of resources if your
-server is very busy.
+server is very busy as sessions are kept in memory.

@@ -59,13 +59,13 @@ emails. Here's a usage example:
        Email : Structure;
     begin
        Composer.Send (ES           => Email,
-                      From_Address => "name@from",
+                      From_Address => "thomas@12boo.net",
                       From_Name    => "Thomas Løcke",
-                      To_Address   => "name@to",
-                      To_Name      => "Thomas Løcke",
+                      To_Address   => "yolk@mailinator.com",
+                      To_Name      => "Zaphod Beeblebrox",
                       Subject      => "A plain text email",
                       Text_Part    => "Here ya go!",
-                      SMTP_Server  => "smtp.server",
+                      SMTP_Server  => "localhost",
                       Charset      => ISO_8859_1);
 
        if Composer.Is_Send (Email) then
@@ -90,13 +90,13 @@ We could've build the exact same email "by hand", like this:
        Email : Structure;
     begin
        Composer.Add_From (ES      => Email,
-                          Address => "name@from",
+                          Address => "thomas@12boo.net",
                           Name    => "Thomas Løcke",
                           Charset => ISO_8859_1);
 
        Composer.Add_Recipient (ES      => Email,
-                               Address => "name@to",
-                               Name    => "Thomas Løcke"
+                               Address => "yolk@mailinator.com",
+                               Name    => "Zaphod Beeblebrox"
                                Charset => ISO_8859_1);
 
        Composer.Set_Subject (ES      => Email,
@@ -108,7 +108,7 @@ We could've build the exact same email "by hand", like this:
                                Charset => ISO_8859_1);
 
        Composer.Add_SMTP_Server (ES   => Email,
-                                 Host => "smtp.server");
+                                 Host => "localhost");
 
        Composer.Send (ES => Email);
 
@@ -125,4 +125,3 @@ We could've build the exact same email "by hand", like this:
 
 It is possible to mix calls to the convenience procedures with the various
 "by hand" procedures, as long as you do it prior to calling the Send procedure.
-

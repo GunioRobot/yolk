@@ -11,7 +11,7 @@ databases, simply by doing this:
           Password          => "secret"),
        Task_To_DB_Mapping_Method => Yolk.Connect_To_DB.AWS_Tasks_To_DB);
 
-And then to get a GNATCOLL.SQL.Exec.Database_Connection we simply do
+And then to get a GNATCOLL.SQL.Exec.Database_Connection we do
 
     with GNATCOLL.SQL.Exec;
 
@@ -52,6 +52,6 @@ DB_Conn_Tasks_To_DB for the subsequent, like this
 If you instantiate the generic more than once with AWS_Tasks_To_DB an exception
 is raised.
 
-You can read more about the GNATcoll database interface here:
+You can read more about the GNATColl database interface here:
 
 https://www.adacore.com/wp-content/files/auto_update/gnatcoll-docs/gnatcoll.html
