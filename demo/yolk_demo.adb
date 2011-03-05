@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --                                                                           --
---                               Yolk Server                                 --
+--                            Yolk Demo Server                               --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -22,6 +22,7 @@
 --                            DEMO FILE                                      --
 --                                                                           --
 -------------------------------------------------------------------------------
+--
 --  For most Yolk applications, using this file "as is" will work fine.
 --
 --  Usually you just have to change the name of environment task and  the name
@@ -45,7 +46,7 @@ with Yolk.Static_Content;
 with Yolk.Utilities;
 with Yolk.Whoops;
 
-procedure Yolk_Server
+procedure Yolk_Demo
 is
 
    use Ada.Exceptions;
@@ -287,4 +288,4 @@ exception
       --  If an exception is caught, write its contents to the Error trace,
       --  attempt to stop the server and the logfile monitor task.
 
-end Yolk_Server;
+end Yolk_Demo;

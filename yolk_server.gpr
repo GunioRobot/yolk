@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 --                                                                           --
---                               Yolk Server                                 --
+--                                  Yolk                                     --
 --                                                                           --
---                        Yolk Server Project File                           --
+--                            Yolk Project File                              --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -22,9 +22,7 @@
 with "aws";
 with "florist";
 with "gnatcoll";
-
---  To add PostgreSQL support to Yolk, just uncomment the following
---  with clause:
+--  To remove PostgreSQL support, just comment the following line.
 with "gnatcoll_postgres";
 
 project Yolk_Server is
@@ -43,7 +41,7 @@ project Yolk_Server is
    for Source_Dirs use Core_Source_Options & Demo_Source_Options;
 
    --  Adjust this to match the actual name of your application.
-   for Main use ("yolk_server.adb");
+   for Main use ("yolk_demo.adb");
 
    for Exec_Dir use "exe";
 

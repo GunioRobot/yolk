@@ -7,7 +7,7 @@ First order of business is checking that you have all the required dependencies
 installed:
 
     1. AWS
-    2. GNATcoll
+    2. GNATColl
     3. Florist
 
 When you're certain that the dependencies are met, then all you need to do is
@@ -16,16 +16,16 @@ follow these 5 steps:
     1. $ cd [path to Yolk root directory]
     2. gnatmake -P yolk_server.gpr
     3. cd exe/
-    4. ./yolk_server
+    4. ./yolk_demo
     5. Using your browser, visit http://localhost:4242
 
 If you follow those 5 steps, you will compile the Yolk demo server using the
-yolk_server.adb file found in the demo/ directory. You can use this file as the
-basis for your own Yolk application. Simply copy it to the Yolk root, and change
-the project file accordingly.
+yolk_demo.adb file found in the demo/ directory. You can use this file as the
+basis for your own Yolk application. Simply copy it to the Yolk root, rename the
+file, the main environment task and change the project file accordingly.
 
 You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
-found in the yolk.pid file.
+found in the yolk_demo.pid file.
 
 Instead of starting/stopping your application by calling the yolk_server executable
 directly, you can use the tools/rc.yolk script. Using this will enable you to
@@ -39,14 +39,14 @@ that this password is changed before you go public with your application. See
 exe/configuration/config.ini for how to do this. Look for the Admin_Password
 option.
 
-If the index page (with all the static content tests) are shown correctly and
-you can access the status page, then Yolk is ready to be used.
+If the index page and all the tests are shown correctly and you can access the
+status page, then Yolk is ready to be used.
 
 If Yolk isn't working, then it's worth checking that:
 
     * gnatmake is in your PATH
     * The ADA_PROJECT_PATH environment variable contains the paths to your AWS,
-      GNATcoll and Florist project files.
+      GNATColl and Florist project files.
     * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin,
       then make sure that the "for Compiler_Command" option in yolk_server.gpr is
       adjusted accordingly.
@@ -57,14 +57,14 @@ prepare for your own Yolk application:
 
     1.  Adjust the Yolk project file to match your environment, for example changing
         the "for Compiler_Command" setting, if necessary. Also you should probably
-        get rid of the Demo_Source_Options and setup your own yolk_server.adb
-        file somewhere. Use the demo/yolk_server.adb file as a starting point.
+        get rid of the Demo_Source_Options and setup your own main .adb file
+        somewhere. Use the demo/yolk_demo.adb file as a starting point.
 
-    2.  You probably want to rename the application from yolk_server to something
+    2.  You probably want to rename the application from yolk_demo to something
         else. This requires you to:
 
-        A.  Rename the main procedure in yolk_server.adb.
-        B.  Rename the main yolk_server.* files.
+        A.  Rename the main procedure in yolk_demo.adb.
+        B.  Rename the main yolk_demo.adb file.
         C.  Adjust the project file accordingly, renaming the "for Main use" file.
 
     3.  Create your own My_Handlers package and place it in the my_handlers/
@@ -78,5 +78,8 @@ prepare for your own Yolk application:
 
     6.  Make sure that the .gitignore files used in Yolk doesn't conflict with
         your own VCS setup.
+
+    7.  Get rid of the Demo_Source_Options in the .gpr file, so you don't compile
+        any of the demo files by mistake.
 
 See the README file and the docs/ for more information on how to use Yolk.
