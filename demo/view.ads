@@ -55,7 +55,7 @@ package View is
          Password => My.Config.Get (My.DB_Password)),
       Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
 
-   Feed : Yolk.Syndication.Atom := Yolk.Syndication.Initialize
+   Feed : Yolk.Syndication.Atom_Feed := Yolk.Syndication.Initialize
      (Id      => "Unique Id",
       Title   => "Fancy Feed Title");
 

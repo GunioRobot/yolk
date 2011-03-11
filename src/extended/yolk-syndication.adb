@@ -35,6 +35,54 @@ package body Yolk.Syndication is
    --  The uppercase T and Z are requried as per the Atom specification.
    --  It is expected that the Time_Stamp is GMT.
 
+   ------------------
+   --  Add_Author  --
+   ------------------
+
+   procedure Add_Author
+     (Feed     : in out Atom_Feed;
+      Name     : in     String;
+      Language : in     String := None;
+      Email    : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.Author_List.Append
+        (Atom_Person'(Name      => TUS (Name),
+                      Language  => TUS (Language),
+                      Email     => TUS (Email),
+                      URI       => TUS (URI)));
+
+   end Add_Author;
+
+   -----------------------
+   --  Add_Contributor  --
+   -----------------------
+
+   procedure Add_Contributor
+     (Feed     : in out Atom_Feed;
+      Name     : in     String;
+      Language : in     String := None;
+      Email    : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.Contributor_List.Append
+        (Atom_Person'(Name      => TUS (Name),
+                      Language  => TUS (Language),
+                      Email     => TUS (Email),
+                      URI       => TUS (URI)));
+
+   end Add_Contributor;
+
    -----------------------
    --  Atom_Date_Image  --
    -----------------------
@@ -65,14 +113,19 @@ package body Yolk.Syndication is
    ------------------
 
    function Initialize
-     (Id      : in String;
-      Title   : in String)
-      return Atom
+     (Base_URI   : in String := None;
+      Id         : in String;
+      Language   : in String := None;
+      Title      : in String;
+      Title_Type : in Content_Type := Text)
+      return Atom_Feed
    is
 
       use Ada.Calendar;
       use Ada.Text_IO;
       use Yolk.Utilities;
+
+      Feed : Atom_Feed;
 
    begin
 
@@ -80,9 +133,14 @@ package body Yolk.Syndication is
       Put_Line (Title);
       Put_Line (Atom_Date_Image (Clock));
 
-      return Atom'(Id => TUS (Id),
-                   Title => TUS (Title),
-                   Updated => Clock);
+      Feed.Base_URI     := TUS (Base_URI);
+      Feed.Id           := TUS (Id);
+      Feed.Language     := TUS (Language);
+      Feed.Title        := TUS (Title);
+      Feed.Title_Type   := Title_Type;
+      Feed.Updated      := Clock;
+
+      return Feed;
 
    end Initialize;
 
@@ -91,7 +149,7 @@ package body Yolk.Syndication is
    --------------
 
    procedure Set_Id
-     (Feed  : in out Atom;
+     (Feed  : in out Atom_Feed;
       Id    : in     String)
    is
 
@@ -108,8 +166,9 @@ package body Yolk.Syndication is
    -----------------
 
    procedure Set_Title
-     (Feed  : in out Atom;
-      Title : in     String)
+     (Feed       : in out Atom_Feed;
+      Title      : in     String;
+      Title_Type : in     Content_Type := Text)
    is
 
       use Yolk.Utilities;
@@ -117,6 +176,7 @@ package body Yolk.Syndication is
    begin
 
       Feed.Title := TUS (Title);
+      Feed.Title_Type := Title_Type;
 
    end Set_Title;
 
@@ -125,7 +185,7 @@ package body Yolk.Syndication is
    -------------------
 
    procedure Set_Updated
-     (Feed    : in out Atom;
+     (Feed    : in out Atom_Feed;
       Updated : in     Ada.Calendar.Time)
    is
    begin
