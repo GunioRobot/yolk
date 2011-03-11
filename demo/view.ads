@@ -39,6 +39,7 @@ with AWS.Templates;
 with My_Configuration;
 with Yolk;
 with Yolk.Connect_To_DB.PostgreSQL;
+with Yolk.Syndication;
 
 package View is
 
@@ -53,6 +54,10 @@ package View is
          User     => My.Config.Get (My.DB_User),
          Password => My.Config.Get (My.DB_Password)),
       Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
+
+   Feed : Yolk.Syndication.Atom := Yolk.Syndication.Initialize
+     (Id      => "Unique Id",
+      Title   => "Fancy Feed Title");
 
    function Build_Response
      (Status_Data   : in AWS.Status.Data;
