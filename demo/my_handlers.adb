@@ -93,12 +93,12 @@ package body My_Handlers is
          URI        => My.Config.Get (My.Handler_Dir),
          Action     => Create (Callback => View.Dir.Generate'Access));
 
-      AWS.Services.Dispatchers.URI.Register_Regexp
+      AWS.Services.Dispatchers.URI.Register
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Email),
          Action     => Create (Callback => View.Email.Generate'Access));
 
-      AWS.Services.Dispatchers.URI.Register_Regexp
+      AWS.Services.Dispatchers.URI.Register
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),
          Action     => Create (Callback => View.Index.Generate'Access));

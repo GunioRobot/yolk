@@ -4,5 +4,5 @@
 <core>
     <title>Yolk XML/XSL Test</title>
     <headline>The Yolk XML/XSL content handlers is functional!</headline>
-    <goback url="/Index">go back</goback>
+    <goback url="/">go back</goback>
 </core>

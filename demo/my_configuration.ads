@@ -72,13 +72,13 @@ package My_Configuration is
                        DB_Password
                        => TUS (""),
                        Handler_DB_Test
-                       => TUS ("/DB_Test"),
+                       => TUS ("/dbtest"),
                        Handler_Dir
-                       => TUS ("/[Dd]ir/.*"),
+                       => TUS ("^/dir/.*"),
                        Handler_Email
-                       => TUS ("/[Ee]mail"),
+                       => TUS ("/email"),
                        Handler_Index
-                       => TUS ("/|/[Ii]ndex"),
+                       => TUS ("/"),
                        SMTP_Host
                        => TUS ("localhost"),
                        SMTP_Port
