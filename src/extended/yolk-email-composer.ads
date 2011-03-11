@@ -21,8 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with GNATCOLL.Email;
-
 package Yolk.Email.Composer is
 
    procedure Add_Custom_Header

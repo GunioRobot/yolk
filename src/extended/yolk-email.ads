@@ -79,7 +79,7 @@ private
          Address  : Unbounded_String;
          Charset  : Character_Set  := US_ASCII;
          Name     : Unbounded_String;
-   end record;
+      end record;
 
    type Email_Kind is (Text,
                        Text_With_Attachment,
