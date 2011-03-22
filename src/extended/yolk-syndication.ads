@@ -52,6 +52,34 @@ package Yolk.Syndication is
    --    versions of characters such as "&" and ">" represent those characters,
    --    not markup.
 
+   type Relation_Type is (Alternate, Related, Self, Enclosure, Via);
+   --  There are five values for the Registry of Link Relations:
+   --
+   --    The value Alternate signifies that the IRI in the value of the href
+   --    attribute identifies an alternate version of the resource described by
+   --    the containing element.
+   --
+   --    The value Related signifies that the IRI in the value of the href
+   --    attribute identifies a resource related to the resource described by
+   --    the containing element. For example, the feed for a site that
+   --    discusses the performance of the search engine at
+   --    "http://search.example.com" might contain, as a child of atom : feed :
+   --    <link rel="related" href="http://search.example.com/"/>
+   --    An identical link might appear as a child of any atom:entry whose
+   --    content contains a discussion of that same search engine.
+   --
+   --    The value Self signifies that the IRI in the value of the href
+   --    attribute identifies a resource equivalent to the containing element.
+   --
+   --    The value Enclosure signifies that the IRI in the value of the href
+   --    attribute identifies a related resource that is potentially large in
+   --    size and might require special handling. For atom : link elements with
+   --    rel = "enclosure", the length attribute SHOULD be provided.
+   --
+   --    The value Via signifies that the IRI in the value of the href
+   --    attribute identifies a resource that is the source of the information
+   --    provided in the containing element.
+
    None : constant String := "";
 
    procedure Add_Author
@@ -83,6 +111,23 @@ package Yolk.Syndication is
       Language : in     String := None;
       URI      : in     String := None);
    --  Add a contributor child element to the Atom top-level feed element.
+
+   procedure Add_Link
+     (Feed        : in out Atom_Feed;
+      Href        : in     String;
+      Base_URI    : in     String := None;
+      Content     : in     String := None;
+      Hreflang    : in     String := None;
+      Language    : in     String := None;
+      Length      : in     Natural := 0;
+      Mime_Type   : in     String := None;
+      Rel         : in     Relation_Type := Alternate;
+      Title       : in     String := None);
+   --  Add an atom:link element.
+   --  Defines a reference from an entry or feed to a Web resource. This
+   --  specification assigns no meaning to the content (if any) of this
+   --  element.
+   --  See comment for Relation_Type for info on the Rel parameter.
 
    function Initialize
      (Id             : in String;
@@ -139,6 +184,24 @@ package Yolk.Syndication is
      (Feed     : in out Atom_Feed;
       Language : in     String := None);
    --  Set the language for the feed.
+
+   procedure Set_Logo
+     (Feed     : in out Atom_Feed;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None);
+   --  A reference [RFC3987] that identifies an image that provides visual
+   --  identification for a feed. The image SHOULD have an aspect ratio of 2
+   --  (horizontal) to 1 (vertical).
+
+   procedure Set_Rights
+     (Feed           : in out Atom_Feed;
+      Text_Content   : in     String;
+      Base_URI       : in     String := None;
+      Language       : in     String := None;
+      Text_Type      : in     Content_Type := Text);
+   --  A Text construct that conveys information about rights held in and over
+   --  an entry or feed.
 
    procedure Set_Title
      (Feed       : in out Atom_Feed;
@@ -205,6 +268,27 @@ private
          Id : Unbounded_String;
       end record;
 
+   type Atom_Link is
+      record
+         Common      : Atom_Common;
+         Content     : Unbounded_String;
+         Href        : Unbounded_String;
+         Hreflang    : Unbounded_String;
+         Length      : Natural;
+         Mime_Type   : Unbounded_String;
+         Rel         : Relation_Type;
+         Title       : Unbounded_String;
+      end record;
+
+   type Atom_Logo is
+      record
+         Common   : Atom_Common;
+         URI      : Unbounded_String;
+      end record;
+
+      Null_Logo : constant Atom_Logo := (Common => Null_Common,
+                                         URI    => Null_Unbounded_String);
+
    type Atom_Person is
       record
          Common   : Atom_Common;
@@ -220,7 +304,12 @@ private
          Text_Type      : Content_Type := Text;
       end record;
 
+   Null_Text : constant Atom_Text := (Common       => Null_Common,
+                                      Text_Content => Null_Unbounded_String,
+                                      Text_Type    => Text);
+
    package Category_List is new Doubly_Linked_Lists (Atom_Category);
+   package Link_List is new Doubly_Linked_Lists (Atom_Link);
    package Person_List is new Doubly_Linked_Lists (Atom_Person);
 
    type Atom_Feed is
@@ -232,6 +321,9 @@ private
          Generator      : Atom_Generator;
          Icon           : Atom_Icon;
          Id             : Atom_Id;
+         Links          : Link_List.List;
+         Logo           : Atom_Logo;
+         Rights         : Atom_Text;
          Title          : Atom_Text;
          Updated        : Ada.Calendar.Time;
       end record;
