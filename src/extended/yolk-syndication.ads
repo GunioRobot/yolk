@@ -203,6 +203,15 @@ package Yolk.Syndication is
    --  A Text construct that conveys information about rights held in and over
    --  an entry or feed.
 
+   procedure Set_Subtitle
+     (Feed         : in out Atom_Feed;
+      Text_Content : in     String;
+      Base_URI     : in     String := None;
+      Language     : in     String := None;
+      Text_Type    : in     Content_Type := Text);
+   --  A Text construct that conveys a human-readable description or subtitle
+   --  for a feed.
+
    procedure Set_Title
      (Feed       : in out Atom_Feed;
       Title      : in     String;
@@ -324,6 +333,7 @@ private
          Links          : Link_List.List;
          Logo           : Atom_Logo;
          Rights         : Atom_Text;
+         Subtitle       : Atom_Text;
          Title          : Atom_Text;
          Updated        : Ada.Calendar.Time;
       end record;

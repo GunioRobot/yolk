@@ -214,6 +214,7 @@ package body Yolk.Syndication is
                    Links          => Link_List.Empty_List,
                    Logo           => Null_Logo,
                    Rights         => Null_Text,
+                   Subtitle       => Null_Text,
                    Title          =>
                      Atom_Text'(Common       =>
                                   Atom_Common'(Base_URI => TUS (Base_URI),
@@ -367,6 +368,30 @@ package body Yolk.Syndication is
                                 Text_Type    => Text_Type);
 
    end Set_Rights;
+
+   --------------------
+   --  Set_Subtitle  --
+   --------------------
+
+   procedure Set_Subtitle
+     (Feed         : in out Atom_Feed;
+      Text_Content : in     String;
+      Base_URI     : in     String := None;
+      Language     : in     String := None;
+      Text_Type    : in     Content_Type := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.Subtitle := Atom_Text'(Common       =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Text_Content => TUS (Text_Content),
+                                  Text_Type    => Text_Type);
+
+   end Set_Subtitle;
 
    -----------------
    --  Set_Title  --
