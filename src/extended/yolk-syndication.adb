@@ -35,124 +35,6 @@ package body Yolk.Syndication is
    --  The uppercase T and Z are requried as per the Atom specification.
    --  It is expected that the Time_Stamp is GMT.
 
-   ------------------
-   --  Add_Author  --
-   ------------------
-
-   procedure Add_Author
-     (Feed     : in out Atom_Feed;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Authors.Append
-        (Atom_Person'(Common  =>
-                        Atom_Common'(Base_URI => TUS (Base_URI),
-                                     Language => TUS (Language)),
-                      Email   => TUS (Email),
-                      Name    => TUS (Name),
-                      URI     => TUS (URI)));
-
-   end Add_Author;
-
-   --------------------
-   --  Add_Category  --
-   --------------------
-
-   procedure Add_Category
-     (Feed     : in out Atom_Feed;
-      Term     : in     String;
-      Base_URI : in     String := None;
-      Content  : in     String := None;
-      Label    : in     String := None;
-      Language : in     String := None;
-      Scheme   : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Categories.Append
-        (Atom_Category'(Common   =>
-                          Atom_Common'(Base_URI => TUS (Base_URI),
-                                       Language => TUS (Language)),
-                        Content  => TUS (Content),
-                        Label    => TUS (Label),
-                        Scheme   => TUS (Scheme),
-                        Term     => TUS (Term)));
-
-   end Add_Category;
-
-   -----------------------
-   --  Add_Contributor  --
-   -----------------------
-
-   procedure Add_Contributor
-     (Feed     : in out Atom_Feed;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Contributors.Append
-        (Atom_Person'(Common  =>
-                        Atom_Common'(Base_URI => TUS (Base_URI),
-                                     Language => TUS (Language)),
-                      Email   => TUS (Email),
-                      Name    => TUS (Name),
-                      URI     => TUS (URI)));
-
-   end Add_Contributor;
-
-   ----------------
-   --  Add_Link  --
-   ----------------
-
-   procedure Add_Link
-     (Feed        : in out Atom_Feed;
-      Href        : in     String;
-      Base_URI    : in     String := None;
-      Content     : in     String := None;
-      Hreflang    : in     String := None;
-      Language    : in     String := None;
-      Length      : in     Natural := 0;
-      Mime_Type   : in     String := None;
-      Rel         : in     Relation_Type := Alternate;
-      Title       : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Links.Append
-        (Atom_Link'(Common =>
-                      Atom_Common'(Base_URI => TUS (Base_URI),
-                                   Language => TUS (Language)),
-                    Content   => TUS (Content),
-                    Href      => TUS (Href),
-                    Hreflang  => TUS (Hreflang),
-                    Length    => Length,
-                    Mime_Type => TUS (Mime_Type),
-                    Rel       => Rel,
-                    Title     => TUS (Title)));
-
-   end Add_Link;
-
    -----------------------
    --  Atom_Date_Image  --
    -----------------------
@@ -178,6 +60,346 @@ package body Yolk.Syndication is
 
    end Atom_Date_Image;
 
+   -----------------
+   --  Atom_Feed  --
+   -----------------
+
+   protected body Atom_Feed is
+
+      ------------------
+      --  Add_Author  --
+      ------------------
+
+      procedure Add_Author
+        (Name     : in String;
+         Base_URI : in String := None;
+         Email    : in String := None;
+         Language : in String := None;
+         URI      : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Authors.Append
+           (Atom_Person'(Common  =>
+                           Atom_Common'(Base_URI => TUS (Base_URI),
+                                        Language => TUS (Language)),
+                         Email   => TUS (Email),
+                         Name    => TUS (Name),
+                         URI     => TUS (URI)));
+
+      end Add_Author;
+
+      --------------------
+      --  Add_Category  --
+      --------------------
+
+      procedure Add_Category
+        (Term     : in String;
+         Base_URI : in String := None;
+         Content  : in String := None;
+         Label    : in String := None;
+         Language : in String := None;
+         Scheme   : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Categories.Append
+           (Atom_Category'(Common   =>
+                             Atom_Common'(Base_URI => TUS (Base_URI),
+                                          Language => TUS (Language)),
+                           Content  => TUS (Content),
+                           Label    => TUS (Label),
+                           Scheme   => TUS (Scheme),
+                           Term     => TUS (Term)));
+
+      end Add_Category;
+
+      -----------------------
+      --  Add_Contributor  --
+      -----------------------
+
+      procedure Add_Contributor
+        (Name     : in String;
+         Base_URI : in String := None;
+         Email    : in String := None;
+         Language : in String := None;
+         URI      : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Contributors.Append
+           (Atom_Person'(Common  =>
+                           Atom_Common'(Base_URI => TUS (Base_URI),
+                                        Language => TUS (Language)),
+                         Email   => TUS (Email),
+                         Name    => TUS (Name),
+                         URI     => TUS (URI)));
+
+      end Add_Contributor;
+
+      ----------------
+      --  Add_Link  --
+      ----------------
+
+      procedure Add_Link
+        (Href        : in String;
+         Base_URI    : in String := None;
+         Content     : in String := None;
+         Hreflang    : in String := None;
+         Language    : in String := None;
+         Length      : in Natural := 0;
+         Mime_Type   : in String := None;
+         Rel         : in Relation_Kind := Alternate;
+         Title       : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Links.Append
+           (Atom_Link'(Common =>
+                         Atom_Common'(Base_URI => TUS (Base_URI),
+                                      Language => TUS (Language)),
+                       Content   => TUS (Content),
+                       Href      => TUS (Href),
+                       Hreflang  => TUS (Hreflang),
+                       Length    => Length,
+                       Mime_Type => TUS (Mime_Type),
+                       Rel       => Rel,
+                       Title     => TUS (Title)));
+
+      end Add_Link;
+
+      --------------------
+      --  Set_Base_URI  --
+      --------------------
+
+      procedure Set_Base_URI
+        (Value : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Common.Base_URI := TUS (Value);
+
+      end Set_Base_URI;
+
+      ------------------
+      --  Set_Common  --
+      ------------------
+
+      procedure Set_Common
+        (Base_URI : in String := None;
+         Language : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Common.Base_URI := TUS (Base_URI);
+         Common.Language := TUS (Language);
+
+      end Set_Common;
+
+      ---------------------
+      --  Set_Generator  --
+      ---------------------
+
+      procedure Set_Generator
+        (Agent  : in String;
+         Base_URI : in String := None;
+         Language : in String := None;
+         URI      : in String := None;
+         Version  : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Generator :=
+           Atom_Generator'(Agent   => TUS (Agent),
+                           Common  => Atom_Common'(Base_URI => TUS (Base_URI),
+                                                   Language => TUS (Language)),
+                           URI     => TUS (URI),
+                           Version => TUS (Version));
+      end Set_Generator;
+
+      ----------------
+      --  Set_Icon  --
+      ----------------
+
+      procedure Set_Icon
+        (URI      : in String;
+         Base_URI : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Icon :=
+           Atom_Icon'(Common   =>
+                        Atom_Common'(Base_URI => TUS (Base_URI),
+                                     Language => Null_Unbounded_String),
+                      URI      => TUS (URI));
+
+      end Set_Icon;
+
+      --------------
+      --  Set_Id  --
+      --------------
+
+      procedure Set_Id
+        (Value : in String)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Id := Atom_Id'(Id => TUS (Value));
+
+      end Set_Id;
+
+      --------------------
+      --  Set_Language  --
+      --------------------
+
+      procedure Set_Language
+        (Value : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Common.Language := TUS (Value);
+
+      end Set_Language;
+
+      ----------------
+      --  Set_Logo  --
+      ----------------
+
+      procedure Set_Logo
+        (URI      : in String;
+         Base_URI : in String := None;
+         Language : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Logo := Atom_Logo'(Common =>
+                              Atom_Common'(Base_URI => TUS (Base_URI),
+                                           Language => TUS (Language)),
+                            URI    => TUS (URI));
+
+      end Set_Logo;
+
+      ------------------
+      --  Set_Rights  --
+      ------------------
+
+      procedure Set_Rights
+        (Content  : in String;
+         Base_URI : in String := None;
+         Kind     : in Content_Kind := Text;
+         Language : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Rights := Atom_Text'(Common       =>
+                                Atom_Common'(Base_URI => TUS (Base_URI),
+                                             Language => TUS (Language)),
+                              Text_Content => TUS (Content),
+                              Text_Type    => Kind);
+
+      end Set_Rights;
+
+      --------------------
+      --  Set_Subtitle  --
+      --------------------
+
+      procedure Set_Subtitle
+        (Content  : in String;
+         Base_URI : in String := None;
+         Kind     : in Content_Kind := Text;
+         Language : in String := None)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Subtitle := Atom_Text'(Common       =>
+                                  Atom_Common'(Base_URI => TUS (Base_URI),
+                                               Language => TUS (Language)),
+                                Text_Content => TUS (Content),
+                                Text_Type    => Kind);
+
+      end Set_Subtitle;
+
+      -----------------
+      --  Set_Title  --
+      -----------------
+
+      procedure Set_Title
+        (Value : in String;
+         Kind  : in Content_Kind := Text)
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Title :=
+           Atom_Text'(Common       =>
+                        Atom_Common'(Base_URI => Title.Common.Base_URI,
+                                     Language => Title.Common.Language),
+                      Text_Content => TUS (Value),
+                      Text_Type    => Kind);
+
+      end Set_Title;
+
+      -------------------
+      --  Set_Updated  --
+      -------------------
+
+      procedure Set_Updated_Time
+        (Value : in Ada.Calendar.Time)
+      is
+
+         use Ada.Calendar;
+
+      begin
+
+         if Value > Updated then
+            Updated := Value;
+         end if;
+
+      end Set_Updated_Time;
+
+   end Atom_Feed;
+
    ------------------
    --  Initialize  --
    ------------------
@@ -187,7 +409,7 @@ package body Yolk.Syndication is
       Title          : in String;
       Base_URI       : in String := None;
       Language       : in String := None;
-      Title_Type     : in Content_Type := Text)
+      Title_Kind     : in Content_Kind := Text)
       return Atom_Feed
    is
 
@@ -201,233 +423,14 @@ package body Yolk.Syndication is
       Put_Line (Title);
       Put_Line (Atom_Date_Image (Clock));
 
-      return
-        Atom_Feed'(Authors        => Person_List.Empty_List,
-                   Categories     => Category_List.Empty_List,
-                   Common         =>
-                     Atom_Common'(Base_URI => TUS (Base_URI),
-                                  Language => TUS (Language)),
-                   Contributors   => Person_List.Empty_List,
-                   Generator      => Null_Generator,
-                   Icon           => Null_Icon,
-                   Id             => Atom_Id'(Id => TUS (Id)),
-                   Links          => Link_List.Empty_List,
-                   Logo           => Null_Logo,
-                   Rights         => Null_Text,
-                   Subtitle       => Null_Text,
-                   Title          =>
-                     Atom_Text'(Common       =>
-                                  Atom_Common'(Base_URI => TUS (Base_URI),
-                                               Language => TUS (Language)),
-                                Text_Content => TUS (Title),
-                                Text_Type    => Title_Type),
-                   Updated        => Clock);
+      return Feed : Atom_Feed do
+         Feed.Set_Id (Value => Id);
+         Feed.Set_Title (Value => Title,
+                         Kind  => Title_Kind);
+         Feed.Set_Common (Base_URI => Base_URI,
+                          Language => Language);
+      end return;
 
    end Initialize;
-
-   --------------------
-   --  Set_Base_URI  --
-   --------------------
-
-   procedure Set_Base_URI
-     (Feed     : in out Atom_Feed;
-      Base_URI : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Common.Base_URI := TUS (Base_URI);
-
-   end Set_Base_URI;
-
-   ---------------------
-   --  Set_Generator  --
-   ---------------------
-
-   procedure Set_Generator
-     (Feed     : in out Atom_Feed;
-      Agent    : in     String;
-      Base_URI : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None;
-      Version  : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Generator :=
-        Atom_Generator'(Agent    => TUS (Agent),
-                        Common   => Atom_Common'(Base_URI => TUS (Base_URI),
-                                                 Language => TUS (Language)),
-                        URI      => TUS (URI),
-                        Version  => TUS (Version));
-   end Set_Generator;
-
-   ----------------
-   --  Set_Icon  --
-   ----------------
-
-   procedure Set_Icon
-     (Feed     : in out Atom_Feed;
-      URI      : in     String;
-      Base_URI : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Icon :=
-        Atom_Icon'(Common   =>
-                     Atom_Common'(Base_URI => TUS (Base_URI),
-                                  Language => Null_Unbounded_String),
-                   URI      => TUS (URI));
-
-   end Set_Icon;
-
-   --------------
-   --  Set_Id  --
-   --------------
-
-   procedure Set_Id
-     (Feed  : in out Atom_Feed;
-      Id    : in     String)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Id := Atom_Id'(Id => TUS (Id));
-
-   end Set_Id;
-
-   --------------------
-   --  Set_Language  --
-   --------------------
-
-   procedure Set_Language
-     (Feed     : in out Atom_Feed;
-      Language : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Common.Language := TUS (Language);
-
-   end Set_Language;
-
-   ----------------
-   --  Set_Logo  --
-   ----------------
-
-   procedure Set_Logo
-     (Feed     : in out Atom_Feed;
-      URI      : in     String;
-      Base_URI : in     String := None;
-      Language : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Logo := Atom_Logo'(Common =>
-                                Atom_Common'(Base_URI => TUS (Base_URI),
-                                             Language => TUS (Language)),
-                              URI    => TUS (URI));
-
-   end Set_Logo;
-
-   ------------------
-   --  Set_Rights  --
-   ------------------
-
-   procedure Set_Rights
-     (Feed           : in out Atom_Feed;
-      Text_Content   : in     String;
-      Base_URI       : in     String := None;
-      Language       : in     String := None;
-      Text_Type      : in     Content_Type := Text)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Rights := Atom_Text'(Common       =>
-                                  Atom_Common'(Base_URI => TUS (Base_URI),
-                                               Language => TUS (Language)),
-                                Text_Content => TUS (Text_Content),
-                                Text_Type    => Text_Type);
-
-   end Set_Rights;
-
-   --------------------
-   --  Set_Subtitle  --
-   --------------------
-
-   procedure Set_Subtitle
-     (Feed         : in out Atom_Feed;
-      Text_Content : in     String;
-      Base_URI     : in     String := None;
-      Language     : in     String := None;
-      Text_Type    : in     Content_Type := Text)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Subtitle := Atom_Text'(Common       =>
-                                    Atom_Common'(Base_URI => TUS (Base_URI),
-                                                 Language => TUS (Language)),
-                                  Text_Content => TUS (Text_Content),
-                                  Text_Type    => Text_Type);
-
-   end Set_Subtitle;
-
-   -----------------
-   --  Set_Title  --
-   -----------------
-
-   procedure Set_Title
-     (Feed       : in out Atom_Feed;
-      Title      : in     String;
-      Title_Type : in     Content_Type := Text)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Feed.Title :=
-        Atom_Text'(Common       =>
-                     Atom_Common'(Base_URI => Feed.Title.Common.Base_URI,
-                                  Language => Feed.Title.Common.Language),
-                   Text_Content => TUS (Title),
-                   Text_Type    => Title_Type);
-
-   end Set_Title;
-
-   -------------------
-   --  Set_Updated  --
-   -------------------
-
-   procedure Set_Updated
-     (Feed    : in out Atom_Feed;
-      Updated : in     Ada.Calendar.Time)
-   is
-   begin
-
-      Feed.Updated := Updated;
-
-   end Set_Updated;
 
 end Yolk.Syndication;

@@ -21,16 +21,16 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Calendar;
-with Ada.Containers.Doubly_Linked_Lists;
-with Ada.Strings.Unbounded;
+private with Ada.Calendar;
+private with Ada.Containers.Doubly_Linked_Lists;
+private with Ada.Strings.Unbounded;
 
 package Yolk.Syndication is
 
-   type Atom_Feed is private;
+   type Atom_Feed is limited private;
    --  An Atom feed object.
 
-   type Content_Type is (Text, Html, Xhtml);
+   type Content_Kind is (Text, Html, Xhtml);
    --  This type is common for a lot of Atom feed XML elements. It identifies
    --  the kind of data found in the element.
    --  Text:
@@ -52,89 +52,43 @@ package Yolk.Syndication is
    --    versions of characters such as "&" and ">" represent those characters,
    --    not markup.
 
-   type Relation_Type is (Alternate, Related, Self, Enclosure, Via);
+   type Relation_Kind is (Alternate, Related, Self, Enclosure, Via);
    --  There are five values for the Registry of Link Relations:
    --
-   --    The value Alternate signifies that the IRI in the value of the href
-   --    attribute identifies an alternate version of the resource described by
-   --    the containing element.
-   --
-   --    The value Related signifies that the IRI in the value of the href
-   --    attribute identifies a resource related to the resource described by
-   --    the containing element. For example, the feed for a site that
-   --    discusses the performance of the search engine at
-   --    "http://search.example.com" might contain, as a child of atom : feed :
-   --    <link rel="related" href="http://search.example.com/"/>
-   --    An identical link might appear as a child of any atom:entry whose
-   --    content contains a discussion of that same search engine.
-   --
-   --    The value Self signifies that the IRI in the value of the href
-   --    attribute identifies a resource equivalent to the containing element.
-   --
-   --    The value Enclosure signifies that the IRI in the value of the href
-   --    attribute identifies a related resource that is potentially large in
-   --    size and might require special handling. For atom : link elements with
-   --    rel = "enclosure", the length attribute SHOULD be provided.
-   --
-   --    The value Via signifies that the IRI in the value of the href
-   --    attribute identifies a resource that is the source of the information
-   --    provided in the containing element.
+   --    Alternate:
+   --       Signifies that the IRI in the value of the href attribute
+   --       identifies an alternate version of the resource described by the
+   --       containing element.
+   --    Related:
+   --       Signifies that the IRI in the value of the href attribute
+   --       identifies a resource related to the resource described by the
+   --       containing element. For example, the feed for a site that
+   --       discusses the performance of the search engine at
+   --       "http://search.example.com" might contain, as a child of atom :
+   --       feed : <link rel="related" href="http://search.example.com/"/>
+   --       An identical link might appear as a child of any atom:entry whose
+   --       content contains a discussion of that same search engine.
+   --    Self:
+   --       Signifies that the IRI in the value of the href attribute
+   --       identifies a resource equivalent to the containing element.
+   --    Enclosure:
+   --       Signifies that the IRI in the value of the href attribute
+   --       identifies a related resource that is potentially large in size and
+   --       might require special handling. For atom : link elements with
+   --       rel = "enclosure", the length attribute SHOULD be provided.
+   --    Via:
+   --       Signifies that the IRI in the value of the href attribute
+   --       identifies a resource that is the source of the information
+   --       provided in the containing element.
 
    None : constant String := "";
 
-   procedure Add_Author
-     (Feed     : in out Atom_Feed;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None);
-   --  Add an author child element to the Atom top-level feed element.
-
-   procedure Add_Category
-     (Feed     : in out Atom_Feed;
-      Term     : in     String;
-      Base_URI : in     String := None;
-      Content  : in     String := None;
-      Label    : in     String := None;
-      Language : in     String := None;
-      Scheme   : in     String := None);
-   --  Add a category to the Atom top-level feed element. Note that the Content
-   --  parameter is assigned no meaning by RFC4287, so in most cases it should
-   --  probably be left empty.
-
-   procedure Add_Contributor
-     (Feed     : in out Atom_Feed;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None);
-   --  Add a contributor child element to the Atom top-level feed element.
-
-   procedure Add_Link
-     (Feed        : in out Atom_Feed;
-      Href        : in     String;
-      Base_URI    : in     String := None;
-      Content     : in     String := None;
-      Hreflang    : in     String := None;
-      Language    : in     String := None;
-      Length      : in     Natural := 0;
-      Mime_Type   : in     String := None;
-      Rel         : in     Relation_Type := Alternate;
-      Title       : in     String := None);
-   --  Add an atom:link element.
-   --  Defines a reference from an entry or feed to a Web resource. This
-   --  specification assigns no meaning to the content (if any) of this
-   --  element.
-   --  See comment for Relation_Type for info on the Rel parameter.
-
    function Initialize
-     (Id             : in String;
-      Title          : in String;
-      Base_URI       : in String := None;
-      Language       : in String := None;
-      Title_Type     : in Content_Type := Text)
+     (Id          : in String;
+      Title       : in String;
+      Base_URI    : in String := None;
+      Language    : in String := None;
+      Title_Kind  : in Content_Kind := Text)
       return Atom_Feed;
    --  Initialize an Atom object with the _required data_, as per the Atom
    --  specification RFC4287:
@@ -150,80 +104,8 @@ package Yolk.Syndication is
    --    descendents.
    --  Title:
    --    A human-readable title for the feed.
-   --  Title_Type:
+   --  Title_Kind:
    --    The title kind. See Content_Type.
-
-   procedure Set_Base_URI
-     (Feed     : in out Atom_Feed;
-      Base_URI : in     String := None);
-   --  Set the Base_URI for the feed.
-
-   procedure Set_Generator
-     (Feed     : in out Atom_Feed;
-      Agent    : in     String;
-      Base_URI : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None;
-      Version  : in     String := None);
-   --  Set the child generator element of the Atom top-level feed element.
-   --  The Agent parameter is text, so markup is escaped.
-
-   procedure Set_Icon
-     (Feed     : in out Atom_Feed;
-      URI      : in     String;
-      Base_URI : in     String := None);
-   --  Set the icon URI for the feed. Should reference a 1 to 1 ratio graphic
-   --  that is suitable for presentation at a small size.
-
-   procedure Set_Id
-     (Feed     : in out Atom_Feed;
-      Id       : in     String);
-   --  Set the atom:id element.
-
-   procedure Set_Language
-     (Feed     : in out Atom_Feed;
-      Language : in     String := None);
-   --  Set the language for the feed.
-
-   procedure Set_Logo
-     (Feed     : in out Atom_Feed;
-      URI      : in     String;
-      Base_URI : in     String := None;
-      Language : in     String := None);
-   --  A reference [RFC3987] that identifies an image that provides visual
-   --  identification for a feed. The image SHOULD have an aspect ratio of 2
-   --  (horizontal) to 1 (vertical).
-
-   procedure Set_Rights
-     (Feed           : in out Atom_Feed;
-      Text_Content   : in     String;
-      Base_URI       : in     String := None;
-      Language       : in     String := None;
-      Text_Type      : in     Content_Type := Text);
-   --  A Text construct that conveys information about rights held in and over
-   --  an entry or feed.
-
-   procedure Set_Subtitle
-     (Feed         : in out Atom_Feed;
-      Text_Content : in     String;
-      Base_URI     : in     String := None;
-      Language     : in     String := None;
-      Text_Type    : in     Content_Type := Text);
-   --  A Text construct that conveys a human-readable description or subtitle
-   --  for a feed.
-
-   procedure Set_Title
-     (Feed       : in out Atom_Feed;
-      Title      : in     String;
-      Title_Type : in     Content_Type := Text);
-   --  Set the child title element of the Atom top-level feed element.
-
-   procedure Set_Updated
-     (Feed    : in out Atom_Feed;
-      Updated : in     Ada.Calendar.Time);
-   --  Set the child updated element of the Atom top-level feed element. It is
-   --  generally not necessary to call this manually, as it happens automatic-
-   --  ally whenever an entry element is added/delete/edited.
 
 private
 
@@ -285,7 +167,7 @@ private
          Hreflang    : Unbounded_String;
          Length      : Natural;
          Mime_Type   : Unbounded_String;
-         Rel         : Relation_Type;
+         Rel         : Relation_Kind;
          Title       : Unbounded_String;
       end record;
 
@@ -295,8 +177,8 @@ private
          URI      : Unbounded_String;
       end record;
 
-      Null_Logo : constant Atom_Logo := (Common => Null_Common,
-                                         URI    => Null_Unbounded_String);
+   Null_Logo : constant Atom_Logo := (Common => Null_Common,
+                                      URI    => Null_Unbounded_String);
 
    type Atom_Person is
       record
@@ -310,7 +192,7 @@ private
       record
          Common         : Atom_Common;
          Text_Content   : Unbounded_String;
-         Text_Type      : Content_Type := Text;
+         Text_Type      : Content_Kind := Text;
       end record;
 
    Null_Text : constant Atom_Text := (Common       => Null_Common,
@@ -321,21 +203,167 @@ private
    package Link_List is new Doubly_Linked_Lists (Atom_Link);
    package Person_List is new Doubly_Linked_Lists (Atom_Person);
 
-   type Atom_Feed is
-      record
-         Authors        : Person_List.List;
-         Categories     : Category_List.List;
-         Common         : Atom_Common;
-         Contributors   : Person_List.List;
-         Generator      : Atom_Generator;
-         Icon           : Atom_Icon;
-         Id             : Atom_Id;
-         Links          : Link_List.List;
-         Logo           : Atom_Logo;
-         Rights         : Atom_Text;
-         Subtitle       : Atom_Text;
-         Title          : Atom_Text;
-         Updated        : Ada.Calendar.Time;
-      end record;
+   protected type Atom_Feed is
+
+      procedure Add_Author
+        (Name     : in String;
+         Base_URI : in String := None;
+         Email    : in String := None;
+         Language : in String := None;
+         URI      : in String := None);
+      --  Add an author child element to the Atom top-level feed element. In an
+      --  Atom Feed Document, the Author elements of the containing atom : feed
+      --  element are considered to apply to the entry if there are no atom :
+      --  author elements in entry elements.
+      --
+      --  Name:
+      --    conveys a human - readable name for the person. The content of
+      --    Name is language sensitive.
+      --  Email:
+      --    conveys an e - mail address associated with the person.
+      --  URI:
+      --    conveys an IRI associated with the person.
+
+      procedure Add_Category
+        (Term     : in String;
+         Base_URI : in String := None;
+         Content  : in String := None;
+         Label    : in String := None;
+         Language : in String := None;
+         Scheme   : in String := None);
+      --  Add a category to the Atom top-level feed element.
+      --
+      --  Term is a string that identifies the category to which the entry or
+      --  feed belongs. Category elements MUST have a "term" attribute.
+      --
+      --  Note that the Content parameter is assigned no meaning by RFC4287, so
+      --  in most cases it should probably be left empty.
+      --
+      --  Label provides a human-readable label for display in end-user
+      --  applications. The content of the Label is language sensitive.
+      --  Entities such as "&amp;" and "&lt;" represent their corresponding
+      --  characters ("&" and "<", respectively), not markup.
+      --
+      --  Scheme is an IRI that identifies a categorization scheme.
+
+      procedure Add_Contributor
+        (Name     : in String;
+         Base_URI : in String := None;
+         Email    : in String := None;
+         Language : in String := None;
+         URI      : in String := None);
+      --  Add a contributor child element to the Atom top-level feed element.
+      --
+      --  Name conveys a human-readable name for the person. The content of
+      --  Name is language sensitive.
+      --
+      --  Email conveys an e-mail address associated with the person.
+      --
+      --  URI conveys an IRI associated with the person.
+
+      procedure Add_Link
+        (Href        : in String;
+         Base_URI    : in String := None;
+         Content     : in String := None;
+         Hreflang    : in String := None;
+         Language    : in String := None;
+         Length      : in Natural := 0;
+         Mime_Type   : in String := None;
+         Rel         : in Relation_Kind := Alternate;
+         Title       : in String := None);
+      --  Add an atom:link element.
+      --  Defines a reference from an entry or feed to a Web resource. This
+      --  specification assigns no meaning to the Content (if any) of this
+      --  element.
+      --  See comment for Relation_Type for info on the Rel parameter.
+      --
+      --  Href contains the link's IRI.
+      --
+      procedure Set_Base_URI
+        (Value : in String := None);
+      --  Set the Base_URI for the feed.
+
+      procedure Set_Common
+        (Base_URI : in String := None;
+         Language : in String := None);
+      --  The attributes base and lang are common to all the elements defined
+      --  in RFC4287. Whether or not they are significant in a given context
+      --  depends entirely on the spec.
+
+      procedure Set_Generator
+        (Agent    : in String;
+         Base_URI : in String := None;
+         Language : in String := None;
+         URI      : in String := None;
+         Version  : in String := None);
+      --  Set the child generator element of the Atom top-level feed element.
+      --  The Agent parameter is text, so markup is escaped.
+
+      procedure Set_Icon
+        (URI      : in String;
+         Base_URI : in String := None);
+      --  Set the icon URI for the feed. Should reference a 1 to 1 ratio
+      --  graphic that is suitable for presentation at a small size.
+
+      procedure Set_Id
+        (Value : in String);
+      --  Set the atom:id element.
+
+      procedure Set_Language
+        (Value : in String := None);
+      --  Set the language for the feed.
+
+      procedure Set_Logo
+        (URI      : in String;
+         Base_URI : in String := None;
+         Language : in String := None);
+      --  A reference [RFC3987] that identifies an image that provides visual
+      --  identification for a feed. The image SHOULD have an aspect ratio of 2
+      --  (horizontal) to 1 (vertical).
+
+      procedure Set_Rights
+        (Content  : in String;
+         Base_URI : in String := None;
+         Kind     : in Content_Kind := Text;
+         Language : in String := None);
+      --  A Text construct that conveys information about rights held in and
+      --  over an entry or feed.
+
+      procedure Set_Subtitle
+        (Content  : in String;
+         Base_URI : in String := None;
+         Kind     : in Content_Kind := Text;
+         Language : in String := None);
+      --  A Text construct that conveys a human-readable description or
+      --  subtitle for a feed.
+
+      procedure Set_Title
+        (Value : in String;
+         Kind  : in Content_Kind := Text);
+      --  Set the child title element of the Atom top-level feed element.
+
+      procedure Set_Updated_Time
+        (Value : in Ada.Calendar.Time);
+      --  Set the child updated element of the Atom top-level feed element. It
+      --  is generally not necessary to call this manually, as it happens
+      --  automatically whenever an entry element is added/delete/edited.
+
+   private
+
+      Authors        : Person_List.List;
+      Categories     : Category_List.List;
+      Common         : Atom_Common;
+      Contributors   : Person_List.List;
+      Generator      : Atom_Generator;
+      Icon           : Atom_Icon;
+      Id             : Atom_Id;
+      Links          : Link_List.List;
+      Logo           : Atom_Logo;
+      Rights         : Atom_Text;
+      Subtitle       : Atom_Text;
+      Title          : Atom_Text;
+      Updated        : Ada.Calendar.Time;
+
+   end Atom_Feed;
 
 end Yolk.Syndication;
