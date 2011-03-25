@@ -180,21 +180,20 @@ package body Yolk.Syndication is
 
       end Add_Link;
 
-      --------------------
-      --  Set_Base_URI  --
-      --------------------
+      ------------------
+      --  Get_String  --
+      ------------------
 
-      procedure Set_Base_URI
-        (Value : in String := None)
+      function Get_String return String
       is
 
          use Yolk.Utilities;
 
       begin
 
-         Common.Base_URI := TUS (Value);
+         return TS (Atom_String);
 
-      end Set_Base_URI;
+      end Get_String;
 
       ------------------
       --  Set_Common  --
@@ -213,6 +212,22 @@ package body Yolk.Syndication is
          Common.Language := TUS (Language);
 
       end Set_Common;
+
+      --------------------
+      --  Set_Encoding  --
+      --------------------
+
+      procedure Set_Encoding
+        (Value : in String := "utf-8")
+      is
+
+         use Yolk.Utilities;
+
+      begin
+
+         Encoding := TUS (Value);
+
+      end Set_Encoding;
 
       ---------------------
       --  Set_Generator  --
@@ -274,22 +289,6 @@ package body Yolk.Syndication is
          Id := Atom_Id'(Id => TUS (Value));
 
       end Set_Id;
-
-      --------------------
-      --  Set_Language  --
-      --------------------
-
-      procedure Set_Language
-        (Value : in String := None)
-      is
-
-         use Yolk.Utilities;
-
-      begin
-
-         Common.Language := TUS (Value);
-
-      end Set_Language;
 
       ----------------
       --  Set_Logo  --
@@ -408,6 +407,7 @@ package body Yolk.Syndication is
      (Id             : in String;
       Title          : in String;
       Base_URI       : in String := None;
+      Encoding       : in String := "utf-8";
       Language       : in String := None;
       Title_Kind     : in Content_Kind := Text)
       return Atom_Feed
@@ -424,6 +424,7 @@ package body Yolk.Syndication is
       Put_Line (Atom_Date_Image (Clock));
 
       return Feed : Atom_Feed do
+         Feed.Set_Encoding (Value => Encoding);
          Feed.Set_Id (Value => Id);
          Feed.Set_Title (Value => Title,
                          Kind  => Title_Kind);

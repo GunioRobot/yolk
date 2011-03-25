@@ -87,6 +87,7 @@ package Yolk.Syndication is
      (Id          : in String;
       Title       : in String;
       Base_URI    : in String := None;
+      Encoding    : in String := "utf-8";
       Language    : in String := None;
       Title_Kind  : in Content_Kind := Text)
       return Atom_Feed;
@@ -97,6 +98,10 @@ package Yolk.Syndication is
    --  Base_URI:
    --    Establishes base URI for resolving relative references in the feed.
    --    Is overruled by Base_URI parameters for individual feed entries.
+   --  Encoding:
+   --    The encoding attribute of the root XML element. This package does not
+   --    do any kind of encoding/decoding, so make sure that the data you put
+   --    in match the encoding given here.
    --  Id:
    --    A permanent, universally unique identifier for the feed.
    --  Language:
@@ -231,20 +236,20 @@ private
          Label    : in String := None;
          Language : in String := None;
          Scheme   : in String := None);
-      --  Add a category to the Atom top-level feed element.
+      --  Add a category to the Atom top-level feed element. Note that the
+      --  Content parameter is assigned no meaning by RFC4287, so in most cases
+      --  it should probably be left empty.
       --
-      --  Term is a string that identifies the category to which the entry or
-      --  feed belongs. Category elements MUST have a "term" attribute.
-      --
-      --  Note that the Content parameter is assigned no meaning by RFC4287, so
-      --  in most cases it should probably be left empty.
-      --
-      --  Label provides a human-readable label for display in end-user
-      --  applications. The content of the Label is language sensitive.
-      --  Entities such as "&amp;" and "&lt;" represent their corresponding
-      --  characters ("&" and "<", respectively), not markup.
-      --
-      --  Scheme is an IRI that identifies a categorization scheme.
+      --  Term:
+      --    A string that identifies the category to which the entry or feed
+      --    belongs.
+      --  Label:
+      --    Provides a human - readable label for display in end-user
+      --    applications. The content of the Label is language sensitive.
+      --    Entities such as "&amp;" and "&lt;" represent their corresponding
+      --    characters ("&" and "<", respectively), not markup.
+      --  Scheme:
+      --    An IRI that identifies a categorization scheme.
 
       procedure Add_Contributor
         (Name     : in String;
@@ -254,12 +259,13 @@ private
          URI      : in String := None);
       --  Add a contributor child element to the Atom top-level feed element.
       --
-      --  Name conveys a human-readable name for the person. The content of
-      --  Name is language sensitive.
-      --
-      --  Email conveys an e-mail address associated with the person.
-      --
-      --  URI conveys an IRI associated with the person.
+      --  Name:
+      --    Conveys a human - readable name for the person. The content of Name
+      --    is language sensitive.
+      --  Email:
+      --    Conveys an e - mail address associated with the person.
+      --  URI:
+      --    Conveys an IRI associated with the person.
 
       procedure Add_Link
         (Href        : in String;
@@ -277,11 +283,31 @@ private
       --  element.
       --  See comment for Relation_Type for info on the Rel parameter.
       --
-      --  Href contains the link's IRI.
-      --
-      procedure Set_Base_URI
-        (Value : in String := None);
-      --  Set the Base_URI for the feed.
+      --  Href:
+      --    Contains the link's IRI.
+      --  Hreflang:
+      --    The Hreflang content describes the language of the resource pointed
+      --    to by Href. When used together with the Rel = Alternate, it implies
+      --    a translated version of the feed.
+      --  Length:
+      --    Indicates an advisory length of the linked content in octets; it is
+      --    a hint about the content length of the representation returned when
+      --    the IRI in Href is mapped to a URI and dereferenced. Note that the
+      --    length attribute does not override the actual content length of the
+      --    representation as reported by the underlying protocol
+      --  Mime_Type:
+      --    On the link element, the Mime_Type value is an advisory media type:
+      --    it is a hint about the type of the representation that is expected
+      --    to be returned when the value of Href is dereferenced. Note that
+      --    the type attribute does not override the actual media type returned
+      --    with the representation.
+      --  Rel:
+      --    Indicates the link relation type.
+      --  Title:
+      --    Conveys human-readable information about the link. The content of
+      --    the Title is language sensitive. Entities such as "&amp;" and
+      --    "&lt;" represent their corresponding characters ("&" and "<"), not
+      --    markup.
 
       procedure Set_Common
         (Base_URI : in String := None;
@@ -289,6 +315,22 @@ private
       --  The attributes base and lang are common to all the elements defined
       --  in RFC4287. Whether or not they are significant in a given context
       --  depends entirely on the spec.
+      --
+      --  Base_URI:
+      --    Establishe the base URI (or IRI) for resolving any relative
+      --    references found within the effective scope of the xml:base
+      --    attribute.
+      --  Language:
+      --    Indicates the natural language for the feed and its descendents.
+      --    The language context is only significant for elements and
+      --    attributes declared to be "language sensitive".
+
+      procedure Set_Encoding
+        (Value : in String := "utf-8");
+      --  Value:
+      --    The encoding attribute of the root XML element. This package does
+      --    not do any kind of encoding/decoding, so make sure that the data
+      --    you put in match the encoding given here.
 
       procedure Set_Generator
         (Agent    : in String;
@@ -298,6 +340,13 @@ private
          Version  : in String := None);
       --  Set the child generator element of the Atom top-level feed element.
       --  The Agent parameter is text, so markup is escaped.
+      --
+      --  Agent:
+      --    The agent used to generate the feed.
+      --  URI:
+      --    Should point to a resource relevant to the Agent.
+      --  Version:
+      --    The version of the Agent.
 
       procedure Set_Icon
         (URI      : in String;
@@ -308,10 +357,22 @@ private
       procedure Set_Id
         (Value : in String);
       --  Set the atom:id element.
-
-      procedure Set_Language
-        (Value : in String := None);
-      --  Set the language for the feed.
+      --
+      --  These are some things to consider when providing the feed ID:
+      --    Provide the scheme in lowercase characters.
+      --    Provide the host, if any, in lowercase characters.
+      --    Only perform percent-encoding where it is essential.
+      --    Use uppercase A through F characters when percent-encoding.
+      --    Prevent dot-segments from appearing in paths.
+      --    For schemes that define a default authority, use an empty authority
+      --    if the default is desired.
+      --    For schemes that define an empty path to be equivalent to a path of
+      --    "/", use "/".
+      --    For schemes that define a port, use an empty port if the default is
+      --    desired.
+      --    Preserve empty fragment identifiers and queries.
+      --    Ensure that all components of the IRI are appropriately character
+      --    normalized, e.g., by using NFC or NFKC.
 
       procedure Set_Logo
         (URI      : in String;
@@ -344,24 +405,31 @@ private
 
       procedure Set_Updated_Time
         (Value : in Ada.Calendar.Time);
-      --  Set the child updated element of the Atom top-level feed element. It
-      --  is generally not necessary to call this manually, as it happens
+      --  Indicates the most recent instant in time when an entry or feed was
+      --  modified in a way the publisher considers significant. Therefore, not
+      --  all modifications necessarily result in a changed updated value.
+      --  It is generally not necessary to call this manually, as it happens
       --  automatically whenever an entry element is added/delete/edited.
+
+      function Get_String return String;
+      --  Return the Atom XML string.
 
    private
 
-      Authors        : Person_List.List;
-      Categories     : Category_List.List;
+      Atom_String    : Unbounded_String := Null_Unbounded_String;
+      Authors        : Person_List.List := Person_List.Empty_List;
+      Categories     : Category_List.List := Category_List.Empty_List;
       Common         : Atom_Common;
-      Contributors   : Person_List.List;
-      Generator      : Atom_Generator;
-      Icon           : Atom_Icon;
+      Contributors   : Person_List.List := Person_List.Empty_List;
+      Encoding       : Unbounded_String;
+      Generator      : Atom_Generator := Null_Generator;
+      Icon           : Atom_Icon := Null_Icon;
       Id             : Atom_Id;
-      Links          : Link_List.List;
-      Logo           : Atom_Logo;
-      Rights         : Atom_Text;
-      Subtitle       : Atom_Text;
-      Title          : Atom_Text;
+      Links          : Link_List.List := Link_List.Empty_List;
+      Logo           : Atom_Logo := Null_Logo;
+      Rights         : Atom_Text := Null_Text;
+      Subtitle       : Atom_Text := Null_Text;
+      Title          : Atom_Text := Null_Text;
       Updated        : Ada.Calendar.Time;
 
    end Atom_Feed;
