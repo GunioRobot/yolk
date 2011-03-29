@@ -150,7 +150,7 @@ My usual modus operandi for setting up these 6 things goes something like this:
         Finally run
 
             $ make build
-            $ make build_docs
+            $ make build_doc
             $ make install
 
     5.  Add /usr/gnat/bin to your PATH environment variable.
