@@ -42,6 +42,7 @@ with View.DB_Test;
 with View.Dir;
 with View.Email;
 with View.Index;
+with View.Syndication;
 with Yolk.Not_Found;
 
 package body My_Handlers is
@@ -102,6 +103,11 @@ package body My_Handlers is
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),
          Action     => Create (Callback => View.Index.Generate'Access));
+
+      AWS.Services.Dispatchers.URI.Register
+        (Dispatcher => RH,
+         URI        => My.Config.Get (My.Handler_Syndication),
+         Action     => Create (Callback => View.Syndication.Generate'Access));
 
    end Set;
 

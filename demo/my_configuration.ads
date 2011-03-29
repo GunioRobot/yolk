@@ -52,6 +52,7 @@ package My_Configuration is
                  Handler_Dir,
                  Handler_Email,
                  Handler_Index,
+                 Handler_Syndication,
                  SMTP_Host,
                  SMTP_Port,
                  Template_DB_Test,
@@ -79,6 +80,8 @@ package My_Configuration is
                        => TUS ("/email"),
                        Handler_Index
                        => TUS ("/"),
+                       Handler_Syndication
+                       => TUS ("/syndication"),
                        SMTP_Host
                        => TUS ("localhost"),
                        SMTP_Port

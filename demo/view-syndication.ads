@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  View                                     --
+--                               View.Syndication                                  --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -33,36 +33,18 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-with AWS.Status;
 with AWS.Response;
-with AWS.Templates;
-with My_Configuration;
-with Yolk;
-with Yolk.Connect_To_DB.PostgreSQL;
+with AWS.Status;
+with Yolk.Syndication;
+with Yolk.Syndication.Writer;
 
-package View is
+package View.Syndication is
 
-   use Yolk;
+   Feed : Yolk.Syndication.Writer.Atom_Feed;
 
-   package My renames My_Configuration;
-
-   package My_DB is new Connect_To_DB.PostgreSQL
-     (DB_Credentials            => Connect_To_DB.Set_Credentials
-        (Host     => My.Config.Get (My.DB_Host),
-         Database => My.Config.Get (My.DB_Name),
-         User     => My.Config.Get (My.DB_User),
-         Password => My.Config.Get (My.DB_Password)),
-      Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
-
-   function Build_Response
-     (Status_Data   : in AWS.Status.Data;
-      Template_File : in String;
-      Translations  : in AWS.Templates.Translate_Set)
+   function Generate
+     (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Build the resource response.
-   --  This is a convenience function that gets rid of a few with clauses in
-   --  the files for the View child packages. Also since we need to create the
-   --  AWS.Response.Data object for each and every resource, we might as well
-   --  shorten the call a bit.
+   --  Generate the content for the /syndication resource.
 
-end View;
+end View.Syndication;

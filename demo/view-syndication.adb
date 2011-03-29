@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                                  View                                     --
+--                               View.Syndication                                  --
 --                                                                           --
---                                  SPEC                                     --
+--                                  BODY                                     --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -33,36 +33,46 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
-with AWS.Status;
-with AWS.Response;
-with AWS.Templates;
-with My_Configuration;
-with Yolk;
-with Yolk.Connect_To_DB.PostgreSQL;
+with AWS.Messages;
+with AWS.MIME;
 
-package View is
+package body View.Syndication is
 
-   use Yolk;
+   ---------------
+   --  Generate --
+   ---------------
 
-   package My renames My_Configuration;
+   function Generate
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
+   is
 
-   package My_DB is new Connect_To_DB.PostgreSQL
-     (DB_Credentials            => Connect_To_DB.Set_Credentials
-        (Host     => My.Config.Get (My.DB_Host),
-         Database => My.Config.Get (My.DB_Name),
-         User     => My.Config.Get (My.DB_User),
-         Password => My.Config.Get (My.DB_Password)),
-      Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
+      use AWS.Messages;
+      use AWS.MIME;
+      use AWS.Response;
+      use AWS.Status;
+      use AWS.Templates;
 
-   function Build_Response
-     (Status_Data   : in AWS.Status.Data;
-      Template_File : in String;
-      Translations  : in AWS.Templates.Translate_Set)
-      return AWS.Response.Data;
-   --  Build the resource response.
-   --  This is a convenience function that gets rid of a few with clauses in
-   --  the files for the View child packages. Also since we need to create the
-   --  AWS.Response.Data object for each and every resource, we might as well
-   --  shorten the call a bit.
+      Encoding : Content_Encoding := Identity;
+      --  Default to no encoding.
 
-end View;
+   begin
+
+      --  Feed.Set_Id (Value => URI (Request));
+
+      if Is_Supported (Request, GZip) then
+         Encoding := GZip;
+         --  GZip is supported by the client.
+      end if;
+
+      return Build (Content_Type  => Text_XML,
+                    Message_Body  => Feed.Get_String,
+                    Encoding      => Encoding);
+
+   end Generate;
+
+begin
+
+   Feed.Set_Encoding;
+
+end View.Syndication;
