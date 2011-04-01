@@ -21,14 +21,12 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Calendar;
-with Ada.Containers.Doubly_Linked_Lists;
-with Ada.Strings.Unbounded;
+private with Ada.Calendar;
+private with Ada.Containers.Doubly_Linked_Lists;
+private with Ada.Strings.Unbounded;
+with DOM.Core;
 
 package Yolk.Syndication.Writer is
-
-   use Ada.Containers;
-   use Ada.Strings.Unbounded;
 
    type Content_Kind is (Text, Html, Xhtml);
    --  This type is common for a lot of Atom feed XML elements. It identifies
@@ -81,11 +79,22 @@ package Yolk.Syndication.Writer is
    --       identifies a resource that is the source of the information
    --       provided in the containing element.
 
-   type Atom_Common is
-      record
-         Base_URI : Unbounded_String;
-         Language : Unbounded_String;
-      end record;
+   type Atom_Feed is limited private;
+
+   function Get_XML_DOM
+     (Feed : in Atom_Feed)
+      return DOM.Core.Document;
+   --  Return the Atom XML DOM document.
+
+   function Get_XML_String
+     (Feed : in Atom_Feed)
+      return String;
+   --  Return the Atom XML string.
+
+   procedure Set_Common
+     (Feed     : in out Atom_Feed;
+      Base_URI : in     String := None;
+      Language : in     String := None);
    --  Base_URI:
    --    Establishe the base URI (or IRI) for resolving any relative
    --    references found within the effective scope of the xml:base
@@ -94,6 +103,43 @@ package Yolk.Syndication.Writer is
    --    Indicates the natural language for the feed and its descendents.
    --    The language context is only significant for elements and
    --    attributes declared to be "language sensitive".
+
+   function Initialize
+     (Id          : in String;
+      Title       : in String;
+      Base_URI    : in String := None;
+      Language    : in String := None;
+      Title_Kind  : in Content_Kind := Text)
+      return Atom_Feed;
+   --  Initialize an Atom object with the _required data_, as per the Atom
+   --  specification RFC4287:
+   --    http://tools.ietf.org/html/rfc4287
+   --
+   --  NOTE: All data is expected to be UTF-8 encoded
+   --
+   --  Base_URI:
+   --    Establishes base URI for resolving relative references in the feed.
+   --    Is overruled by Base_URI parameters for individual feed entries.
+   --  Id:
+   --    A permanent, universally unique identifier for the feed.
+   --  Language:
+   --    Indicated the natural language for the atom:feed element and its
+   --    descendents.
+   --  Title:
+   --    A human-readable title for the feed.
+   --  Title_Kind:
+   --    The title kind. See Content_Type.
+
+private
+
+   use Ada.Containers;
+   use Ada.Strings.Unbounded;
+
+   type Atom_Common is
+      record
+         Base_URI : Unbounded_String;
+         Language : Unbounded_String;
+      end record;
 
    type Atom_Category is
       record
@@ -215,7 +261,7 @@ package Yolk.Syndication.Writer is
    package Link_List is new Doubly_Linked_Lists (Atom_Link);
    package Person_List is new Doubly_Linked_Lists (Atom_Person);
 
-   protected type Atom_Feed is
+   protected type PT_Atom_Feed is
 
       procedure Add_Author
         (Value : in Atom_Person);
@@ -242,6 +288,9 @@ package Yolk.Syndication.Writer is
       --  element.
       --  See comment for Relation_Type for info on the Rel parameter.
 
+      function Get_DOM return DOM.Core.Document;
+      --  Return the Atom DOM document.
+
       function Get_String return String;
       --  Return the Atom XML string.
 
@@ -250,13 +299,6 @@ package Yolk.Syndication.Writer is
       --  The attributes base and lang are common to all the elements defined
       --  in RFC4287. Whether or not they are significant in a given context
       --  depends entirely on the spec.
-
-      procedure Set_Encoding
-        (Value : in String := "utf-8");
-      --  Value:
-      --    The encoding attribute of the root XML element. This package does
-      --    not do any kind of encoding/decoding, so make sure that the data
-      --    you put in match the encoding given here.
 
       procedure Set_Generator
         (Value : in Atom_Generator);
@@ -323,7 +365,6 @@ package Yolk.Syndication.Writer is
       Categories     : Category_List.List;
       Common         : Atom_Common;
       Contributors   : Person_List.List;
-      Encoding       : Unbounded_String;
       Generator      : Atom_Generator;
       Icon           : Atom_Icon;
       Id             : Unbounded_String;
@@ -334,6 +375,11 @@ package Yolk.Syndication.Writer is
       Title          : Atom_Text;
       Updated        : Ada.Calendar.Time;
 
-   end Atom_Feed;
+   end PT_Atom_Feed;
+
+   type Atom_Feed is
+      record
+         PAF : PT_Atom_Feed;
+      end record;
 
 end Yolk.Syndication.Writer;

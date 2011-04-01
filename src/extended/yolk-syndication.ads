@@ -23,33 +23,7 @@
 
 package Yolk.Syndication is
 
---     function Initialize
---       (Id          : in String;
---        Title       : in String;
---        Base_URI    : in String := None;
---        Encoding    : in String := "utf-8";
---        Language    : in String := None;
---        Title_Kind  : in Content_Kind := Text)
---        return Atom_Feed;
-   --  Initialize an Atom object with the _required data_, as per the Atom
-   --  specification RFC4287:
-   --    http://tools.ietf.org/html/rfc4287
-   --
-   --  Base_URI:
-   --    Establishes base URI for resolving relative references in the feed.
-   --    Is overruled by Base_URI parameters for individual feed entries.
-   --  Encoding:
-   --    The encoding attribute of the root XML element. This package does not
-   --    do any kind of encoding/decoding, so make sure that the data you put
-   --    in match the encoding given here.
-   --  Id:
-   --    A permanent, universally unique identifier for the feed.
-   --  Language:
-   --    Indicated the natural language for the atom:feed element and its
-   --    descendents.
-   --  Title:
-   --    A human-readable title for the feed.
-   --  Title_Kind:
-   --    The title kind. See Content_Type.
+   None  : constant String := "";
+   XMLNS : constant String := "http://www.w3.org/2005/Atom";
 
 end Yolk.Syndication;

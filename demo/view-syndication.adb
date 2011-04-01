@@ -51,28 +51,22 @@ package body View.Syndication is
       use AWS.MIME;
       use AWS.Response;
       use AWS.Status;
-      use AWS.Templates;
 
-      Encoding : Content_Encoding := Identity;
+      Encoding : constant Content_Encoding := Identity;
       --  Default to no encoding.
 
    begin
 
-      --  Feed.Set_Id (Value => URI (Request));
-
       if Is_Supported (Request, GZip) then
-         Encoding := GZip;
+         --  Encoding := GZip;
          --  GZip is supported by the client.
+         null;
       end if;
 
       return Build (Content_Type  => Text_XML,
-                    Message_Body  => Feed.Get_String,
+                    Message_Body  => Get_XML_String (Feed),
                     Encoding      => Encoding);
 
    end Generate;
-
-begin
-
-   Feed.Set_Encoding;
 
 end View.Syndication;

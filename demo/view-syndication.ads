@@ -35,12 +35,17 @@
 
 with AWS.Response;
 with AWS.Status;
-with Yolk.Syndication;
 with Yolk.Syndication.Writer;
 
 package View.Syndication is
 
-   Feed : Yolk.Syndication.Writer.Atom_Feed;
+   use Yolk.Syndication.Writer;
+
+   Feed : Atom_Feed := Initialize (Id         => "Some Id",
+                                   Title      => "Some title",
+                                   Base_URI   => "/base_uri",
+                                   Language   => "da",
+                                   Title_Kind => Text);
 
    function Generate
      (Request : in AWS.Status.Data)
