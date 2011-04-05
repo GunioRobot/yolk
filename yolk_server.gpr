@@ -69,7 +69,7 @@ project Yolk_Server is
                            "-gnat05",
                            "-g");
       --  Use this option to check if your application is leaking memory.
-      --    $ valgrind -v --leak-check=full yolk
+      --    $ valgrind -v --leak-check=full --track-origins=yes yolk_demo
 
       for Default_Switches ("Ada") use Common_Options;
 
