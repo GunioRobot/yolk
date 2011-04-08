@@ -28,6 +28,10 @@ with DOM.Core;
 
 package Yolk.Syndication.Writer is
 
+   Not_Valid_XML : exception;
+   --  Is raised when some Xhtml content is not valid XML. This exception
+   --  can be raised by all procedures that can take Xhtml as content.
+
    type Content_Kind is (Text, Html, Xhtml);
    --  This type is common for a lot of Atom feed XML elements. It identifies
    --  the kind of data found in the element.
@@ -81,6 +85,79 @@ package Yolk.Syndication.Writer is
 
    type Atom_Feed is limited private;
 
+   procedure Add_Author
+     (Feed     : in out Atom_Feed;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None);
+   --  Add an author child element to the Atom top-level feed element. In an
+   --  Atom Feed Document, the author elements of the containing atom:feed
+   --  element are considered to apply to the entry if there are no atom:
+   --  author elements in entry elements.
+   --
+   --  Name:
+   --    conveys a human - readable name for the person. The content of
+   --    Name is language sensitive.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Email:
+   --    conveys an e - mail address associated with the person.
+   --  Language:
+   --    See Set_Common.
+   --  URI:
+   --    conveys an IRI associated with the person.
+
+   procedure Add_Category
+     (Feed     : in out Atom_Feed;
+      Term     : in     String;
+      Base_URI : in     String := None;
+      Content  : in     String := None;
+      Label    : in     String := None;
+      Language : in     String := None;
+      Scheme   : in     String := None);
+   --  Add a category to the Atom top-level feed element. Note that the
+   --  Content parameter is assigned no meaning by RFC4287, so in most cases
+   --  it should probably be left empty.
+   --
+   --  Content:
+   --    No meaning is assigned to this by RFC4287. Should probably be left
+   --    empty.
+   --  Term:
+   --    A string that identifies the category to which the entry or feed
+   --    belongs.
+   --  Label:
+   --    Provides a human - readable label for display in end-user
+   --    applications. The content of the Label is language sensitive.
+   --    Entities such as "&amp;" and "&lt;" represent their corresponding
+   --    characters ("&" and "<", respectively), not markup.
+   --  Scheme:
+   --    An IRI that identifies a categorization scheme.
+
+   procedure Add_Contributor
+     (Feed     : in out Atom_Feed;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None);
+   --  Add a contributor child element to the Atom top-level feed element. In
+   --  an Atom Feed Document, the contributor element indicates a person or
+   --  other entity who contributed to the feed.
+   --
+   --  Name:
+   --    conveys a human - readable name for the person. The content of
+   --    Name is language sensitive.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Email:
+   --    conveys an e - mail address associated with the contributor.
+   --  Language:
+   --    See Set_Common.
+   --  URI:
+   --    conveys an IRI associated with the person.
+
    function Get_XML_DOM
      (Feed : in Atom_Feed)
       return DOM.Core.Document;
@@ -95,6 +172,10 @@ package Yolk.Syndication.Writer is
      (Feed     : in out Atom_Feed;
       Base_URI : in     String := None;
       Language : in     String := None);
+   --  The attributes base and lang are common to all the elements defined
+   --  in RFC4287. Whether or not they are significant in a given context
+   --  depends entirely on the spec.
+   --
    --  Base_URI:
    --    Establishe the base URI (or IRI) for resolving any relative
    --    references found within the effective scope of the xml:base
@@ -130,6 +211,44 @@ package Yolk.Syndication.Writer is
    --  Title_Kind:
    --    The title kind. See Content_Type.
 
+   procedure Set_Generator
+     (Feed     : in out Atom_Feed;
+      Agent    : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None;
+      Version  : in     String := None);
+   --  Identifies the agent used to generate a feed. The Agent is text, so
+   --  characters such as < and > are escaped to &lt; and &gt;.
+   --
+   --  Agent:
+   --    The agent used to generate the feed.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  URI:
+   --    Should point to a resource relevant to the Agent.
+   --  Version:
+   --    The version of the Agent.
+
+   procedure Set_Icon
+     (Feed     : in out Atom_Feed;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None);
+   --  Identifies an image that provides iconic visual identification for a
+   --  feed.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  URI
+   --    URI to an image that provides iconic visual identification for a
+   --    feed. The image SHOULD have an aspect ratio of one (horizontal) to one
+   --    (vertical) and SHOULD be suitable for presentation at a small size.
+
 private
 
    use Ada.Containers;
@@ -149,43 +268,20 @@ private
          Scheme   : Unbounded_String;
          Term     : Unbounded_String;
       end record;
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
-   --  Term:
-   --    A string that identifies the category to which the entry or feed
-   --    belongs.
-   --  Label:
-   --    Provides a human - readable label for display in end-user
-   --    applications. The content of the Label is language sensitive.
-   --    Entities such as "&amp;" and "&lt;" represent their corresponding
-   --    characters ("&" and "<", respectively), not markup.
-   --  Scheme:
-   --    An IRI that identifies a categorization scheme.
 
    type Atom_Generator is
       record
          Agent    : Unbounded_String;
          Common   : Atom_Common;
-         Version  : Unbounded_String;
          URI      : Unbounded_String;
+         Version  : Unbounded_String;
       end record;
-   --  Agent:
-   --    The agent used to generate the feed.
-   --  URI:
-   --    Should point to a resource relevant to the Agent.
-   --  Version:
-   --    The version of the Agent.
 
    type Atom_Icon is
       record
          Common   : Atom_Common;
          URI      : Unbounded_String;
       end record;
-   --  URI:
-   --    Identifies an image that provides iconic visual identification for a
-   --    feed. The image SHOULD have an aspect ratio of one (horizontal) to one
-   --    (vertical) and SHOULD be suitable for presentation at a small size.
 
    type Atom_Link is
       record
@@ -240,13 +336,6 @@ private
          Name     : Unbounded_String;
          URI      : Unbounded_String;
       end record;
-      --  Name:
-      --    conveys a human - readable name for the person. The content of
-      --    Name is language sensitive.
-      --  Email:
-      --    conveys an e - mail address associated with the person.
-      --  URI:
-      --    conveys an IRI associated with the person.
 
    type Atom_Text is
       record
@@ -254,8 +343,6 @@ private
          Text_Content   : Unbounded_String;
          Text_Type      : Content_Kind;
       end record;
-   --  A Text construct contains human-readable text, usually in small
-   --  quantities. The content of Text constructs is Language - Sensitive.
 
    package Category_List is new Doubly_Linked_Lists (Atom_Category);
    package Link_List is new Doubly_Linked_Lists (Atom_Link);
@@ -265,16 +352,9 @@ private
 
       procedure Add_Author
         (Value : in Atom_Person);
-      --  Add an author child element to the Atom top-level feed element. In an
-      --  Atom Feed Document, the Author elements of the containing atom : feed
-      --  element are considered to apply to the entry if there are no atom :
-      --  author elements in entry elements.
 
       procedure Add_Category
         (Value : in Atom_Category);
-      --  Add a category to the Atom top-level feed element. Note that the
-      --  Content parameter is assigned no meaning by RFC4287, so in most cases
-      --  it should probably be left empty.
 
       procedure Add_Contributor
         (Value : in Atom_Person);
@@ -289,16 +369,13 @@ private
       --  See comment for Relation_Type for info on the Rel parameter.
 
       function Get_DOM return DOM.Core.Document;
-      --  Return the Atom DOM document.
+      --  Return the Atom DOM document. Remember to free it after use.
 
       function Get_String return String;
       --  Return the Atom XML string.
 
       procedure Set_Common
         (Value : in Atom_Common);
-      --  The attributes base and lang are common to all the elements defined
-      --  in RFC4287. Whether or not they are significant in a given context
-      --  depends entirely on the spec.
 
       procedure Set_Generator
         (Value : in Atom_Generator);
@@ -360,7 +437,6 @@ private
 
    private
 
-      Atom_String    : Unbounded_String;
       Authors        : Person_List.List;
       Categories     : Category_List.List;
       Common         : Atom_Common;

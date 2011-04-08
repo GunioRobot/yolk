@@ -35,6 +35,7 @@
 
 with AWS.Messages;
 with AWS.MIME;
+with Ada.Text_IO;
 
 package body View.Syndication is
 
@@ -52,15 +53,14 @@ package body View.Syndication is
       use AWS.Response;
       use AWS.Status;
 
-      Encoding : constant Content_Encoding := Identity;
+      Encoding : Content_Encoding := Identity;
       --  Default to no encoding.
 
    begin
 
       if Is_Supported (Request, GZip) then
-         --  Encoding := GZip;
+         Encoding := GZip;
          --  GZip is supported by the client.
-         null;
       end if;
 
       return Build (Content_Type  => Text_XML,
@@ -68,5 +68,28 @@ package body View.Syndication is
                     Encoding      => Encoding);
 
    end Generate;
+
+begin
+
+   Add_Author (Feed     => Feed,
+               Name     => "Thomas Locke");
+   Add_Category (Feed     => Feed,
+                 Term     => "Some Term");
+   Add_Contributor (Feed => Feed,
+                    Name => "Trine Locke");
+   Set_Generator (Feed => Feed,
+                  Agent => "Yolk Syndication",
+                  Base_URI => "/",
+                  Language => "da",
+                  URI      => "/some/uri",
+                  Version  => "0.21");
+
+   Set_Icon (Feed     => Feed,
+             URI      => "icon URI");
+
+exception
+
+   when others =>
+      Ada.Text_IO.Put_Line ("crap!");
 
 end View.Syndication;

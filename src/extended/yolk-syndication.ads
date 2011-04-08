@@ -23,7 +23,8 @@
 
 package Yolk.Syndication is
 
-   None  : constant String := "";
-   XMLNS : constant String := "http://www.w3.org/2005/Atom";
+   None     : constant String := "";
+   XMLNS    : constant String := "http://www.w3.org/2005/Atom";
+   XHTMLNS  : constant String := "http://www.w3.org/1999/xhtml";
 
 end Yolk.Syndication;
