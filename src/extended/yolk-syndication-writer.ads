@@ -158,6 +158,52 @@ package Yolk.Syndication.Writer is
    --  URI:
    --    conveys an IRI associated with the person.
 
+   procedure Add_Link
+     (Feed      : in out Atom_Feed;
+      Href      : in     String;
+      Base_URI  : in     String := None;
+      Content   : in     String := None;
+      Hreflang  : in     String := None;
+      Language  : in     String := None;
+      Length    : in     Natural := 0;
+      Mime_Type : in     String := None;
+      Rel       : in     Relation_Kind := Alternate;
+      Title     : in     String := None);
+   --  Defines a reference from an entry or feed to a Web resource.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Content:
+   --    No meaning is assigned to this by RFC4287. Should probably be left
+   --    empty.
+   --  Href:
+   --    Contains the link's IRI.
+   --  Hreflang:
+   --    The Hreflang content describes the language of the resource pointed
+   --    to by Href. When used together with the Rel = Alternate, it implies
+   --    a translated version of the feed.
+   --  Language:
+   --    See Set_Common.
+   --  Length:
+   --    Indicates an advisory length of the linked content in octets; it is
+   --    a hint about the content length of the representation returned when
+   --    the IRI in Href is mapped to a URI and dereferenced. Note that the
+   --    length attribute does not override the actual content length of the
+   --    representation as reported by the underlying protocol
+   --  Mime_Type:
+   --    On the link element, the Mime_Type value is an advisory media type:
+   --    it is a hint about the type of the representation that is expected
+   --    to be returned when the value of Href is dereferenced. Note that
+   --    the type attribute does not override the actual media type returned
+   --    with the representation.
+   --  Rel:
+   --    Indicates the link relation type.
+   --  Title:
+   --    Conveys human-readable information about the link. The content of
+   --    the Title is language sensitive. Entities such as "&amp;" and
+   --    "&lt;" represent their corresponding characters ("&" and "<"), not
+   --    markup.
+
    function Get_XML_DOM
      (Feed : in Atom_Feed)
       return DOM.Core.Document;
@@ -167,6 +213,22 @@ package Yolk.Syndication.Writer is
      (Feed : in Atom_Feed)
       return String;
    --  Return the Atom XML string.
+
+   function New_Atom_Feed
+     (Base_URI : in String := None;
+      Language : in String := None)
+      return Atom_Feed;
+   --  Initialize an Atom object, as per the Atom specification RFC4287:
+   --    http://tools.ietf.org/html/rfc4287
+   --
+   --  NOTE: All data is expected to be UTF-8 encoded
+   --
+   --  Base_URI:
+   --    Establishes base URI for resolving relative references in the feed.
+   --    Is overruled by Base_URI parameters for individual feed entries.
+   --  Language:
+   --    Indicates the natural language for the atom:feed element and its
+   --    descendents.
 
    procedure Set_Common
      (Feed     : in out Atom_Feed;
@@ -184,32 +246,6 @@ package Yolk.Syndication.Writer is
    --    Indicates the natural language for the feed and its descendents.
    --    The language context is only significant for elements and
    --    attributes declared to be "language sensitive".
-
-   function Initialize
-     (Id          : in String;
-      Title       : in String;
-      Base_URI    : in String := None;
-      Language    : in String := None;
-      Title_Kind  : in Content_Kind := Text)
-      return Atom_Feed;
-   --  Initialize an Atom object with the _required data_, as per the Atom
-   --  specification RFC4287:
-   --    http://tools.ietf.org/html/rfc4287
-   --
-   --  NOTE: All data is expected to be UTF-8 encoded
-   --
-   --  Base_URI:
-   --    Establishes base URI for resolving relative references in the feed.
-   --    Is overruled by Base_URI parameters for individual feed entries.
-   --  Id:
-   --    A permanent, universally unique identifier for the feed.
-   --  Language:
-   --    Indicated the natural language for the atom:feed element and its
-   --    descendents.
-   --  Title:
-   --    A human-readable title for the feed.
-   --  Title_Kind:
-   --    The title kind. See Content_Type.
 
    procedure Set_Generator
      (Feed     : in out Atom_Feed;
@@ -249,6 +285,62 @@ package Yolk.Syndication.Writer is
    --    feed. The image SHOULD have an aspect ratio of one (horizontal) to one
    --    (vertical) and SHOULD be suitable for presentation at a small size.
 
+   procedure Set_Id
+     (Feed     : in out Atom_Feed;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None);
+   --  Conveys a permanent, universally unique identifier for the feed.
+   --  Its content MUST be an IRI, as defined by [RFC3987]. Note that the
+   --  definition of "IRI" excludes relative references. Though the IRI might
+   --  use a dereferencable scheme, Atom Processors MUST NOT assume it can be
+   --  dereferenced. When an Atom Document is relocated, migrated, syndicated,
+   --  republished, exported, or imported, the content of its atom : id element
+   --  MUST NOT change. Put another way, an atom:id element pertains to all
+   --  instantiations of a particular Atom feed; revisions retain the same
+   --  content in their atom:id elements. It is suggested that the atom:id
+   --  element be stored along with the associated resource. The content of an
+   --  atom:id element MUST be created in a way that assures uniqueness.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Id:
+   --    A permanent, universally unique identifier for the feed.
+
+   procedure Set_Logo
+     (Feed     : in out Atom_Feed;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None);
+   --  Identifies an image that provides visual identification for a feed. The
+   --  image SHOULD have an aspect ratio of 2 (horizontal) to 1 (vertical).
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  URI:
+   --    The URL to the image.
+
+   procedure Set_Title
+     (Feed       : in out Atom_Feed;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Content_Kind := Text);
+   --  Conveys a human-readable title for the feed.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Title:
+   --    A human-readable title for the feed.
+   --  Title_Kind:
+   --    The title kind. See Content_Type.
+
 private
 
    use Ada.Containers;
@@ -283,6 +375,12 @@ private
          URI      : Unbounded_String;
       end record;
 
+   type Atom_Id is
+      record
+         Common   : Atom_Common;
+         URI      : Unbounded_String;
+      end record;
+
    type Atom_Link is
       record
          Common      : Atom_Common;
@@ -294,34 +392,6 @@ private
          Rel         : Relation_Kind;
          Title       : Unbounded_String;
       end record;
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
-   --  Href:
-   --    Contains the link's IRI.
-   --  Hreflang:
-   --    The Hreflang content describes the language of the resource pointed
-   --    to by Href. When used together with the Rel = Alternate, it implies
-   --    a translated version of the feed.
-   --  Length:
-   --    Indicates an advisory length of the linked content in octets; it is
-   --    a hint about the content length of the representation returned when
-   --    the IRI in Href is mapped to a URI and dereferenced. Note that the
-   --    length attribute does not override the actual content length of the
-   --    representation as reported by the underlying protocol
-   --  Mime_Type:
-   --    On the link element, the Mime_Type value is an advisory media type:
-   --    it is a hint about the type of the representation that is expected
-   --    to be returned when the value of Href is dereferenced. Note that
-   --    the type attribute does not override the actual media type returned
-   --    with the representation.
-   --  Rel:
-   --    Indicates the link relation type.
-   --  Title:
-   --    Conveys human-readable information about the link. The content of
-   --    the Title is language sensitive. Entities such as "&amp;" and
-   --    "&lt;" represent their corresponding characters ("&" and "<"), not
-   --    markup.
 
    type Atom_Logo is
       record
@@ -388,24 +458,8 @@ private
       --  graphic that is suitable for presentation at a small size.
 
       procedure Set_Id
-        (Value : in String);
+        (Value : in Atom_Id);
       --  Set the atom:id element.
-      --
-      --  These are some things to consider when providing the feed ID:
-      --    Provide the scheme in lowercase characters.
-      --    Provide the host, if any, in lowercase characters.
-      --    Only perform percent-encoding where it is essential.
-      --    Use uppercase A through F characters when percent-encoding.
-      --    Prevent dot-segments from appearing in paths.
-      --    For schemes that define a default authority, use an empty authority
-      --    if the default is desired.
-      --    For schemes that define an empty path to be equivalent to a path of
-      --    "/", use "/".
-      --    For schemes that define a port, use an empty port if the default is
-      --    desired.
-      --    Preserve empty fragment identifiers and queries.
-      --    Ensure that all components of the IRI are appropriately character
-      --    normalized, e.g., by using NFC or NFKC.
 
       procedure Set_Logo
         (Value : in Atom_Logo);
@@ -443,7 +497,7 @@ private
       Contributors   : Person_List.List;
       Generator      : Atom_Generator;
       Icon           : Atom_Icon;
-      Id             : Unbounded_String;
+      Id             : Atom_Id;
       Links          : Link_List.List;
       Logo           : Atom_Logo;
       Rights         : Atom_Text;

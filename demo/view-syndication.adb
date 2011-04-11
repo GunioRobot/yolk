@@ -71,6 +71,15 @@ package body View.Syndication is
 
 begin
 
+   Set_Id (Feed     => Feed,
+           URI      => "/some/id/uri",
+           Base_URI => "/",
+           Language => "da");
+   Set_Title (Feed       => Feed,
+              Title      => "Some title",
+              Base_URI   => "/",
+              Language   => "da",
+              Title_Kind => Text);
    Add_Author (Feed     => Feed,
                Name     => "Thomas Locke");
    Add_Category (Feed     => Feed,
@@ -86,6 +95,24 @@ begin
 
    Set_Icon (Feed     => Feed,
              URI      => "icon URI");
+
+   Add_Link (Feed => Feed,
+             Href => "link_one",
+             Base_URI  => "base",
+             Content   => "content",
+             Hreflang  => "hreflang",
+             Language  => "lang",
+             Length    => 1,
+             Mime_Type => "mime",
+             Rel       => Alternate,
+             Title     => "Title");
+   Add_Link (Feed => Feed,
+             Href => "link_two");
+
+   Set_Logo (Feed     => Feed,
+             URI      => "logo/uri",
+             Base_URI => "base",
+             Language => "da");
 
 exception
 

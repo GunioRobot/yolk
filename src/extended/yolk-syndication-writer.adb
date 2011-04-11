@@ -23,6 +23,7 @@
 
 with Ada.Calendar.Formatting;
 with Ada.Streams;
+with Ada.Strings.Fixed;
 with DOM.Core.Documents;
 with DOM.Core.Elements;
 with DOM.Core.Nodes;
@@ -130,6 +131,41 @@ package body Yolk.Syndication.Writer is
 
    end Add_Contributor;
 
+   ----------------
+   --  Add_Link  --
+   ----------------
+
+   procedure Add_Link
+     (Feed      : in out Atom_Feed;
+      Href      : in     String;
+      Base_URI  : in     String := None;
+      Content   : in     String := None;
+      Hreflang  : in     String := None;
+      Language  : in     String := None;
+      Length    : in     Natural := 0;
+      Mime_Type : in     String := None;
+      Rel       : in     Relation_Kind := Alternate;
+      Title     : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Add_Link
+        (Value => Atom_Link'(Common =>
+                               Atom_Common'(Base_URI => TUS (Base_URI),
+                                            Language => TUS (Language)),
+                             Content   => TUS (Content),
+                             Href      => TUS (Href),
+                             Hreflang  => TUS (Hreflang),
+                             Length    => Length,
+                             Mime_Type => TUS (Mime_Type),
+                             Rel       => Rel,
+                             Title     => TUS (Title)));
+
+   end Add_Link;
+
    -----------------------
    --  Atom_Date_Image  --
    -----------------------
@@ -234,36 +270,27 @@ package body Yolk.Syndication.Writer is
 
    end Get_XML_String;
 
-   ------------------
-   --  Initialize  --
-   ------------------
+   ---------------------
+   --  New_Atom_Feed  --
+   ---------------------
 
-   function Initialize
-     (Id          : in String;
-      Title       : in String;
-      Base_URI    : in String := None;
-      Language    : in String := None;
-      Title_Kind  : in Content_Kind := Text)
+   function New_Atom_Feed
+     (Base_URI : in String := None;
+      Language : in String := None)
       return Atom_Feed
    is
 
       use Yolk.Utilities;
-
       Common : constant Atom_Common := (Base_URI => TUS (Base_URI),
                                         Language => TUS (Language));
 
    begin
 
       return Feed : Atom_Feed do
-         Feed.PAF.Set_Id (Value => Id);
          Feed.PAF.Set_Common (Value => Common);
-         Feed.PAF.Set_Title
-           (Value => Atom_Text'(Common         => Common,
-                                Text_Content   => TUS (Title),
-                                Text_Type      => Title_Kind));
       end return;
 
-   end Initialize;
+   end New_Atom_Feed;
 
    ------------------
    --  Set_Common  --
@@ -333,6 +360,73 @@ package body Yolk.Syndication.Writer is
                              URI    => TUS (URI)));
 
    end Set_Icon;
+
+   --------------
+   --  Set_Id  --
+   --------------
+
+   procedure Set_Id
+     (Feed     : in out Atom_Feed;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Set_Id
+        (Value => Atom_Id'(Common =>
+                             Atom_Common'(Base_URI => TUS (Base_URI),
+                                          Language => TUS (Language)),
+                           URI    => TUS (URI)));
+
+   end Set_Id;
+
+   procedure Set_Logo
+     (Feed     : in out Atom_Feed;
+      URI      : in String;
+      Base_URI : in String := None;
+      Language : in String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Set_Logo
+        (Value => Atom_Logo'(Common =>
+                               Atom_Common'(Base_URI => TUS (Base_URI),
+                                            Language => TUS (Language)),
+                             URI    => TUS (URI)));
+
+   end Set_Logo;
+
+   -----------------
+   --  Set_Title  --
+   -----------------
+
+   procedure Set_Title
+     (Feed       : in out Atom_Feed;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Content_Kind := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Set_Title
+        (Value => Atom_Text'(Common =>
+                               Atom_Common'(Base_URI => TUS (Base_URI),
+                                            Language => TUS (Language)),
+                             Text_Content => TUS (Title),
+                             Text_Type    => Title_Kind));
+
+   end Set_Title;
 
    --------------------
    --  PT_Atom_Feed  --
@@ -449,9 +543,21 @@ package body Yolk.Syndication.Writer is
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => "id"));
 
+            if Id.Common.Base_URI /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Id_Node,
+                              Name  => "base",
+                              Value => TS (Id.Common.Base_URI));
+            end if;
+
+            if Id.Common.Language /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Id_Node,
+                              Name  => "lang",
+                              Value => TS (Id.Common.Language));
+            end if;
+
             Id_Node := Append_Child
               (N         => Id_Node,
-               New_Child => Create_Text_Node (Doc, TS (Id)));
+               New_Child => Create_Text_Node (Doc, TS (Id.URI)));
 
             pragma Unreferenced (Id_Node);
             --  We need this because XML/Ada have no Append_Child procedures,
@@ -494,6 +600,18 @@ package body Yolk.Syndication.Writer is
 
             Title_Node := Append_Child (Feed_Node,
                                         Create_Element (Doc, "title"));
+
+            if Title.Common.Base_URI /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Title_Node,
+                              Name  => "base",
+                              Value => TS (Title.Common.Base_URI));
+            end if;
+
+            if Title.Common.Language /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Title_Node,
+                              Name  => "lang",
+                              Value => TS (Title.Common.Language));
+            end if;
 
             case Title.Text_Type is
                when Text =>
@@ -757,7 +875,7 @@ package body Yolk.Syndication.Writer is
 
                if Generator.Common.Language /= Null_Unbounded_String then
                   Set_Attribute (Elem  => Generator_Node,
-                                 Name  => "language",
+                                 Name  => "lang",
                                  Value => TS (Generator.Common.Language));
                end if;
 
@@ -804,7 +922,7 @@ package body Yolk.Syndication.Writer is
 
                if Icon.Common.Language /= Null_Unbounded_String  then
                   Set_Attribute (Elem  => Icon_Node,
-                                 Name  => "language",
+                                 Name  => "lang",
                                  Value => TS (Icon.Common.Language));
                end if;
 
@@ -815,6 +933,131 @@ package body Yolk.Syndication.Writer is
 
             end Add_Icon_To_DOM;
          end if;
+
+         --  feed:link elements
+         Add_Link_To_DOM :
+         declare
+
+            use Ada.Strings;
+
+            A_Link      : Atom_Link;
+            C           : Link_List.Cursor := Links.First;
+            Link_Node   : Node;
+
+         begin
+
+            loop
+               exit when not Link_List.Has_Element (C);
+
+               A_Link := Link_List.Element (C);
+
+               Link_Node := Append_Child
+                 (N         => Feed_Node,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => "link"));
+
+               case A_Link.Rel is
+                  when Alternate =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "alternate");
+                  when Related =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "related");
+                  when Self =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "self");
+                  when Enclosure =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "enclosure");
+                  when Via =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "via");
+               end case;
+
+               Set_Attribute (Elem  => Link_Node,
+                              Name  => "href",
+                              Value => TS (A_Link.Href));
+
+               if A_Link.Hreflang /= Null_Unbounded_String then
+                  Set_Attribute (Elem  => Link_Node,
+                                 Name  => "hreflang",
+                                 Value => TS (A_Link.Hreflang));
+               end if;
+
+               if A_Link.Length > 0 then
+                  Set_Attribute
+                    (Elem  => Link_Node,
+                     Name  => "length",
+                     Value => Fixed.Trim
+                       (Source => Natural'Image (A_Link.Length),
+                        Side   => Left));
+               end if;
+
+               if A_Link.Mime_Type /= Null_Unbounded_String then
+                  Set_Attribute (Elem  => Link_Node,
+                                 Name  => "type",
+                                 Value => TS (A_Link.Mime_Type));
+               end if;
+
+               if A_Link.Title /= Null_Unbounded_String then
+                  Set_Attribute (Elem  => Link_Node,
+                                 Name  => "title",
+                                 Value => TS (A_Link.Title));
+               end if;
+
+               if A_Link.Content /= Null_Unbounded_String then
+                  Link_Node := Append_Child
+                    (N         => Link_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (A_Link.Content)));
+               end if;
+
+               Link_List.Next (C);
+            end loop;
+
+         end Add_Link_To_DOM;
+
+         --  feed:logo
+         Add_Logo_To_DOM :
+         declare
+
+            Logo_Node : Node;
+
+         begin
+
+            Logo_Node := Append_Child
+              (N         => Feed_Node,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => "logo"));
+
+            if Logo.Common.Base_URI /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Logo_Node,
+                              Name  => "base",
+                              Value => TS (Logo.Common.Base_URI));
+            end if;
+
+            if Logo.Common.Language /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Logo_Node,
+                              Name  => "lang",
+                              Value => TS (Logo.Common.Language));
+            end if;
+
+            Logo_Node := Append_Child
+              (N         => Logo_Node,
+               New_Child => Create_Text_Node (Doc  => Doc,
+                                              Data => TS (Logo.URI)));
+
+            pragma Unreferenced (Logo_Node);
+            --  We need this because XML/Ada have no Append_Child procedures,
+            --  which obviously is annoying as hell.
+
+         end Add_Logo_To_DOM;
 
          return Doc;
 
@@ -955,14 +1198,14 @@ package body Yolk.Syndication.Writer is
       --------------
 
       procedure Set_Id
-        (Value : in String)
+        (Value : in Atom_Id)
       is
 
          use Yolk.Utilities;
 
       begin
 
-         Id := TUS (Value);
+         Id := Value;
 
       end Set_Id;
 
