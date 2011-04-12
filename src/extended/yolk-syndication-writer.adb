@@ -550,11 +550,22 @@ package body Yolk.Syndication.Writer is
          use DOM.Core.Nodes;
          use Yolk.Utilities;
 
+         Doc         : Document;
+         Impl        : DOM_Implementation;
+         Feed_Node   : Node;
+
          procedure Attribute
            (Elem  : in Node;
             Name  : in String;
             Value : in String);
          --  Add the attribute Name to Elem if Value isn't empty.
+
+         procedure Text_Construct
+           (Elem      : in out Node;
+            Text_Kind : in     Content_Kind;
+            Data      : in     String);
+         --  Set the type (text/html/xhtml) and content of an atomTextConstruct
+         --  element.
 
          -----------------
          --  Attribute  --
@@ -575,9 +586,53 @@ package body Yolk.Syndication.Writer is
 
          end Attribute;
 
-         Doc         : Document;
-         Impl        : DOM_Implementation;
-         Feed_Node   : Node;
+         ----------------------
+         --  Text_Construct  --
+         ----------------------
+
+         procedure Text_Construct
+           (Elem      : in out Node;
+            Text_Kind : in     Content_Kind;
+            Data      : in     String)
+         is
+         begin
+
+            case Text_Kind is
+               when Text =>
+                  Set_Attribute (Elem  => Elem,
+                                 Name  => "type",
+                                 Value => "text");
+                  Elem := Append_Child
+                    (N         => Elem,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => Data));
+               when Html =>
+                  Set_Attribute (Elem  => Elem,
+                                 Name  => "type",
+                                 Value => "html");
+                  Elem := Append_Child
+                    (N         => Elem,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => Data));
+               when Xhtml =>
+                  Set_Attribute (Elem  => Elem,
+                                 Name  => "type",
+                                 Value => "xhtml");
+                  Set_Attribute (Elem  => Elem,
+                                 Name  => "xmlns",
+                                 Value => XHTMLNS);
+
+                  Elem := Append_Child
+                    (N         => Elem,
+                     New_Child => First_Child
+                       (N => Create_DOM_From_String
+                          (XML_String => "<div>" & Data & "</div>")));
+
+            end case;
+
+         end Text_Construct;
 
       begin
 
@@ -678,42 +733,9 @@ package body Yolk.Syndication.Writer is
                        Name  => "lang",
                        Value => TS (Title.Common.Language));
 
-            case Title.Text_Type is
-               when Text =>
-                  Set_Attribute (Elem  => Title_Node,
-                                 Name  => "type",
-                                 Value => "text");
-                  Title_Node := Append_Child
-                    (N         => Title_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (Title.Text_Content)));
-               when Html =>
-                  Set_Attribute (Elem  => Title_Node,
-                                 Name  => "type",
-                                 Value => "html");
-                  Title_Node := Append_Child
-                    (N         => Title_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (Title.Text_Content)));
-               when Xhtml =>
-                  Set_Attribute (Elem  => Title_Node,
-                                 Name  => "type",
-                                 Value => "xhtml");
-                  Set_Attribute (Elem  => Title_Node,
-                                 Name  => "xmlns",
-                                 Value => XHTMLNS);
-
-                  Title_Node := Append_Child
-                    (N         => Title_Node,
-                     New_Child => First_Child
-                       (N => Create_DOM_From_String
-                          (XML_String => "<div>" &
-                           TS (Title.Text_Content) &
-                           "</div>")));
-
-            end case;
+            Text_Construct (Elem      => Title_Node,
+                            Text_Kind => Title.Text_Type,
+                            Data      => TS (Title.Text_Content));
 
          end Add_Title_To_DOM;
 
@@ -1108,42 +1130,9 @@ package body Yolk.Syndication.Writer is
                        Name  => "lang",
                        Value => TS (Rights.Common.Language));
 
-            case Rights.Text_Type is
-               when Text =>
-                  Set_Attribute (Elem  => Rights_Node,
-                                 Name  => "type",
-                                 Value => "text");
-                  Rights_Node := Append_Child
-                    (N         => Rights_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (Rights.Text_Content)));
-               when Html =>
-                  Set_Attribute (Elem  => Rights_Node,
-                                 Name  => "type",
-                                 Value => "html");
-                  Rights_Node := Append_Child
-                    (N         => Rights_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (Rights.Text_Content)));
-               when Xhtml =>
-                  Set_Attribute (Elem  => Rights_Node,
-                                 Name  => "type",
-                                 Value => "xhtml");
-                  Set_Attribute (Elem  => Rights_Node,
-                                 Name  => "xmlns",
-                                 Value => XHTMLNS);
-
-                  Rights_Node := Append_Child
-                    (N         => Rights_Node,
-                     New_Child => First_Child
-                       (N => Create_DOM_From_String
-                          (XML_String => "<div>" &
-                           TS (Rights.Text_Content) &
-                           "</div>")));
-
-            end case;
+            Text_Construct (Elem      => Rights_Node,
+                            Text_Kind => Rights.Text_Type,
+                            Data      => TS (Rights.Text_Content));
 
          end Add_Rights_To_DOM;
 
@@ -1168,42 +1157,9 @@ package body Yolk.Syndication.Writer is
                        Name  => "lang",
                        Value => TS (Subtitle.Common.Language));
 
-            case Subtitle.Text_Type is
-               when Text =>
-                  Set_Attribute (Elem  => Subtitle_Node,
-                                 Name  => "type",
-                                 Value => "text");
-                  Subtitle_Node := Append_Child
-                    (N         => Subtitle_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (Subtitle.Text_Content)));
-               when Html =>
-                  Set_Attribute (Elem  => Subtitle_Node,
-                                 Name  => "type",
-                                 Value => "html");
-                  Subtitle_Node := Append_Child
-                    (N         => Subtitle_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (Subtitle.Text_Content)));
-               when Xhtml =>
-                  Set_Attribute (Elem  => Subtitle_Node,
-                                 Name  => "type",
-                                 Value => "xhtml");
-                  Set_Attribute (Elem  => Subtitle_Node,
-                                 Name  => "xmlns",
-                                 Value => XHTMLNS);
-
-                  Subtitle_Node := Append_Child
-                    (N         => Subtitle_Node,
-                     New_Child => First_Child
-                       (N => Create_DOM_From_String
-                          (XML_String => "<div>" &
-                           TS (Subtitle.Text_Content) &
-                           "</div>")));
-
-            end case;
+            Text_Construct (Elem      => Subtitle_Node,
+                            Text_Kind => Subtitle.Text_Type,
+                            Data      => TS (Subtitle.Text_Content));
 
          end Add_Subtitle_To_DOM;
 

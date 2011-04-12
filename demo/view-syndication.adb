@@ -121,10 +121,10 @@ begin
              Language => "da");
 
    Set_Rights (Feed        => Feed,
-               Rights      => "Some <b>rights</b>",
+               Rights      => "Some rights",
                Base_URI    => "base/",
                Language    => "da",
-               Rights_Kind => Xhtml);
+               Rights_Kind => Text);
 
    Set_Subtitle (Feed          => Feed,
                  Subtitle      => "Some subtitle",
