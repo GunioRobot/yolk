@@ -550,6 +550,31 @@ package body Yolk.Syndication.Writer is
          use DOM.Core.Nodes;
          use Yolk.Utilities;
 
+         procedure Attribute
+           (Elem  : in Node;
+            Name  : in String;
+            Value : in String);
+         --  Add the attribute Name to Elem if Value isn't empty.
+
+         -----------------
+         --  Attribute  --
+         -----------------
+
+         procedure Attribute
+           (Elem  : in Node;
+            Name  : in String;
+            Value : in String)
+         is
+         begin
+
+            if Value /= "" then
+               Set_Attribute (Elem  => Elem,
+                              Name  => Name,
+                              Value => Value);
+            end if;
+
+         end Attribute;
+
          Doc         : Document;
          Impl        : DOM_Implementation;
          Feed_Node   : Node;
@@ -568,17 +593,13 @@ package body Yolk.Syndication.Writer is
                         Name  => "xmlns",
                         Value => XMLNS);
 
-         if Common.Base_URI /= Null_Unbounded_String then
-            Set_Attribute (Elem  => Feed_Node,
-                           Name  => "base",
-                           Value => TS (Common.Base_URI));
-         end if;
+         Attribute (Elem  => Feed_Node,
+                    Name  => "base",
+                    Value => TS (Common.Base_URI));
 
-         if Common.Language /= Null_Unbounded_String then
-            Set_Attribute (Elem  => Feed_Node,
-                           Name  => "lang",
-                           Value => TS (Common.Language));
-         end if;
+         Attribute (Elem  => Feed_Node,
+                    Name  => "lang",
+                    Value => TS (Common.Language));
 
          --  feed:id element
          Add_Id_To_DOM :
@@ -593,17 +614,13 @@ package body Yolk.Syndication.Writer is
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => "id"));
 
-            if Id.Common.Base_URI /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Id_Node,
-                              Name  => "base",
-                              Value => TS (Id.Common.Base_URI));
-            end if;
+            Attribute (Elem  => Id_Node,
+                       Name  => "base",
+                       Value => TS (Id.Common.Base_URI));
 
-            if Id.Common.Language /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Id_Node,
-                              Name  => "lang",
-                              Value => TS (Id.Common.Language));
-            end if;
+            Attribute (Elem  => Id_Node,
+                       Name  => "lang",
+                       Value => TS (Id.Common.Language));
 
             Id_Node := Append_Child
               (N         => Id_Node,
@@ -653,17 +670,13 @@ package body Yolk.Syndication.Writer is
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => "title"));
 
-            if Title.Common.Base_URI /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Title_Node,
-                              Name  => "base",
-                              Value => TS (Title.Common.Base_URI));
-            end if;
+            Attribute (Elem  => Title_Node,
+                       Name  => "base",
+                       Value => TS (Title.Common.Base_URI));
 
-            if Title.Common.Language /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Title_Node,
-                              Name  => "lang",
-                              Value => TS (Title.Common.Language));
-            end if;
+            Attribute (Elem  => Title_Node,
+                       Name  => "lang",
+                       Value => TS (Title.Common.Language));
 
             case Title.Text_Type is
                when Text =>
@@ -725,17 +738,13 @@ package body Yolk.Syndication.Writer is
                   New_Child => Create_Element (Doc      => Doc,
                                                Tag_Name => "author"));
 
-               if A_Person.Common.Base_URI /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Author_Node,
-                                 Name  => "base",
-                                 Value => TS (A_Person.Common.Base_URI));
-               end if;
+               Attribute (Elem  => Author_Node,
+                          Name  => "base",
+                          Value => TS (A_Person.Common.Base_URI));
 
-               if A_Person.Common.Language /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Author_Node,
-                                 Name  => "lang",
-                                 Value => TS (A_Person.Common.Language));
-               end if;
+               Attribute (Elem  => Author_Node,
+                          Name  => "lang",
+                          Value => TS (A_Person.Common.Language));
 
                Elem_Node := Append_Child
                  (N         => Author_Node,
@@ -798,28 +807,21 @@ package body Yolk.Syndication.Writer is
                               Name  => "term",
                               Value => TS (A_Category.Term));
 
-               if A_Category.Common.Base_URI /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Category_Node,
-                                 Name  => "base",
-                                 Value => TS (A_Category.Common.Base_URI));
-               end if;
-               if A_Category.Common.Language /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Category_Node,
-                                 Name  => "lang",
-                                 Value => TS (A_Category.Common.Language));
-               end if;
+               Attribute (Elem  => Category_Node,
+                          Name  => "base",
+                          Value => TS (A_Category.Common.Base_URI));
 
-               if A_Category.Label /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Category_Node,
-                                 Name  => "label",
-                                 Value => TS (A_Category.Label));
-               end if;
+               Attribute (Elem  => Category_Node,
+                          Name  => "lang",
+                          Value => TS (A_Category.Common.Language));
 
-               if A_Category.Scheme /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Category_Node,
-                                 Name  => "scheme",
-                                 Value => TS (A_Category.Scheme));
-               end if;
+               Attribute (Elem  => Category_Node,
+                          Name  => "label",
+                          Value => TS (A_Category.Label));
+
+               Attribute (Elem  => Category_Node,
+                          Name  => "scheme",
+                          Value => TS (A_Category.Scheme));
 
                if A_Category.Content /= Null_Unbounded_String then
                   Category_Node := Append_Child
@@ -855,17 +857,13 @@ package body Yolk.Syndication.Writer is
                   New_Child => Create_Element (Doc      => Doc,
                                                Tag_Name => "contributor"));
 
-               if A_Person.Common.Base_URI /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Contributor_Node,
-                                 Name  => "base",
-                                 Value => TS (A_Person.Common.Base_URI));
-               end if;
+               Attribute (Elem  => Contributor_Node,
+                          Name  => "base",
+                          Value => TS (A_Person.Common.Base_URI));
 
-               if A_Person.Common.Language /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Contributor_Node,
-                                 Name  => "lang",
-                                 Value => TS (A_Person.Common.Language));
-               end if;
+               Attribute (Elem  => Contributor_Node,
+                          Name  => "lang",
+                          Value => TS (A_Person.Common.Language));
 
                Elem_Node := Append_Child
                  (N         => Contributor_Node,
@@ -919,29 +917,21 @@ package body Yolk.Syndication.Writer is
                   New_Child => Create_Element (Doc      => Doc,
                                                Tag_Name => "generator"));
 
-               if Generator.Common.Base_URI /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Generator_Node,
-                                 Name  => "base",
-                                 Value => TS (Generator.Common.Base_URI));
-               end if;
+               Attribute (Elem  => Generator_Node,
+                          Name  => "base",
+                          Value => TS (Generator.Common.Base_URI));
 
-               if Generator.Common.Language /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Generator_Node,
-                                 Name  => "lang",
-                                 Value => TS (Generator.Common.Language));
-               end if;
+               Attribute (Elem  => Generator_Node,
+                          Name  => "lang",
+                          Value => TS (Generator.Common.Language));
 
-               if Generator.URI /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Generator_Node,
-                                 Name  => "uri",
-                                 Value => TS (Generator.URI));
-               end if;
+               Attribute (Elem  => Generator_Node,
+                          Name  => "uri",
+                          Value => TS (Generator.URI));
 
-               if Generator.Version /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Generator_Node,
-                                 Name  => "version",
-                                 Value => TS (Generator.Version));
-               end if;
+               Attribute (Elem  => Generator_Node,
+                          Name  => "version",
+                          Value => TS (Generator.Version));
 
                Generator_Node := Append_Child
                  (N         => Generator_Node,
@@ -966,17 +956,13 @@ package body Yolk.Syndication.Writer is
                   New_Child => Create_Element (Doc      => Doc,
                                                Tag_Name => "icon"));
 
-               if Icon.Common.Base_URI /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Icon_Node,
-                                 Name  => "base",
-                                 Value => TS (Icon.Common.Base_URI));
-               end if;
+               Attribute (Elem  => Icon_Node,
+                          Name  => "base",
+                          Value => TS (Icon.Common.Base_URI));
 
-               if Icon.Common.Language /= Null_Unbounded_String  then
-                  Set_Attribute (Elem  => Icon_Node,
-                                 Name  => "lang",
-                                 Value => TS (Icon.Common.Language));
-               end if;
+               Attribute (Elem  => Icon_Node,
+                          Name  => "lang",
+                          Value => TS (Icon.Common.Language));
 
                Icon_Node := Append_Child
                  (N         => Icon_Node,
@@ -1035,11 +1021,9 @@ package body Yolk.Syndication.Writer is
                               Name  => "href",
                               Value => TS (A_Link.Href));
 
-               if A_Link.Hreflang /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Link_Node,
-                                 Name  => "hreflang",
-                                 Value => TS (A_Link.Hreflang));
-               end if;
+               Attribute (Elem  => Link_Node,
+                          Name  => "hreflang",
+                          Value => TS (A_Link.Hreflang));
 
                if A_Link.Length > 0 then
                   Set_Attribute
@@ -1050,17 +1034,13 @@ package body Yolk.Syndication.Writer is
                         Side   => Left));
                end if;
 
-               if A_Link.Mime_Type /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Link_Node,
-                                 Name  => "type",
-                                 Value => TS (A_Link.Mime_Type));
-               end if;
+               Attribute (Elem  => Link_Node,
+                          Name  => "type",
+                          Value => TS (A_Link.Mime_Type));
 
-               if A_Link.Title /= Null_Unbounded_String then
-                  Set_Attribute (Elem  => Link_Node,
-                                 Name  => "title",
-                                 Value => TS (A_Link.Title));
-               end if;
+               Attribute (Elem  => Link_Node,
+                          Name  => "title",
+                          Value => TS (A_Link.Title));
 
                if A_Link.Content /= Null_Unbounded_String then
                   Link_Node := Append_Child
@@ -1088,17 +1068,13 @@ package body Yolk.Syndication.Writer is
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => "logo"));
 
-            if Logo.Common.Base_URI /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Logo_Node,
-                              Name  => "base",
-                              Value => TS (Logo.Common.Base_URI));
-            end if;
+            Attribute (Elem  => Logo_Node,
+                       Name  => "base",
+                       Value => TS (Logo.Common.Base_URI));
 
-            if Logo.Common.Language /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Logo_Node,
-                              Name  => "lang",
-                              Value => TS (Logo.Common.Language));
-            end if;
+            Attribute (Elem  => Logo_Node,
+                       Name  => "lang",
+                       Value => TS (Logo.Common.Language));
 
             Logo_Node := Append_Child
               (N         => Logo_Node,
@@ -1124,17 +1100,13 @@ package body Yolk.Syndication.Writer is
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => "rights"));
 
-            if Rights.Common.Base_URI /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Rights_Node,
-                              Name  => "base",
-                              Value => TS (Rights.Common.Base_URI));
-            end if;
+            Attribute (Elem  => Rights_Node,
+                       Name  => "base",
+                       Value => TS (Rights.Common.Base_URI));
 
-            if Rights.Common.Language /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Rights_Node,
-                              Name  => "lang",
-                              Value => TS (Rights.Common.Language));
-            end if;
+            Attribute (Elem  => Rights_Node,
+                       Name  => "lang",
+                       Value => TS (Rights.Common.Language));
 
             case Rights.Text_Type is
                when Text =>
@@ -1188,17 +1160,13 @@ package body Yolk.Syndication.Writer is
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => "subtitle"));
 
-            if Subtitle.Common.Base_URI /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Subtitle_Node,
-                              Name  => "base",
-                              Value => TS (Subtitle.Common.Base_URI));
-            end if;
+            Attribute (Elem  => Subtitle_Node,
+                       Name  => "base",
+                       Value => TS (Subtitle.Common.Base_URI));
 
-            if Subtitle.Common.Language /= Null_Unbounded_String then
-               Set_Attribute (Elem  => Subtitle_Node,
-                              Name  => "lang",
-                              Value => TS (Subtitle.Common.Language));
-            end if;
+            Attribute (Elem  => Subtitle_Node,
+                       Name  => "lang",
+                       Value => TS (Subtitle.Common.Language));
 
             case Subtitle.Text_Type is
                when Text =>
