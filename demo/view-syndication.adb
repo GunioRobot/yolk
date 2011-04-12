@@ -35,7 +35,6 @@
 
 with AWS.Messages;
 with AWS.MIME;
-with Ada.Text_IO;
 
 package body View.Syndication is
 
@@ -66,6 +65,13 @@ package body View.Syndication is
       return Build (Content_Type  => Text_XML,
                     Message_Body  => Get_XML_String (Feed),
                     Encoding      => Encoding);
+
+   exception
+
+      when Yolk.Syndication.Writer.Not_Valid_XML =>
+         return Build (Content_Type  => Text_HTML,
+                       Message_Body  => "WTF!",
+                       Encoding      => Encoding);
 
    end Generate;
 
@@ -114,9 +120,16 @@ begin
              Base_URI => "base",
              Language => "da");
 
-exception
+   Set_Rights (Feed        => Feed,
+               Rights      => "Some <b>rights</b>",
+               Base_URI    => "base/",
+               Language    => "da",
+               Rights_Kind => Xhtml);
 
-   when others =>
-      Ada.Text_IO.Put_Line ("crap!");
+   Set_Subtitle (Feed          => Feed,
+                 Subtitle      => "Some subtitle",
+                 Base_URI      => "base/",
+                 Language      => "da",
+                 Subtitle_Kind => Text);
 
 end View.Syndication;

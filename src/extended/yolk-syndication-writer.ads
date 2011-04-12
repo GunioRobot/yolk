@@ -324,6 +324,41 @@ package Yolk.Syndication.Writer is
    --  URI:
    --    The URL to the image.
 
+   procedure Set_Rights
+     (Feed        : in out Atom_Feed;
+      Rights      : in     String;
+      Base_URI    : in     String := None;
+      Language    : in     String := None;
+      Rights_Kind : in     Content_Kind := Text);
+   --  Conveys information about rights held in and over a feed. SHOULD NOT be
+   --  used to convey machine - readable licensing information.
+   --
+   --  Rights:
+   --    The actual text describing the rights.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Rights_Kind:
+   --    The rights kind. See Content_Type.
+
+   procedure Set_Subtitle
+     (Feed           : in out Atom_Feed;
+      Subtitle       : in     String;
+      Base_URI       : in     String := None;
+      Language       : in     String := None;
+      Subtitle_Kind  : in     Content_Kind := Text);
+   --  Conveys a human-readable description or subtitle for a feed.
+   --
+   --  Subtitle:
+   --    The Subtitle is supposed to expand upon the Title.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Subtitle_Kind:
+   --    The rights kind. See Content_Type.
+
    procedure Set_Title
      (Feed       : in out Atom_Feed;
       Title      : in     String;

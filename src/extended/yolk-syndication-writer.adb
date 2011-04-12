@@ -403,6 +403,56 @@ package body Yolk.Syndication.Writer is
 
    end Set_Logo;
 
+   ------------------
+   --  Set_Rights  --
+   ------------------
+
+   procedure Set_Rights
+     (Feed        : in out Atom_Feed;
+      Rights      : in String;
+      Base_URI    : in String := None;
+      Language    : in String := None;
+      Rights_Kind : in Content_Kind := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Set_Rights
+        (Value => Atom_Text'(Common =>
+                               Atom_Common'(Base_URI => TUS (Base_URI),
+                                            Language => TUS (Language)),
+                             Text_Content => TUS (Rights),
+                             Text_Type    => Rights_Kind));
+
+   end Set_Rights;
+
+   --------------------
+   --  Set_Subtitle  --
+   --------------------
+
+   procedure Set_Subtitle
+     (Feed           : in out Atom_Feed;
+      Subtitle       : in String;
+      Base_URI       : in String := None;
+      Language       : in String := None;
+      Subtitle_Kind  : in Content_Kind := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Set_Subtitle
+        (Value => Atom_Text'(Common =>
+                               Atom_Common'(Base_URI => TUS (Base_URI),
+                                            Language => TUS (Language)),
+                             Text_Content => TUS (Subtitle),
+                             Text_Type    => Subtitle_Kind));
+
+   end Set_Subtitle;
+
    -----------------
    --  Set_Title  --
    -----------------
@@ -598,8 +648,10 @@ package body Yolk.Syndication.Writer is
 
          begin
 
-            Title_Node := Append_Child (Feed_Node,
-                                        Create_Element (Doc, "title"));
+            Title_Node := Append_Child
+              (N         => Feed_Node,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => "title"));
 
             if Title.Common.Base_URI /= Null_Unbounded_String then
                Set_Attribute (Elem  => Title_Node,
@@ -1058,6 +1110,134 @@ package body Yolk.Syndication.Writer is
             --  which obviously is annoying as hell.
 
          end Add_Logo_To_DOM;
+
+         --  feed:rights
+         Add_Rights_To_DOM :
+         declare
+
+            Rights_Node : Node;
+
+         begin
+
+            Rights_Node := Append_Child
+              (N         => Feed_Node,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => "rights"));
+
+            if Rights.Common.Base_URI /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Rights_Node,
+                              Name  => "base",
+                              Value => TS (Rights.Common.Base_URI));
+            end if;
+
+            if Rights.Common.Language /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Rights_Node,
+                              Name  => "lang",
+                              Value => TS (Rights.Common.Language));
+            end if;
+
+            case Rights.Text_Type is
+               when Text =>
+                  Set_Attribute (Elem  => Rights_Node,
+                                 Name  => "type",
+                                 Value => "text");
+                  Rights_Node := Append_Child
+                    (N         => Rights_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (Rights.Text_Content)));
+               when Html =>
+                  Set_Attribute (Elem  => Rights_Node,
+                                 Name  => "type",
+                                 Value => "html");
+                  Rights_Node := Append_Child
+                    (N         => Rights_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (Rights.Text_Content)));
+               when Xhtml =>
+                  Set_Attribute (Elem  => Rights_Node,
+                                 Name  => "type",
+                                 Value => "xhtml");
+                  Set_Attribute (Elem  => Rights_Node,
+                                 Name  => "xmlns",
+                                 Value => XHTMLNS);
+
+                  Rights_Node := Append_Child
+                    (N         => Rights_Node,
+                     New_Child => First_Child
+                       (N => Create_DOM_From_String
+                          (XML_String => "<div>" &
+                           TS (Rights.Text_Content) &
+                           "</div>")));
+
+            end case;
+
+         end Add_Rights_To_DOM;
+
+         --  feed:subtitle
+         Add_Subtitle_To_DOM :
+         declare
+
+            Subtitle_Node : Node;
+
+         begin
+
+            Subtitle_Node := Append_Child
+              (N         => Feed_Node,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => "subtitle"));
+
+            if Subtitle.Common.Base_URI /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Subtitle_Node,
+                              Name  => "base",
+                              Value => TS (Subtitle.Common.Base_URI));
+            end if;
+
+            if Subtitle.Common.Language /= Null_Unbounded_String then
+               Set_Attribute (Elem  => Subtitle_Node,
+                              Name  => "lang",
+                              Value => TS (Subtitle.Common.Language));
+            end if;
+
+            case Subtitle.Text_Type is
+               when Text =>
+                  Set_Attribute (Elem  => Subtitle_Node,
+                                 Name  => "type",
+                                 Value => "text");
+                  Subtitle_Node := Append_Child
+                    (N         => Subtitle_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (Subtitle.Text_Content)));
+               when Html =>
+                  Set_Attribute (Elem  => Subtitle_Node,
+                                 Name  => "type",
+                                 Value => "html");
+                  Subtitle_Node := Append_Child
+                    (N         => Subtitle_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (Subtitle.Text_Content)));
+               when Xhtml =>
+                  Set_Attribute (Elem  => Subtitle_Node,
+                                 Name  => "type",
+                                 Value => "xhtml");
+                  Set_Attribute (Elem  => Subtitle_Node,
+                                 Name  => "xmlns",
+                                 Value => XHTMLNS);
+
+                  Subtitle_Node := Append_Child
+                    (N         => Subtitle_Node,
+                     New_Child => First_Child
+                       (N => Create_DOM_From_String
+                          (XML_String => "<div>" &
+                           TS (Subtitle.Text_Content) &
+                           "</div>")));
+
+            end case;
+
+         end Add_Subtitle_To_DOM;
 
          return Doc;
 
