@@ -53,6 +53,33 @@ package body Yolk.Syndication.Writer is
    ------------------
 
    procedure Add_Author
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Authors.Append
+        (New_Item => Atom_Person'(Common =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Name   => TUS (Name),
+                                  Email  => TUS (Email),
+                                  URI    => TUS (URI)));
+
+   end Add_Author;
+
+   ------------------
+   --  Add_Author  --
+   ------------------
+
+   procedure Add_Author
      (Feed     : in out Atom_Feed;
       Name     : in     String;
       Base_URI : in     String := None;
@@ -74,6 +101,35 @@ package body Yolk.Syndication.Writer is
                                URI    => TUS (URI)));
 
    end Add_Author;
+
+   --------------------
+   --  Add_Category  --
+   --------------------
+
+   procedure Add_Category
+     (Entr     : in out Atom_Entry;
+      Term     : in     String;
+      Base_URI : in     String := None;
+      Content  : in     String := None;
+      Label    : in     String := None;
+      Language : in     String := None;
+      Scheme   : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Categories.Append
+        (New_Item => Atom_Category'(Common =>
+                                      Atom_Common'(Base_URI => TUS (Base_URI),
+                                                   Language => TUS (Language)),
+                                    Content  => TUS (Content),
+                                    Label    => TUS (Label),
+                                    Scheme   => TUS (Scheme),
+                                    Term     => TUS (Term)));
+
+   end Add_Category;
 
    --------------------
    --  Add_Category  --
@@ -109,6 +165,33 @@ package body Yolk.Syndication.Writer is
    -----------------------
 
    procedure Add_Contributor
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Contributors.Append
+        (New_Item => Atom_Person'(Common =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Name   => TUS (Name),
+                                  Email  => TUS (Email),
+                                  URI    => TUS (URI)));
+
+   end Add_Contributor;
+
+   -----------------------
+   --  Add_Contributor  --
+   -----------------------
+
+   procedure Add_Contributor
      (Feed     : in out Atom_Feed;
       Name     : in     String;
       Base_URI : in     String := None;
@@ -130,6 +213,55 @@ package body Yolk.Syndication.Writer is
                                URI    => TUS (URI)));
 
    end Add_Contributor;
+
+   -----------------
+   --  Add_Entry  --
+   -----------------
+
+   procedure Add_Entry
+     (Feed : in out Atom_Feed;
+      Entr : in     Atom_Entry)
+   is
+   begin
+
+      Feed.PAF.Add_Entry (Value => Entr);
+
+   end Add_Entry;
+
+   ----------------
+   --  Add_Link  --
+   ----------------
+
+   procedure Add_Link
+     (Entr      : in out Atom_Entry;
+      Href      : in     String;
+      Base_URI  : in     String := None;
+      Content   : in     String := None;
+      Hreflang  : in     String := None;
+      Language  : in     String := None;
+      Length    : in     Natural := 0;
+      Mime_Type : in     String := None;
+      Rel       : in     Relation_Kind := Alternate;
+      Title     : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Links.Append
+        (New_Item => Atom_Link'(Common =>
+                                  Atom_Common'(Base_URI => TUS (Base_URI),
+                                               Language => TUS (Language)),
+                                Content   => TUS (Content),
+                                Href      => TUS (Href),
+                                Hreflang  => TUS (Hreflang),
+                                Length    => Length,
+                                Mime_Type => TUS (Mime_Type),
+                                Rel       => Rel,
+                                Title     => TUS (Title)));
+
+   end Add_Link;
 
    ----------------
    --  Add_Link  --
@@ -270,6 +402,58 @@ package body Yolk.Syndication.Writer is
 
    end Get_XML_String;
 
+   ----------------------
+   --  New_Atom_Entry  --
+   ----------------------
+
+   function New_Atom_Entry
+     (Base_URI : in String := None;
+      Language : in String := None)
+      return Atom_Entry
+   is
+
+      use Ada.Calendar;
+      use Yolk.Utilities;
+
+   begin
+
+      return An_Entry : Atom_Entry do
+         An_Entry := (Authors       => Person_List.Empty_List,
+                      Categories    => Category_List.Empty_List,
+                      Common        =>
+                        Atom_Common'(Base_URI => TUS (Base_URI),
+                                     Language => TUS (Language)),
+                      Contributors  => Person_List.Empty_List,
+                      Id            =>
+                        Atom_Id'(Common =>
+                                   Atom_Common'(Base_URI =>
+                                                  Null_Unbounded_String,
+                                                Language =>
+                                                  Null_Unbounded_String),
+                                 URI    => Null_Unbounded_String),
+                      Links         => Link_List.Empty_List,
+                      Rights        =>
+                        Atom_Text'(Common       =>
+                                     Atom_Common'(Base_URI =>
+                                                    Null_Unbounded_String,
+                                                  Language =>
+                                                    Null_Unbounded_String),
+                                   Text_Content => Null_Unbounded_String,
+                                   Text_Type    => Text),
+                      Title         =>
+                        Atom_Text'(Common       =>
+                                     Atom_Common'(Base_URI =>
+                                                    Null_Unbounded_String,
+                                                  Language =>
+                                                    Null_Unbounded_String),
+                                   Text_Content => Null_Unbounded_String,
+                                   Text_Type    => Text),
+                      Updated       => Clock);
+
+      end return;
+
+   end New_Atom_Entry;
+
    ---------------------
    --  New_Atom_Feed  --
    ---------------------
@@ -366,6 +550,28 @@ package body Yolk.Syndication.Writer is
    --------------
 
    procedure Set_Id
+     (Entr     : in out Atom_Entry;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Id := Atom_Id'(Common =>
+                            Atom_Common'(Base_URI => TUS (Base_URI),
+                                         Language => TUS (Language)),
+                          URI    => TUS (URI));
+
+   end Set_Id;
+
+   --------------
+   --  Set_Id  --
+   --------------
+
+   procedure Set_Id
      (Feed     : in out Atom_Feed;
       URI      : in     String;
       Base_URI : in     String := None;
@@ -383,6 +589,10 @@ package body Yolk.Syndication.Writer is
                            URI    => TUS (URI)));
 
    end Set_Id;
+
+   ----------------
+   --  Set_Logo  --
+   ----------------
 
    procedure Set_Logo
      (Feed     : in out Atom_Feed;
@@ -523,6 +733,19 @@ package body Yolk.Syndication.Writer is
 
       end Add_Contributor;
 
+      -----------------
+      --  Add_Entry  --
+      -----------------
+
+      procedure Add_Entry
+        (Value : in Atom_Entry)
+      is
+      begin
+
+         Entries.Prepend (Value);
+
+      end Add_Entry;
+
       ----------------
       --  Add_Link  --
       ----------------
@@ -560,10 +783,31 @@ package body Yolk.Syndication.Writer is
             Value : in String);
          --  Add the attribute Name to Elem if Value isn't empty.
 
-         procedure Text_Construct
-           (Elem      : in out Node;
-            Text_Kind : in     Content_Kind;
-            Data      : in     String);
+         procedure Create_Category_Elements
+           (List   : in Category_List.List;
+            Parent : in Node);
+         --  Add atom:category elements to parent.
+
+         procedure Create_Id_Element
+           (Id     : in Atom_Id;
+            Parent : in Node);
+         --  Add atom:id element to parent;
+
+         procedure Create_Link_Elements
+           (List   : in Link_List.List;
+            Parent : in Node);
+         --  Add atom:link elements to Parent.
+
+         procedure Create_Person_Elements
+           (Elem_Name   : in String;
+            List        : in Person_List.List;
+            Parent      : in Node);
+         --  Add atom:person elements to Parent.
+
+         procedure Create_Text_Construct
+           (Data      : in     String;
+            Parent    : in out Node;
+            Text_Kind : in     Content_Kind);
          --  Set the type (text/html/xhtml) and content of an atomTextConstruct
          --  element.
 
@@ -586,53 +830,308 @@ package body Yolk.Syndication.Writer is
 
          end Attribute;
 
-         ----------------------
-         --  Text_Construct  --
-         ----------------------
+         --------------------------------
+         --  Create_Category_Elements  --
+         --------------------------------
 
-         procedure Text_Construct
-           (Elem      : in out Node;
-            Text_Kind : in     Content_Kind;
-            Data      : in     String)
+         procedure Create_Category_Elements
+           (List   : in Category_List.List;
+            Parent : in Node)
+         is
+
+            A_Category     : Atom_Category;
+            C              : Category_List.Cursor := List.First;
+            Category_Node  : Node;
+
+         begin
+
+            loop
+               exit when not Category_List.Has_Element (C);
+
+               A_Category := Category_List.Element (C);
+
+               Category_Node := Append_Child
+                 (N         => Parent,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => "category"));
+
+               Set_Attribute (Elem  => Category_Node,
+                              Name  => "term",
+                              Value => TS (A_Category.Term));
+
+               Attribute (Elem  => Category_Node,
+                          Name  => "base",
+                          Value => TS (A_Category.Common.Base_URI));
+
+               Attribute (Elem  => Category_Node,
+                          Name  => "lang",
+                          Value => TS (A_Category.Common.Language));
+
+               Attribute (Elem  => Category_Node,
+                          Name  => "label",
+                          Value => TS (A_Category.Label));
+
+               Attribute (Elem  => Category_Node,
+                          Name  => "scheme",
+                          Value => TS (A_Category.Scheme));
+
+               if A_Category.Content /= Null_Unbounded_String then
+                  Category_Node := Append_Child
+                    (N         => Category_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (A_Category.Content)));
+               end if;
+
+               Category_List.Next (C);
+            end loop;
+
+         end Create_Category_Elements;
+
+         -------------------------
+         --  Create_Id_Element  --
+         -------------------------
+
+         procedure Create_Id_Element
+           (Id     : in Atom_Id;
+            Parent : in Node)
+         is
+
+            Id_Node : Node;
+
+         begin
+
+            Id_Node := Append_Child
+              (N         => Parent,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => "id"));
+
+            Attribute (Elem  => Id_Node,
+                       Name  => "base",
+                       Value => TS (Id.Common.Base_URI));
+
+            Attribute (Elem  => Id_Node,
+                       Name  => "lang",
+                       Value => TS (Id.Common.Language));
+
+            Id_Node := Append_Child
+              (N         => Id_Node,
+               New_Child => Create_Text_Node (Doc, TS (Id.URI)));
+
+            pragma Unreferenced (Id_Node);
+            --  We need this because XML/Ada have no Append_Child procedures,
+            --  which obviously is annoying as hell.
+
+         end Create_Id_Element;
+
+         ----------------------------
+         --  Create_Link_Elements  --
+         ----------------------------
+
+         procedure Create_Link_Elements
+           (List   : in Link_List.List;
+            Parent : in Node)
+         is
+
+            use Ada.Strings;
+
+            A_Link      : Atom_Link;
+            C           : Link_List.Cursor := List.First;
+            Link_Node   : Node;
+
+         begin
+
+            loop
+               exit when not Link_List.Has_Element (C);
+
+               A_Link := Link_List.Element (C);
+
+               Link_Node := Append_Child
+                 (N         => Parent,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => "link"));
+
+               case A_Link.Rel is
+                  when Alternate =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "alternate");
+                  when Related =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "related");
+                  when Self =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "self");
+                  when Enclosure =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "enclosure");
+                  when Via =>
+                     Set_Attribute (Elem  => Link_Node,
+                                    Name  => "rel",
+                                    Value => "via");
+               end case;
+
+               Set_Attribute (Elem  => Link_Node,
+                              Name  => "href",
+                              Value => TS (A_Link.Href));
+
+               Attribute (Elem  => Link_Node,
+                          Name  => "hreflang",
+                          Value => TS (A_Link.Hreflang));
+
+               if A_Link.Length > 0 then
+                  Set_Attribute
+                    (Elem  => Link_Node,
+                     Name  => "length",
+                     Value => Fixed.Trim
+                       (Source => Natural'Image (A_Link.Length),
+                        Side   => Left));
+               end if;
+
+               Attribute (Elem  => Link_Node,
+                          Name  => "type",
+                          Value => TS (A_Link.Mime_Type));
+
+               Attribute (Elem  => Link_Node,
+                          Name  => "title",
+                          Value => TS (A_Link.Title));
+
+               if A_Link.Content /= Null_Unbounded_String then
+                  Link_Node := Append_Child
+                    (N         => Link_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (A_Link.Content)));
+               end if;
+
+               Link_List.Next (C);
+            end loop;
+
+         end Create_Link_Elements;
+
+         ------------------------------
+         --  Create_Person_Elements  --
+         ------------------------------
+
+         procedure Create_Person_Elements
+           (Elem_Name   : in String;
+            List        : in Person_List.List;
+            Parent      : in Node)
+         is
+
+            A_Person    : Atom_Person;
+            Person_Node : Node;
+            C           : Person_List.Cursor := List.First;
+            Elem_Node   : Node;
+
+         begin
+
+            loop
+               exit when not Person_List.Has_Element (C);
+
+               A_Person := Person_List.Element (C);
+
+               Person_Node := Append_Child
+                 (N         => Parent,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => Elem_Name));
+
+               Attribute (Elem  => Person_Node,
+                          Name  => "base",
+                          Value => TS (A_Person.Common.Base_URI));
+
+               Attribute (Elem  => Person_Node,
+                          Name  => "lang",
+                          Value => TS (A_Person.Common.Language));
+
+               Elem_Node := Append_Child
+                 (N         => Person_Node,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => "name"));
+               Elem_Node := Append_Child
+                 (N         => Elem_Node,
+                  New_Child => Create_Text_Node (Doc  => Doc,
+                                                 Data => TS (A_Person.Name)));
+
+               if A_Person.Email /= Null_Unbounded_String then
+                  Elem_Node := Append_Child
+                    (N         => Person_Node,
+                     New_Child => Create_Element (Doc      => Doc,
+                                                  Tag_Name => "email"));
+                  Elem_Node := Append_Child
+                    (N         => Elem_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (A_Person.Email)));
+               end if;
+
+               if A_Person.URI /= Null_Unbounded_String then
+                  Elem_Node := Append_Child
+                    (N         => Person_Node,
+                     New_Child => Create_Element (Doc      => Doc,
+                                                  Tag_Name => "uri"));
+                  Elem_Node := Append_Child
+                    (N         => Elem_Node,
+                     New_Child => Create_Text_Node
+                       (Doc  => Doc,
+                        Data => TS (A_Person.URI)));
+               end if;
+
+               Person_List.Next (C);
+            end loop;
+
+         end Create_Person_Elements;
+
+         -----------------------------
+         --  Create_Text_Construct  --
+         -----------------------------
+
+         procedure Create_Text_Construct
+           (Data      : in     String;
+            Parent    : in out Node;
+            Text_Kind : in     Content_Kind)
          is
          begin
 
             case Text_Kind is
                when Text =>
-                  Set_Attribute (Elem  => Elem,
+                  Set_Attribute (Elem  => Parent,
                                  Name  => "type",
                                  Value => "text");
-                  Elem := Append_Child
-                    (N         => Elem,
+                  Parent := Append_Child
+                    (N         => Parent,
                      New_Child => Create_Text_Node
                        (Doc  => Doc,
                         Data => Data));
                when Html =>
-                  Set_Attribute (Elem  => Elem,
+                  Set_Attribute (Elem  => Parent,
                                  Name  => "type",
                                  Value => "html");
-                  Elem := Append_Child
-                    (N         => Elem,
+                  Parent := Append_Child
+                    (N         => Parent,
                      New_Child => Create_Text_Node
                        (Doc  => Doc,
                         Data => Data));
                when Xhtml =>
-                  Set_Attribute (Elem  => Elem,
+                  Set_Attribute (Elem  => Parent,
                                  Name  => "type",
                                  Value => "xhtml");
-                  Set_Attribute (Elem  => Elem,
+                  Set_Attribute (Elem  => Parent,
                                  Name  => "xmlns",
                                  Value => XHTMLNS);
 
-                  Elem := Append_Child
-                    (N         => Elem,
+                  Parent := Append_Child
+                    (N         => Parent,
                      New_Child => First_Child
                        (N => Create_DOM_From_String
                           (XML_String => "<div>" & Data & "</div>")));
 
             end case;
 
-         end Text_Construct;
+         end Create_Text_Construct;
 
       begin
 
@@ -657,35 +1156,8 @@ package body Yolk.Syndication.Writer is
                     Value => TS (Common.Language));
 
          --  feed:id element
-         Add_Id_To_DOM :
-         declare
-
-            Id_Node : Node;
-
-         begin
-
-            Id_Node := Append_Child
-              (N         => Feed_Node,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "id"));
-
-            Attribute (Elem  => Id_Node,
-                       Name  => "base",
-                       Value => TS (Id.Common.Base_URI));
-
-            Attribute (Elem  => Id_Node,
-                       Name  => "lang",
-                       Value => TS (Id.Common.Language));
-
-            Id_Node := Append_Child
-              (N         => Id_Node,
-               New_Child => Create_Text_Node (Doc, TS (Id.URI)));
-
-            pragma Unreferenced (Id_Node);
-            --  We need this because XML/Ada have no Append_Child procedures,
-            --  which obviously is annoying as hell.
-
-         end Add_Id_To_DOM;
+         Create_Id_Element (Id     => Id,
+                            Parent => Feed_Node);
 
          --  feed:updated element
          Add_Updated_To_DOM :
@@ -733,197 +1205,25 @@ package body Yolk.Syndication.Writer is
                        Name  => "lang",
                        Value => TS (Title.Common.Language));
 
-            Text_Construct (Elem      => Title_Node,
-                            Text_Kind => Title.Text_Type,
-                            Data      => TS (Title.Text_Content));
+            Create_Text_Construct (Parent    => Title_Node,
+                                   Text_Kind => Title.Text_Type,
+                                   Data      => TS (Title.Text_Content));
 
          end Add_Title_To_DOM;
 
          --  feed:author elements
-         Add_Authors_To_DOM :
-         declare
-
-            A_Person    : Atom_Person;
-            Author_Node : Node;
-            C           : Person_List.Cursor := Authors.First;
-            Elem_Node   : Node;
-
-         begin
-
-            loop
-               exit when not Person_List.Has_Element (C);
-
-               A_Person := Person_List.Element (C);
-
-               Author_Node := Append_Child
-                 (N         => Feed_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "author"));
-
-               Attribute (Elem  => Author_Node,
-                          Name  => "base",
-                          Value => TS (A_Person.Common.Base_URI));
-
-               Attribute (Elem  => Author_Node,
-                          Name  => "lang",
-                          Value => TS (A_Person.Common.Language));
-
-               Elem_Node := Append_Child
-                 (N         => Author_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "name"));
-               Elem_Node := Append_Child
-                 (N         => Elem_Node,
-                  New_Child => Create_Text_Node (Doc  => Doc,
-                                                 Data => TS (A_Person.Name)));
-
-               if A_Person.Email /= Null_Unbounded_String then
-                  Elem_Node := Append_Child
-                    (N         => Author_Node,
-                     New_Child => Create_Element (Doc      => Doc,
-                                                  Tag_Name => "email"));
-                  Elem_Node := Append_Child
-                    (N => Elem_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Person.Email)));
-               end if;
-
-               if A_Person.URI /= Null_Unbounded_String then
-                  Elem_Node := Append_Child
-                    (N         => Author_Node,
-                     New_Child => Create_Element (Doc      => Doc,
-                                                  Tag_Name => "uri"));
-                  Elem_Node := Append_Child
-                    (N         => Elem_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Person.URI)));
-               end if;
-
-               Person_List.Next (C);
-            end loop;
-
-         end Add_Authors_To_DOM;
+         Create_Person_Elements (Elem_Name   => "author",
+                                 List        => Authors,
+                                 Parent      => Feed_Node);
 
          --  feed:category elements
-         Add_Categories_To_Dom :
-         declare
-
-            A_Category     : Atom_Category;
-            C              : Category_List.Cursor := Categories.First;
-            Category_Node  : Node;
-
-         begin
-
-            loop
-               exit when not Category_List.Has_Element (C);
-
-               A_Category := Category_List.Element (C);
-
-               Category_Node := Append_Child
-                 (N         => Feed_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "category"));
-               Set_Attribute (Elem  => Category_Node,
-                              Name  => "term",
-                              Value => TS (A_Category.Term));
-
-               Attribute (Elem  => Category_Node,
-                          Name  => "base",
-                          Value => TS (A_Category.Common.Base_URI));
-
-               Attribute (Elem  => Category_Node,
-                          Name  => "lang",
-                          Value => TS (A_Category.Common.Language));
-
-               Attribute (Elem  => Category_Node,
-                          Name  => "label",
-                          Value => TS (A_Category.Label));
-
-               Attribute (Elem  => Category_Node,
-                          Name  => "scheme",
-                          Value => TS (A_Category.Scheme));
-
-               if A_Category.Content /= Null_Unbounded_String then
-                  Category_Node := Append_Child
-                    (N         => Category_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Category.Content)));
-               end if;
-
-               Category_List.Next (C);
-            end loop;
-
-         end Add_Categories_To_Dom;
+         Create_Category_Elements (List   => Categories,
+                                   Parent => Feed_Node);
 
          --  feed:contributor elements
-         Add_Contributors_To_DOM :
-         declare
-
-            A_Person          : Atom_Person;
-            C                 : Person_List.Cursor := Contributors.First;
-            Contributor_Node  : Node;
-            Elem_Node         : Node;
-
-         begin
-
-            loop
-               exit when not Person_List.Has_Element (C);
-
-               A_Person := Person_List.Element (C);
-
-               Contributor_Node := Append_Child
-                 (N         => Feed_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "contributor"));
-
-               Attribute (Elem  => Contributor_Node,
-                          Name  => "base",
-                          Value => TS (A_Person.Common.Base_URI));
-
-               Attribute (Elem  => Contributor_Node,
-                          Name  => "lang",
-                          Value => TS (A_Person.Common.Language));
-
-               Elem_Node := Append_Child
-                 (N         => Contributor_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "name"));
-               Elem_Node := Append_Child
-                 (N         => Elem_Node,
-                  New_Child => Create_Text_Node (Doc  => Doc,
-                                                 Data => TS (A_Person.Name)));
-
-               if A_Person.Email /= Null_Unbounded_String then
-                  Elem_Node := Append_Child
-                    (N         => Contributor_Node,
-                     New_Child => Create_Element (Doc      => Doc,
-                                                  Tag_Name => "email"));
-                  Elem_Node := Append_Child
-                    (N => Elem_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Person.Email)));
-               end if;
-
-               if A_Person.URI /= Null_Unbounded_String then
-                  Elem_Node := Append_Child
-                    (N         => Contributor_Node,
-                     New_Child => Create_Element (Doc      => Doc,
-                                                  Tag_Name => "uri"));
-                  Elem_Node := Append_Child
-                    (N         => Elem_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Person.URI)));
-               end if;
-
-               Person_List.Next (C);
-            end loop;
-
-         end Add_Contributors_To_DOM;
+         Create_Person_Elements (Elem_Name   => "contributor",
+                                 List        => Contributors,
+                                 Parent      => Feed_Node);
 
          --  feed:generator element
          if Generator.Agent /= Null_Unbounded_String then
@@ -995,87 +1295,8 @@ package body Yolk.Syndication.Writer is
          end if;
 
          --  feed:link elements
-         Add_Link_To_DOM :
-         declare
-
-            use Ada.Strings;
-
-            A_Link      : Atom_Link;
-            C           : Link_List.Cursor := Links.First;
-            Link_Node   : Node;
-
-         begin
-
-            loop
-               exit when not Link_List.Has_Element (C);
-
-               A_Link := Link_List.Element (C);
-
-               Link_Node := Append_Child
-                 (N         => Feed_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "link"));
-
-               case A_Link.Rel is
-                  when Alternate =>
-                     Set_Attribute (Elem  => Link_Node,
-                                    Name  => "rel",
-                                    Value => "alternate");
-                  when Related =>
-                     Set_Attribute (Elem  => Link_Node,
-                                    Name  => "rel",
-                                    Value => "related");
-                  when Self =>
-                     Set_Attribute (Elem  => Link_Node,
-                                    Name  => "rel",
-                                    Value => "self");
-                  when Enclosure =>
-                     Set_Attribute (Elem  => Link_Node,
-                                    Name  => "rel",
-                                    Value => "enclosure");
-                  when Via =>
-                     Set_Attribute (Elem  => Link_Node,
-                                    Name  => "rel",
-                                    Value => "via");
-               end case;
-
-               Set_Attribute (Elem  => Link_Node,
-                              Name  => "href",
-                              Value => TS (A_Link.Href));
-
-               Attribute (Elem  => Link_Node,
-                          Name  => "hreflang",
-                          Value => TS (A_Link.Hreflang));
-
-               if A_Link.Length > 0 then
-                  Set_Attribute
-                    (Elem  => Link_Node,
-                     Name  => "length",
-                     Value => Fixed.Trim
-                       (Source => Natural'Image (A_Link.Length),
-                        Side   => Left));
-               end if;
-
-               Attribute (Elem  => Link_Node,
-                          Name  => "type",
-                          Value => TS (A_Link.Mime_Type));
-
-               Attribute (Elem  => Link_Node,
-                          Name  => "title",
-                          Value => TS (A_Link.Title));
-
-               if A_Link.Content /= Null_Unbounded_String then
-                  Link_Node := Append_Child
-                    (N         => Link_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Link.Content)));
-               end if;
-
-               Link_List.Next (C);
-            end loop;
-
-         end Add_Link_To_DOM;
+         Create_Link_Elements (List   => Links,
+                               Parent => Feed_Node);
 
          --  feed:logo
          Add_Logo_To_DOM :
@@ -1130,9 +1351,9 @@ package body Yolk.Syndication.Writer is
                        Name  => "lang",
                        Value => TS (Rights.Common.Language));
 
-            Text_Construct (Elem      => Rights_Node,
-                            Text_Kind => Rights.Text_Type,
-                            Data      => TS (Rights.Text_Content));
+            Create_Text_Construct (Parent    => Rights_Node,
+                                   Text_Kind => Rights.Text_Type,
+                                   Data      => TS (Rights.Text_Content));
 
          end Add_Rights_To_DOM;
 
@@ -1157,11 +1378,66 @@ package body Yolk.Syndication.Writer is
                        Name  => "lang",
                        Value => TS (Subtitle.Common.Language));
 
-            Text_Construct (Elem      => Subtitle_Node,
-                            Text_Kind => Subtitle.Text_Type,
-                            Data      => TS (Subtitle.Text_Content));
+            Create_Text_Construct (Parent    => Subtitle_Node,
+                                   Text_Kind => Subtitle.Text_Type,
+                                   Data      => TS (Subtitle.Text_Content));
 
          end Add_Subtitle_To_DOM;
+
+         --  feed:entry
+         Add_Entries_To_DOM :
+         declare
+
+            An_Entry    : Atom_Entry;
+            C           : Entry_List.Cursor := Entries.First;
+            Entry_Node  : Node;
+
+         begin
+
+            loop
+               exit when not Entry_List.Has_Element (C);
+
+               An_Entry := Entry_List.Element (C);
+
+               Entry_Node := Append_Child
+                 (N         => Feed_Node,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => "entry"));
+
+               Attribute (Elem  => Entry_Node,
+                          Name  => "base",
+                          Value => TS (An_Entry.Common.Base_URI));
+
+               Attribute (Elem  => Entry_Node,
+                          Name  => "lang",
+                          Value => TS (An_Entry.Common.Language));
+
+               --  entry:author elements
+               Create_Person_Elements (Elem_Name => "author",
+                                       List      => An_Entry.Authors,
+                                       Parent    => Entry_Node);
+
+               --  entry:cateory elements
+               Create_Category_Elements (List   => An_Entry.Categories,
+                                         Parent => Entry_Node);
+
+               --  entry:contributor elements
+               Create_Person_Elements (Elem_Name => "contributor",
+                                       List      => An_Entry.Contributors,
+                                       Parent    => Entry_Node);
+
+               --  entry:id element
+               Create_Id_Element (Id     => An_Entry.Id,
+                                  Parent => Entry_Node);
+
+               --  entry:link elements
+               Create_Link_Elements (List   => An_Entry.Links,
+                                     Parent => Entry_Node);
+
+               Entry_List.Next (C);
+            end loop;
+
+         end Add_Entries_To_DOM;
 
          return Doc;
 

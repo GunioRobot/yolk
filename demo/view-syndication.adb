@@ -68,7 +68,7 @@ package body View.Syndication is
 
    exception
 
-      when Yolk.Syndication.Writer.Not_Valid_XML =>
+      when Not_Valid_XML =>
          return Build (Content_Type  => Text_HTML,
                        Message_Body  => "WTF!",
                        Encoding      => Encoding);
@@ -131,5 +131,57 @@ begin
                  Base_URI      => "base/",
                  Language      => "da",
                  Subtitle_Kind => Text);
+
+   declare
+
+      An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "entry/base/",
+                                               Language => "entry lang");
+
+   begin
+
+      Add_Author (Entr     => An_Entry,
+                  Name     => "Thomas Locke",
+                  Base_URI => "author/base",
+                  Email    => "thomas@loecke.dk",
+                  Language => "da",
+                  URI      => "http://12boo.net");
+
+      Add_Category (Entr     => An_Entry,
+                    Term     => "entry category",
+                    Base_URI => "/",
+                    Content  => "undefined content",
+                    Label    => "A label",
+                    Language => "da",
+                    Scheme   => "URI to scheme");
+
+      Add_Contributor (Entr     => An_Entry,
+                       Name     => "Con Thomas Locke",
+                       Base_URI => "base/con",
+                       Email    => "con email",
+                       Language => "con lan",
+                       URI      => "con URI");
+
+      Set_Id (Entr     => An_Entry,
+              URI      => "id URI",
+              Base_URI => "id/base",
+              Language => "id/lang");
+
+      Add_Link (Entr      => An_Entry,
+                Href      => "entry link_one",
+                Base_URI  => "base",
+                Content   => "content",
+                Hreflang  => "hreflang",
+                Language  => "lang",
+                Length    => 1,
+                Mime_Type => "mime",
+                Rel       => Alternate,
+                Title     => "Title");
+      Add_Link (Entr => An_Entry,
+                Href => "entry link_two");
+
+      Add_Entry (Feed => Feed,
+                 Entr => An_Entry);
+
+   end;
 
 end View.Syndication;
