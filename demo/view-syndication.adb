@@ -33,6 +33,7 @@
 --  This package is currently only "with'ed" by other demo source files. It is
 --  NOT required by Yolk in any way.
 
+with Ada.Calendar;
 with AWS.Messages;
 with AWS.MIME;
 
@@ -132,6 +133,9 @@ begin
                  Language      => "da",
                  Subtitle_Kind => Text);
 
+   Set_Updated (Feed        => Feed,
+                Update_Time => Ada.Calendar.Clock);
+
    declare
 
       An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "entry/base/",
@@ -178,6 +182,16 @@ begin
                 Title     => "Title");
       Add_Link (Entr => An_Entry,
                 Href => "entry link_two");
+
+      Set_Published (Entr           => An_Entry,
+                     Published_Time => Ada.Calendar.Clock,
+                     Base_URI       => "published/base",
+                     Language       => "published/language");
+
+      Set_Updated (Entr        => An_Entry,
+                   Update_Time => Ada.Calendar.Clock,
+                   Base_URI    => "updated/base",
+                   Language    => "updated/language");
 
       Add_Entry (Feed => Feed,
                  Entr => An_Entry);

@@ -415,6 +415,8 @@ package body Yolk.Syndication.Writer is
       use Ada.Calendar;
       use Yolk.Utilities;
 
+      Now : constant Time := Clock;
+
    begin
 
       return An_Entry : Atom_Entry do
@@ -432,6 +434,13 @@ package body Yolk.Syndication.Writer is
                                                   Null_Unbounded_String),
                                  URI    => Null_Unbounded_String),
                       Links         => Link_List.Empty_List,
+                      Published     =>
+                        Atom_Date'(Common     =>
+                                     Atom_Common'(Base_URI =>
+                                                    Null_Unbounded_String,
+                                                  Language =>
+                                                    Null_Unbounded_String),
+                                   Time_Stamp => Now),
                       Rights        =>
                         Atom_Text'(Common       =>
                                      Atom_Common'(Base_URI =>
@@ -448,7 +457,13 @@ package body Yolk.Syndication.Writer is
                                                     Null_Unbounded_String),
                                    Text_Content => Null_Unbounded_String,
                                    Text_Type    => Text),
-                      Updated       => Clock);
+                      Updated       =>
+                        Atom_Date'(Common     =>
+                                     Atom_Common'(Base_URI =>
+                                                    Null_Unbounded_String,
+                                                  Language =>
+                                                    Null_Unbounded_String),
+                                   Time_Stamp => Now));
 
       end return;
 
@@ -613,6 +628,28 @@ package body Yolk.Syndication.Writer is
 
    end Set_Logo;
 
+   ---------------------
+   --  Set_Published  --
+   ---------------------
+
+   procedure Set_Published
+     (Entr           : in out Atom_Entry;
+      Published_Time : in     Ada.Calendar.Time;
+      Base_URI       : in     String := None;
+      Language       : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Published := Atom_Date'(Common     =>
+                                     Atom_Common'(Base_URI => TUS (Base_URI),
+                                                  Language => TUS (Language)),
+                                   Time_Stamp => Published_Time);
+
+   end Set_Published;
+
    ------------------
    --  Set_Rights  --
    ------------------
@@ -687,6 +724,51 @@ package body Yolk.Syndication.Writer is
                              Text_Type    => Title_Kind));
 
    end Set_Title;
+
+   -------------------
+   --  Set_Updated  --
+   -------------------
+
+   procedure Set_Updated
+     (Entr        : in out Atom_Entry;
+      Update_Time : in     Ada.Calendar.Time;
+      Base_URI    : in     String := None;
+      Language    : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Updated := Atom_Date'(Common     =>
+                                   Atom_Common'(Base_URI => TUS (Base_URI),
+                                                Language => TUS (Language)),
+                                 Time_Stamp => Update_Time);
+
+   end Set_Updated;
+
+   -------------------
+   --  Set_Updated  --
+   -------------------
+
+   procedure Set_Updated
+     (Feed        : in out Atom_Feed;
+      Update_Time : in     Ada.Calendar.Time;
+      Base_URI    : in     String := None;
+      Language    : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Feed.PAF.Set_Updated_Time
+        (Value => Atom_Date'(Common =>
+                               Atom_Common'(Base_URI => TUS (Base_URI),
+                                            Language => TUS (Language)),
+                             Time_Stamp => Update_Time));
+
+   end Set_Updated;
 
    --------------------
    --  PT_Atom_Feed  --
@@ -788,10 +870,16 @@ package body Yolk.Syndication.Writer is
             Parent : in Node);
          --  Add atom:category elements to parent.
 
+         procedure Create_Date_Construct
+           (Date      : in Atom_Date;
+            Elem_Name : in String;
+            Parent    : in Node);
+         --  Add an Atom date construct to Parent.
+
          procedure Create_Id_Element
            (Id     : in Atom_Id;
             Parent : in Node);
-         --  Add atom:id element to parent;
+         --  Add atom:id element to Parent;
 
          procedure Create_Link_Elements
            (List   : in Link_List.List;
@@ -887,6 +975,45 @@ package body Yolk.Syndication.Writer is
             end loop;
 
          end Create_Category_Elements;
+
+         -----------------------------
+         --  Create_Date_Construct  --
+         -----------------------------
+
+         procedure Create_Date_Construct
+           (Date      : in Atom_Date;
+            Elem_Name : in String;
+            Parent    : in Node)
+         is
+
+            Date_Node : Node;
+
+         begin
+
+            Date_Node := Append_Child
+              (N         => Parent,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => Elem_Name));
+
+            Attribute (Elem  => Date_Node,
+                       Name  => "base",
+                       Value => TS (Date.Common.Base_URI));
+
+            Attribute (Elem  => Date_Node,
+                       Name  => "lang",
+                       Value => TS (Date.Common.Language));
+
+            Date_Node := Append_Child
+              (N         => Date_Node,
+               New_Child => Create_Text_Node
+                 (Doc  => Doc,
+                  Data => Atom_Date_Image (Time_Stamp => Date.Time_Stamp)));
+
+            pragma Unreferenced (Date_Node);
+            --  We need this because XML/Ada have no Append_Child procedures,
+            --  which obviously is annoying as hell.
+
+         end Create_Date_Construct;
 
          -------------------------
          --  Create_Id_Element  --
@@ -1160,29 +1287,9 @@ package body Yolk.Syndication.Writer is
                             Parent => Feed_Node);
 
          --  feed:updated element
-         Add_Updated_To_DOM :
-         declare
-
-            Updated_Node : Node;
-
-         begin
-
-            Updated_Node := Append_Child
-              (N         => Feed_Node,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "updated"));
-
-            Updated_Node := Append_Child
-              (N         => Updated_Node,
-               New_Child => Create_Text_Node
-                 (Doc  => Doc,
-                  Data => Atom_Date_Image (Time_Stamp => Clock)));
-
-            pragma Unreferenced (Updated_Node);
-            --  We need this because XML/Ada have no Append_Child procedures,
-            --  which obviously is annoying as hell.
-
-         end Add_Updated_To_DOM;
+         Create_Date_Construct (Date      => Updated,
+                                Elem_Name => "updated",
+                                Parent    => Feed_Node);
 
          --  feed:title element
          Add_Title_To_DOM :
@@ -1434,6 +1541,16 @@ package body Yolk.Syndication.Writer is
                Create_Link_Elements (List   => An_Entry.Links,
                                      Parent => Entry_Node);
 
+               --  entry:published element
+               Create_Date_Construct (Date      => An_Entry.Published,
+                                      Elem_Name => "published",
+                                      Parent    => Entry_Node);
+
+               --  entry:updated element
+               Create_Date_Construct (Date      => An_Entry.Updated,
+                                      Elem_Name => "updated",
+                                      Parent    => Entry_Node);
+
                Entry_List.Next (C);
             end loop;
 
@@ -1646,16 +1763,14 @@ package body Yolk.Syndication.Writer is
       -------------------
 
       procedure Set_Updated_Time
-        (Value : in Ada.Calendar.Time)
+        (Value : in Atom_Date)
       is
 
          use Ada.Calendar;
 
       begin
 
-         if Value > Updated then
-            Updated := Value;
-         end if;
+         Updated := Value;
 
       end Set_Updated_Time;
 

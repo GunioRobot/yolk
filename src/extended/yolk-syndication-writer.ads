@@ -21,7 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-private with Ada.Calendar;
+with Ada.Calendar;
 private with Ada.Containers.Doubly_Linked_Lists;
 private with Ada.Strings.Unbounded;
 with DOM.Core;
@@ -487,6 +487,20 @@ package Yolk.Syndication.Writer is
    --  URI:
    --    The URL to the image.
 
+   procedure Set_Published
+     (Entr           : in out Atom_Entry;
+      Published_Time : in     Ada.Calendar.Time;
+      Base_URI       : in     String := None;
+      Language       : in     String := None);
+   --  Indicates the instant in time when an entry was published.
+   --
+   --  Published_Time:
+   --    When did we publish the entry.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+
    procedure Set_Rights
      (Feed        : in out Atom_Feed;
       Rights      : in     String;
@@ -539,6 +553,36 @@ package Yolk.Syndication.Writer is
    --  Title_Kind:
    --    The title kind. See Content_Type.
 
+   procedure Set_Updated
+     (Entr        : in out Atom_Entry;
+      Update_Time : in     Ada.Calendar.Time;
+      Base_URI    : in     String := None;
+      Language    : in     String := None);
+   --  Indicates the most recent instant in time when an entry was modified in
+   --  a way the publisher considers significant.
+   --
+   --  Update_Time:
+   --    When did the update occur.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+
+   procedure Set_Updated
+     (Feed        : in out Atom_Feed;
+      Update_Time : in     Ada.Calendar.Time;
+      Base_URI    : in     String := None;
+      Language    : in     String := None);
+   --  Indicates the most recent instant in time when a feed was modified in a
+   --  way the publisher considers significant.
+   --
+   --  Update_Time:
+   --    When did the update occur.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+
 private
 
    use Ada.Containers;
@@ -557,6 +601,12 @@ private
          Label    : Unbounded_String;
          Scheme   : Unbounded_String;
          Term     : Unbounded_String;
+      end record;
+
+   type Atom_Date is
+      record
+         Common      : Atom_Common;
+         Time_Stamp  : Ada.Calendar.Time;
       end record;
 
    type Atom_Generator is
@@ -624,9 +674,10 @@ private
          Contributors   : Person_List.List;
          Id             : Atom_Id;
          Links          : Link_List.List;
+         Published      : Atom_Date;
          Rights         : Atom_Text;
          Title          : Atom_Text;
-         Updated        : Ada.Calendar.Time;
+         Updated        : Atom_Date;
       end record;
 
    package Entry_List is new Doubly_Linked_Lists (Atom_Entry);
@@ -677,7 +728,7 @@ private
         (Value : in Atom_Text);
 
       procedure Set_Updated_Time
-        (Value : in Ada.Calendar.Time);
+        (Value : in Atom_Date);
 
    private
 
@@ -694,7 +745,7 @@ private
       Rights         : Atom_Text;
       Subtitle       : Atom_Text;
       Title          : Atom_Text;
-      Updated        : Ada.Calendar.Time;
+      Updated        : Atom_Date;
 
    end PT_Atom_Feed;
 
