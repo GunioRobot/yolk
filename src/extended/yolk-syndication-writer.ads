@@ -54,6 +54,8 @@ package Yolk.Syndication.Writer is
    --    versions of characters such as "&" and ">" represent those characters,
    --    not markup.
 
+   type Entry_Content_Kind is (Text, Html, Xhtml, Inline, OutOfLine);
+
    type Relation_Kind is (Alternate, Related, Self, Enclosure, Via);
    --  There are five values for the Registry of Link Relations:
    --
@@ -502,6 +504,24 @@ package Yolk.Syndication.Writer is
    --    See Set_Common.
 
    procedure Set_Rights
+     (Entr        : in out Atom_Entry;
+      Rights      : in     String;
+      Base_URI    : in     String := None;
+      Language    : in     String := None;
+      Rights_Kind : in     Content_Kind := Text);
+   --  Conveys information about rights held in and over an entry. SHOULD NOT
+   --  be used to convey machine - readable licensing information.
+   --
+   --  Rights:
+   --    The actual text describing the rights.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Rights_Kind:
+   --    The rights kind. See Content_Type.
+
+   procedure Set_Rights
      (Feed        : in out Atom_Feed;
       Rights      : in     String;
       Base_URI    : in     String := None;
@@ -535,6 +555,40 @@ package Yolk.Syndication.Writer is
    --    See Set_Common.
    --  Subtitle_Kind:
    --    The rights kind. See Content_Type.
+
+   procedure Set_Summary
+     (Entr           : in out Atom_Entry;
+      Summary        : in     String;
+      Base_URI       : in     String := None;
+      Language       : in     String := None;
+      Summary_Kind   : in     Content_Kind := Text);
+   --  Conveys a short summary, abstract, or excerpt of an entry.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Summary:
+   --    A human-readable summary of the entry.
+   --  Summary_Kind:
+   --    The summary kind. See Content_Type.
+
+   procedure Set_Title
+     (Entr       : in out Atom_Entry;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Content_Kind := Text);
+   --  Conveys a human-readable title for the entry.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Title:
+   --    A human-readable title for the entry.
+   --  Title_Kind:
+   --    The title kind. See Content_Type.
 
    procedure Set_Title
      (Feed       : in out Atom_Feed;
@@ -609,6 +663,13 @@ private
          Time_Stamp  : Ada.Calendar.Time;
       end record;
 
+   type Atom_Entry_Content is
+      record
+         Common         : Atom_Common;
+         Content        : Unbounded_String;
+         Content_Type   : Entry_Content_Kind;
+      end record;
+
    type Atom_Generator is
       record
          Agent    : Unbounded_String;
@@ -671,11 +732,13 @@ private
          Authors        : Person_List.List;
          Categories     : Category_List.List;
          Common         : Atom_Common;
+         Content        : Atom_Entry_Content;
          Contributors   : Person_List.List;
          Id             : Atom_Id;
          Links          : Link_List.List;
          Published      : Atom_Date;
          Rights         : Atom_Text;
+         Summary        : Atom_Text;
          Title          : Atom_Text;
          Updated        : Atom_Date;
       end record;

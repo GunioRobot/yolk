@@ -21,10 +21,15 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Characters.Latin_1;
+
 package Yolk.Syndication is
+
+   Q : Character renames Ada.Characters.Latin_1.Quotation;
 
    None     : constant String := "";
    XMLNS    : constant String := "http://www.w3.org/2005/Atom";
    XHTMLNS  : constant String := "http://www.w3.org/1999/xhtml";
+   DIVNS    : constant String := "xmlns=" & Q & XHTMLNS & Q;
 
 end Yolk.Syndication;

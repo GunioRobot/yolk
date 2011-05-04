@@ -449,6 +449,14 @@ package body Yolk.Syndication.Writer is
                                                     Null_Unbounded_String),
                                    Text_Content => Null_Unbounded_String,
                                    Text_Type    => Text),
+                      Summary       =>
+                        Atom_Text'(Common       =>
+                                     Atom_Common'(Base_URI =>
+                                                    Null_Unbounded_String,
+                                                  Language =>
+                                                    Null_Unbounded_String),
+                                   Text_Content => Null_Unbounded_String,
+                                   Text_Type    => Text),
                       Title         =>
                         Atom_Text'(Common       =>
                                      Atom_Common'(Base_URI =>
@@ -655,6 +663,30 @@ package body Yolk.Syndication.Writer is
    ------------------
 
    procedure Set_Rights
+     (Entr        : in out Atom_Entry;
+      Rights      : in String;
+      Base_URI    : in String := None;
+      Language    : in String := None;
+      Rights_Kind : in Content_Kind := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Rights := Atom_Text'(Common       =>
+                                  Atom_Common'(Base_URI => TUS (Base_URI),
+                                               Language => TUS (Language)),
+                                Text_Content => TUS (Rights),
+                                Text_Type    => Rights_Kind);
+
+   end Set_Rights;
+
+   ------------------
+   --  Set_Rights  --
+   ------------------
+
+   procedure Set_Rights
      (Feed        : in out Atom_Feed;
       Rights      : in String;
       Base_URI    : in String := None;
@@ -699,6 +731,54 @@ package body Yolk.Syndication.Writer is
                              Text_Type    => Subtitle_Kind));
 
    end Set_Subtitle;
+
+   -----------------
+   --  Set_Summary  --
+   -----------------
+
+   procedure Set_Summary
+     (Entr           : in out Atom_Entry;
+      Summary        : in     String;
+      Base_URI       : in     String := None;
+      Language       : in     String := None;
+      Summary_Kind   : in     Content_Kind := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Summary := Atom_Text'(Common       =>
+                                   Atom_Common'(Base_URI => TUS (Base_URI),
+                                                Language => TUS (Language)),
+                                 Text_Content => TUS (Summary),
+                                 Text_Type    => Summary_Kind);
+
+   end Set_Summary;
+
+   -----------------
+   --  Set_Title  --
+   -----------------
+
+   procedure Set_Title
+     (Entr       : in out Atom_Entry;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Content_Kind := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Title := Atom_Text'(Common       =>
+                                 Atom_Common'(Base_URI => TUS (Base_URI),
+                                              Language => TUS (Language)),
+                               Text_Content => TUS (Title),
+                               Text_Type    => Title_Kind);
+
+   end Set_Title;
 
    -----------------
    --  Set_Title  --
@@ -870,16 +950,17 @@ package body Yolk.Syndication.Writer is
             Parent : in Node);
          --  Add atom:category elements to parent.
 
-         procedure Create_Date_Construct
-           (Date      : in Atom_Date;
+         procedure Create_Generic_Element
+           (Common    : in Atom_Common;
+            Data      : in String;
             Elem_Name : in String;
             Parent    : in Node);
-         --  Add an Atom date construct to Parent.
-
-         procedure Create_Id_Element
-           (Id     : in Atom_Id;
-            Parent : in Node);
-         --  Add atom:id element to Parent;
+         --  Add a generic element to Parent. A generic element has the
+         --  following structure:
+         --
+         --    <Elem_Name base="Common.Base_URI" lang="Common.Language">
+         --       Data
+         --    </Elem_Name>
 
          procedure Create_Link_Elements
            (List   : in Link_List.List;
@@ -893,9 +974,11 @@ package body Yolk.Syndication.Writer is
          --  Add atom:person elements to Parent.
 
          procedure Create_Text_Construct
-           (Data      : in     String;
-            Parent    : in out Node;
-            Text_Kind : in     Content_Kind);
+           (Common    : in Atom_Common;
+            Data      : in String;
+            Elem_Name : in String;
+            Parent    : in Node;
+            Text_Kind : in Content_Kind);
          --  Set the type (text/html/xhtml) and content of an atomTextConstruct
          --  element.
 
@@ -976,80 +1059,42 @@ package body Yolk.Syndication.Writer is
 
          end Create_Category_Elements;
 
-         -----------------------------
-         --  Create_Date_Construct  --
-         -----------------------------
+         ------------------------------
+         --  Create_Generic_Element  --
+         ------------------------------
 
-         procedure Create_Date_Construct
-           (Date      : in Atom_Date;
-            Elem_Name : in String;
-            Parent    : in Node)
+         procedure Create_Generic_Element
+           (Common      : in Atom_Common;
+            Data        : in String;
+            Elem_Name   : in String;
+            Parent      : in Node)
          is
 
-            Date_Node : Node;
+            Elem_Node : Node;
 
          begin
 
-            Date_Node := Append_Child
+            Elem_Node := Append_Child
               (N         => Parent,
                New_Child => Create_Element (Doc      => Doc,
                                             Tag_Name => Elem_Name));
 
-            Attribute (Elem  => Date_Node,
+            Attribute (Elem  => Elem_Node,
                        Name  => "base",
-                       Value => TS (Date.Common.Base_URI));
+                       Value => TS (Common.Base_URI));
 
-            Attribute (Elem  => Date_Node,
+            Attribute (Elem  => Elem_Node,
                        Name  => "lang",
-                       Value => TS (Date.Common.Language));
+                       Value => TS (Common.Language));
 
-            Date_Node := Append_Child
-              (N         => Date_Node,
-               New_Child => Create_Text_Node
-                 (Doc  => Doc,
-                  Data => Atom_Date_Image (Time_Stamp => Date.Time_Stamp)));
-
-            pragma Unreferenced (Date_Node);
+            Elem_Node := Append_Child
+              (N         => Elem_Node,
+               New_Child => Create_Text_Node (Doc, Data));
+            pragma Unreferenced (Elem_Node);
             --  We need this because XML/Ada have no Append_Child procedures,
             --  which obviously is annoying as hell.
 
-         end Create_Date_Construct;
-
-         -------------------------
-         --  Create_Id_Element  --
-         -------------------------
-
-         procedure Create_Id_Element
-           (Id     : in Atom_Id;
-            Parent : in Node)
-         is
-
-            Id_Node : Node;
-
-         begin
-
-            Id_Node := Append_Child
-              (N         => Parent,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "id"));
-
-            Attribute (Elem  => Id_Node,
-                       Name  => "base",
-                       Value => TS (Id.Common.Base_URI));
-
-            Attribute (Elem  => Id_Node,
-                       Name  => "lang",
-                       Value => TS (Id.Common.Language));
-
-            Id_Node := Append_Child
-              (N         => Id_Node,
-               New_Child => Create_Text_Node (Doc, TS (Id.URI)));
-
-            pragma Unreferenced (Id_Node);
-            --  We need this because XML/Ada have no Append_Child procedures,
-            --  which obviously is annoying as hell.
-
-         end Create_Id_Element;
+         end Create_Generic_Element;
 
          ----------------------------
          --  Create_Link_Elements  --
@@ -1217,44 +1262,60 @@ package body Yolk.Syndication.Writer is
          -----------------------------
 
          procedure Create_Text_Construct
-           (Data      : in     String;
-            Parent    : in out Node;
-            Text_Kind : in     Content_Kind)
+           (Common    : in Atom_Common;
+            Data      : in String;
+            Elem_Name : in String;
+            Parent    : in Node;
+            Text_Kind : in Content_Kind)
          is
+
+            Elem_Node : Node;
+
          begin
+
+            Elem_Node := Append_Child
+              (N         => Parent,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => Elem_Name));
+
+            Attribute (Elem  => Elem_Node,
+                       Name  => "base",
+                       Value => TS (Common.Base_URI));
+
+            Attribute (Elem  => Elem_Node,
+                       Name  => "lang",
+                       Value => TS (Common.Language));
 
             case Text_Kind is
                when Text =>
-                  Set_Attribute (Elem  => Parent,
+                  Set_Attribute (Elem  => Elem_Node,
                                  Name  => "type",
                                  Value => "text");
-                  Parent := Append_Child
-                    (N         => Parent,
+                  Elem_Node := Append_Child
+                    (N         => Elem_Node,
                      New_Child => Create_Text_Node
                        (Doc  => Doc,
                         Data => Data));
                when Html =>
-                  Set_Attribute (Elem  => Parent,
+                  Set_Attribute (Elem  => Elem_Node,
                                  Name  => "type",
                                  Value => "html");
-                  Parent := Append_Child
-                    (N         => Parent,
+                  Elem_Node := Append_Child
+                    (N         => Elem_Node,
                      New_Child => Create_Text_Node
                        (Doc  => Doc,
                         Data => Data));
                when Xhtml =>
-                  Set_Attribute (Elem  => Parent,
+                  Set_Attribute (Elem  => Elem_Node,
                                  Name  => "type",
                                  Value => "xhtml");
-                  Set_Attribute (Elem  => Parent,
-                                 Name  => "xmlns",
-                                 Value => XHTMLNS);
 
-                  Parent := Append_Child
-                    (N         => Parent,
+                  Elem_Node := Append_Child
+                    (N         => Elem_Node,
                      New_Child => First_Child
                        (N => Create_DOM_From_String
-                          (XML_String => "<div>" & Data & "</div>")));
+                          (XML_String =>
+                           "<div " & DIVNS & ">" & Data & "</div>")));
 
             end case;
 
@@ -1281,42 +1342,6 @@ package body Yolk.Syndication.Writer is
          Attribute (Elem  => Feed_Node,
                     Name  => "lang",
                     Value => TS (Common.Language));
-
-         --  feed:id element
-         Create_Id_Element (Id     => Id,
-                            Parent => Feed_Node);
-
-         --  feed:updated element
-         Create_Date_Construct (Date      => Updated,
-                                Elem_Name => "updated",
-                                Parent    => Feed_Node);
-
-         --  feed:title element
-         Add_Title_To_DOM :
-         declare
-
-            Title_Node  : Node;
-
-         begin
-
-            Title_Node := Append_Child
-              (N         => Feed_Node,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "title"));
-
-            Attribute (Elem  => Title_Node,
-                       Name  => "base",
-                       Value => TS (Title.Common.Base_URI));
-
-            Attribute (Elem  => Title_Node,
-                       Name  => "lang",
-                       Value => TS (Title.Common.Language));
-
-            Create_Text_Construct (Parent    => Title_Node,
-                                   Text_Kind => Title.Text_Type,
-                                   Data      => TS (Title.Text_Content));
-
-         end Add_Title_To_DOM;
 
          --  feed:author elements
          Create_Person_Elements (Elem_Name   => "author",
@@ -1373,123 +1398,61 @@ package body Yolk.Syndication.Writer is
 
          --  feed:icon element
          if Icon.URI /= Null_Unbounded_String then
-            Add_Icon_To_DOM :
-            declare
-
-               Icon_Node : Node;
-
-            begin
-
-               Icon_Node := Append_Child
-                 (N         => Feed_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "icon"));
-
-               Attribute (Elem  => Icon_Node,
-                          Name  => "base",
-                          Value => TS (Icon.Common.Base_URI));
-
-               Attribute (Elem  => Icon_Node,
-                          Name  => "lang",
-                          Value => TS (Icon.Common.Language));
-
-               Icon_Node := Append_Child
-                 (N         => Icon_Node,
-                  New_Child => Create_Text_Node (Doc  => Doc,
-                                                 Data => TS (Icon.URI)));
-
-            end Add_Icon_To_DOM;
+            Create_Generic_Element (Common    => Icon.Common,
+                                    Data      => TS (Icon.URI),
+                                    Elem_Name => "icon",
+                                    Parent    => Feed_Node);
          end if;
+
+         --  feed:id element
+         Create_Generic_Element (Common    => Id.Common,
+                                 Data      => TS (Id.URI),
+                                 Elem_Name => "id",
+                                 Parent    => Feed_Node);
 
          --  feed:link elements
          Create_Link_Elements (List   => Links,
                                Parent => Feed_Node);
 
          --  feed:logo
-         Add_Logo_To_DOM :
-         declare
-
-            Logo_Node : Node;
-
-         begin
-
-            Logo_Node := Append_Child
-              (N         => Feed_Node,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "logo"));
-
-            Attribute (Elem  => Logo_Node,
-                       Name  => "base",
-                       Value => TS (Logo.Common.Base_URI));
-
-            Attribute (Elem  => Logo_Node,
-                       Name  => "lang",
-                       Value => TS (Logo.Common.Language));
-
-            Logo_Node := Append_Child
-              (N         => Logo_Node,
-               New_Child => Create_Text_Node (Doc  => Doc,
-                                              Data => TS (Logo.URI)));
-
-            pragma Unreferenced (Logo_Node);
-            --  We need this because XML/Ada have no Append_Child procedures,
-            --  which obviously is annoying as hell.
-
-         end Add_Logo_To_DOM;
+         if Logo.URI /= Null_Unbounded_String then
+            Create_Generic_Element (Common    => Logo.Common,
+                                    Data      => TS (Logo.URI),
+                                    Elem_Name => "logo",
+                                    Parent    => Feed_Node);
+         end if;
 
          --  feed:rights
-         Add_Rights_To_DOM :
-         declare
-
-            Rights_Node : Node;
-
-         begin
-
-            Rights_Node := Append_Child
-              (N         => Feed_Node,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "rights"));
-
-            Attribute (Elem  => Rights_Node,
-                       Name  => "base",
-                       Value => TS (Rights.Common.Base_URI));
-
-            Attribute (Elem  => Rights_Node,
-                       Name  => "lang",
-                       Value => TS (Rights.Common.Language));
-
-            Create_Text_Construct (Parent    => Rights_Node,
-                                   Text_Kind => Rights.Text_Type,
-                                   Data      => TS (Rights.Text_Content));
-
-         end Add_Rights_To_DOM;
+         if Rights.Text_Content /= Null_Unbounded_String then
+            Create_Text_Construct (Common    => Rights.Common,
+                                   Data      => TS (Rights.Text_Content),
+                                   Elem_Name => "rights",
+                                   Parent    => Feed_Node,
+                                   Text_Kind => Rights.Text_Type);
+         end if;
 
          --  feed:subtitle
-         Add_Subtitle_To_DOM :
-         declare
+         if Subtitle.Text_Content /= Null_Unbounded_String then
+            Create_Text_Construct (Common    => Subtitle.Common,
+                                   Data      => TS (Subtitle.Text_Content),
+                                   Elem_Name => "subtitle",
+                                   Parent    => Feed_Node,
+                                   Text_Kind => Subtitle.Text_Type);
+         end if;
 
-            Subtitle_Node : Node;
+         --  feed:title element
+         Create_Text_Construct (Common    => Title.Common,
+                                Data      => TS (Title.Text_Content),
+                                Elem_Name => "title",
+                                Parent    => Feed_Node,
+                                Text_Kind => Title.Text_Type);
 
-         begin
-
-            Subtitle_Node := Append_Child
-              (N         => Feed_Node,
-               New_Child => Create_Element (Doc      => Doc,
-                                            Tag_Name => "subtitle"));
-
-            Attribute (Elem  => Subtitle_Node,
-                       Name  => "base",
-                       Value => TS (Subtitle.Common.Base_URI));
-
-            Attribute (Elem  => Subtitle_Node,
-                       Name  => "lang",
-                       Value => TS (Subtitle.Common.Language));
-
-            Create_Text_Construct (Parent    => Subtitle_Node,
-                                   Text_Kind => Subtitle.Text_Type,
-                                   Data      => TS (Subtitle.Text_Content));
-
-         end Add_Subtitle_To_DOM;
+         --  feed:updated element
+         Create_Generic_Element
+           (Common    => Updated.Common,
+            Data      => Atom_Date_Image (Time_Stamp => Updated.Time_Stamp),
+            Elem_Name => "updated",
+            Parent    => Feed_Node);
 
          --  feed:entry
          Add_Entries_To_DOM :
@@ -1524,7 +1487,7 @@ package body Yolk.Syndication.Writer is
                                        List      => An_Entry.Authors,
                                        Parent    => Entry_Node);
 
-               --  entry:cateory elements
+               --  entry:category elements
                Create_Category_Elements (List   => An_Entry.Categories,
                                          Parent => Entry_Node);
 
@@ -1534,22 +1497,56 @@ package body Yolk.Syndication.Writer is
                                        Parent    => Entry_Node);
 
                --  entry:id element
-               Create_Id_Element (Id     => An_Entry.Id,
-                                  Parent => Entry_Node);
+               Create_Generic_Element (Common    => An_Entry.Id.Common,
+                                       Data      => TS (An_Entry.Id.URI),
+                                       Elem_Name => "id",
+                                       Parent    => Entry_Node);
 
                --  entry:link elements
                Create_Link_Elements (List   => An_Entry.Links,
                                      Parent => Entry_Node);
 
                --  entry:published element
-               Create_Date_Construct (Date      => An_Entry.Published,
-                                      Elem_Name => "published",
-                                      Parent    => Entry_Node);
+               Create_Generic_Element
+                 (Common    => An_Entry.Published.Common,
+                  Data      => Atom_Date_Image
+                    (Time_Stamp => An_Entry.Published.Time_Stamp),
+                  Elem_Name => "published",
+                  Parent    => Entry_Node);
+
+               --  entry:rights
+               if An_Entry.Rights.Text_Content /= Null_Unbounded_String then
+                  Create_Text_Construct
+                    (Common    => An_Entry.Rights.Common,
+                     Data      => TS (An_Entry.Rights.Text_Content),
+                     Elem_Name => "rights",
+                     Parent    => Entry_Node,
+                     Text_Kind => An_Entry.Rights.Text_Type);
+               end if;
+
+               --  entry:summary element
+               Create_Text_Construct
+                 (Common    => An_Entry.Summary.Common,
+                  Data      => TS (An_Entry.Summary.Text_Content),
+                  Elem_Name => "summary",
+                  Parent    => Entry_Node,
+                  Text_Kind => An_Entry.Summary.Text_Type);
+
+               --  entry:title element
+               Create_Text_Construct
+                 (Common    => An_Entry.Title.Common,
+                  Data      => TS (An_Entry.Title.Text_Content),
+                  Elem_Name => "title",
+                  Parent    => Entry_Node,
+                  Text_Kind => An_Entry.Title.Text_Type);
 
                --  entry:updated element
-               Create_Date_Construct (Date      => An_Entry.Updated,
-                                      Elem_Name => "updated",
-                                      Parent    => Entry_Node);
+               Create_Generic_Element
+                 (Common    => An_Entry.Common,
+                  Data      => Atom_Date_Image
+                    (Time_Stamp => An_Entry.Updated.Time_Stamp),
+                  Elem_Name => "updated",
+                  Parent    => Entry_Node);
 
                Entry_List.Next (C);
             end loop;

@@ -188,6 +188,24 @@ begin
                      Base_URI       => "published/base",
                      Language       => "published/language");
 
+      Set_Rights (Entr        => An_Entry,
+                  Rights      => "Some entry rights",
+                  Base_URI    => "entryrights/base",
+                  Language    => "entryrights/lang",
+                  Rights_Kind => Text);
+
+      Set_Summary (Entr         => An_Entry,
+                   Summary      => "<b>An</b> entry summary",
+                   Base_URI     => "summary/base",
+                   Language     => "summary/lang",
+                   Summary_Kind => Xhtml);
+
+      Set_Title (Entr       => An_Entry,
+                 Title      => "Entry Title",
+                 Base_URI   => "entrytitle/base",
+                 Language   => "entrytitle/lang",
+                 Title_Kind => Text);
+
       Set_Updated (Entr        => An_Entry,
                    Update_Time => Ada.Calendar.Clock,
                    Base_URI    => "updated/base",
