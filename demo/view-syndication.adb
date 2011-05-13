@@ -165,6 +165,85 @@ begin
                        Language => "con lan",
                        URI      => "con URI");
 
+      Set_Content_OutOfLine (Entr      => An_Entry,
+                             Mime_Type => "OutOfLine Content",
+                             Source    => "SomeURL",
+                             Base_URI  => "OutOfLine/base",
+                             Language  => "OutOfLine/lang");
+
+      Set_Common_Source (Entr     => An_Entry,
+                         Base_URI => "source/base",
+                         Language => "source/lang");
+
+      Add_Author_Source (Entr     => An_Entry,
+                         Name     => "Thomas Locke",
+                         Base_URI => "author/base",
+                         Email    => "thomas@responsum.dk",
+                         Language => "author/lang",
+                         URI      => "author URI");
+
+      Add_Category_Source (Entr     => An_Entry,
+                           Term     => "Source category");
+
+      Add_Contributor_Source (Entr     => An_Entry,
+                              Name     => "Thomas Locke");
+
+      Set_Generator_Source (Entr     => An_Entry,
+                            Agent    => "source generator",
+                            Base_URI => "generator/base",
+                            Language => "generator/lang",
+                            URI      => "generator/uri",
+                            Version  => "generator/version");
+
+      Set_Icon_Source (Entr     => An_Entry,
+                       URI      => "icon source URI",
+                       Base_URI => "icon/base",
+                       Language => "icon/lang");
+
+      Set_Id_Source (Entr     => An_Entry,
+                     URI      => "source Id URI",
+                     Base_URI => "id/base",
+                     Language => "id/lang");
+
+      Add_Link_Source (Entr      => An_Entry,
+                       Href      => "source link",
+                       Base_URI  => "link/base",
+                       Content   => "source content",
+                       Hreflang  => "source hreflang",
+                       Language  => "link/lang",
+                       Length    => 1,
+                       Mime_Type => "source mime",
+                       Rel       => Alternate,
+                       Title     => "source link title");
+
+      Set_Logo_Source (Entr     => An_Entry,
+                       URI      => "logo source URI",
+                       Base_URI => "logo/base",
+                       Language => "logo/lang");
+
+      Set_Rights_Source (Entr        => An_Entry,
+                         Rights      => "source rights",
+                         Base_URI    => "rights/base",
+                         Language    => "rights/lang",
+                         Rights_Kind => Text);
+
+      Set_Subtitle_Source (Entr          => An_Entry,
+                           Subtitle      => "source subtitle",
+                           Base_URI      => "subtitle/base",
+                           Language      => "subtitle/lang",
+                           Subtitle_Kind => Text);
+
+      Set_Title_Source (Entr       => An_Entry,
+                        Title      => "source title",
+                        Base_URI   => "title/base",
+                        Language   => "title/lang",
+                        Title_Kind => Text);
+
+      Set_Updated_Source (Entr        => An_Entry,
+                          Update_Time => Ada.Calendar.Clock,
+                          Base_URI    => "updated/base",
+                          Language    => "updated/lang");
+
       Set_Id (Entr     => An_Entry,
               URI      => "id URI",
               Base_URI => "id/base",

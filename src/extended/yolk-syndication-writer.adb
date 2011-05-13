@@ -102,6 +102,33 @@ package body Yolk.Syndication.Writer is
 
    end Add_Author;
 
+   -------------------------
+   --  Add_Author_Source  --
+   -------------------------
+
+   procedure Add_Author_Source
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Authors.Append
+        (New_Item => Atom_Person'(Common =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Name   => TUS (Name),
+                                  Email  => TUS (Email),
+                                  URI    => TUS (URI)));
+
+   end Add_Author_Source;
+
    --------------------
    --  Add_Category  --
    --------------------
@@ -160,6 +187,35 @@ package body Yolk.Syndication.Writer is
 
    end Add_Category;
 
+   ---------------------------
+   --  Add_Category_Source  --
+   ---------------------------
+
+   procedure Add_Category_Source
+     (Entr     : in out Atom_Entry;
+      Term     : in     String;
+      Base_URI : in     String := None;
+      Content  : in     String := None;
+      Label    : in     String := None;
+      Language : in     String := None;
+      Scheme   : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Categories.Append
+        (New_Item => Atom_Category'(Common =>
+                                      Atom_Common'(Base_URI => TUS (Base_URI),
+                                                   Language => TUS (Language)),
+                                    Content  => TUS (Content),
+                                    Label    => TUS (Label),
+                                    Scheme   => TUS (Scheme),
+                                    Term     => TUS (Term)));
+
+   end Add_Category_Source;
+
    -----------------------
    --  Add_Contributor  --
    -----------------------
@@ -213,6 +269,33 @@ package body Yolk.Syndication.Writer is
                                URI    => TUS (URI)));
 
    end Add_Contributor;
+
+   ------------------------------
+   --  Add_Contributor_Source  --
+   ------------------------------
+
+   procedure Add_Contributor_Source
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Contributors.Append
+        (New_Item => Atom_Person'(Common =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Name   => TUS (Name),
+                                  Email  => TUS (Email),
+                                  URI    => TUS (URI)));
+
+   end Add_Contributor_Source;
 
    -----------------
    --  Add_Entry  --
@@ -297,6 +380,41 @@ package body Yolk.Syndication.Writer is
                              Title     => TUS (Title)));
 
    end Add_Link;
+
+   -----------------------
+   --  Add_Link_Source  --
+   -----------------------
+
+   procedure Add_Link_Source
+     (Entr      : in out Atom_Entry;
+      Href      : in     String;
+      Base_URI  : in     String := None;
+      Content   : in     String := None;
+      Hreflang  : in     String := None;
+      Language  : in     String := None;
+      Length    : in     Natural := 0;
+      Mime_Type : in     String := None;
+      Rel       : in     Relation_Kind := Alternate;
+      Title     : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Links.Append
+        (New_Item => Atom_Link'(Common =>
+                                  Atom_Common'(Base_URI => TUS (Base_URI),
+                                               Language => TUS (Language)),
+                                Content   => TUS (Content),
+                                Href      => TUS (Href),
+                                Hreflang  => TUS (Hreflang),
+                                Length    => Length,
+                                Mime_Type => TUS (Mime_Type),
+                                Rel       => Rel,
+                                Title     => TUS (Title)));
+
+   end Add_Link_Source;
 
    -----------------------
    --  Atom_Date_Image  --
@@ -425,6 +543,15 @@ package body Yolk.Syndication.Writer is
                       Common        =>
                         Atom_Common'(Base_URI => TUS (Base_URI),
                                      Language => TUS (Language)),
+                      Content       =>
+                        Atom_Entry_Content'(
+                          Common        =>
+                            Atom_Common'(Base_URI => Null_Unbounded_String,
+                                         Language => Null_Unbounded_String),
+                          Content       => Null_Unbounded_String,
+                          Content_Kind  => Text,
+                          Mime_Type     => Null_Unbounded_String,
+                          Source        => Null_Unbounded_String),
                       Contributors  => Person_List.Empty_List,
                       Id            =>
                         Atom_Id'(Common =>
@@ -448,7 +575,61 @@ package body Yolk.Syndication.Writer is
                                                   Language =>
                                                     Null_Unbounded_String),
                                    Text_Content => Null_Unbounded_String,
-                                   Text_Type    => Text),
+                                   Text_Kind    => Text),
+                      Source        =>
+                        Atom_Entry_Source'
+                          (Authors      => Person_List.Empty_List,
+                           Categories   => Category_List.Empty_List,
+                           Common       => Atom_Common'
+                             (Base_URI => Null_Unbounded_String,
+                              Language => Null_Unbounded_String),
+                           Contributors => Person_List.Empty_List,
+                           Generator    => Atom_Generator'
+                             (Agent   => Null_Unbounded_String,
+                              Common  => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              URI     => Null_Unbounded_String,
+                              Version => Null_Unbounded_String),
+                           Icon         => Atom_Icon'
+                             (Common => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              URI    => Null_Unbounded_String),
+                           Id           => Atom_Id'
+                             (Common => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              URI    => Null_Unbounded_String),
+                           Links        => Link_List.Empty_List,
+                           Logo         => Atom_Logo'
+                             (Common => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              URI    => Null_Unbounded_String),
+                           Rights       => Atom_Text'
+                             (Common       => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              Text_Content => Null_Unbounded_String,
+                              Text_Kind    => Text),
+                           Subtitle     => Atom_Text'
+                             (Common       => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              Text_Content => Null_Unbounded_String,
+                              Text_Kind    => Text),
+                           Title        => Atom_Text'
+                             (Common       => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              Text_Content => Null_Unbounded_String,
+                              Text_Kind    => Text),
+                           Updated      => Atom_Date'
+                             (Common     => Atom_Common'
+                                (Base_URI => Null_Unbounded_String,
+                                 Language => Null_Unbounded_String),
+                              Time_Stamp => Now)),
                       Summary       =>
                         Atom_Text'(Common       =>
                                      Atom_Common'(Base_URI =>
@@ -456,7 +637,7 @@ package body Yolk.Syndication.Writer is
                                                   Language =>
                                                     Null_Unbounded_String),
                                    Text_Content => Null_Unbounded_String,
-                                   Text_Type    => Text),
+                                   Text_Kind    => Text),
                       Title         =>
                         Atom_Text'(Common       =>
                                      Atom_Common'(Base_URI =>
@@ -464,7 +645,7 @@ package body Yolk.Syndication.Writer is
                                                   Language =>
                                                     Null_Unbounded_String),
                                    Text_Content => Null_Unbounded_String,
-                                   Text_Type    => Text),
+                                   Text_Kind    => Text),
                       Updated       =>
                         Atom_Date'(Common     =>
                                      Atom_Common'(Base_URI =>
@@ -518,6 +699,106 @@ package body Yolk.Syndication.Writer is
 
    end Set_Common;
 
+   -------------------------
+   --  Set_Common_Source  --
+   -------------------------
+
+   procedure Set_Common_Source
+     (Entr     : in out Atom_Entry;
+      Base_URI : in     String := None;
+      Language : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Common := Atom_Common'(Base_URI => TUS (Base_URI),
+                                         Language => TUS (Language));
+
+   end Set_Common_Source;
+
+   -------------------
+   --  Set_Content  --
+   -------------------
+
+   procedure Set_Content
+     (Entr         : in out Atom_Entry;
+      Content      : in     String;
+      Content_Kind : in     Text_Kinds;
+      Base_URI     : in     String := None;
+      Language     : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Content :=
+        Atom_Entry_Content'(Common       =>
+                              Atom_Common'(Base_URI => TUS (Base_URI),
+                                           Language => TUS (Language)),
+                            Content      => TUS (Content),
+                            Content_Kind => Content_Kind,
+                            Mime_Type    => Null_Unbounded_String,
+                            Source       => Null_Unbounded_String);
+
+   end Set_Content;
+
+   --------------------------
+   --  Set_Content_Inline  --
+   --------------------------
+
+   procedure Set_Content_Inline
+     (Entr      : in out Atom_Entry;
+      Content   : in     String;
+      Mime_Type : in     String;
+      Base_URI  : in     String := None;
+      Language  : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Content :=
+        Atom_Entry_Content'(Common       =>
+                              Atom_Common'(Base_URI => TUS (Base_URI),
+                                           Language => TUS (Language)),
+                            Content      => TUS (Content),
+                            Content_Kind => InlineOther,
+                            Mime_Type    => TUS (Mime_Type),
+                            Source       => Null_Unbounded_String);
+
+   end Set_Content_Inline;
+
+   -----------------------------
+   --  Set_Content_OutOfLine  --
+   -----------------------------
+
+   procedure Set_Content_OutOfLine
+     (Entr      : in out Atom_Entry;
+      Mime_Type : in     String;
+      Source    : in     String;
+      Base_URI  : in     String := None;
+      Language  : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Content :=
+        Atom_Entry_Content'(Common       =>
+                              Atom_Common'(Base_URI => TUS (Base_URI),
+                                           Language => TUS (Language)),
+                            Content      => Null_Unbounded_String,
+                            Content_Kind => OutOfLineOther,
+                            Mime_Type    => TUS (Mime_Type),
+                            Source       => TUS (Source));
+
+   end Set_Content_OutOfLine;
+
    ---------------------
    --  Set_Generator  --
    ---------------------
@@ -545,6 +826,33 @@ package body Yolk.Syndication.Writer is
 
    end Set_Generator;
 
+   ----------------------------
+   --  Set_Generator_Source  --
+   ----------------------------
+
+   procedure Set_Generator_Source
+     (Entr     : in out Atom_Entry;
+      Agent    : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None;
+      Version  : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Generator := Atom_Generator'
+        (Agent   => TUS (Agent),
+         Common  =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         URI     => TUS (URI),
+         Version => TUS (Version));
+
+   end Set_Generator_Source;
+
    ----------------
    --  Set_Icon  --
    ----------------
@@ -567,6 +875,29 @@ package body Yolk.Syndication.Writer is
                              URI    => TUS (URI)));
 
    end Set_Icon;
+
+   -----------------------
+   --  Set_Icon_Source  --
+   -----------------------
+
+   procedure Set_Icon_Source
+     (Entr     : in out Atom_Entry;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Icon := Atom_Icon'
+        (Common =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         URI    => TUS (URI));
+
+   end Set_Icon_Source;
 
    --------------
    --  Set_Id  --
@@ -613,6 +944,28 @@ package body Yolk.Syndication.Writer is
 
    end Set_Id;
 
+   ---------------------
+   --  Set_Id_Source  --
+   ---------------------
+
+   procedure Set_Id_Source
+     (Entr     : in out Atom_Entry;
+      URI      : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Id := Atom_Id'(Common =>
+                                   Atom_Common'(Base_URI => TUS (Base_URI),
+                                                Language => TUS (Language)),
+                                 URI    => TUS (URI));
+
+   end Set_Id_Source;
+
    ----------------
    --  Set_Logo  --
    ----------------
@@ -635,6 +988,29 @@ package body Yolk.Syndication.Writer is
                              URI    => TUS (URI)));
 
    end Set_Logo;
+
+   -----------------------
+   --  Set_Logo_Source  --
+   -----------------------
+
+   procedure Set_Logo_Source
+     (Entr     : in out Atom_Entry;
+      URI      : in String;
+      Base_URI : in String := None;
+      Language : in String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Logo := Atom_Logo'
+        (Common =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         URI    => TUS (URI));
+
+   end Set_Logo_Source;
 
    ---------------------
    --  Set_Published  --
@@ -667,7 +1043,7 @@ package body Yolk.Syndication.Writer is
       Rights      : in String;
       Base_URI    : in String := None;
       Language    : in String := None;
-      Rights_Kind : in Content_Kind := Text)
+      Rights_Kind : in Text_Kinds := Text)
    is
 
       use Yolk.Utilities;
@@ -678,7 +1054,7 @@ package body Yolk.Syndication.Writer is
                                   Atom_Common'(Base_URI => TUS (Base_URI),
                                                Language => TUS (Language)),
                                 Text_Content => TUS (Rights),
-                                Text_Type    => Rights_Kind);
+                                Text_Kind    => Rights_Kind);
 
    end Set_Rights;
 
@@ -691,7 +1067,7 @@ package body Yolk.Syndication.Writer is
       Rights      : in String;
       Base_URI    : in String := None;
       Language    : in String := None;
-      Rights_Kind : in Content_Kind := Text)
+      Rights_Kind : in Text_Kinds := Text)
    is
 
       use Yolk.Utilities;
@@ -703,9 +1079,34 @@ package body Yolk.Syndication.Writer is
                                Atom_Common'(Base_URI => TUS (Base_URI),
                                             Language => TUS (Language)),
                              Text_Content => TUS (Rights),
-                             Text_Type    => Rights_Kind));
+                             Text_Kind    => Rights_Kind));
 
    end Set_Rights;
+
+   -------------------------
+   --  Set_Rights_Source  --
+   -------------------------
+
+   procedure Set_Rights_Source
+     (Entr        : in out Atom_Entry;
+      Rights      : in String;
+      Base_URI    : in String := None;
+      Language    : in String := None;
+      Rights_Kind : in Text_Kinds := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Rights := Atom_Text'
+        (Common       =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         Text_Content => TUS (Rights),
+         Text_Kind    => Rights_Kind);
+
+   end Set_Rights_Source;
 
    --------------------
    --  Set_Subtitle  --
@@ -716,7 +1117,7 @@ package body Yolk.Syndication.Writer is
       Subtitle       : in String;
       Base_URI       : in String := None;
       Language       : in String := None;
-      Subtitle_Kind  : in Content_Kind := Text)
+      Subtitle_Kind  : in Text_Kinds := Text)
    is
 
       use Yolk.Utilities;
@@ -728,9 +1129,34 @@ package body Yolk.Syndication.Writer is
                                Atom_Common'(Base_URI => TUS (Base_URI),
                                             Language => TUS (Language)),
                              Text_Content => TUS (Subtitle),
-                             Text_Type    => Subtitle_Kind));
+                             Text_Kind    => Subtitle_Kind));
 
    end Set_Subtitle;
+
+   ---------------------------
+   --  Set_Subtitle_Source  --
+   ---------------------------
+
+   procedure Set_Subtitle_Source
+     (Entr           : in out Atom_Entry;
+      Subtitle       : in String;
+      Base_URI       : in String := None;
+      Language       : in String := None;
+      Subtitle_Kind  : in Text_Kinds := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Subtitle := Atom_Text'
+        (Common       =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         Text_Content => TUS (Subtitle),
+         Text_Kind    => Subtitle_Kind);
+
+   end Set_Subtitle_Source;
 
    -----------------
    --  Set_Summary  --
@@ -741,7 +1167,7 @@ package body Yolk.Syndication.Writer is
       Summary        : in     String;
       Base_URI       : in     String := None;
       Language       : in     String := None;
-      Summary_Kind   : in     Content_Kind := Text)
+      Summary_Kind   : in     Text_Kinds := Text)
    is
 
       use Yolk.Utilities;
@@ -752,7 +1178,7 @@ package body Yolk.Syndication.Writer is
                                    Atom_Common'(Base_URI => TUS (Base_URI),
                                                 Language => TUS (Language)),
                                  Text_Content => TUS (Summary),
-                                 Text_Type    => Summary_Kind);
+                                 Text_Kind    => Summary_Kind);
 
    end Set_Summary;
 
@@ -765,7 +1191,7 @@ package body Yolk.Syndication.Writer is
       Title      : in     String;
       Base_URI   : in     String := None;
       Language   : in     String := None;
-      Title_Kind : in     Content_Kind := Text)
+      Title_Kind : in     Text_Kinds := Text)
    is
 
       use Yolk.Utilities;
@@ -776,7 +1202,7 @@ package body Yolk.Syndication.Writer is
                                  Atom_Common'(Base_URI => TUS (Base_URI),
                                               Language => TUS (Language)),
                                Text_Content => TUS (Title),
-                               Text_Type    => Title_Kind);
+                               Text_Kind    => Title_Kind);
 
    end Set_Title;
 
@@ -789,7 +1215,7 @@ package body Yolk.Syndication.Writer is
       Title      : in     String;
       Base_URI   : in     String := None;
       Language   : in     String := None;
-      Title_Kind : in     Content_Kind := Text)
+      Title_Kind : in     Text_Kinds := Text)
    is
 
       use Yolk.Utilities;
@@ -801,9 +1227,34 @@ package body Yolk.Syndication.Writer is
                                Atom_Common'(Base_URI => TUS (Base_URI),
                                             Language => TUS (Language)),
                              Text_Content => TUS (Title),
-                             Text_Type    => Title_Kind));
+                             Text_Kind    => Title_Kind));
 
    end Set_Title;
+
+   ------------------------
+   --  Set_Title_Source  --
+   ------------------------
+
+   procedure Set_Title_Source
+     (Entr       : in out Atom_Entry;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Text_Kinds := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Title := Atom_Text'
+        (Common       =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         Text_Content => TUS (Title),
+         Text_Kind    => Title_Kind);
+
+   end Set_Title_Source;
 
    -------------------
    --  Set_Updated  --
@@ -849,6 +1300,29 @@ package body Yolk.Syndication.Writer is
                              Time_Stamp => Update_Time));
 
    end Set_Updated;
+
+   --------------------------
+   --  Set_Updated_Source  --
+   --------------------------
+
+   procedure Set_Updated_Source
+     (Entr        : in out Atom_Entry;
+      Update_Time : in     Ada.Calendar.Time;
+      Base_URI    : in     String := None;
+      Language    : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Source.Updated := Atom_Date'
+        (Common     =>
+           Atom_Common'(Base_URI => TUS (Base_URI),
+                        Language => TUS (Language)),
+         Time_Stamp => Update_Time);
+
+   end Set_Updated_Source;
 
    --------------------
    --  PT_Atom_Feed  --
@@ -948,7 +1422,17 @@ package body Yolk.Syndication.Writer is
          procedure Create_Category_Elements
            (List   : in Category_List.List;
             Parent : in Node);
-         --  Add atom:category elements to parent.
+         --  Add atom:category elements to Parent.
+
+         procedure Create_Content_Element
+           (Entry_Content  : in Atom_Entry_Content;
+            Parent         : in Node);
+         --  Add atom:content element to Parent.
+
+         procedure Create_Generator_Element
+           (A_Generator : in Atom_Generator;
+            Parent      : in Node);
+         --  Add atom:generator element to Parent.
 
          procedure Create_Generic_Element
            (Common    : in Atom_Common;
@@ -973,12 +1457,17 @@ package body Yolk.Syndication.Writer is
             Parent      : in Node);
          --  Add atom:person elements to Parent.
 
+         procedure Create_Source_Element
+           (Source : in Atom_Entry_Source;
+            Parent : in Node);
+         --  Add an atom:source element to Parent.
+
          procedure Create_Text_Construct
            (Common    : in Atom_Common;
             Data      : in String;
             Elem_Name : in String;
             Parent    : in Node;
-            Text_Kind : in Content_Kind);
+            Text_Kind : in Text_Kinds);
          --  Set the type (text/html/xhtml) and content of an atomTextConstruct
          --  element.
 
@@ -1060,6 +1549,104 @@ package body Yolk.Syndication.Writer is
          end Create_Category_Elements;
 
          ------------------------------
+         --  Create_Content_Element  --
+         ------------------------------
+
+         procedure Create_Content_Element
+           (Entry_Content  : in Atom_Entry_Content;
+            Parent         : in Node)
+         is
+
+            Content_Node : Node;
+
+         begin
+
+            case Entry_Content.Content_Kind is
+               when Text | Html | Xhtml =>
+                  Create_Text_Construct
+                    (Common    => Entry_Content.Common,
+                     Data      => TS (Entry_Content.Content),
+                     Elem_Name => "content",
+                     Parent    => Parent,
+                     Text_Kind => Entry_Content.Content_Kind);
+               when others =>
+                  Content_Node := Append_Child
+                    (N         => Parent,
+                     New_Child => Create_Element (Doc      => Doc,
+                                                  Tag_Name => "content"));
+
+                  Attribute (Elem  => Content_Node,
+                             Name  => "base",
+                             Value => TS (Entry_Content.Common.Base_URI));
+
+                  Attribute (Elem  => Content_Node,
+                             Name  => "lang",
+                             Value => TS (Entry_Content.Common.Language));
+
+                  Attribute (Elem  => Content_Node,
+                             Name  => "type",
+                             Value => TS (Entry_Content.Mime_Type));
+
+                  if Entry_Content.Source /= Null_Unbounded_String then
+                     Attribute (Elem  => Content_Node,
+                                Name  => "src",
+                                Value => TS (Entry_Content.Source));
+                  else
+                     Content_Node := Append_Child
+                       (N         => Content_Node,
+                        New_Child => Create_Text_Node
+                          (Doc  => Doc,
+                           Data => TS (Entry_Content.Content)));
+                  end if;
+            end case;
+
+         end Create_Content_Element;
+
+         --------------------------------
+         --  Create_Generator_Element  --
+         --------------------------------
+
+         procedure Create_Generator_Element
+           (A_Generator : in Atom_Generator;
+            Parent      : in Node)
+         is
+
+            Generator_Node : Node;
+
+         begin
+
+            if A_Generator.Agent /= Null_Unbounded_String then
+               Generator_Node := Append_Child
+                 (N         => Parent,
+                  New_Child => Create_Element (Doc      => Doc,
+                                               Tag_Name => "generator"));
+
+               Attribute (Elem  => Generator_Node,
+                          Name  => "base",
+                          Value => TS (A_Generator.Common.Base_URI));
+
+               Attribute (Elem  => Generator_Node,
+                          Name  => "lang",
+                          Value => TS (A_Generator.Common.Language));
+
+               Attribute (Elem  => Generator_Node,
+                          Name  => "uri",
+                          Value => TS (A_Generator.URI));
+
+               Attribute (Elem  => Generator_Node,
+                          Name  => "version",
+                          Value => TS (A_Generator.Version));
+
+               Generator_Node := Append_Child
+                 (N         => Generator_Node,
+                  New_Child => Create_Text_Node
+                    (Doc  => Doc,
+                     Data => TS (A_Generator.Agent)));
+            end if;
+
+         end Create_Generator_Element;
+
+         ------------------------------
          --  Create_Generic_Element  --
          ------------------------------
 
@@ -1089,7 +1676,8 @@ package body Yolk.Syndication.Writer is
 
             Elem_Node := Append_Child
               (N         => Elem_Node,
-               New_Child => Create_Text_Node (Doc, Data));
+               New_Child => Create_Text_Node (Doc  => Doc,
+                                              Data => Data));
             pragma Unreferenced (Elem_Node);
             --  We need this because XML/Ada have no Append_Child procedures,
             --  which obviously is annoying as hell.
@@ -1258,6 +1846,101 @@ package body Yolk.Syndication.Writer is
          end Create_Person_Elements;
 
          -----------------------------
+         --  Create_Source_Element  --
+         -----------------------------
+
+         procedure Create_Source_Element
+           (Source : in Atom_Entry_Source;
+            Parent : in Node)
+         is
+
+            Source_Node : Node;
+
+         begin
+
+            Source_Node := Append_Child
+              (N         => Parent,
+               New_Child => Create_Element (Doc      => Doc,
+                                            Tag_Name => "source"));
+
+            Attribute (Elem  => Source_Node,
+                       Name  => "base",
+                       Value => TS (Source.Common.Base_URI));
+
+            Attribute (Elem  => Source_Node,
+                       Name  => "lang",
+                       Value => TS (Source.Common.Language));
+
+            Create_Person_Elements (Elem_Name   => "author",
+                                    List        => Source.Authors,
+                                    Parent      => Source_Node);
+
+            Create_Category_Elements (List   => Source.Categories,
+                                      Parent => Source_Node);
+
+            Create_Person_Elements (Elem_Name => "contributor",
+                                    List      => Source.Contributors,
+                                    Parent    => Source_Node);
+
+            Create_Generator_Element (A_Generator => Source.Generator,
+                                      Parent      => Source_Node);
+
+            if Source.Icon.URI /= Null_Unbounded_String then
+               Create_Generic_Element (Common    => Source.Icon.Common,
+                                       Data      => TS (Source.Icon.URI),
+                                       Elem_Name => "icon",
+                                       Parent    => Source_Node);
+            end if;
+
+            Create_Generic_Element (Common    => Source.Id.Common,
+                                    Data      => TS (Source.Id.URI),
+                                    Elem_Name => "id",
+                                    Parent    => Source_Node);
+
+            Create_Link_Elements (List   => Source.Links,
+                                  Parent => Source_Node);
+
+            if Source.Logo.URI /= Null_Unbounded_String then
+               Create_Generic_Element (Common    => Source.Logo.Common,
+                                       Data      => TS (Source.Logo.URI),
+                                       Elem_Name => "logo",
+                                       Parent    => Source_Node);
+            end if;
+
+            if Source.Rights.Text_Content /= Null_Unbounded_String then
+               Create_Text_Construct
+                 (Common    => Source.Rights.Common,
+                  Data      => TS (Source.Rights.Text_Content),
+                  Elem_Name => "rights",
+                  Parent    => Source_Node,
+                  Text_Kind => Source.Rights.Text_Kind);
+            end if;
+
+            if Source.Subtitle.Text_Content /= Null_Unbounded_String then
+               Create_Text_Construct
+                 (Common    => Source.Subtitle.Common,
+                  Data      => TS (Source.Subtitle.Text_Content),
+                  Elem_Name => "subtitle",
+                  Parent    => Source_Node,
+                  Text_Kind => Source.Subtitle.Text_Kind);
+            end if;
+
+            Create_Text_Construct (Common    => Source.Title.Common,
+                                   Data      => TS (Source.Title.Text_Content),
+                                   Elem_Name => "title",
+                                   Parent    => Source_Node,
+                                   Text_Kind => Source.Title.Text_Kind);
+
+            Create_Generic_Element
+              (Common    => Source.Updated.Common,
+               Data      =>
+                 Atom_Date_Image (Time_Stamp => Source.Updated.Time_Stamp),
+               Elem_Name => "updated",
+               Parent    => Source_Node);
+
+         end Create_Source_Element;
+
+         -----------------------------
          --  Create_Text_Construct  --
          -----------------------------
 
@@ -1266,7 +1949,7 @@ package body Yolk.Syndication.Writer is
             Data      : in String;
             Elem_Name : in String;
             Parent    : in Node;
-            Text_Kind : in Content_Kind)
+            Text_Kind : in Text_Kinds)
          is
 
             Elem_Node : Node;
@@ -1358,43 +2041,8 @@ package body Yolk.Syndication.Writer is
                                  Parent      => Feed_Node);
 
          --  feed:generator element
-         if Generator.Agent /= Null_Unbounded_String then
-            Add_Generator_To_DOM :
-            declare
-
-               Generator_Node : Node;
-
-            begin
-
-               Generator_Node := Append_Child
-                 (N         => Feed_Node,
-                  New_Child => Create_Element (Doc      => Doc,
-                                               Tag_Name => "generator"));
-
-               Attribute (Elem  => Generator_Node,
-                          Name  => "base",
-                          Value => TS (Generator.Common.Base_URI));
-
-               Attribute (Elem  => Generator_Node,
-                          Name  => "lang",
-                          Value => TS (Generator.Common.Language));
-
-               Attribute (Elem  => Generator_Node,
-                          Name  => "uri",
-                          Value => TS (Generator.URI));
-
-               Attribute (Elem  => Generator_Node,
-                          Name  => "version",
-                          Value => TS (Generator.Version));
-
-               Generator_Node := Append_Child
-                 (N         => Generator_Node,
-                  New_Child => Create_Text_Node
-                    (Doc  => Doc,
-                     Data => TS (Generator.Agent)));
-
-            end Add_Generator_To_DOM;
-         end if;
+         Create_Generator_Element (A_Generator  => Generator,
+                                   Parent       => Feed_Node);
 
          --  feed:icon element
          if Icon.URI /= Null_Unbounded_String then
@@ -1428,7 +2076,7 @@ package body Yolk.Syndication.Writer is
                                    Data      => TS (Rights.Text_Content),
                                    Elem_Name => "rights",
                                    Parent    => Feed_Node,
-                                   Text_Kind => Rights.Text_Type);
+                                   Text_Kind => Rights.Text_Kind);
          end if;
 
          --  feed:subtitle
@@ -1437,7 +2085,7 @@ package body Yolk.Syndication.Writer is
                                    Data      => TS (Subtitle.Text_Content),
                                    Elem_Name => "subtitle",
                                    Parent    => Feed_Node,
-                                   Text_Kind => Subtitle.Text_Type);
+                                   Text_Kind => Subtitle.Text_Kind);
          end if;
 
          --  feed:title element
@@ -1445,7 +2093,7 @@ package body Yolk.Syndication.Writer is
                                 Data      => TS (Title.Text_Content),
                                 Elem_Name => "title",
                                 Parent    => Feed_Node,
-                                Text_Kind => Title.Text_Type);
+                                Text_Kind => Title.Text_Kind);
 
          --  feed:updated element
          Create_Generic_Element
@@ -1491,6 +2139,10 @@ package body Yolk.Syndication.Writer is
                Create_Category_Elements (List   => An_Entry.Categories,
                                          Parent => Entry_Node);
 
+               --  entry:content element
+               Create_Content_Element (Entry_Content  => An_Entry.Content,
+                                       Parent         => Entry_Node);
+
                --  entry:contributor elements
                Create_Person_Elements (Elem_Name => "contributor",
                                        List      => An_Entry.Contributors,
@@ -1521,8 +2173,12 @@ package body Yolk.Syndication.Writer is
                      Data      => TS (An_Entry.Rights.Text_Content),
                      Elem_Name => "rights",
                      Parent    => Entry_Node,
-                     Text_Kind => An_Entry.Rights.Text_Type);
+                     Text_Kind => An_Entry.Rights.Text_Kind);
                end if;
+
+               --  entry:source element
+               Create_Source_Element (Source => An_Entry.Source,
+                                      Parent => Entry_Node);
 
                --  entry:summary element
                Create_Text_Construct
@@ -1530,7 +2186,7 @@ package body Yolk.Syndication.Writer is
                   Data      => TS (An_Entry.Summary.Text_Content),
                   Elem_Name => "summary",
                   Parent    => Entry_Node,
-                  Text_Kind => An_Entry.Summary.Text_Type);
+                  Text_Kind => An_Entry.Summary.Text_Kind);
 
                --  entry:title element
                Create_Text_Construct
@@ -1538,7 +2194,7 @@ package body Yolk.Syndication.Writer is
                   Data      => TS (An_Entry.Title.Text_Content),
                   Elem_Name => "title",
                   Parent    => Entry_Node,
-                  Text_Kind => An_Entry.Title.Text_Type);
+                  Text_Kind => An_Entry.Title.Text_Kind);
 
                --  entry:updated element
                Create_Generic_Element
