@@ -93,49 +93,20 @@ package Yolk.Syndication.Writer is
    type Atom_Feed is limited private;
 
    procedure Add_Author
-     (Entr     : in out Atom_Entry;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None);
-   --  Add an author child element to the atom:entry element.
-   --
-   --  Name:
-   --    conveys a human - readable name for the person. The content of
-   --    Name is language sensitive.
-   --  Base_URI:
-   --    See Set_Common.
-   --  Email:
-   --    conveys an e - mail address associated with the person.
-   --  Language:
-   --    See Set_Common.
-   --  URI:
-   --    conveys an IRI associated with the person.
-
-   procedure Add_Author
      (Feed     : in out Atom_Feed;
       Name     : in     String;
       Base_URI : in     String := None;
       Email    : in     String := None;
       Language : in     String := None;
       URI      : in     String := None);
-   --  Add an author child element to the atom:feed element. In an Atom Feed
-   --  Document, the author elements of the containing atom:feed element are
-   --  considered to apply to the entry if there are no atom:author elements in
-   --  entry elements.
-   --
-   --  Name:
-   --    conveys a human - readable name for the person. The content of
-   --    Name is language sensitive.
-   --  Base_URI:
-   --    See Set_Common.
-   --  Email:
-   --    conveys an e - mail address associated with the person.
-   --  Language:
-   --    See Set_Common.
-   --  URI:
-   --    conveys an IRI associated with the person.
+
+   procedure Add_Author
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None);
 
    procedure Add_Author_Source
      (Entr     : in out Atom_Entry;
@@ -144,7 +115,7 @@ package Yolk.Syndication.Writer is
       Email    : in     String := None;
       Language : in     String := None;
       URI      : in     String := None);
-   --  Add an author child element to the atom:source element.
+   --  Add an author to the feed/entry.
    --
    --  Name:
    --    conveys a human - readable name for the person. The content of
@@ -300,9 +271,39 @@ package Yolk.Syndication.Writer is
    --    conveys an IRI associated with the person.
 
    procedure Add_Entry
-     (Feed : in out Atom_Feed;
-      Entr : in     Atom_Entry);
-   --  Add an entry element to the atom:feed element.
+     (Feed        : in out Atom_Feed;
+      Entr        : in     Atom_Entry;
+      Entry_Added : out    Boolean);
+   --  Add an entry element to the atom:feed element, placing it in the list
+   --  according to its Atom_Entry.Updated value. Entries are sorted in the
+   --  list with newest first. If an entry's Updated time is older than
+   --  Atom_Feed.Max_Entry_Age, then it's only added if the list length is
+   --  lesser than Atom_Feed.Min_Entries.
+   --
+   --  NOTE:
+   --    This procedures considers two entries the same if the Atom_Entry.Id
+   --    values are equal. If you add an entry with an Id that already exists
+   --    in the list, then the old entry is deleted and the new one added.
+   --
+   --  This procedure also takes care of keeping the entry list up to date
+   --  according to the Atom_Feed.Max_Entry_Age, Atom_Feed.Max_Entries and
+   --  Atom_Feed.Min_Entries values.
+   --
+   --  If the list of entries are longer than Max_Entries, then the oldest
+   --  entries are deleted until the list is Max_Entries long.
+   --
+   --  If an entry is older than Max_Entry_Age and the list is longer than
+   --  Min_Entries then the entry is deleted. The Max_Entry_Age is compared to
+   --  the Atom_Entry.Updated value.
+   --
+   --  No entries are deleted from the list of entries as long as the list is
+   --  shorter than Min_Entries.
+   --
+   --  Entry_Added is set to True of the entry was successfully added.
+   --
+   --  The Feed updated timestamp is set to the entries updated timestamp if
+   --  the entry has been successfully added to the entry list and the entry
+   --  updated timestamp is newer than the current Feed updated timestamp.
 
    procedure Add_Link
      (Entr      : in out Atom_Entry;
@@ -470,8 +471,11 @@ package Yolk.Syndication.Writer is
    --    descendents.
 
    function New_Atom_Feed
-     (Base_URI : in String := None;
-      Language : in String := None)
+     (Base_URI    : in String := None;
+      Language    : in String := None;
+      Max_Age     : in Duration := 5_616_000.0;
+      Max_Entries : in Positive := 100;
+      Min_Entries : in Positive := 10)
       return Atom_Feed;
    --  Initialize an Atom object, as per the Atom specification RFC4287:
    --    http://tools.ietf.org/html/rfc4287
@@ -486,6 +490,18 @@ package Yolk.Syndication.Writer is
    --  Language:
    --    Indicates the natural language for the atom:feed element and its
    --    descendents.
+   --  Max_Age:
+   --    If an entries Updated value is older than Max_Age, and there are more
+   --    than Min_Entries in the list, then the entry is deleted. This is done
+   --    in the Add_Entry procedure. Max_Age is given in seconds.
+   --  Max_Entries:
+   --    This is the max amount of entries we keep in the list. If there are
+   --    more than Max_Entries entries in the list, then the oldest entries are
+   --    deleted until the list is Max_Entries long.
+   --  Min_Entries:
+   --    The is the minimum amount of entries that must be in the list before
+   --    we bother with deleting old entries. If there are less than
+   --    Min_Entries in the list, then even a 100 year old entry is kept.
 
    procedure Set_Common
      (Feed     : in out Atom_Feed;
@@ -627,56 +643,20 @@ package Yolk.Syndication.Writer is
    --    (vertical) and SHOULD be suitable for presentation at a small size.
 
    procedure Set_Id
-     (Entr     : in out Atom_Entry;
-      URI      : in     String;
+     (Feed     : in out Atom_Feed;
+      Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None);
-   --  Conveys a permanent, universally unique identifier for the entry.
-   --  Its content MUST be an IRI, as defined by [RFC3987]. Note that the
-   --  definition of "IRI" excludes relative references. Though the IRI might
-   --  use a dereferencable scheme, Atom Processors MUST NOT assume it can be
-   --  dereferenced. When an Atom Document is relocated, migrated, syndicated,
-   --  republished, exported, or imported, the content of its atom : id element
-   --  MUST NOT change. Put another way, an atom:id element pertains to all
-   --  instantiations of a particular Atom feed; revisions retain the same
-   --  content in their atom:id elements. It is suggested that the atom:id
-   --  element be stored along with the associated resource. The content of an
-   --  atom:id element MUST be created in a way that assures uniqueness.
-   --
-   --  Base_URI:
-   --    See Set_Common.
-   --  Language:
-   --    See Set_Common.
-   --  Id:
-   --    A permanent, universally unique identifier for the entry.
 
    procedure Set_Id
-     (Feed     : in out Atom_Feed;
-      URI      : in     String;
+     (Entr     : in out Atom_Entry;
+      Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None);
-   --  Conveys a permanent, universally unique identifier for the feed.
-   --  Its content MUST be an IRI, as defined by [RFC3987]. Note that the
-   --  definition of "IRI" excludes relative references. Though the IRI might
-   --  use a dereferencable scheme, Atom Processors MUST NOT assume it can be
-   --  dereferenced. When an Atom Document is relocated, migrated, syndicated,
-   --  republished, exported, or imported, the content of its atom : id element
-   --  MUST NOT change. Put another way, an atom:id element pertains to all
-   --  instantiations of a particular Atom feed; revisions retain the same
-   --  content in their atom:id elements. It is suggested that the atom:id
-   --  element be stored along with the associated resource. The content of an
-   --  atom:id element MUST be created in a way that assures uniqueness.
-   --
-   --  Base_URI:
-   --    See Set_Common.
-   --  Language:
-   --    See Set_Common.
-   --  Id:
-   --    A permanent, universally unique identifier for the feed.
 
    procedure Set_Id_Source
      (Entr     : in out Atom_Entry;
-      URI      : in     String;
+      Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None);
    --  Conveys a permanent, universally unique identifier for the entry.
@@ -693,10 +673,10 @@ package Yolk.Syndication.Writer is
    --
    --  Base_URI:
    --    See Set_Common.
-   --  Language:
-   --    See Set_Common.
    --  Id:
    --    A permanent, universally unique identifier for the entry.
+   --  Language:
+   --    See Set_Common.
 
    procedure Set_Logo
      (Feed     : in out Atom_Feed;
@@ -1069,7 +1049,11 @@ private
          Updated        : Atom_Date;
       end record;
 
-   package Entry_List is new Doubly_Linked_Lists (Atom_Entry);
+   function Equal_Entry
+     (Left, Right : in Atom_Entry)
+      return Boolean;
+
+   package Entry_List is new Doubly_Linked_Lists (Atom_Entry, Equal_Entry);
 
    protected type PT_Atom_Feed is
 
@@ -1083,7 +1067,8 @@ private
         (Value : in Atom_Person);
 
       procedure Add_Entry
-        (Value : in Atom_Entry);
+        (Value       : in Atom_Entry;
+         Entry_Added : out Boolean);
 
       procedure Add_Link
         (Value : in Atom_Link);
@@ -1106,6 +1091,15 @@ private
 
       procedure Set_Logo
         (Value : in Atom_Logo);
+
+      procedure Set_Max_Age
+        (Value : in Duration);
+
+      procedure Set_Max_Entries
+        (Value : in Positive);
+
+      procedure Set_Min_Entries
+        (Value : in Positive);
 
       procedure Set_Rights
         (Value : in Atom_Text);
@@ -1131,6 +1125,9 @@ private
       Id             : Atom_Id;
       Links          : Link_List.List;
       Logo           : Atom_Logo;
+      Max_Entry_Age  : Duration;
+      Max_Entries    : Positive;
+      Min_Entries    : Positive;
       Rights         : Atom_Text;
       Subtitle       : Atom_Text;
       Title          : Atom_Text;

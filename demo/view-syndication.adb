@@ -79,7 +79,7 @@ package body View.Syndication is
 begin
 
    Set_Id (Feed     => Feed,
-           URI      => "/some/id/uri",
+           Id       => "/some/id/uri",
            Base_URI => "/",
            Language => "da");
    Set_Title (Feed       => Feed,
@@ -133,13 +133,11 @@ begin
                  Language      => "da",
                  Subtitle_Kind => Text);
 
-   Set_Updated (Feed        => Feed,
-                Update_Time => Ada.Calendar.Clock);
-
    declare
 
       An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "entry/base/",
                                                Language => "entry lang");
+      Success : Boolean;
 
    begin
 
@@ -201,7 +199,7 @@ begin
                        Language => "icon/lang");
 
       Set_Id_Source (Entr     => An_Entry,
-                     URI      => "source Id URI",
+                     Id       => "source Id URI",
                      Base_URI => "id/base",
                      Language => "id/lang");
 
@@ -245,7 +243,7 @@ begin
                           Language    => "updated/lang");
 
       Set_Id (Entr     => An_Entry,
-              URI      => "id URI",
+              Id       => "id URI",
               Base_URI => "id/base",
               Language => "id/lang");
 
@@ -290,9 +288,13 @@ begin
                    Base_URI    => "updated/base",
                    Language    => "updated/language");
 
-      Add_Entry (Feed => Feed,
-                 Entr => An_Entry);
+      Add_Entry (Feed        => Feed,
+                 Entr        => An_Entry,
+                 Entry_Added => Success);
 
    end;
+
+   Set_Updated (Feed        => Feed,
+                Update_Time => Ada.Calendar.Clock);
 
 end View.Syndication;

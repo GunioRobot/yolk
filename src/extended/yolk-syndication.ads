@@ -28,8 +28,11 @@ package Yolk.Syndication is
    Q : Character renames Ada.Characters.Latin_1.Quotation;
 
    None     : constant String := "";
-   XMLNS    : constant String := "http://www.w3.org/2005/Atom";
+   PI       : constant String := "<?xml version="
+     & Q & "1.0" & Q & " encoding=" & Q & "utf-8" & Q & "?>"
+     & Ada.Characters.Latin_1.LF;
    XHTMLNS  : constant String := "http://www.w3.org/1999/xhtml";
+   XMLNS    : constant String := "http://www.w3.org/2005/Atom";
    DIVNS    : constant String := "xmlns=" & Q & XHTMLNS & Q;
 
 end Yolk.Syndication;

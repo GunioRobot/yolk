@@ -43,37 +43,10 @@ package body Yolk.Syndication.Writer is
    --  The uppercase T and Z are requried as per the Atom specification.
    --  It is expected that the Time_Stamp is GMT.
 
-   function Create_DOM_From_String
+   function Create_Node_From_String
      (XML_String : in String)
-      return DOM.Core.Document;
-   --  Return a DOM document based on the given XML_String.
-
-   ------------------
-   --  Add_Author  --
-   ------------------
-
-   procedure Add_Author
-     (Entr     : in out Atom_Entry;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Authors.Append
-        (New_Item => Atom_Person'(Common =>
-                                    Atom_Common'(Base_URI => TUS (Base_URI),
-                                                 Language => TUS (Language)),
-                                  Name   => TUS (Name),
-                                  Email  => TUS (Email),
-                                  URI    => TUS (URI)));
-
-   end Add_Author;
+      return DOM.Core.Node;
+   --  Return a DOM node based on the given XML_String.
 
    ------------------
    --  Add_Author  --
@@ -99,6 +72,33 @@ package body Yolk.Syndication.Writer is
                                Name   => TUS (Name),
                                Email  => TUS (Email),
                                URI    => TUS (URI)));
+
+   end Add_Author;
+
+   ------------------
+   --  Add_Author  --
+   ------------------
+
+   procedure Add_Author
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Authors.Append
+        (New_Item => Atom_Person'(Common =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Name   => TUS (Name),
+                                  Email  => TUS (Email),
+                                  URI    => TUS (URI)));
 
    end Add_Author;
 
@@ -302,12 +302,14 @@ package body Yolk.Syndication.Writer is
    -----------------
 
    procedure Add_Entry
-     (Feed : in out Atom_Feed;
-      Entr : in     Atom_Entry)
+     (Feed        : in out Atom_Feed;
+      Entr        : in     Atom_Entry;
+      Entry_Added : out    Boolean)
    is
    begin
 
-      Feed.PAF.Add_Entry (Value => Entr);
+      Feed.PAF.Add_Entry (Value       => Entr,
+                          Entry_Added => Entry_Added);
 
    end Add_Entry;
 
@@ -441,27 +443,27 @@ package body Yolk.Syndication.Writer is
 
    end Atom_Date_Image;
 
-   ---------------------------
-   --  Create_DOM_Document  --
-   ---------------------------
+   -------------------------------
+   --  Create_Node_From_String  --
+   -------------------------------
 
-   function Create_DOM_From_String
+   function Create_Node_From_String
      (XML_String : in String)
-      return DOM.Core.Document
+      return DOM.Core.Node
    is
 
       use DOM.Core;
+      use DOM.Core.Nodes;
       use DOM.Readers;
       use Input_Sources.Strings;
       use Sax.Readers;
 
       Input  : String_Input;
       Reader : Tree_Reader;
-      --  Doc    : Document;
 
    begin
 
-      return Doc : Document do
+      return Fragment : Node do
          Open (Str      => XML_String,
                Encoding => Unicode.CES.Utf8.Utf8_Encoding,
                Input    => Input);
@@ -478,7 +480,7 @@ package body Yolk.Syndication.Writer is
 
          Close (Input => Input);
 
-         Doc := Get_Tree (Read => Reader);
+         Fragment := Get_Tree (Read => Reader);
 
       exception
 
@@ -487,7 +489,21 @@ package body Yolk.Syndication.Writer is
 
       end return;
 
-   end Create_DOM_From_String;
+   end Create_Node_From_String;
+
+   -------------------
+   --  Equal_Entry  --
+   -------------------
+
+   function Equal_Entry
+     (Left, Right : in Atom_Entry)
+      return Boolean
+   is
+   begin
+
+      return Left.Id.URI = Right.Id.URI;
+
+   end Equal_Entry;
 
    -------------------
    --  Get_XML_DOM  --
@@ -663,8 +679,11 @@ package body Yolk.Syndication.Writer is
    ---------------------
 
    function New_Atom_Feed
-     (Base_URI : in String := None;
-      Language : in String := None)
+     (Base_URI    : in String := None;
+      Language    : in String := None;
+      Max_Age     : in Duration := 5_616_000.0;
+      Max_Entries : in Positive := 100;
+      Min_Entries : in Positive := 10)
       return Atom_Feed
    is
 
@@ -676,6 +695,9 @@ package body Yolk.Syndication.Writer is
 
       return Feed : Atom_Feed do
          Feed.PAF.Set_Common (Value => Common);
+         Feed.PAF.Set_Max_age (Value => Max_Age);
+         Feed.PAF.Set_Max_Entries (Value => Max_Entries);
+         Feed.PAF.Set_Min_Entries (Value => Min_Entries);
       end return;
 
    end New_Atom_Feed;
@@ -905,7 +927,7 @@ package body Yolk.Syndication.Writer is
 
    procedure Set_Id
      (Entr     : in out Atom_Entry;
-      URI      : in     String;
+      Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None)
    is
@@ -917,7 +939,7 @@ package body Yolk.Syndication.Writer is
       Entr.Id := Atom_Id'(Common =>
                             Atom_Common'(Base_URI => TUS (Base_URI),
                                          Language => TUS (Language)),
-                          URI    => TUS (URI));
+                          URI    => TUS (Id));
 
    end Set_Id;
 
@@ -927,7 +949,7 @@ package body Yolk.Syndication.Writer is
 
    procedure Set_Id
      (Feed     : in out Atom_Feed;
-      URI      : in     String;
+      Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None)
    is
@@ -940,7 +962,7 @@ package body Yolk.Syndication.Writer is
         (Value => Atom_Id'(Common =>
                              Atom_Common'(Base_URI => TUS (Base_URI),
                                           Language => TUS (Language)),
-                           URI    => TUS (URI)));
+                           URI    => TUS (Id)));
 
    end Set_Id;
 
@@ -950,7 +972,7 @@ package body Yolk.Syndication.Writer is
 
    procedure Set_Id_Source
      (Entr     : in out Atom_Entry;
-      URI      : in     String;
+      Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None)
    is
@@ -962,7 +984,7 @@ package body Yolk.Syndication.Writer is
       Entr.Source.Id := Atom_Id'(Common =>
                                    Atom_Common'(Base_URI => TUS (Base_URI),
                                                 Language => TUS (Language)),
-                                 URI    => TUS (URI));
+                                 URI    => TUS (Id));
 
    end Set_Id_Source;
 
@@ -1374,11 +1396,109 @@ package body Yolk.Syndication.Writer is
       -----------------
 
       procedure Add_Entry
-        (Value : in Atom_Entry)
+        (Value       : in Atom_Entry;
+         Entry_Added : out Boolean)
       is
+
+         use Ada.Calendar;
+         use Entry_List;
+
+         procedure Insert_Entry
+           (Value : in Atom_Entry;
+            Done  : out Boolean);
+         --  Insert the Value into List sorted by Atom_Entry.Updated
+
+         --------------------
+         --  Insert_Entry  --
+         --------------------
+
+         procedure Insert_Entry
+           (Value : in Atom_Entry;
+            Done  : out Boolean)
+         is
+
+            C : Cursor;
+
+         begin
+
+            if Entries.Is_Empty then
+               Entries.Append (New_Item => Value);
+               Done := True;
+            elsif Value.Updated.Time_Stamp <=
+              Entries.Last_Element.Updated.Time_Stamp
+            then
+               Entries.Append (New_Item => Value);
+               Done := True;
+            elsif Value.Updated.Time_Stamp >=
+              Entries.First_Element.Updated.Time_Stamp
+            then
+               Entries.Prepend (New_Item => Value);
+               Done := True;
+            else
+               C := Entries.First;
+               while Has_Element (C) loop
+                  if Value.Updated.Time_Stamp >=
+                    Element (C).Updated.Time_Stamp
+                  then
+                     Entries.Insert (Before   => C,
+                                     New_Item => Value);
+                     Done := True;
+                     exit;
+                  end if;
+
+                  Next (C);
+               end loop;
+            end if;
+
+         end Insert_Entry;
+
+         C : Cursor;
+         Counter : Natural := Natural (Entries.Length);
+         Now : constant Time := Clock;
+
+         use Yolk.Utilities;
+
       begin
 
-         Entries.Prepend (Value);
+         Entry_Added := False;
+
+         C := Find (Container => Entries,
+                    Item      => Value);
+         if  C /= No_Element then
+            Entries.Delete (Position => C);
+         end if;
+
+         if Entries.Length >= Count_Type (Max_Entries) then
+            Entries.Delete_Last
+              (Count => Entries.Length - (Count_Type (Max_Entries - 1)));
+         end if;
+
+         C := Entries.Last;
+         loop
+            exit when Counter <= Min_Entries;
+
+            if Now - Element (C).Updated.Time_Stamp > Max_Entry_Age then
+               Entries.Delete (Position => C);
+               C := Entries.Last;
+            else
+               Previous (C);
+            end if;
+
+            Counter := Counter - 1;
+         end loop;
+
+         if Entries.Length < Count_Type (Max_Entries)
+           or Clock - Value.Updated.Time_Stamp <= Max_Entry_Age
+         then
+            Insert_Entry (Value => Value,
+                          Done  => Entry_Added);
+         end if;
+
+         if Entry_Added
+           and then Value.Updated.Time_Stamp < Updated.Time_Stamp
+         then
+            Updated.Time_Stamp := Value.Updated.Time_Stamp;
+         end if;
 
       end Add_Entry;
 
@@ -1995,10 +2115,9 @@ package body Yolk.Syndication.Writer is
 
                   Elem_Node := Append_Child
                     (N         => Elem_Node,
-                     New_Child => First_Child
-                       (N => Create_DOM_From_String
-                          (XML_String =>
-                           "<div " & DIVNS & ">" & Data & "</div>")));
+                     New_Child => Create_Node_From_String
+                       (XML_String =>
+                        "<div " & DIVNS & ">" & Data & "</div>"));
 
             end case;
 
@@ -2294,13 +2413,15 @@ package body Yolk.Syndication.Writer is
 
       begin
 
-         DOM.Core.Nodes.Write (Stream        => Output'Access,
-                               N             => Doc,
-                               Pretty_Print  => True);
+         DOM.Core.Nodes.Write (Stream                 => Output'Access,
+                               N                      => Doc,
+                               Print_Comments         => False,
+                               Print_XML_Declaration  => False,
+                               Pretty_Print           => True);
 
          Free (Doc);
 
-         return TS (Output.Str);
+         return PI & TS (Output.Str);
 
       end Get_String;
 
@@ -2371,6 +2492,45 @@ package body Yolk.Syndication.Writer is
          Logo := Value;
 
       end Set_Logo;
+
+      -------------------
+      --  Set_Max_Age  --
+      -------------------
+
+      procedure Set_Max_Age
+        (Value : in Duration)
+      is
+      begin
+
+         Max_Entry_Age := Value;
+
+      end Set_Max_Age;
+
+      -----------------------
+      --  Set_Max_Entries  --
+      -----------------------
+
+      procedure Set_Max_Entries
+        (Value : in Positive)
+      is
+      begin
+
+         Max_Entries := Value;
+
+      end Set_Max_Entries;
+
+      -----------------------
+      --  Set_Min_Entries  --
+      -----------------------
+
+      procedure Set_Min_Entries
+        (Value : in Positive)
+      is
+      begin
+
+         Min_Entries := Value;
+
+      end Set_Min_Entries;
 
       ------------------
       --  Set_Rights  --

@@ -41,8 +41,11 @@ package View.Syndication is
 
    use Yolk.Syndication.Writer;
 
-   Feed : Atom_Feed := New_Atom_Feed (Base_URI => "base",
-                                      Language => "lang");
+   Feed : Atom_Feed := New_Atom_Feed (Base_URI    => "base",
+                                      Language    => "lang",
+                                      Max_Age     => 10.0,
+                                      Min_Entries => 5,
+                                      Max_Entries => 8);
 
    function Generate
      (Request : in AWS.Status.Data)
