@@ -99,6 +99,19 @@ package Yolk.Syndication.Writer is
       Email    : in     String := None;
       Language : in     String := None;
       URI      : in     String := None);
+   --  Add an author to the feed/entry.
+   --
+   --  Name:
+   --    conveys a human - readable name for the person. The content of
+   --    Name is language sensitive.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Email:
+   --    conveys an e - mail address associated with the person.
+   --  Language:
+   --    See Set_Common.
+   --  URI:
+   --    conveys an IRI associated with the person.
 
    procedure Add_Author
      (Entr     : in out Atom_Entry;
@@ -107,6 +120,19 @@ package Yolk.Syndication.Writer is
       Email    : in     String := None;
       Language : in     String := None;
       URI      : in     String := None);
+   --  Add an author to the feed/entry.
+   --
+   --  Name:
+   --    conveys a human - readable name for the person. The content of
+   --    Name is language sensitive.
+   --  Base_URI:
+   --    See Set_Common.
+   --  Email:
+   --    conveys an e - mail address associated with the person.
+   --  Language:
+   --    See Set_Common.
+   --  URI:
+   --    conveys an IRI associated with the person.
 
    procedure Add_Author_Source
      (Entr     : in out Atom_Entry;
@@ -130,15 +156,15 @@ package Yolk.Syndication.Writer is
    --    conveys an IRI associated with the person.
 
    procedure Add_Category
-     (Entr     : in out Atom_Entry;
+     (Feed     : in out Atom_Feed;
       Term     : in     String;
       Base_URI : in     String := None;
       Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None);
-   --  Add an atom:category element to the entry. The atom:category element
-   --  conveys information about a category associated with an entry or feed.
+   --  Add a category to the feed/entry. The category element conveys
+   --  information about a category associated with an entry or feed.
    --
    --  Content:
    --    No meaning is assigned to this by RFC4287. Should probably be left
@@ -154,21 +180,21 @@ package Yolk.Syndication.Writer is
    --    An IRI that identifies a categorization scheme.
 
    procedure Add_Category
-     (Feed     : in out Atom_Feed;
+     (Entr     : in out Atom_Entry;
       Term     : in     String;
       Base_URI : in     String := None;
       Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None);
-   --  Add an atom:category element to the feed. The atom:category element
-   --  conveys information about a category associated with an entry or feed.
+   --  Add a category to the feed/entry. The category element conveys
+   --  information about a category associated with an entry or feed.
    --
    --  Content:
    --    No meaning is assigned to this by RFC4287. Should probably be left
    --    empty.
    --  Term:
-   --    A string that identifies the category to which the feed belongs.
+   --    A string that identifies the category to which the entry belongs.
    --  Label:
    --    Provides a human - readable label for display in end-user
    --    applications. The content of the Label is language sensitive.
@@ -185,8 +211,8 @@ package Yolk.Syndication.Writer is
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None);
-   --  Add a category element to atom:source element. The atom:category element
-   --  conveys information about a category associated with an entry or feed.
+   --  Add a category to the feed/entry. The category element conveys
+   --  information about a category associated with an entry or feed.
    --
    --  Content:
    --    No meaning is assigned to this by RFC4287. Should probably be left
@@ -202,13 +228,13 @@ package Yolk.Syndication.Writer is
    --    An IRI that identifies a categorization scheme.
 
    procedure Add_Contributor
-     (Entr     : in out Atom_Entry;
+     (Feed     : in out Atom_Feed;
       Name     : in     String;
       Base_URI : in     String := None;
       Email    : in     String := None;
       Language : in     String := None;
       URI      : in     String := None);
-   --  Add a contributor child element to the atom:entry element. In an Atom
+   --  Add a contributor child element to the atom:feed element. In an Atom
    --  Feed Document, the contributor element indicates a person or other
    --  entity who contributed to the feed.
    --
@@ -225,13 +251,13 @@ package Yolk.Syndication.Writer is
    --    conveys an IRI associated with the person.
 
    procedure Add_Contributor
-     (Feed     : in out Atom_Feed;
+     (Entr     : in out Atom_Entry;
       Name     : in     String;
       Base_URI : in     String := None;
       Email    : in     String := None;
       Language : in     String := None;
       URI      : in     String := None);
-   --  Add a contributor child element to the atom:feed element. In an Atom
+   --  Add a contributor child element to the atom:entry element. In an Atom
    --  Feed Document, the contributor element indicates a person or other
    --  entity who contributed to the feed.
    --
@@ -306,7 +332,7 @@ package Yolk.Syndication.Writer is
    --  updated timestamp is newer than the current Feed updated timestamp.
 
    procedure Add_Link
-     (Entr      : in out Atom_Entry;
+     (Feed      : in out Atom_Feed;
       Href      : in     String;
       Base_URI  : in     String := None;
       Content   : in     String := None;
@@ -352,7 +378,7 @@ package Yolk.Syndication.Writer is
    --    markup.
 
    procedure Add_Link
-     (Feed      : in out Atom_Feed;
+     (Entr      : in out Atom_Entry;
       Href      : in     String;
       Base_URI  : in     String := None;
       Content   : in     String := None;
@@ -442,6 +468,16 @@ package Yolk.Syndication.Writer is
    --    the Title is language sensitive. Entities such as "&amp;" and
    --    "&lt;" represent their corresponding characters ("&" and "<"), not
    --    markup.
+
+   procedure Clear_Entry_List
+     (Feed : in out Atom_Feed);
+   --  Remove all entries from the Feed.
+
+   procedure Delete_Entry
+     (Feed  : in out Atom_Feed;
+      Id    : in     String);
+   --  Delete all entries from Feed where the Atom_Entry.Id = Id. Match must
+   --  be exact. "foo" is _not_ the same as "Foo".
 
    function Get_XML_DOM
      (Feed : in Atom_Feed)
@@ -647,12 +683,48 @@ package Yolk.Syndication.Writer is
       Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None);
+   --  Conveys a permanent, universally unique identifier for the entry.
+   --  Its content MUST be an IRI, as defined by [RFC3987]. Note that the
+   --  definition of "IRI" excludes relative references. Though the IRI might
+   --  use a dereferencable scheme, Atom Processors MUST NOT assume it can be
+   --  dereferenced. When an Atom Document is relocated, migrated, syndicated,
+   --  republished, exported, or imported, the content of its atom : id element
+   --  MUST NOT change. Put another way, an atom:id element pertains to all
+   --  instantiations of a particular Atom feed; revisions retain the same
+   --  content in their atom:id elements. It is suggested that the atom:id
+   --  element be stored along with the associated resource. The content of an
+   --  atom:id element MUST be created in a way that assures uniqueness.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Id:
+   --    A permanent, universally unique identifier for the entry.
+   --  Language:
+   --    See Set_Common.
 
    procedure Set_Id
      (Entr     : in out Atom_Entry;
       Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None);
+   --  Conveys a permanent, universally unique identifier for the entry.
+   --  Its content MUST be an IRI, as defined by [RFC3987]. Note that the
+   --  definition of "IRI" excludes relative references. Though the IRI might
+   --  use a dereferencable scheme, Atom Processors MUST NOT assume it can be
+   --  dereferenced. When an Atom Document is relocated, migrated, syndicated,
+   --  republished, exported, or imported, the content of its atom : id element
+   --  MUST NOT change. Put another way, an atom:id element pertains to all
+   --  instantiations of a particular Atom feed; revisions retain the same
+   --  content in their atom:id elements. It is suggested that the atom:id
+   --  element be stored along with the associated resource. The content of an
+   --  atom:id element MUST be created in a way that assures uniqueness.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Id:
+   --    A permanent, universally unique identifier for the entry.
+   --  Language:
+   --    See Set_Common.
 
    procedure Set_Id_Source
      (Entr     : in out Atom_Entry;
@@ -723,13 +795,13 @@ package Yolk.Syndication.Writer is
    --    See Set_Common.
 
    procedure Set_Rights
-     (Entr        : in out Atom_Entry;
+     (Feed        : in out Atom_Feed;
       Rights      : in     String;
       Base_URI    : in     String := None;
       Language    : in     String := None;
       Rights_Kind : in     Text_Kinds := Text);
-   --  Conveys information about rights held in and over an entry. SHOULD NOT
-   --  be used to convey machine - readable licensing information.
+   --  Conveys information about rights held in and over a feed. SHOULD NOT be
+   --  used to convey machine - readable licensing information.
    --
    --  Rights:
    --    The actual text describing the rights.
@@ -741,13 +813,13 @@ package Yolk.Syndication.Writer is
    --    The rights kind. See Content_Type.
 
    procedure Set_Rights
-     (Feed        : in out Atom_Feed;
+     (Entr        : in out Atom_Entry;
       Rights      : in     String;
       Base_URI    : in     String := None;
       Language    : in     String := None;
       Rights_Kind : in     Text_Kinds := Text);
-   --  Conveys information about rights held in and over a feed. SHOULD NOT be
-   --  used to convey machine - readable licensing information.
+   --  Conveys information about rights held in and over an entry. SHOULD NOT
+   --  be used to convey machine - readable licensing information.
    --
    --  Rights:
    --    The actual text describing the rights.
@@ -828,23 +900,6 @@ package Yolk.Syndication.Writer is
    --    The summary kind. See Content_Type.
 
    procedure Set_Title
-     (Entr       : in out Atom_Entry;
-      Title      : in     String;
-      Base_URI   : in     String := None;
-      Language   : in     String := None;
-      Title_Kind : in     Text_Kinds := Text);
-   --  Conveys a human-readable title for the entry.
-   --
-   --  Base_URI:
-   --    See Set_Common.
-   --  Language:
-   --    See Set_Common.
-   --  Title:
-   --    A human-readable title for the entry.
-   --  Title_Kind:
-   --    The title kind. See Content_Type.
-
-   procedure Set_Title
      (Feed       : in out Atom_Feed;
       Title      : in     String;
       Base_URI   : in     String := None;
@@ -858,6 +913,23 @@ package Yolk.Syndication.Writer is
    --    See Set_Common.
    --  Title:
    --    A human-readable title for the feed.
+   --  Title_Kind:
+   --    The title kind. See Content_Type.
+
+   procedure Set_Title
+     (Entr       : in out Atom_Entry;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Text_Kinds := Text);
+   --  Conveys a human-readable title for the entry.
+   --
+   --  Base_URI:
+   --    See Set_Common.
+   --  Language:
+   --    See Set_Common.
+   --  Title:
+   --    A human-readable title for the entry.
    --  Title_Kind:
    --    The title kind. See Content_Type.
 
@@ -879,12 +951,12 @@ package Yolk.Syndication.Writer is
    --    The title kind. See Content_Type.
 
    procedure Set_Updated
-     (Entr        : in out Atom_Entry;
+     (Feed        : in out Atom_Feed;
       Update_Time : in     Ada.Calendar.Time;
       Base_URI    : in     String := None;
       Language    : in     String := None);
-   --  Indicates the most recent instant in time when an entry was modified in
-   --  a way the publisher considers significant.
+   --  Indicates the most recent instant in time when a feed was modified in a
+   --  way the publisher considers significant.
    --
    --  Update_Time:
    --    When did the update occur.
@@ -894,12 +966,12 @@ package Yolk.Syndication.Writer is
    --    See Set_Common.
 
    procedure Set_Updated
-     (Feed        : in out Atom_Feed;
+     (Entr        : in out Atom_Entry;
       Update_Time : in     Ada.Calendar.Time;
       Base_URI    : in     String := None;
       Language    : in     String := None);
-   --  Indicates the most recent instant in time when a feed was modified in a
-   --  way the publisher considers significant.
+   --  Indicates the most recent instant in time when an entry was modified in
+   --  a way the publisher considers significant.
    --
    --  Update_Time:
    --    When did the update occur.
@@ -1072,6 +1144,11 @@ private
 
       procedure Add_Link
         (Value : in Atom_Link);
+
+      procedure Clear_Entry_List;
+
+      procedure Delete_Entry
+        (Id : in String);
 
       function Get_DOM return DOM.Core.Document;
 

@@ -134,35 +134,6 @@ package body Yolk.Syndication.Writer is
    --------------------
 
    procedure Add_Category
-     (Entr     : in out Atom_Entry;
-      Term     : in     String;
-      Base_URI : in     String := None;
-      Content  : in     String := None;
-      Label    : in     String := None;
-      Language : in     String := None;
-      Scheme   : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Categories.Append
-        (New_Item => Atom_Category'(Common =>
-                                      Atom_Common'(Base_URI => TUS (Base_URI),
-                                                   Language => TUS (Language)),
-                                    Content  => TUS (Content),
-                                    Label    => TUS (Label),
-                                    Scheme   => TUS (Scheme),
-                                    Term     => TUS (Term)));
-
-   end Add_Category;
-
-   --------------------
-   --  Add_Category  --
-   --------------------
-
-   procedure Add_Category
      (Feed     : in out Atom_Feed;
       Term     : in     String;
       Base_URI : in     String := None;
@@ -184,6 +155,35 @@ package body Yolk.Syndication.Writer is
                                  Label    => TUS (Label),
                                  Scheme   => TUS (Scheme),
                                  Term     => TUS (Term)));
+
+   end Add_Category;
+
+   --------------------
+   --  Add_Category  --
+   --------------------
+
+   procedure Add_Category
+     (Entr     : in out Atom_Entry;
+      Term     : in     String;
+      Base_URI : in     String := None;
+      Content  : in     String := None;
+      Label    : in     String := None;
+      Language : in     String := None;
+      Scheme   : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Categories.Append
+        (New_Item => Atom_Category'(Common =>
+                                      Atom_Common'(Base_URI => TUS (Base_URI),
+                                                   Language => TUS (Language)),
+                                    Content  => TUS (Content),
+                                    Label    => TUS (Label),
+                                    Scheme   => TUS (Scheme),
+                                    Term     => TUS (Term)));
 
    end Add_Category;
 
@@ -221,33 +221,6 @@ package body Yolk.Syndication.Writer is
    -----------------------
 
    procedure Add_Contributor
-     (Entr     : in out Atom_Entry;
-      Name     : in     String;
-      Base_URI : in     String := None;
-      Email    : in     String := None;
-      Language : in     String := None;
-      URI      : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Contributors.Append
-        (New_Item => Atom_Person'(Common =>
-                                    Atom_Common'(Base_URI => TUS (Base_URI),
-                                                 Language => TUS (Language)),
-                                  Name   => TUS (Name),
-                                  Email  => TUS (Email),
-                                  URI    => TUS (URI)));
-
-   end Add_Contributor;
-
-   -----------------------
-   --  Add_Contributor  --
-   -----------------------
-
-   procedure Add_Contributor
      (Feed     : in out Atom_Feed;
       Name     : in     String;
       Base_URI : in     String := None;
@@ -267,6 +240,33 @@ package body Yolk.Syndication.Writer is
                                Name   => TUS (Name),
                                Email  => TUS (Email),
                                URI    => TUS (URI)));
+
+   end Add_Contributor;
+
+   -----------------------
+   --  Add_Contributor  --
+   -----------------------
+
+   procedure Add_Contributor
+     (Entr     : in out Atom_Entry;
+      Name     : in     String;
+      Base_URI : in     String := None;
+      Email    : in     String := None;
+      Language : in     String := None;
+      URI      : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Contributors.Append
+        (New_Item => Atom_Person'(Common =>
+                                    Atom_Common'(Base_URI => TUS (Base_URI),
+                                                 Language => TUS (Language)),
+                                  Name   => TUS (Name),
+                                  Email  => TUS (Email),
+                                  URI    => TUS (URI)));
 
    end Add_Contributor;
 
@@ -318,41 +318,6 @@ package body Yolk.Syndication.Writer is
    ----------------
 
    procedure Add_Link
-     (Entr      : in out Atom_Entry;
-      Href      : in     String;
-      Base_URI  : in     String := None;
-      Content   : in     String := None;
-      Hreflang  : in     String := None;
-      Language  : in     String := None;
-      Length    : in     Natural := 0;
-      Mime_Type : in     String := None;
-      Rel       : in     Relation_Kind := Alternate;
-      Title     : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Links.Append
-        (New_Item => Atom_Link'(Common =>
-                                  Atom_Common'(Base_URI => TUS (Base_URI),
-                                               Language => TUS (Language)),
-                                Content   => TUS (Content),
-                                Href      => TUS (Href),
-                                Hreflang  => TUS (Hreflang),
-                                Length    => Length,
-                                Mime_Type => TUS (Mime_Type),
-                                Rel       => Rel,
-                                Title     => TUS (Title)));
-
-   end Add_Link;
-
-   ----------------
-   --  Add_Link  --
-   ----------------
-
-   procedure Add_Link
      (Feed      : in out Atom_Feed;
       Href      : in     String;
       Base_URI  : in     String := None;
@@ -380,6 +345,41 @@ package body Yolk.Syndication.Writer is
                              Mime_Type => TUS (Mime_Type),
                              Rel       => Rel,
                              Title     => TUS (Title)));
+
+   end Add_Link;
+
+   ----------------
+   --  Add_Link  --
+   ----------------
+
+   procedure Add_Link
+     (Entr      : in out Atom_Entry;
+      Href      : in     String;
+      Base_URI  : in     String := None;
+      Content   : in     String := None;
+      Hreflang  : in     String := None;
+      Language  : in     String := None;
+      Length    : in     Natural := 0;
+      Mime_Type : in     String := None;
+      Rel       : in     Relation_Kind := Alternate;
+      Title     : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Links.Append
+        (New_Item => Atom_Link'(Common =>
+                                  Atom_Common'(Base_URI => TUS (Base_URI),
+                                               Language => TUS (Language)),
+                                Content   => TUS (Content),
+                                Href      => TUS (Href),
+                                Hreflang  => TUS (Hreflang),
+                                Length    => Length,
+                                Mime_Type => TUS (Mime_Type),
+                                Rel       => Rel,
+                                Title     => TUS (Title)));
 
    end Add_Link;
 
@@ -443,6 +443,19 @@ package body Yolk.Syndication.Writer is
 
    end Atom_Date_Image;
 
+   ------------------------
+   --  Clear_Entry_List  --
+   ------------------------
+
+   procedure Clear_Entry_List
+     (Feed : in out Atom_Feed)
+   is
+   begin
+
+      Feed.PAF.Clear_Entry_List;
+
+   end Clear_Entry_List;
+
    -------------------------------
    --  Create_Node_From_String  --
    -------------------------------
@@ -490,6 +503,20 @@ package body Yolk.Syndication.Writer is
       end return;
 
    end Create_Node_From_String;
+
+   --------------------
+   --  Delete_Entry  --
+   --------------------
+
+   procedure Delete_Entry
+     (Feed : in out Atom_Feed;
+      Id   : in     String)
+   is
+   begin
+
+      Feed.PAF.Delete_Entry (Id => Id);
+
+   end Delete_Entry;
 
    -------------------
    --  Equal_Entry  --
@@ -926,28 +953,6 @@ package body Yolk.Syndication.Writer is
    --------------
 
    procedure Set_Id
-     (Entr     : in out Atom_Entry;
-      Id       : in     String;
-      Base_URI : in     String := None;
-      Language : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Id := Atom_Id'(Common =>
-                            Atom_Common'(Base_URI => TUS (Base_URI),
-                                         Language => TUS (Language)),
-                          URI    => TUS (Id));
-
-   end Set_Id;
-
-   --------------
-   --  Set_Id  --
-   --------------
-
-   procedure Set_Id
      (Feed     : in out Atom_Feed;
       Id       : in     String;
       Base_URI : in     String := None;
@@ -963,6 +968,28 @@ package body Yolk.Syndication.Writer is
                              Atom_Common'(Base_URI => TUS (Base_URI),
                                           Language => TUS (Language)),
                            URI    => TUS (Id)));
+
+   end Set_Id;
+
+   --------------
+   --  Set_Id  --
+   --------------
+
+   procedure Set_Id
+     (Entr     : in out Atom_Entry;
+      Id       : in     String;
+      Base_URI : in     String := None;
+      Language : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Id := Atom_Id'(Common =>
+                            Atom_Common'(Base_URI => TUS (Base_URI),
+                                         Language => TUS (Language)),
+                          URI    => TUS (Id));
 
    end Set_Id;
 
@@ -1061,30 +1088,6 @@ package body Yolk.Syndication.Writer is
    ------------------
 
    procedure Set_Rights
-     (Entr        : in out Atom_Entry;
-      Rights      : in String;
-      Base_URI    : in String := None;
-      Language    : in String := None;
-      Rights_Kind : in Text_Kinds := Text)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Rights := Atom_Text'(Common       =>
-                                  Atom_Common'(Base_URI => TUS (Base_URI),
-                                               Language => TUS (Language)),
-                                Text_Content => TUS (Rights),
-                                Text_Kind    => Rights_Kind);
-
-   end Set_Rights;
-
-   ------------------
-   --  Set_Rights  --
-   ------------------
-
-   procedure Set_Rights
      (Feed        : in out Atom_Feed;
       Rights      : in String;
       Base_URI    : in String := None;
@@ -1102,6 +1105,30 @@ package body Yolk.Syndication.Writer is
                                             Language => TUS (Language)),
                              Text_Content => TUS (Rights),
                              Text_Kind    => Rights_Kind));
+
+   end Set_Rights;
+
+   ------------------
+   --  Set_Rights  --
+   ------------------
+
+   procedure Set_Rights
+     (Entr        : in out Atom_Entry;
+      Rights      : in String;
+      Base_URI    : in String := None;
+      Language    : in String := None;
+      Rights_Kind : in Text_Kinds := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Rights := Atom_Text'(Common       =>
+                                  Atom_Common'(Base_URI => TUS (Base_URI),
+                                               Language => TUS (Language)),
+                                Text_Content => TUS (Rights),
+                                Text_Kind    => Rights_Kind);
 
    end Set_Rights;
 
@@ -1209,30 +1236,6 @@ package body Yolk.Syndication.Writer is
    -----------------
 
    procedure Set_Title
-     (Entr       : in out Atom_Entry;
-      Title      : in     String;
-      Base_URI   : in     String := None;
-      Language   : in     String := None;
-      Title_Kind : in     Text_Kinds := Text)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Title := Atom_Text'(Common       =>
-                                 Atom_Common'(Base_URI => TUS (Base_URI),
-                                              Language => TUS (Language)),
-                               Text_Content => TUS (Title),
-                               Text_Kind    => Title_Kind);
-
-   end Set_Title;
-
-   -----------------
-   --  Set_Title  --
-   -----------------
-
-   procedure Set_Title
      (Feed       : in out Atom_Feed;
       Title      : in     String;
       Base_URI   : in     String := None;
@@ -1250,6 +1253,30 @@ package body Yolk.Syndication.Writer is
                                             Language => TUS (Language)),
                              Text_Content => TUS (Title),
                              Text_Kind    => Title_Kind));
+
+   end Set_Title;
+
+   -----------------
+   --  Set_Title  --
+   -----------------
+
+   procedure Set_Title
+     (Entr       : in out Atom_Entry;
+      Title      : in     String;
+      Base_URI   : in     String := None;
+      Language   : in     String := None;
+      Title_Kind : in     Text_Kinds := Text)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Title := Atom_Text'(Common       =>
+                                 Atom_Common'(Base_URI => TUS (Base_URI),
+                                              Language => TUS (Language)),
+                               Text_Content => TUS (Title),
+                               Text_Kind    => Title_Kind);
 
    end Set_Title;
 
@@ -1283,28 +1310,6 @@ package body Yolk.Syndication.Writer is
    -------------------
 
    procedure Set_Updated
-     (Entr        : in out Atom_Entry;
-      Update_Time : in     Ada.Calendar.Time;
-      Base_URI    : in     String := None;
-      Language    : in     String := None)
-   is
-
-      use Yolk.Utilities;
-
-   begin
-
-      Entr.Updated := Atom_Date'(Common     =>
-                                   Atom_Common'(Base_URI => TUS (Base_URI),
-                                                Language => TUS (Language)),
-                                 Time_Stamp => Update_Time);
-
-   end Set_Updated;
-
-   -------------------
-   --  Set_Updated  --
-   -------------------
-
-   procedure Set_Updated
      (Feed        : in out Atom_Feed;
       Update_Time : in     Ada.Calendar.Time;
       Base_URI    : in     String := None;
@@ -1320,6 +1325,28 @@ package body Yolk.Syndication.Writer is
                                Atom_Common'(Base_URI => TUS (Base_URI),
                                             Language => TUS (Language)),
                              Time_Stamp => Update_Time));
+
+   end Set_Updated;
+
+   -------------------
+   --  Set_Updated  --
+   -------------------
+
+   procedure Set_Updated
+     (Entr        : in out Atom_Entry;
+      Update_Time : in     Ada.Calendar.Time;
+      Base_URI    : in     String := None;
+      Language    : in     String := None)
+   is
+
+      use Yolk.Utilities;
+
+   begin
+
+      Entr.Updated := Atom_Date'(Common     =>
+                                   Atom_Common'(Base_URI => TUS (Base_URI),
+                                                Language => TUS (Language)),
+                                 Time_Stamp => Update_Time);
 
    end Set_Updated;
 
@@ -1514,6 +1541,44 @@ package body Yolk.Syndication.Writer is
          Links.Append (Value);
 
       end Add_Link;
+
+      ------------------------
+      --  Clear_Entry_List  --
+      ------------------------
+
+      procedure Clear_Entry_List
+      is
+      begin
+
+         Entries.Clear;
+
+      end Clear_Entry_List;
+
+      --------------------
+      --  Delete_Entry  --
+      --------------------
+
+      procedure Delete_Entry
+        (Id : in String)
+      is
+
+         use Entry_List;
+         use Yolk.Utilities;
+
+         C : Cursor;
+
+      begin
+
+         C := Entries.First;
+         while Has_Element (C) loop
+            if Element (C).Id.URI = TUS (Id) then
+               Entries.Delete (C);
+            end if;
+
+            Next (C);
+         end loop;
+
+      end Delete_Entry;
 
       ---------------
       --  Get_DOM  --
