@@ -1,5 +1,0 @@
-function works(){
-    
-    alert('Hello!');
-    
-}

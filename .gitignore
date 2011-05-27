@@ -1,13 +1,5 @@
 # Do not track build objects.
 build/*.o
 build/*.ali
+yolklib/
 
-# Do not track pid files and the yolk executable in exe/
-exe/yolk_demo
-exe/yolk.pid
-
-# Do not track .pem files in exe/certificates
-exe/certificates/*.pem
-
-# Do not track the log files
-exe/logs/*.log
