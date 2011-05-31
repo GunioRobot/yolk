@@ -22,7 +22,6 @@
 with "aws";
 with "florist";
 with "gnatcoll";
---  To remove PostgreSQL support, just comment the following line.
 with "gnatcoll_postgres";
 
 project Yolk_Build is
