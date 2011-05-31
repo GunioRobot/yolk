@@ -4,7 +4,7 @@
 ##                                                                           ##
 ##                                  Yolk                                     ##
 ##                                                                           ##
-##                     rc script to start and stop Yolk                      ##
+##              rc script to start and stop a Yolk application               ##
 ##                                                                           ##
 ##                   Copyright (C) 2010-2011, Thomas Løcke                   ##
 ##                                                                           ##
@@ -45,10 +45,10 @@
 NAME_OF_APPLICATION=Yolk
 
 # This is the actual filename of the Yolk application executable.
-NAME_OF_EXE_FILE=yolk_server
+NAME_OF_EXE_FILE=yolk
 
 # Path to where the NAME_OF_EXE_FILE lives. Do _not_ write the trailing /
-PATH_TO_YOLK_EXE_DIRECTORY=/home/thomas/Ada/Yolk/exe
+PATH_TO_YOLK_EXE_DIRECTORY=/somepath
 
 ##############################################################
 # Do not edit below here, unless you know what you're doing. #
