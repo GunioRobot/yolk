@@ -21,7 +21,6 @@ a better term, a convenience. Some of things that Yolk offers are:
 
     * Sending emails from the application
     * Setting up rotating log files and handling basic log file management
-    * Adding new resources to your web application
     * Loading configuration files
     * Handling the most common static content types (HTML, PNG, ICO and so on)
     * Easy Atom RSS feed generation
@@ -30,7 +29,13 @@ a better term, a convenience. Some of things that Yolk offers are:
     * Start/stop as a "regular" daemon using an rc script.
 
 Yolk is not a magic bullet. If your needs are very complex, you might be better
-off using plain AWS.
+off using plain AWS. Be sure to check out the Yolk demo application for a good
+example on how to make use of Yolk.
+
+I've only ever tested Yolk on Linux. I've no idea if it works on Windows or Mac,
+and I've no current plans for trying my hand at those two platforms. If you'd
+like to help make it work for Mac and/or Windows, feel free to contact me at
+thomas@12boo.net
 
 --------------------
 --  Dependencies  --
@@ -51,7 +56,7 @@ compile.
 
 My usual modus operandi for setting up these 6 things goes something like this:
 
-    1.  Install PostgreSQL by whatever means is fitting for your OS. 
+    1.  Install PostgreSQL by whatever means is fitting for the OS. 
 
     2.  Install GNAT GPL in its default location (/usr/gnat) and add /usr/gnat/bin
         to your PATH:
@@ -181,8 +186,8 @@ be used. You can get the Yolk demo here:
 A Yolk application will almost certainly depend on some of the files found in 
 extras/. Here you'll find an rc script to start/stop your Yolk application,
 you'll find an example set of SSL files for running a HTTPS server in the 
-certificates/ directory. There's a full set of configuration related files in
-the configuration/ directory. The template file used by the AWS status page is
+certificates/ directory, there's a full set of configuration related files in
+the configuration/ directory, the template file used by the AWS status page is
 in the status/ directory, and various system templates are found the templates/
 directory.
 
