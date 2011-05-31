@@ -1,85 +1,12 @@
-When you clone Yolk from the offical Git repository, it comes setup with a
-demo website that will run, almost, out of the box.
-This makes it easy to check that everything is working as intended at the
-cost of a bit of cleaning up before you can get started on your own application.
+Before trying to install Yolk, be sure to read the README and make sure that
+all the dependencies are met.
 
-First order of business is checking that you have all the required dependencies
-installed:
+Building and installing Yolk is as simple as:
 
-    1. AWS
-    2. GNATColl
-    3. Florist
+    Editing makefile.setup to suit your needs
+    $ make
+    $ make install
 
-When you're certain that the dependencies are met, then all you need to do is
-follow these 5 steps:
+You can remove Yolk from your system by doing:
 
-    1. $ cd [path to Yolk root directory]
-    2. make
-    3. cd exe/
-    4. ./yolk_demo
-    5. Using your browser, visit http://localhost:4242
-
-If you follow those 5 steps, you will compile the Yolk demo server using the
-yolk_demo.adb file found in the demo/ directory. You can use this file as the
-basis for your own Yolk application. Simply copy it to the Yolk root, rename the
-file, the main environment task and change the project file accordingly.
-
-You can shutdown the server cleanly by pressing CTRL+c. Or simply kill the PID
-found in the yolk_demo.pid file.
-
-Instead of starting/stopping your application by calling the yolk_server executable
-directly, you can use the tools/rc.yolk script. Using this will enable you to
-run a Yolk application like any other server-software. It is properly detached
-from the console. All you have to do is edit a few variables at the beginning of
-the script, so it fits your environment.
-
-To see the status page for the application, go to http://localhost:4242/status
-and enter "admin" as username and "changemenow" as password. Please make sure
-that this password is changed before you go public with your application. See
-exe/configuration/config.ini for how to do this. Look for the Admin_Password
-option.
-
-If the index page and all the tests are shown correctly and you can access the
-status page, then Yolk is ready to be used.
-
-If Yolk isn't working, then it's worth checking that:
-
-    * gnatmake is in your PATH
-    * The ADA_PROJECT_PATH environment variable contains the paths to your AWS,
-      GNATColl and Florist project files.
-    * If you've installed your Ada compiler to somewhere else than /usr/gnat/bin,
-      then make sure that the "for Compiler_Command" option in yolk_server.gpr is
-      adjusted accordingly.
-    * That you're not already using port 4242 for something else.
-
-When you've verified that the demo website is working as intended, it's time to
-prepare for your own Yolk application:
-
-    1.  Adjust the Yolk project file to match your environment, for example changing
-        the "for Compiler_Command" setting, if necessary. Also you should probably
-        get rid of the Demo_Source_Options and setup your own main .adb file
-        somewhere. Use the demo/yolk_demo.adb file as a starting point.
-
-    2.  You probably want to rename the application from yolk_demo to something
-        else. This requires you to:
-
-        A.  Rename the main procedure in yolk_demo.adb.
-        B.  Rename the main yolk_demo.adb file.
-        C.  Adjust the project file accordingly, renaming the "for Main use" file.
-
-    3.  Create your own My_Handlers package and place it in the my_handlers/
-        directory. You can use the demo/my_handlers.* files as inspiration.
-
-    4.  Create your own content handlers and place them in the my_view/
-        directory. See the demo/view* files for inspiration.
-
-    5.  Create your own configuration setup. See the demo/configuration.ads file
-        for inspiration.
-
-    6.  Make sure that the .gitignore files used in Yolk doesn't conflict with
-        your own VCS setup.
-
-    7.  Get rid of the Demo_Source_Options in the .gpr file, so you don't compile
-        any of the demo files by mistake.
-
-See the README file and the docs/ for more information on how to use Yolk.
+    $ make distclean

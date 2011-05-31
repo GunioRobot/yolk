@@ -21,9 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  In this package we define the core content/resource handlers.
---  Content not handled in this package should be added to the
---  My_Handlers package.
+--  In this package we set some core static content/resource handlers.
 
 with AWS.Services.Dispatchers.URI;
 
@@ -33,8 +31,5 @@ package Yolk.Handlers is
      (RH : out AWS.Services.Dispatchers.URI.Handler);
    --  The Handlers package define a set of default handlers for static content
    --  such as HTML, images and ICO files.
-   --  The My_Handlers package define application specific handlers, so it is
-   --  in this package that such handlers should be placed.
-   --  See my_handlers/my_handlers.ad[sb] for more information.
 
 end Yolk.Handlers;

@@ -48,8 +48,7 @@ package Yolk.Rotating_Log is
    --  by calling the Track procedure.
    --
    --  IMPORTANT:
-   --    The Error and Info handles should _not_ be removed. They are
-   --    referenced in some of the core/ source files.
+   --    The Error and Info handles should _not_ be removed.
    --
    --  NOTE:
    --    The GNATCOLL_SQL value is special. This handle is locked to the

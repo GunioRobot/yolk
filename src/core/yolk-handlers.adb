@@ -22,7 +22,6 @@
 -------------------------------------------------------------------------------
 
 with AWS.Dispatchers.Callback;
---  with My_Handlers;
 with Yolk.Configuration;
 with Yolk.Static_Content;
 
@@ -42,12 +41,6 @@ package body Yolk.Handlers is
       package SC renames Yolk.Static_Content;
 
    begin
-
-      --  My_Handlers.Set (RH => RH);
-      --  Start by setting the application specific handlers. Resources are
-      --  matched on a "first hit" basis, so the application specific resource
-      --  handlers should be set prior to the more general core content
-      --  handlers below.
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,

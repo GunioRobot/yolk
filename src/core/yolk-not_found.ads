@@ -23,8 +23,6 @@
 
 --  If a requested resource is not found, then we must return a 404 message to
 --  the client. Yolk.Not_Found.Output does exactly that and nothing else.
---  The template file for this 404 message is defined in the
---  configuration/config.ini file.
 
 with AWS.Response;
 with AWS.Status;

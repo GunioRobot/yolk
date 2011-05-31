@@ -23,7 +23,7 @@ include makefile.setup
 
 all:
 	gnatmake -P yolk_build
-	mkdir yolklib
+	mkdir -p yolklib
 	cp -p build/* yolklib
 	ar rc yolklib/libyolk.a yolklib/*.o
 	ranlib yolklib/libyolk.a

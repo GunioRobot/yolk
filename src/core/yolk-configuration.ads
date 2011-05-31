@@ -21,8 +21,9 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  Default configuration settings for a Yolk application. For resource related
---  configuration, take a look at the My_Configuration package.
+--  Default configuration settings for a Yolk application.
+--  Keys postfixed with "--  AWS" are keys that are used specifically by AWS.
+--  Other keys are for Yolk specific configuration.
 
 with Ada.Strings.Unbounded;
 with AWS.Config;
@@ -41,7 +42,7 @@ package Yolk.Configuration is
                  Case_Sensitive_Parameters, --  AWS
                  Certificate, --  AWS
                  Check_URL_Validity, --  AWS
-                 Cleaner_Client_Data_Timeout,
+                 Cleaner_Client_Data_Timeout, --  AWS
                  Cleaner_Client_Header_Timeout, --  AWS
                  Cleaner_Server_Response_Timeout, --  AWS
                  Cleaner_Wait_For_Client_Timeout, --  AWS
@@ -106,9 +107,6 @@ package Yolk.Configuration is
                  Upload_Size_Limit, --  AWS
                  WWW_Root, --  AWS
                  Yolk_User);
-   --  The valid configuration keys.
-   --  These configuration keys are essential for core parts of Yolk, so you
-   --  should not change them, unless you know what you're doing.
 
    type Defaults_Array is array (Keys) of Unbounded_String;
 
