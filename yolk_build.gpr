@@ -26,14 +26,13 @@ with "gnatcoll_postgres";
 
 project Yolk_Build is
 
-   --  Adjust the Source_Dirs to match your needs.
    Source_Options := (".",
                       "src/core",
                       "src/extended");
    for Source_Dirs use Source_Options;
 
    for Object_Dir use "build";
-
+   
    package Ide is
 
       --  Adjust this to point to the compiler you want to use.
