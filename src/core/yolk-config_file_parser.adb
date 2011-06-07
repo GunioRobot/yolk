@@ -33,16 +33,16 @@ package body Yolk.Config_File_Parser is
    -------------------------
 
    function Check_And_Convert
-     (Key : in Keys)
+     (Key : in Key_Type)
       return String
    is
    begin
 
-      if Defaults (Key) = Null_Unbounded_String then
-         raise Empty_Key with Keys'Image (Key);
+      if Values (Key) = Null_Unbounded_String then
+         raise Empty_Key with Key_Type'Image (Key);
       end if;
 
-      return To_String (Defaults (Key));
+      return To_String (Values (Key));
 
    end Check_And_Convert;
 
@@ -51,7 +51,7 @@ package body Yolk.Config_File_Parser is
    -----------
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Boolean
    is
    begin
@@ -60,7 +60,7 @@ package body Yolk.Config_File_Parser is
 
    exception
       when Constraint_Error =>
-         raise Conversion_Error with Keys'Image (Key);
+         raise Conversion_Error with Key_Type'Image (Key);
 
    end Get;
 
@@ -69,7 +69,7 @@ package body Yolk.Config_File_Parser is
    -----------
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Duration
    is
    begin
@@ -78,7 +78,7 @@ package body Yolk.Config_File_Parser is
 
    exception
       when Constraint_Error =>
-         raise Conversion_Error with Keys'Image (Key);
+         raise Conversion_Error with Key_Type'Image (Key);
 
    end Get;
 
@@ -87,7 +87,7 @@ package body Yolk.Config_File_Parser is
    -----------
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Float
    is
    begin
@@ -96,7 +96,7 @@ package body Yolk.Config_File_Parser is
 
    exception
       when Constraint_Error =>
-         raise Conversion_Error with Keys'Image (Key);
+         raise Conversion_Error with Key_Type'Image (Key);
 
    end Get;
 
@@ -105,7 +105,7 @@ package body Yolk.Config_File_Parser is
    -----------
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Integer
    is
    begin
@@ -114,7 +114,7 @@ package body Yolk.Config_File_Parser is
 
    exception
       when Constraint_Error =>
-         raise Conversion_Error with Keys'Image (Key);
+         raise Conversion_Error with Key_Type'Image (Key);
 
    end Get;
 
@@ -123,12 +123,12 @@ package body Yolk.Config_File_Parser is
    -----------
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return String
    is
    begin
 
-      return To_String (Defaults (Key));
+      return To_String (Values (Key));
 
    end Get;
 
@@ -137,12 +137,12 @@ package body Yolk.Config_File_Parser is
    -----------
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Unbounded_String
    is
    begin
 
-      return Defaults (Key);
+      return Values (Key);
 
    end Get;
 
@@ -151,12 +151,12 @@ package body Yolk.Config_File_Parser is
    -----------------
 
    function Has_Value
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Boolean
    is
    begin
 
-      return Defaults (Key) /= Null_Unbounded_String;
+      return Values (Key) /= Null_Unbounded_String;
 
    end Has_Value;
 
@@ -286,7 +286,7 @@ package body Yolk.Config_File_Parser is
 
                begin
 
-                  Defaults (Keys'Value (Key)) := Value;
+                  Values (Key_Type'Value (Key)) := Value;
 
                exception
                   when Constraint_Error =>

@@ -63,9 +63,9 @@ generic
 
    use Ada.Strings.Unbounded;
 
-   type Keys is (<>);
-   type Defaults_Array is array (Keys) of Unbounded_String;
-   Default_Values : in Defaults_Array;
+   type Key_Type is (<>);
+   type Defaults_Array_Type is array (Key_Type) of Unbounded_String;
+   Defaults : in Defaults_Array_Type;
    Config_File    : in String;
 
 package Yolk.Config_File_Parser is
@@ -81,29 +81,29 @@ package Yolk.Config_File_Parser is
    --  Is raised when a key with the element Null_Unbounded_String is called.
 
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Boolean;
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Duration;
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Float;
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Integer;
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return String;
    function Get
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Unbounded_String;
    --  Get the VALUE for Key and convert it to target type.
    --  Exceptions:
    --    Conversion_Error
 
    function Has_Value
-     (Key : in Keys)
+     (Key : in Key_Type)
       return Boolean;
    --  Return True if Key is not a Null_Unbounded_String.
 
@@ -118,13 +118,10 @@ package Yolk.Config_File_Parser is
 
 private
 
-   Defaults : Defaults_Array := Default_Values;
-   --  Copy of the Default_Values array supplied when this generic was
-   --  instantiated. We do this to avoid overwriting the original
-   --  Defaults_Array with the values found in Config_File.
+   Values : Defaults_Array_Type := Defaults;
 
    function Check_And_Convert
-     (Key : in Keys)
+     (Key : in Key_Type)
       return String;
    --  Check if Key contains Null_Unbounded_String. If so, then raise the
    --  Empty_Key exception.
