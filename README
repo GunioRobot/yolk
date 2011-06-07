@@ -12,11 +12,11 @@ Contents of this README:
 --  Introduction --
 -------------------
 
-Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATColl[2], 
+Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2], 
 Florist[3], XML/Ada[4] and PostgreSQL[5].
 
 It is important to understand that Yolk itself does very little that cannot be
-accomplished using plain AWS, GNATColl, XML/Ada and Florist. It is, for lack of
+accomplished using plain AWS, GNATcoll, XML/Ada and Florist. It is, for lack of
 a better term, a convenience. Some of things that Yolk offers are:
 
     * Sending emails from the application
@@ -44,12 +44,12 @@ Yolk depends on 6 things out of the box. All of these are required:
 
     1. An Ada 2005 compiler[6]
     2. AWS (required version >= 2.10.0)
-    3. GNATColl (required version >= 1.4w)
+    3. GNATcoll (required version >= 1.4w)
     4. Florist (required version >= florist-gpl-2010)
     5. XML/Ada (required version >= 4.2w)
-    6. PostgreSQL (compile GNATColl with PostgreSQL support)
+    6. PostgreSQL (compile GNATcoll with PostgreSQL support)
 
-The path to the AWS, GNATColl, Florist and XML/Ada project files must be added
+The path to the AWS, GNATcoll, Florist and XML/Ada project files must be added
 to the ADA_PROJECT_PATH environment variable, or else your Yolk project wont
 compile.
 
@@ -81,7 +81,7 @@ My usual modus operandi for setting up these 6 things goes something like this:
         This step is of course only necessary if you don't already have an Ada
         compiler installed.
 
-    3.  Install GNATColl in /usr/gnat:
+    3.  Install GNATcoll in /usr/gnat:
 
             $ ./configure --prefix=/usr/gnat \
                                 --disable-gtk \
@@ -93,7 +93,7 @@ My usual modus operandi for setting up these 6 things goes something like this:
 
         You should of course adjust the above configuration options to fit your
         needs, just make sure PostgreSQL support is enabled.
-        At the time of writing, the GNATColl "make" step will fail if you don't
+        At the time of writing, the GNATcoll "make" step will fail if you don't
         manually define the "PROCESSORS" variable, like this:
 
             $ PROCESSORS=4 make
