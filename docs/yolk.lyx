@@ -670,7 +670,7 @@ You're not forced to use this, if you don't want to.
  But even if you don't, you'll still have to make a valid configuration
  file available in the configuration directory defined in the Config instantiati
 on, so you might as well use this as the configuration foundation for the
- AWS HTTP server component if your application.
+ AWS HTTP server component of your application.
 \end_layout
 
 \end_body
