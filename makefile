@@ -23,15 +23,9 @@ include makefile.setup
 
 all:
 	gnatmake -P yolk_build
-	mkdir -p yolklib
-	cp -p build/* yolklib
-	ar rc yolklib/libyolk.a yolklib/*.o
-	ranlib yolklib/libyolk.a
-	rm -f yolklib/*.o
 
 clean:
 	gnatclean -P yolk_build
-	rm -rf yolklib
 
 distclean: clean
 	rm -rf $(prefix)/yolk
@@ -42,7 +36,7 @@ install:
 	mkdir -p $(prefix)/lib/gnat
 	mkdir -p $(prefix)/yolk
 	mkdir -p $(prefix)/include/yolk
-	cp -pr yolklib/* $(prefix)/yolk
+	cp -pr library/* $(prefix)/yolk
 	cp -pr src/core/*.ad[sb] $(prefix)/include/yolk
 	cp -pr src/extended/*.ad[sb] $(prefix)/include/yolk
 	cp -pr yolk.gpr $(prefix)/lib/gnat

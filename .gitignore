@@ -1,5 +1,4 @@
 # Do not track build objects.
-build/*.o
-build/*.ali
-yolklib/
+build/
+library/
 

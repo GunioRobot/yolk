@@ -24,7 +24,7 @@ with "florist";
 with "gnatcoll";
 with "gnatcoll_postgres";
 
-project Yolk_Build is
+library project Yolk_Build is
 
    Source_Options := (".",
                       "src/core",
@@ -32,7 +32,11 @@ project Yolk_Build is
    for Source_Dirs use Source_Options;
 
    for Object_Dir use "build";
-   
+
+   for Library_Dir use "library";
+
+   for Library_Name use "yolk";
+
    package Ide is
 
       --  Adjust this to point to the compiler you want to use.
