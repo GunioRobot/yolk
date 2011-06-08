@@ -40,7 +40,7 @@ library project Yolk_Build is
    package Ide is
 
       --  Adjust this to point to the compiler you want to use.
-      for Compiler_Command ("ada") use "/usr/gnat/bin/gnatmake";
+      for Compiler_Command ("ada") use "gnatmake";
 
    end Ide;
 
