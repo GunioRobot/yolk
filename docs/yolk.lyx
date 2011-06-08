@@ -616,6 +616,13 @@ configuration/config.ini
 extras/configuration/
 \emph default
 .
+ This setup is required if you're using Yolk, and the only way to avoid
+ having 
+\emph on
+config.ini
+\emph default
+ in the mentioned directory is if you manually change the path in the source
+ file before compiling Yolk.
 \end_layout
 
 \begin_layout Standard
