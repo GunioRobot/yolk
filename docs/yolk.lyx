@@ -55,7 +55,7 @@ written by Thomas Løcke
 \end_layout
 
 \begin_layout Date
-Revised June 6th.
+Revised June 9th.
  2011
 \end_layout
 
@@ -153,6 +153,27 @@ Building and installing Yolk
 \begin_layout Standard
 See the README and INSTALL files.
  These are found in the Yolk root directory.
+\end_layout
+
+\begin_layout Section
+The extras/ directory
+\end_layout
+
+\begin_layout Standard
+In extras/ you'll find various files/directories that are necessary to run
+ a Yolk application.
+ Some of them are required, others are there for your convenience.
+\end_layout
+
+\begin_layout Subsection
+extras/rc.yolk
+\end_layout
+
+\begin_layout Standard
+This is a plain rc script for starting and stopping a Yolk application.
+ It should work on most systems.
+ Simply edit the variables at the beginning of the script to match your
+ environment, and you should be able to use it to control your application.
 \end_layout
 
 \begin_layout Section
@@ -417,7 +438,7 @@ config.ini
  as the configuration file.
  This means that KEY/VALUE pairs found in this file will overwrite the default
  values set in the Default_Values array.
- Also not that we've defined the default values.
+ Also note that we've defined the default values.
  This must be done and all KEY's must be present.
  If the default value is empty, simply set it to Null_Unbounded_String.
 \end_layout
@@ -649,7 +670,12 @@ status open
 
 \begin_layout Plain Layout
 
-AWS_Config : constant AWS.Config.Object := Get_AWS_Configuration;
+AWS_Config : constant AWS.Config.Object := 
+\end_layout
+
+\begin_layout Plain Layout
+
+  Yolk.Configuration.Get_AWS_Configuration;
 \end_layout
 
 \begin_layout Plain Layout
