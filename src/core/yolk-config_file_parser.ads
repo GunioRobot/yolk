@@ -65,8 +65,8 @@ generic
 
    type Key_Type is (<>);
    type Defaults_Array_Type is array (Key_Type) of Unbounded_String;
-   Defaults : in Defaults_Array_Type;
-   Config_File    : in String;
+   Defaults    : in Defaults_Array_Type;
+   Config_File : in String;
 
 package Yolk.Config_File_Parser is
 
