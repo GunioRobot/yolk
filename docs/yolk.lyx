@@ -156,24 +156,51 @@ See the README and INSTALL files.
 \end_layout
 
 \begin_layout Section
-The extras/ directory
+The demo
 \end_layout
 
 \begin_layout Standard
-In extras/ you'll find various files/directories that are necessary to run
- a Yolk application.
- Some of them are required, others are there for your convenience.
-\end_layout
-
-\begin_layout Subsection
-extras/rc.yolk
+When you read this document and the Yolk source code, you'll notice that
+ quite a few packages depend on various files being available at specified
+ locations.
+ This is for example the case for the Yolk.Configuration package, that must
+ have a config.ini file available in 
+\emph on
+configuration/config.ini
+\emph default
+ or the Yolk.Whoops package that expects its template file to be found at
+ the path 
+\emph on
+templates/system/500.tmpl
 \end_layout
 
 \begin_layout Standard
-This is a plain rc script for starting and stopping a Yolk application.
- It should work on most systems.
- Simply edit the variables at the beginning of the script to match your
- environment, and you should be able to use it to control your application.
+All such 
+\begin_inset Quotes eld
+\end_inset
+
+dependencies
+\begin_inset Quotes erd
+\end_inset
+
+ will of course be noted accordingly, but instead of forgetting one or more
+ in your own application, I'd much rather encourage using the demo application
+ as a foundation for your own applications, since all these fixed files
+ and paths has been properly added to the demo.
+\end_layout
+
+\begin_layout Standard
+I do also recommend compiling and running the demo, to make sure your Yolk
+ install is working as intended.
+ Just read the 
+\emph on
+demo/README
+\emph default
+ and 
+\emph on
+demo/INSTALL
+\emph default
+ files for instructions on how to get it up and running.
 \end_layout
 
 \begin_layout Section
