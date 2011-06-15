@@ -1,10 +1,13 @@
 # Do not track build objects.
-build/
-library/
+build/*
+library/*
+!build/.gitignore
+!library/.gitignore
 
 # demo/
 # Do not track demo build objects.
-demo/build/
+demo/build/*
+!demo/build/.gitignore
 
 # Do not track pid files and the yolk executable in exe/
 demo/exe/yolk_demo
