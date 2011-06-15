@@ -1,0 +1,99 @@
+html, body, div, span, h1, h2, h3, h4, h5, h6, p,
+blockquote, a, em, font, img, strong, dl, dt, dd,
+ol, ul, li, form, table, tr, th, td, form {
+    margin: 0px;
+    padding: 0px;
+}
+
+
+body {
+    height: 100%;
+    width: 43em;
+    font-family: "DejaVu Sans", Arial, sans-serif;
+    font-size: 15px;
+    color: #444;
+    background-color: #fffffa;
+    margin: 3% auto;
+    padding: 10px 25px;
+    border: solid 1px #d3d3d3;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px #bbb;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    padding: 5px 10px 5px 0px;
+}
+
+p {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+ul {
+    margin: 15px 20px;
+    list-style-type: none;
+}
+
+input {
+    padding: 2px;
+    border: solid 2px #ddd;
+}
+
+code {
+    display: block;
+    margin: 10px;
+    padding: 0px;
+}
+
+dl {
+    margin: 20px 15px;
+    padding: 0px 10px 10px 10px;
+    border: solid 1px #ddd;
+    background-color: #eee;
+}
+
+dt {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+dd {
+    font-size: 13px;
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+a {
+    color: #000080;
+}
+
+a:hover {
+    color: #800000;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.green {
+    color: #009000;
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.red {
+    color: #900000;
+    font-weight: bold;
+}
+
+.strike {
+    text-decoration: line-through;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="iso-8859-1"/>
+        <link rel="stylesheet" type="text/css" href="/css/index.css"/>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
+        <title>
+            Yolk Web Toolbox
+        </title>
+    </head>
+<body>
+    <h3>Database test</h3>
+    @@IF@@ @_DB_SETUP_@
+        <p>
+            It appears that I've been able to connect to the database set in configuration/my_config.ini.
+        </p>
+        <p>
+            The test will now proceed with creating a table, adding and querying some data and finally dropping the table.
+        </p>
+        <h4>Test output</h4>
+        <ul>
+            @@TABLE@@
+                <li>@_MESSAGES_@</li>
+            @@END_TABLE@@
+            @@IF@@ @_SUCCESS_@
+                <li class="green">Test successfully completed!</li>
+            @@ELSE@@
+                <li class="red">Test failed!</li>
+            @@END_IF@@
+        </ul>
+        <p>
+            If all went well, go back to the <a href="/">main page</a>. If you have some red output, check the log files, fix the error and try again.
+        </p>
+    @@ELSE@@
+        <p>
+            In order to test if Yolk can connect and interact with a PostgreSQL database, you must create an empty PostgreSQL database and then set the four database parameters in configuration/my_config.ini accordingly:
+        </p>
+        <ul>
+            <li>DB_Host</li>
+            <li>DB_Name</li>
+            <li>DB_Password</li>
+            <li>DB_User</li>
+        </ul>
+        <p>
+           You do not need to create any tables in the DB_Name database.
+        </p>
+        <p>
+            When you've done this, simply refresh this page, or drop this test and go back to the <a href="/">main page</a>.
+        </p>
+    @@END_IF@@
+</body>
+</html>

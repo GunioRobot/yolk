@@ -1,0 +1,10 @@
+Before trying to compile the Yolk demo application, be sure to read the README
+and make sure that all the dependencies are met.
+
+Building the Yolk demo is as simple as:
+
+    $ make
+   
+And that's all. You now have a fully functioning Yolk application in the exe/
+directory. Be sure to adjust the exe/configuration/* config files to match your
+setup.
