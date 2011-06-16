@@ -50,12 +50,8 @@
 Yolk Manual
 \end_layout
 
-\begin_layout Author
-written by Thomas Løcke
-\end_layout
-
 \begin_layout Date
-Revised June 9th.
+Revised June 16th.
  2011
 \end_layout
 
@@ -129,21 +125,38 @@ The Yolk demo application
 
 \begin_layout Standard
 Reading this manual will of course (I hope!) help you understand how to
- use Yolk, but please consider downloading the Yolk demo application to
- see how Yolk is actually used.
- The demo has been heavily commented, so it should be fairly easy to understand
+ use Yolk, but please consider taking a closer look at the Yolk demo application
+ to get a feel for how Yolk is actually used.
+ The demo is heavily commented, so it should be fairly easy to understand
  what's going on.
  The demo application is also very suitable as a foundation for other AWS/Yolk
  applications.
- The demo application is available at TODO: URL
 \end_layout
 
 \begin_layout Standard
 It is much easier to show how to use Yolk, than it is to write down all
  possible usage scenarios.
  With the combination of this manual, the Yolk source files and the demo
- application, you should be able to fully make use of the Yolk packages
- in your own applications.
+ application, you should be able to make full use of the Yolk packages in
+ your own applications.
+\end_layout
+
+\begin_layout Standard
+Also note that the configuration files
+\end_layout
+
+\begin_layout Section
+The source code
+\end_layout
+
+\begin_layout Standard
+The Yolk source code is the best documentation there is.
+ This document is never going to be as comprehensive as the actual source,
+ so I'll strongly suggest having the source code available as you read this
+ document.
+ What you will find in this document are short descriptions of what a package
+ is meant to do and small usage examples, not a complete rundown of every
+ type and procedure in a package.
 \end_layout
 
 \begin_layout Section
@@ -156,7 +169,7 @@ See the README and INSTALL files.
 \end_layout
 
 \begin_layout Section
-The demo
+The files Yolk depend upon
 \end_layout
 
 \begin_layout Standard
@@ -164,12 +177,16 @@ When you read this document and the Yolk source code, you'll notice that
  quite a few packages depend on various files being available at specified
  locations.
  This is for example the case for the Yolk.Configuration package, that must
- have a config.ini file available in 
+ have a 
 \emph on
-configuration/config.ini
+config.ini
 \emph default
- or the Yolk.Whoops package that expects its template file to be found at
- the path 
+ file available in 
+\emph on
+configuration/
+\emph default
+ directory or the Yolk.Whoops package that expects its template file to be
+ found at the path 
 \emph on
 templates/system/500.tmpl
 \end_layout
@@ -185,8 +202,8 @@ dependencies
 
  will of course be noted accordingly, but instead of forgetting one or more
  in your own application, I'd much rather encourage using the demo application
- as a foundation for your own applications, since all these fixed files
- and paths has been properly added to the demo.
+ as a foundation for your own applications, since all these fixed paths
+ and files has been properly added to the demo.
 \end_layout
 
 \begin_layout Standard
@@ -339,25 +356,6 @@ status open
 
 \begin_layout Plain Layout
 
-with Ada.Strings.Unbounded;
-\end_layout
-
-\begin_layout Plain Layout
-
-with Yolk.Config_File_Parser;
-\end_layout
-
-\begin_layout Plain Layout
-
-with Yolk.Utilities; use Yolk.Utilities;
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
 package My_Configuration is
 \end_layout
 
@@ -455,13 +453,9 @@ end My_Configuration;
 
 \begin_layout Standard
 Here we instantiate the Config package with 
-\begin_inset Quotes eld
-\end_inset
-
+\emph on
 config.ini
-\begin_inset Quotes erd
-\end_inset
-
+\emph default
  as the configuration file.
  This means that KEY/VALUE pairs found in this file will overwrite the default
  values set in the Default_Values array.
@@ -498,8 +492,12 @@ My_Configuration.Config.Load_File ("new_config.ini");
 
 \begin_layout Standard
 And that is all.
- Now the KEY/VALUE pairs of new_config.ini will overwrite the ones originally
- found in the config.ini file the package was instantiated with.
+ Now the KEY/VALUE pairs of 
+\emph on
+new_config.ini
+\emph default
+ will overwrite the ones originally found in the config.ini file the package
+ was instantiated with.
  You can do this as many times as you like.
  Note that you cannot change what KEY's are valid, so if the new_config.ini
  contains unknown keys, Load_File will raise the Unknown_Key exception.
