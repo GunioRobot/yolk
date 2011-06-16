@@ -44,10 +44,13 @@ Yolk depends on 6 things out of the box. All of these are required:
 
     1. An Ada 2005 compiler[6]
     2. AWS (required version >= 2.10.0)
-    3. GNATcoll (required version >= 1.4w)
-    4. Florist (required version >= florist-gpl-2010)
-    5. XML/Ada (required version >= 4.2w)
+    3. GNATcoll (required version >= 1.4)
+    4. Florist (required version >= florist-gpl-2011)
+    5. XML/Ada (required version >= 4.1)
     6. PostgreSQL (compile GNATcoll with PostgreSQL support)
+
+Yolk might work with other versions of the above software, but those are the
+versions I've tested it with.
 
 The path to the AWS, GNATcoll, Florist and XML/Ada project files must be added
 to the ADA_PROJECT_PATH environment variable, or else your Yolk project wont

@@ -16,7 +16,7 @@ Contents of this README:
 The Yolk demo application serves two purposes:
 
     1. It serves as an example on how a Yolk application is structured.
-    2. It contains examples on how all the various Yolk packages are used.
+    2. It contains examples on how all the various Yolk packages can be used.
 
 Obviously Yolk comes with complete documentation and a fair amount of source
 code comments, but in some cases it is easier to "get" a system if you see
@@ -59,7 +59,7 @@ For the email demo page to work, you must set these my_config.ini keys:
     SMTP_Host
     SMTP_Port
 
-These must point to a functional SMTP server.
+These must point to a reachable and functional SMTP server.
 
 ---------------------------------------
 --  Using the Yolk demo application  --
