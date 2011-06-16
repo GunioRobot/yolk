@@ -102,10 +102,10 @@ package Yolk.Config_File_Parser is
    --  Exceptions:
    --    Conversion_Error
 
-   function Has_Value
+   function Has_Non_Empty_Value
      (Key : in Key_Type)
       return Boolean;
-   --  Return True if Key is not a Null_Unbounded_String.
+   --  Return True if Key is _not_ a Null_Unbounded_String.
 
    procedure Load_File
      (Config_File : in String);

@@ -128,11 +128,11 @@ package body Yolk.Config_File_Parser is
 
    end Get;
 
-   -----------------
-   --  Has_Value  --
-   -----------------
+   ---------------------------
+   --  Has_Non_Empty_Value  --
+   ---------------------------
 
-   function Has_Value
+   function Has_Non_Empty_Value
      (Key : in Key_Type)
       return Boolean
    is
@@ -140,7 +140,7 @@ package body Yolk.Config_File_Parser is
 
       return Values (Key) /= Null_Unbounded_String;
 
-   end Has_Value;
+   end Has_Non_Empty_Value;
 
    -----------------
    --  Load_File  --
