@@ -276,8 +276,6 @@ package body Yolk.Rotating_Log is
    exception
       when Config.Conversion_Error =>
          raise;
-      when Config.Empty_Key =>
-         raise;
       when others =>
          Process_Control.Stop;
          raise Cannot_Create_Log_File with
@@ -395,8 +393,6 @@ package body Yolk.Rotating_Log is
 
    exception
       when Config.Conversion_Error =>
-         raise;
-      when Config.Empty_Key =>
          raise;
       when others =>
          Process_Control.Stop;

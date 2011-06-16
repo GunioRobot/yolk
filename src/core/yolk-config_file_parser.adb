@@ -28,24 +28,6 @@ with Ada.Text_IO;
 
 package body Yolk.Config_File_Parser is
 
-   -------------------------
-   --  Check_And_Convert  --
-   -------------------------
-
-   function Check_And_Convert
-     (Key : in Key_Type)
-      return String
-   is
-   begin
-
-      if Values (Key) = Null_Unbounded_String then
-         raise Empty_Key with Key_Type'Image (Key);
-      end if;
-
-      return To_String (Values (Key));
-
-   end Check_And_Convert;
-
    -----------
    --  Get  --
    -----------
@@ -56,7 +38,7 @@ package body Yolk.Config_File_Parser is
    is
    begin
 
-      return Boolean'Value (Check_And_Convert (Key));
+      return Boolean'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
@@ -74,7 +56,7 @@ package body Yolk.Config_File_Parser is
    is
    begin
 
-      return Duration'Value (Check_And_Convert (Key));
+      return Duration'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
@@ -92,7 +74,7 @@ package body Yolk.Config_File_Parser is
    is
    begin
 
-      return Float'Value (Check_And_Convert (Key));
+      return Float'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
@@ -110,7 +92,7 @@ package body Yolk.Config_File_Parser is
    is
    begin
 
-      return Integer'Value (Check_And_Convert (Key));
+      return Integer'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>

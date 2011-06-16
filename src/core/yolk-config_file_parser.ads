@@ -50,8 +50,10 @@
 --
 --  If VALUE is True or False (case-insensitive), then the KEY can be returned
 --  as both a String or as a Boolean.
---  Conversions from VALUE to other types, such as Integer or Float, will raise
---  an exception on failure. It will NOT return some dummy value.
+--
+--  Trying to convert VALUE to an incompatible type, e.g. a Float to a Boolean
+--  will raise the Conversion_Error exception. It will NOT return some dummy
+--  value.
 --
 --  To clear a default value, simply add the key to the configuration file,
 --  with no value set. Conversely, you must omit (or comment) keys for whích
@@ -66,7 +68,7 @@ generic
    type Key_Type is (<>);
    type Defaults_Array_Type is array (Key_Type) of Unbounded_String;
    Defaults    : in Defaults_Array_Type;
-   Config_File : in String;
+   Config_File : in String := "configuration/config.ini";
 
 package Yolk.Config_File_Parser is
 
@@ -77,8 +79,6 @@ package Yolk.Config_File_Parser is
    --  path.
    Conversion_Error        : exception;
    --  Is raised when a value cannot be converted to a specific type.
-   Empty_Key               : exception;
-   --  Is raised when a key with the element Null_Unbounded_String is called.
 
    function Get
      (Key : in Key_Type)
@@ -119,14 +119,5 @@ package Yolk.Config_File_Parser is
 private
 
    Values : Defaults_Array_Type := Defaults;
-
-   function Check_And_Convert
-     (Key : in Key_Type)
-      return String;
-   --  Check if Key contains Null_Unbounded_String. If so, then raise the
-   --  Empty_Key exception.
-   --  This function is used when a Key must be converted to a numeric.
-   --  Exceptions:
-   --    Empty_Key
 
 end Yolk.Config_File_Parser;
