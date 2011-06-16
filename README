@@ -93,14 +93,9 @@ My usual modus operandi for setting up these 6 things goes something like this:
 
         You should of course adjust the above configuration options to fit your
         needs, just make sure PostgreSQL support is enabled.
-        At the time of writing, the GNATcoll "make" step will fail if you don't
-        manually define the "PROCESSORS" variable, like this:
 
-            $ PROCESSORS=4 make
+            $ make
             $ make install
-
-        You should of course adjust the PROCESSORS number to what is suitable on
-        your own system.
 
     4.  Install Florist in /usr/gnat:
 
