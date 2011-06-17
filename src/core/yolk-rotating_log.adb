@@ -398,7 +398,6 @@ package body Yolk.Rotating_Log is
          Process_Control.Stop;
          raise Cannot_Write_To_Log_File with
            "Handle: " & Trace_Handles'Image (Handle) & " and slot: ";
-         --  & Log.Get_Slot;
 
    end Track;
 
