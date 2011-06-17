@@ -30,12 +30,14 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with GNATCOLL.Traces;
-with Yolk.Process_Control;
 with Yolk.Configuration;
+with Yolk.Process_Control;
 
 package body Yolk.Rotating_Log is
 
    use Yolk.Configuration;
+
+   package EIO is new Ada.Text_IO.Enumeration_IO (Trace_Handles);
 
    Is_Started : Boolean := False;
    --  Is set to True when Start is called the first time.
@@ -50,14 +52,8 @@ package body Yolk.Rotating_Log is
 
    protected type Log_Object is
 
-      entry Seize;
-      --  Lock the object.
-
       function Get_File_Access return Access_File;
       --  Return access to an Ada.Text_IO.File_Type.
-
-      function Get_Size return Natural;
-      --  Return the amount of characters added to the log. See Set_Size.
 
       function Get_Slot return String;
       --  Return the Current_Slot value as a String.
@@ -65,29 +61,23 @@ package body Yolk.Rotating_Log is
       procedure Move_To_Next_Slot;
       --  Move to the next slot. Basically we just cycle 1 .. Max_Slot_Count
 
-      procedure Release;
-      --  Unlock the object.
-
       procedure Set_File_Access;
       --  Allocate a new Ada.Text_IO.File_Type.
 
-      procedure Set_Size
-        (Length : in Natural);
-      --  Add Length to Log_Object.Size. We use this to decide when to cycle
-      --  the logfiles. If Size > Max_Logged_Characters, then we cycle to the
-      --  next slot.
-      --  This is done instead of checking the size of the logfile, to avoid
-      --  going to disk on every call to Track. It's not as accurate, but it
-      --  will probably not be off by much.
-      --  Max_Logged_Characters is defined in configuration/config.ini.
+      procedure Set_Handle
+        (A_Handle : in Trace_Handles);
+      --  Set the Trace_Handles value for this specific Log_Object.
+
+      procedure Write
+        (Log_String : in String);
 
    private
 
-      File           : Access_File;
       Current_Slot   : Positive := 1;
+      File           : Access_File;
+      Handle         : Trace_Handles;
       Size           : Natural := 0;
       Slot_Max       : Positive := Config.Get (Max_Slot_Count);
-      Locked         : Boolean := False;
 
    end Log_Object;
 
@@ -254,8 +244,13 @@ package body Yolk.Rotating_Log is
 
          for Handle in Trace_Handles loop
             A_Handle := Handle;
+            --  We need this in case an exception is raised. See the
+            --  when others exception handler further down.
+
             Log_Objects_List (Handle) := new Log_Object;
             Log_Objects_List (Handle).Set_File_Access;
+            Log_Objects_List (Handle).Set_Handle (A_Handle => Handle);
+
             Create
               (File => Log_Objects_List (Handle).Get_File_Access.all,
                Mode => Out_File,
@@ -327,66 +322,12 @@ package body Yolk.Rotating_Log is
       Log_String   : in String)
    is
 
-      use Ada.Calendar;
-      use Ada.Calendar.Formatting;
-      use Ada.Calendar.Time_Zones;
-      use Ada.Text_IO;
-
-      package EIO is new Ada.Text_IO.Enumeration_IO (Trace_Handles);
-
-      Log            : constant Access_Log_Object := Log_Objects_List (Handle);
-      Circa_Length   : Natural := Log_String'Length;
-      Now            : constant Time := Clock;
-      Offset         : constant Time_Offset := UTC_Time_Offset;
+      Log : constant Access_Log_Object := Log_Objects_List (Handle);
 
    begin
 
       if Is_Started then
-         Log.Seize;
-
-         if Log.Get_Size > Config.Get (Rotating_Log_Size_Limit) then
-            if Is_Open (File => Log.Get_File_Access.all) then
-               Close (File => Log.Get_File_Access.all);
-            end if;
-
-            Log.Move_To_Next_Slot;
-
-            Create
-              (File => Log.Get_File_Access.all,
-               Mode => Out_File,
-               Name => Config.Get (Log_File_Directory) &
-               Config.Get (Server_Name) & "-rotating-" &
-               Trace_Handles'Image (Handle) & "-" &
-               Log.Get_Slot & ".log");
-         end if;
-
-         Put (File => Log.Get_File_Access.all,
-              Item => Image (Date      => Now,
-                             Time_Zone => Offset));
-         Put (File => Log.Get_File_Access.all,
-              Item => " ");
-         Circa_Length := Circa_Length + 20;
-
-         if Handle /= GNATCOLL_SQL then
-            Put (File => Log.Get_File_Access.all,
-                 Item => "[");
-            EIO.Put (File => Log.Get_File_Access.all,
-                     Item => Handle);
-            Put (File => Log.Get_File_Access.all,
-                 Item => "] ");
-            Circa_Length := Circa_Length + 3;
-         end if;
-
-         Put_Line (File => Log.Get_File_Access.all,
-                   Item => Log_String);
-
-         if Config.Get (Immediate_Flush) then
-            Flush (File => Log.Get_File_Access.all);
-         end if;
-
-         Log.Set_Size (Length => Circa_Length);
-
-         Log.Release;
+         Log.Write (Log_String => Log_String);
       else
          raise Cannot_Write_To_Log_File with "Rotating logs not started";
       end if;
@@ -407,18 +348,6 @@ package body Yolk.Rotating_Log is
 
    protected body Log_Object is
 
-      -------------
-      --  Seize  --
-      -------------
-
-      entry Seize when Locked = False
-      is
-      begin
-
-         Locked := True;
-
-      end Seize;
-
       -----------------------
       --  Get_File_Access  --
       -----------------------
@@ -430,18 +359,6 @@ package body Yolk.Rotating_Log is
          return File;
 
       end Get_File_Access;
-
-      ----------------
-      --  Get_Size  --
-      ----------------
-
-      function Get_Size return Natural
-      is
-      begin
-
-         return Size;
-
-      end Get_Size;
 
       ----------------
       --  Get_Slot  --
@@ -478,18 +395,6 @@ package body Yolk.Rotating_Log is
 
       end Move_To_Next_Slot;
 
-      ---------------
-      --  Release  --
-      ---------------
-
-      procedure Release
-      is
-      begin
-
-         Locked := False;
-
-      end Release;
-
       -----------------------
       --  Set_File_Access  --
       -----------------------
@@ -505,18 +410,81 @@ package body Yolk.Rotating_Log is
 
       end Set_File_Access;
 
-      ----------------
-      --  Set_Size  --
-      ----------------
+      ------------------
+      --  Set_Handle  --
+      ------------------
 
-      procedure Set_Size
-        (Length : Natural)
+      procedure Set_Handle
+        (A_Handle : in Trace_Handles)
       is
       begin
 
-         Size := Size + Length;
+         Handle := A_Handle;
 
-      end Set_Size;
+      end Set_Handle;
+
+      -------------
+      --  Write  --
+      -------------
+
+      procedure Write
+        (Log_String : in String)
+      is
+
+         use Ada.Calendar;
+         use Ada.Calendar.Formatting;
+         use Ada.Calendar.Time_Zones;
+         use Ada.Text_IO;
+
+         Circa_Length   : Natural := Log_String'Length;
+         Now            : constant Time := Clock;
+         Offset         : constant Time_Offset := UTC_Time_Offset;
+
+      begin
+
+         if Size > Config.Get (Rotating_Log_Size_Limit) then
+            if Is_Open (File => Get_File_Access.all) then
+               Close (File => Get_File_Access.all);
+            end if;
+
+            Move_To_Next_Slot;
+
+            Create
+              (File => Get_File_Access.all,
+               Mode => Out_File,
+               Name => Config.Get (Log_File_Directory) &
+               Config.Get (Server_Name) & "-rotating-" &
+               Trace_Handles'Image (Handle) & "-" &
+               Get_Slot & ".log");
+         end if;
+
+         Put (File => Get_File_Access.all,
+              Item => Image (Date      => Now,
+                             Time_Zone => Offset));
+         Put (File => Get_File_Access.all,
+              Item => " ");
+         Circa_Length := Circa_Length + 20;
+
+         if Handle /= GNATCOLL_SQL then
+            Put (File => Get_File_Access.all,
+                 Item => "[");
+            EIO.Put (File => Get_File_Access.all,
+                     Item => Handle);
+            Put (File => Get_File_Access.all,
+                 Item => "] ");
+            Circa_Length := Circa_Length + 3;
+         end if;
+
+         Put_Line (File => Get_File_Access.all,
+                   Item => Log_String);
+
+         if Config.Get (Immediate_Flush) then
+            Flush (File => Get_File_Access.all);
+         end if;
+
+         Size := Size + Circa_Length;
+
+      end Write;
 
    end Log_Object;
 

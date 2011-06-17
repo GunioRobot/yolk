@@ -24,10 +24,10 @@
 --  This package provides the ability to create and write to rotating log
 --  files. These files are rotated based on the amount of characters written to
 --  them.
---  By adding new components to the Trace_Handles type you can create your own
+--  By adding new components to the Trace_Handles type you can create extra
 --  rotating log files.
 --  All rotating log file share the same configuration settings, which are
---  set in configuration/config.ini
+--  set in configuration/config.ini (path is relative to your application).
 --  The Rotating_Log package make use of the GNATCOLL.Traces package for the
 --  GNATCOLL_SQL trace handle. If you don't use any of the GNATCOLL database
 --  stuff (see DB_Connection) in your application, you can disable that
