@@ -21,21 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_handlers/ directory
---  and change it according to you own needs, or you can provide your own.
---
---  This package is required by Yolk. It is "with'ed" by the Yolk.Handlers
---  package. You must provide a My_Handlers package, preferably placed in the
---  my_handlers/ directory.
-
---  Application specific resource handlers.
-
 with AWS.Dispatchers.Callback;
 with My_Configuration;
 with View.DB_Test;
@@ -67,13 +52,17 @@ package body My_Handlers is
       --  Unknown Resource (404) Dispatcher  --
       -----------------------------------------
 
+      AWS.Services.Dispatchers.URI.Register_Default_Callback
+        (Dispatcher => RH,
+         Action     => Create (Callback => Not_Found.Generate'Access));
       --  This dispatcher is called if the requested resource doesn't match any
       --  of the other dispatchers.
       --  It returns a generic 404 HTML page. The template for this 404 can be
       --  found in templates/system.
-      AWS.Services.Dispatchers.URI.Register_Default_Callback
-        (Dispatcher => RH,
-         Action     => Create (Callback => Not_Found.Generate'Access));
+      --  Another option is of course to use this default callback for your
+      --  main content, so if unknown resources are called, then the main
+      --  content of the website is used. I personally prefer giving back 404's
+      --  if unknown content is requested by a client.
 
       -----------------------------------
       --  General Content Dispatchers  --
@@ -82,8 +71,7 @@ package body My_Handlers is
       --  These dispatchers handle the "page" content.
       --  NOTE:
       --    Order matters. The first handler that matches a resource handles
-      --    the request, hence this Set procedure is called  at the beginning
-      --    of the Handlers.Set procedure in the Handlers package.
+      --    the request.
 
       AWS.Services.Dispatchers.URI.Register
         (Dispatcher => RH,
@@ -111,6 +99,7 @@ package body My_Handlers is
          Action     => Create (Callback => View.Syndication.Generate'Access));
 
       Handlers.Set (RH => RH);
+      --  Set the generic content handlers defined in Yolk.Handlers.
 
    end Set;
 

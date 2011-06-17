@@ -21,20 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
-
 with Ada.Directories;
-with Ada.Strings.Fixed;
 with AWS.Services.Directory;
 with Yolk.Configuration;
 with Yolk.Not_Found;
@@ -51,19 +38,15 @@ package body View.Dir is
    is
 
       use Ada.Directories;
-      use Ada.Strings;
       use Yolk.Configuration;
 
       URL               : constant String := AWS.Status.URI (Request);
-      Resource          : String (1 .. (URL'Length - 4));
+      Resource          : constant String (1 .. (URL'Length - 4))
+        := URL (5 .. (URL'Length));
+      --  Get rid of the /dir part of the URL
       Parent_Directory  : constant String := Config.Get (WWW_Root);
 
    begin
-
-      Fixed.Move (Source  => URL,
-                  Target  => Resource,
-                  Drop    => Left);
-      --  Get rid of the /dir part of the URI
 
       if not Exists (Parent_Directory & Resource) then
          return Not_Found.Generate (Request);

@@ -21,18 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
-
 with Ada.Calendar;
 
 package body View.Index is

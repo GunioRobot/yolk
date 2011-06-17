@@ -15,7 +15,7 @@ Contents of this README:
 
 The Yolk demo application serves two purposes:
 
-    1. It serves as an example on how a Yolk application is structured.
+    1. It serves as an example on how Yolk can be used in an AWS application.
     2. It contains examples on how all the various Yolk packages can be used.
 
 Obviously Yolk comes with complete documentation and a fair amount of source
@@ -94,7 +94,7 @@ how to change the password for this page. Look for the Admin_Password option.
 -------------------------------------------
 
 You can absolutely use the Yolk demo application as a foundation for your own
-Yolk applications. Just do this:
+applications. Just do this:
 
     1. You probably want to rename the application from yolk_demo to something
        else. This requires you to:

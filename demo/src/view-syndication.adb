@@ -21,21 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
-
 with Ada.Calendar;
-with AWS.Messages;
-with AWS.MIME;
 
 package body View.Syndication is
 
@@ -48,35 +34,33 @@ package body View.Syndication is
       return AWS.Response.Data
    is
 
-      use AWS.Messages;
-      use AWS.MIME;
       use AWS.Response;
       use AWS.Status;
 
-      Encoding : Content_Encoding := Identity;
-      --  Default to no encoding.
-
    begin
 
-      if Is_Supported (Request, GZip) then
-         Encoding := GZip;
-         --  GZip is supported by the client.
-      end if;
-
-      return Build (Content_Type  => Text_XML,
-                    Message_Body  => Get_XML_String (Feed),
-                    Encoding      => Encoding);
+      return Build_Response (Status_Data => Request,
+                             Content     => Get_XML_String (Feed),
+                             MIME_Type   => Text_XML);
 
    exception
 
       when Not_Valid_XML =>
-         return Build (Content_Type  => Text_HTML,
-                       Message_Body  => "WTF!",
-                       Encoding      => Encoding);
+         return Build_Response (Status_Data => Request,
+                                Content     => "<p>XML not valid.</p>",
+                                MIME_Type   => Text_HTML);
 
    end Generate;
 
 begin
+
+   --  Lets build the ATOM feed. This is a rather involved process, since there
+   --  are quite a lot of XML elements to take care of in the ATOM RFC.
+   --  The feed built here is use more or less every available element. This is
+   --  _not_ required by RFC 4287,I've merely done so for completeness of the
+   --  example.
+   --
+   --  http://tools.ietf.org/html/rfc4287
 
    Set_Id (Feed     => Feed,
            Id       => "/some/id/uri",
@@ -133,6 +117,7 @@ begin
                  Language      => "da",
                  Subtitle_Kind => Text);
 
+   --  With the basic feed elements out of the way, it is time to add an entry.
    declare
 
       An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "entry/base/",
@@ -248,7 +233,7 @@ begin
               Language => "id/lang");
 
       Add_Link (Entr      => An_Entry,
-                Href      => "entry link_one",
+                Href      => "/",
                 Base_URI  => "base",
                 Content   => "content",
                 Hreflang  => "hreflang",
@@ -278,7 +263,7 @@ begin
                    Summary_Kind => Xhtml);
 
       Set_Title (Entr       => An_Entry,
-                 Title      => "Entry Title",
+                 Title      => "Entry Title (link go back to /)",
                  Base_URI   => "entrytitle/base",
                  Language   => "entrytitle/lang",
                  Title_Kind => Text);
@@ -296,5 +281,6 @@ begin
 
    Set_Updated (Feed        => Feed,
                 Update_Time => Ada.Calendar.Clock);
+   --  Finally we set the updated timestamp for the ATOM feed to now.
 
 end View.Syndication;

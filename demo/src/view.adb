@@ -21,20 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
-
 with AWS.Messages;
-with AWS.MIME;
 
 package body View is
 
@@ -44,13 +31,37 @@ package body View is
 
    function Build_Response
      (Status_Data   : in AWS.Status.Data;
-      Template_File : in String;
-      Translations  : in AWS.Templates.Translate_Set)
+      Template_File  : in String;
+      Translations   : in AWS.Templates.Translate_Set;
+      MIME_Type      : in String := Text_HTML)
+      return AWS.Response.Data
+   is
+
+      use AWS.Templates;
+
+   begin
+
+      return Build_Response (Status_Data => Status_Data,
+                             Content     => Parse
+                               (Filename     => Template_File,
+                                Translations => Translations,
+                                Cached       => True),
+                             MIME_Type   => MIME_Type);
+
+   end Build_Response;
+
+   ----------------------
+   --  Build_Response  --
+   ----------------------
+
+   function Build_Response
+     (Status_Data : in AWS.Status.Data;
+      Content     : in String;
+      MIME_Type   : in String := Text_HTML)
       return AWS.Response.Data
    is
 
       use AWS.Messages;
-      use AWS.MIME;
       use AWS.Response;
       use AWS.Status;
       use AWS.Templates;
@@ -65,13 +76,9 @@ package body View is
          --  GZip is supported by the client.
       end if;
 
-      return Build
-        (Content_Type   => Text_HTML,
-         Message_Body   => Parse
-           (Filename     => Template_File,
-            Translations => Translations,
-            Cached       => True),
-         Encoding       => Encoding);
+      return Build (Content_Type  => MIME_Type,
+                    Message_Body  => Content,
+                    Encoding      => Encoding);
 
    end Build_Response;
 

@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --                                                                           --
---                            Yolk Demo Server                               --
+--                                Yolk Demo                                  --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -17,13 +17,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
---
---  For most Yolk applications, using this file "as is" will work fine.
+--  Feel free to use this demo application as the foundation for your own
+--  applications.
 --
 --  Usually you just have to change the name of environment task and  the name
 --  of the file itself to match whatever you want to call your application.
@@ -59,31 +54,33 @@ is
    use Yolk.Utilities;
 
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
-   --  The various resource handlers. These are defined in the Handlers and
-   --  My_Handlers packages.
+   --  The various resource handlers. These are defined in the Yolk.Handlers
+   --  and My_Handlers packages.
 
    Web_Server        : AWS.Server.HTTP;
-   --  The main webserver object.
+   --  The main AWS webserver object.
 
    Web_Server_Config : constant AWS.Config.Object := Get_AWS_Configuration;
    --  Set the AWS configuration object.
    --  All AWS related configuration parameters can be found in the
    --  configuration/config.ini file. They are marked with:
    --    Used by AWS: Yes
+   --  Default values are set in the Yolk.Configuration package.
 
    task Log_File_Monitor is
       entry Start;
       entry Stop;
    end Log_File_Monitor;
-   --  This task monitor the Log_File_Directory and deletes excess log files.
+   --  This task monitors the Log_File_Directory and deletes excess/old log
+   --  files.
 
    --------------------
    --  Start_Server  --
    --------------------
 
    procedure Start_Server;
-   --  Start the AWS server. A short message is written to the Info trace
-   --  whenever the server is started.
+   --  Start the AWS server. A short message is written to the rotating Info
+   --  log track whenever the server is started.
 
    procedure Start_Server
    is
@@ -106,19 +103,18 @@ is
       --  Unfortunately we have to start the server BEFORE we start the logs.
       --  If we start the logs first, then the log files aren't created in the
       --  Log_File_Directory directory, but instead they are created in the
-      --  same directory as where the executable is.
+      --  directory where the executable is.
 
       if Config.Get (Enable_Access_Log) then
          AWS.Server.Log.Start (Web_Server => Web_Server,
                                Auto_Flush => Config.Get (Immediate_Flush));
       end if;
       AWS.Server.Log.Start_Error (Web_Server);
-      --  Start the access and error log.
+      --  Start the access and error logs.
 
       Track (Handle     => Info,
              Log_String => "Started " &
              AWS.Config.Server_Name (Web_Server_Config));
-
       Track (Handle     => Info,
              Log_String => "Yolk version " & Yolk.Version);
 
@@ -129,8 +125,8 @@ is
    -------------------
 
    procedure Stop_Server;
-   --  Stop the AWS server. A short message is written to the Info trace
-   --  whenever the server is stopped.
+   --  Stop the AWS server. A short message is written to the rotating Info log
+   --  track whenever the server is stopped.
 
    procedure Stop_Server
    is
@@ -169,7 +165,7 @@ is
       Files_To_Keep  : constant Positive :=
                          Config.Get (Amount_Of_Log_Files_To_Keep);
       --  How many log files to keep. If more than this amount is found, then
-      --  delete the oldest.
+      --  the oldest are deleted.
       Good_To_Go     : Boolean := False;
       Interval       : constant Duration :=
                          Config.Get (Log_File_Cleanup_Interval);
@@ -191,6 +187,7 @@ is
                Clean_Up (Config_Object             => Web_Server_Config,
                          Web_Server                => Web_Server,
                          Amount_Of_Files_To_Keep   => Files_To_Keep);
+               --  Do an initial clean-up.
             end Start;
          or
             accept Stop do
@@ -219,8 +216,8 @@ begin
    --  Switch user.
 
    Start_Rotating_Logs;
-   --  Fire up the rotating log system. Calls to Track up until this point
-   --  will fail, so please avoid those!
+   --  Fire up the rotating log system. Calls to Yolk.Rotating_Log.Track up
+   --  until this point will fail, so please avoid those.
 
    Initialize_Compressed_Cache_Directory;
    --  Delete old compressed content and create a clean directory for compres-
@@ -238,12 +235,13 @@ begin
       end if;
    end loop;
    --  Check for configuration settings where the setting differ from the
-   --  default value, and notify the user of these on the Info trace.
+   --  default value, and notify the user of these on the rotating Info log
+   --  track.
 
    AWS.MIME.Load (MIME_File => Config.Get (MIME_Types));
    --  Load the MIME type file. We need to do this here, because the AWS.MIME
    --  package has already been initialized with the default AWS configuration
-   --  parameters, and in these the aws.mime file is placed in ./, whereas our
+   --  parameters, and in these the aws.mime file is placed in ./ whereas our
    --  aws.mime is in configuration/aws.mime.
 
    Set (RH => Resource_Handlers);
@@ -255,7 +253,9 @@ begin
    AWS.Server.Set_Unexpected_Exception_Handler
      (Web_Server => Web_Server,
       Handler    => Yolk.Whoops.Unexpected_Exception_Handler'Access);
-   --  Set the unexpected exception handler.
+   --  Set the unexpected exception handler. If your app raises an exception
+   --  and there's no handler for it, then it'll get handled by the
+   --  Yolk.Whoops.Unexpected_Exception_Handler exception handler.
 
    Start_Server;
    --  Start the server.
@@ -269,11 +269,11 @@ begin
 
    Wait;
    --  This is the main "loop". We will wait here as long as the
-   --  Process_Control.Controller.Check entry barrier is False.
+   --  Yolk.Process_Control.Controller.Check entry barrier is False.
 
    Stop_Server;
-   --  Shutdown requested in Process_Control.Controller, so we will attempt to
-   --  shutdown the server.
+   --  Shutdown requested in Yolk.Process_Control.Controller, so we will
+   --  attempt to shutdown the server.
 
    Log_File_Monitor.Stop;
    --  Stop the logfile monitor.
@@ -281,11 +281,14 @@ begin
 exception
    when Event : others =>
       Start_Rotating_Logs (Called_From_Main_Task_Exception_Handler => True);
+      --  We might end up down here before the Yolk.Rotating_Logs system has
+      --  been started, so we try to start it. If it's already running, all
+      --  this call will do is make a note of that in the log.
       Track (Handle     => Error,
              Log_String => Exception_Information (Event));
+      --  Write the exception information to the rotating Error log track.
       Stop_Server;
       Log_File_Monitor.Stop;
-      --  If an exception is caught, write its contents to the Error trace,
-      --  attempt to stop the server and the logfile monitor task.
+      --  First stop the server, then stop the log file monitor task.
 
 end Yolk_Demo;

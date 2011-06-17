@@ -21,17 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
+--  The syndication resource.
 
 with AWS.Response;
 with AWS.Status;
@@ -46,6 +36,7 @@ package View.Syndication is
                                       Max_Age     => 10.0,
                                       Min_Entries => 5,
                                       Max_Entries => 8);
+   --  Declare a new Atom_Feed object.
 
    function Generate
      (Request : in AWS.Status.Data)

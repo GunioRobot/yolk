@@ -4,7 +4,7 @@
 ##                                                                           ##
 ##                                  Yolk                                     ##
 ##                                                                           ##
-##                     rc script to start and stop Yolk                      ##
+##               rc script to start and stop a Yolk application              ##
 ##                                                                           ##
 ##                   Copyright (C) 2010-2011, Thomas Løcke                   ##
 ##                                                                           ##

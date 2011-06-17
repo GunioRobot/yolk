@@ -21,18 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
-
 with Ada.Strings.Fixed;
 with AWS.Parameters;
 with AWS.Templates;
@@ -119,14 +107,21 @@ package body View.Email is
                     String'(My.Config.Get (My.SMTP_Host))));
                else
                   Insert (T, Assoc ("IS_SEND", False));
+                  --  Sending failed.
+
+                  Populate_Form (T             => T,
+                                 Recip_Name    => P_Recip_Name,
+                                 Recip_Address => P_Recip_Address);
                end if;
             else
                Insert (T, Assoc ("IS_SEND", False));
-            end if;
+               --  No recipient address, so obviously we cannot send the email.
 
-            Populate_Form (T             => T,
+               Populate_Form (T             => T,
                            Recip_Name    => P_Recip_Name,
                            Recip_Address => P_Recip_Address);
+            end if;
+
          end;
       else
          Populate_Form (T             => T,

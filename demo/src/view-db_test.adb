@@ -21,18 +21,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
---                                                                           --
---                            DEMO FILE                                      --
---                                                                           --
--------------------------------------------------------------------------------
-
---  This is a DEMO file. You can either move this to the my_view/ directory and
---  change it according to you own needs, or you can provide your own.
---
---  This package is currently only "with'ed" by other demo source files. It is
---  NOT required by Yolk in any way.
-
 with AWS.Templates;
 with Database;
 with GNATCOLL.SQL;
@@ -54,15 +42,15 @@ package body View.DB_Test is
       use GNATCOLL.SQL;
       use GNATCOLL.SQL.Exec;
 
-      Billy : aliased String := "Billy";
-      Has_Tmp_Table : Boolean := False;
-
-      DB_Conn     : constant Database_Connection := My_DB.Connection;
-      FC : Forward_Cursor;
+      Billy          : aliased String := "Billy";
+      DB_Conn        : constant Database_Connection := My_DB.Connection;
+      FC             : Forward_Cursor;
+      Has_Tmp_Table  : Boolean := False;
 
       Query_Insert_Data : constant SQL_Query := SQL_Insert
         ((Tmp.Id = Integer_Param (1)) &
          (Tmp.Name = Text_Param (2)));
+
       Prepared_Query_Insert_Data : constant Prepared_Statement := Prepare
         (Query       => Query_Insert_Data,
          On_Server   => True);
@@ -71,6 +59,7 @@ package body View.DB_Test is
         (Fields   => Tmp.Id & Tmp.Name,
          From     => Tmp,
          Where    => Tmp.Name = Text_Param (1));
+
       Prepared_Query_Select_Data : constant Prepared_Statement := Prepare
         (Query       => Query_Select_Data,
          On_Server   => True);
@@ -90,6 +79,7 @@ package body View.DB_Test is
                    "AND tablename = 'tmp'");
 
          Append (Messages, "Checking if table 'tmp' exists.");
+
          while FC.Has_Row loop
             Has_Tmp_Table := True;
             Append (Messages, "Table 'tmp' found.");
@@ -99,6 +89,7 @@ package body View.DB_Test is
          if not Has_Tmp_Table then
             DB_Conn.Execute
               ("CREATE TABLE tmp (id INTEGER, name TEXT)");
+
             Append (Messages, "Table 'tmp' not found. Creating it.");
             Append (Messages, "Table 'tmp' created.");
          end if;
@@ -107,6 +98,7 @@ package body View.DB_Test is
             DB_Conn.Execute (Stmt   => Prepared_Query_Insert_Data,
                              Params => (1 => +i,
                                         2 => +Names (i)));
+
             Append (Messages, "Added " & i'Img & ":" & Names (i).all &
                     " to 'tmp'.");
          end loop;
@@ -124,6 +116,7 @@ package body View.DB_Test is
          end loop;
 
          DB_Conn.Execute ("DROP TABLE tmp");
+
          Append (Messages, "Table 'tmp' dropped.");
 
          DB_Conn.Commit_Or_Rollback;
