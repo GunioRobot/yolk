@@ -37,6 +37,5 @@ install:
 	mkdir -p $(prefix)/yolk
 	mkdir -p $(prefix)/include/yolk
 	cp -pr library/* $(prefix)/yolk
-	cp -pr src/core/*.ad[sb] $(prefix)/include/yolk
-	cp -pr src/extended/*.ad[sb] $(prefix)/include/yolk
+	cp -pr src/*.ad[sb] $(prefix)/include/yolk
 	cp -pr yolk.gpr $(prefix)/lib/gnat
