@@ -83,7 +83,7 @@ What is Yolk?
 \end_layout
 
 \begin_layout Standard
-Yolk is a collection of tools that aim to help build solid web-applications
+Yolk is a collection of packages that aim to help build solid web-applications
  using Ada.
  Yolk itself doesn't do a whole lot that can't be accomplished simply by
  using 
@@ -105,8 +105,7 @@ target "http://libre.adacore.com/libre/tools/gnat-component-collection/"
 , but it does make the job of building complete web-applications a bit simpler.
  Things like changing user for the running application, accessing multiple
  databases, automatically cleaning up log files, adding basic static content
- handlers and starting/stopping the application using an rc script are all
- handled by Yolk.
+ handlers and building ATOM syndication XML are all handled by Yolk.
 \end_layout
 
 \begin_layout Standard
@@ -141,10 +140,6 @@ It is much easier to show how to use Yolk, than it is to write down all
  your own applications.
 \end_layout
 
-\begin_layout Standard
-Also note that the configuration files
-\end_layout
-
 \begin_layout Section
 The source code
 \end_layout
@@ -176,12 +171,12 @@ The files Yolk depend upon
 When you read this document and the Yolk source code, you'll notice that
  quite a few packages depend on various files being available at specified
  locations.
- This is for example the case for the Yolk.Configuration package, that must
+ This is for example the case with the Yolk.Configuration package, that must
  have a 
 \emph on
 config.ini
 \emph default
- file available in 
+ file available in the 
 \emph on
 configuration/
 \emph default
@@ -229,7 +224,6 @@ The Yolk core packages are those packages that are considered, well, core
  to Yolk's functionality.
  Here you'll find packages for configuration, log file management, process
  control and similar.
- These packages will probably be used in all Yolk applications.
 \end_layout
 
 \begin_layout Subsection
@@ -237,7 +231,10 @@ Yolk
 \end_layout
 
 \begin_layout Standard
-The Yolk main package currently only contain one thing: The Yolk Version
+The Yolk main package currently only contain one thing: The Yolk 
+\emph on
+Version
+\emph default
  string.
 \end_layout
 
@@ -284,19 +281,94 @@ some value with whitespace
 \begin_inset Quotes erd
 \end_inset
 
- when calling Get (KEY).
- If VALUE is boolean true or false (case-insensitive), then the KEY can
- be returned as a string or a boolean, depending on the target type.
+ when calling 
+\emph on
+Get (KEY)
+\emph default
+.
+ If VALUE is Boolean True or False (case-insensitive), then the KEY can
+ be returned as a String or a Boolean, depending on the target type.
  If the target type does not match the VALUE and no sensible conversion
- can be made, then a Conversion_Error exception is raised.
+ can be made, then a 
+\emph on
+Conversion_Error
+\emph default
+ exception is raised.
  No dummy values are returned at any time.
 \end_layout
 
 \begin_layout Standard
 To clear a default value, simply add the key to the configuration file,
  with no value set.
- This will cause the Empty_Key exception to be raised when you try to access
- the key.
+\end_layout
+
+\begin_layout Subsubsection
+The generic formal parameters
+\end_layout
+
+\begin_layout Standard
+These are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+generic
+\end_layout
+
+\begin_layout Plain Layout
+
+   use Ada.Strings.Unbounded;
+\end_layout
+
+\begin_layout Plain Layout
+
+   type Key_Type is (<>);
+\end_layout
+
+\begin_layout Plain Layout
+
+   type Defaults_Array_Type is array (Key_Type) of Unbounded_String;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Defaults    : in Defaults_Array_Type;    
+\end_layout
+
+\begin_layout Plain Layout
+
+   Config_File : in String := "configuration/config.ini";
+\end_layout
+
+\begin_layout Plain Layout
+
+package Yolk.Config_File_Parser is
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the 
+\emph on
+Config_File
+\emph default
+ parameter has a default value.
+ This path is actually where Yolk expects to find the configuration file
+ used by the Yolk.Configuration package.
 \end_layout
 
 \begin_layout Subsubsection
@@ -304,24 +376,40 @@ Exceptions
 \end_layout
 
 \begin_layout Standard
-There are 4 different exceptions that can be raised by the Yolk.Config_File_Parse
+There are 3 different exceptions that can be raised by the Yolk.Config_File_Parse
 r package.
  These are:
 \end_layout
 
 \begin_layout Itemize
-Unknown_Key.
+
+\emph on
+Unknown_Key
+\emph default
+.
  This is raised if an unknown key has been found in the configuration file
- given when instantiating the package or when Load_File is called.
+ given when instantiating the package or when 
+\emph on
+Load_File
+\emph default
+ is called.
 \end_layout
 
 \begin_layout Itemize
-Cannot_Open_Config_File.
+
+\emph on
+Cannot_Open_Config_File
+\emph default
+.
  This is raised when a configuration file cannot be read.
 \end_layout
 
 \begin_layout Itemize
-Conversion_Error.
+
+\emph on
+Conversion_Error
+\emph default
+.
  This is raised when a value cannot be converted to the target type, ie.
  the value 
 \begin_inset Quotes eld
@@ -332,11 +420,6 @@ Conversion_Error.
 \end_inset
 
  to a Boolean.
-\end_layout
-
-\begin_layout Itemize
-Empty_Key.
- This is raised when the value of a key is a Null_Unbounded_String.
 \end_layout
 
 \begin_layout Subsubsection
@@ -452,16 +535,26 @@ end My_Configuration;
 \end_layout
 
 \begin_layout Standard
-Here we instantiate the Config package with 
+Here we instantiate the 
+\emph on
+Config
+\emph default
+ package with 
 \emph on
 config.ini
 \emph default
  as the configuration file.
  This means that KEY/VALUE pairs found in this file will overwrite the default
- values set in the Default_Values array.
- Also note that we've defined the default values.
- This must be done and all KEY's must be present.
- If the default value is empty, simply set it to Null_Unbounded_String.
+ values set in the 
+\emph on
+Default_Values
+\emph default
+ array.
+ Setting a default value to 
+\emph on
+Null_Unbounded_String
+\emph default
+ means the value is empty.
 \end_layout
 
 \begin_layout Subsubsection
@@ -469,9 +562,15 @@ Re-loading configuration files
 \end_layout
 
 \begin_layout Standard
-If a configuration file has been updated, you might want to re-load it into
- the Config package.
- This is done using the Load_File procedure:
+With the 
+\emph on
+Load_File
+\emph default
+ procedure you can re-load a new configuration file into your 
+\emph on
+Config
+\emph default
+ package:
 \end_layout
 
 \begin_layout Standard
@@ -496,11 +595,25 @@ And that is all.
 \emph on
 new_config.ini
 \emph default
- will overwrite the ones originally found in the config.ini file the package
- was instantiated with.
+ will overwrite the ones originally found in the 
+\emph on
+config.ini
+\emph default
+ file the package was instantiated with.
  You can do this as many times as you like.
- Note that you cannot change what KEY's are valid, so if the new_config.ini
- contains unknown keys, Load_File will raise the Unknown_Key exception.
+ Note that you cannot change what KEY's are valid, so if the 
+\emph on
+new_config.ini
+\emph default
+ file contains unknown keys, 
+\emph on
+Load_File
+\emph default
+ will raise the 
+\emph on
+Unknown_Key
+\emph default
+ exception.
 \end_layout
 
 \begin_layout Subsubsection
@@ -510,7 +623,11 @@ Getting values
 \begin_layout Standard
 With instantiation and loading of configuration files out of the way, it
  is now time to get to the configuration values.
- To get the value of the Foo key, you do:
+ To get the value of the 
+\emph on
+Foo
+\emph default
+ key, you do:
 \end_layout
 
 \begin_layout Standard
@@ -558,8 +675,14 @@ Unbounded_String
 \end_layout
 
 \begin_layout Standard
-If a key is empty (ie.
- contains a Null_Unbounded_String), the Empty_Key exception is raised.
+Empty keys simply return an empty String or a Null_Unbounded_String, depending
+ on the target type.
+ If a key is empty and the target type is not a String or an Unbounded_String,
+ then the 
+\emph on
+Conversion_Error
+\emph default
+ exception is raised.
 \end_layout
 
 \begin_layout Subsubsection
@@ -567,7 +690,11 @@ Checking if a KEY has a VALUE
 \end_layout
 
 \begin_layout Standard
-You can check if a key has a value with the Has_Value function:
+You can check if a key has a value with the 
+\emph on
+Has_Value
+\emph default
+ function:
 \end_layout
 
 \begin_layout Standard
@@ -657,9 +784,13 @@ configuration/config.ini
 \emph default
 .
  This path is of course relative to the application.
- There's a fully commented config.ini file available in 
+ There's a fully commented 
 \emph on
-extras/configuration/
+config.ini
+\emph default
+ file available in 
+\emph on
+demo/exe/configuration/
 \emph default
 .
  This setup is required if you're using Yolk, and the only way to avoid
@@ -672,8 +803,8 @@ config.ini
 \end_layout
 
 \begin_layout Standard
-I recommend that you grab the Yolk demo application to see how the Yolk.Configura
-tion package is used.
+I recommend that you take a look at the Yolk demo application to see how
+ the Yolk.Configuration package is used.
 \end_layout
 
 \begin_layout Subsubsection
@@ -684,7 +815,11 @@ Get the AWS specific configuration settings
 When you start an AWS server, you need to give it an AWS.Config.Object with
  all the necessary configuration settings.
  This is already handled for you in Yolk.Configuration, all you have to do
- is call the Get_AWS_Configuration function, for example like this:
+ is call the 
+\emph on
+Get_AWS_Configuration
+\emph default
+ function, like this:
 \end_layout
 
 \begin_layout Standard
@@ -726,9 +861,13 @@ AWS.Server.Start (Web_Server => Web_Server,
 \begin_layout Standard
 You're not forced to use this, if you don't want to.
  But even if you don't, you'll still have to make a valid configuration
- file available in the configuration directory defined in the Config instantiati
-on, so you might as well use this as the configuration foundation for the
- AWS HTTP server component of your application.
+ file available in the configuration directory defined in the 
+\emph on
+Config
+\emph default
+ instantiation, so you might as well use this as the configuration foundation
+ for the AWS HTTP server component of your application.
+ Again, see the demo application for examples on how this is done.
 \end_layout
 
 \end_body
