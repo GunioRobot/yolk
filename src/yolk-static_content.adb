@@ -37,6 +37,132 @@ package body Yolk.Static_Content is
    --  first time. Subsequent calls to Initialize_Compressed_Cache_Directory
    --  are ignored.
 
+   protected GZip_And_Cache is
+
+      procedure Do_It
+        (GZ_Resource : in String;
+         Resource    : in String);
+      --  If a compressable resource is requested and it doesn't yet exist,
+      --  then this procedure takes care of GZip'ing the Resource and saving
+      --  it to disk as a .gz file.
+
+   end GZip_And_Cache;
+   --  Handle GZip'ing and saving of compressable resources. This is done in
+   --  a protected object so we don't get multiple threads all trying to
+   --  compress the same resources at the same time.
+
+   ----------------------
+   --  GZip_And_Cache  --
+   ----------------------
+
+   protected body GZip_And_Cache is
+
+      procedure Do_It
+        (GZ_Resource : in String;
+         Resource    : in String)
+      is
+
+         use Ada.Directories;
+
+         Cache_Dir : constant String := Containing_Directory (GZ_Resource);
+
+      begin
+
+         if Exists (GZ_Resource) then
+            return;
+            --  We only need to continue if the GZ_Resource doesn't exist. It
+            --  might not have existed when Do_It was called, but the previous
+            --  Do_It call might've created it. So if it now exists, we simply
+            --  return.
+         end if;
+
+         if not Exists (Cache_Dir) then
+            Create_Path (Cache_Dir);
+         end if;
+
+         Compress_File :
+         declare
+
+            File_In  : Ada.Streams.Stream_IO.File_Type;
+            File_Out : Ada.Streams.Stream_IO.File_Type;
+            Filter   : ZLib.Filter_Type;
+
+            procedure Data_Read
+              (Item : out Ada.Streams.Stream_Element_Array;
+               Last : out Ada.Streams.Stream_Element_Offset);
+            --  Read data from File_In.
+
+            procedure Data_Write
+              (Item : in Ada.Streams.Stream_Element_Array);
+            --  Write data to File_Out.
+
+            procedure Translate is new ZLib.Generic_Translate
+              (Data_In  => Data_Read,
+               Data_Out => Data_Write);
+            --  Do the actual compression. Use Data_Read to read from File_In
+            --  and Data_Write to write the compressed content to File_Out.
+
+            -----------------
+            --  Data_Read  --
+            -----------------
+
+            procedure Data_Read
+              (Item : out Ada.Streams.Stream_Element_Array;
+               Last : out Ada.Streams.Stream_Element_Offset)
+            is
+            begin
+
+               Ada.Streams.Stream_IO.Read
+                 (File => File_In,
+                  Item => Item,
+                  Last => Last);
+
+            end Data_Read;
+
+            ----------------
+            --  Data_Out  --
+            ----------------
+
+            procedure Data_Write
+              (Item : in Ada.Streams.Stream_Element_Array)
+            is
+            begin
+
+               Ada.Streams.Stream_IO.Write (File => File_Out,
+                                            Item => Item);
+
+            end Data_Write;
+
+         begin
+
+            Ada.Streams.Stream_IO.Open
+              (File => File_In,
+               Mode => Ada.Streams.Stream_IO.In_File,
+               Name => Resource);
+
+            Ada.Streams.Stream_IO.Create
+              (File => File_Out,
+               Mode => Ada.Streams.Stream_IO.Out_File,
+               Name => GZ_Resource);
+
+            ZLib.Deflate_Init
+              (Filter => Filter,
+               Level  => ZLib.Best_Compression,
+               Header => ZLib.GZip);
+
+            Translate (Filter);
+
+            ZLib.Close (Filter);
+
+            Ada.Streams.Stream_IO.Close (File => File_In);
+            Ada.Streams.Stream_IO.Close (File => File_Out);
+
+         end Compress_File;
+
+      end Do_It;
+
+   end GZip_And_Cache;
+
    -------------------
    --  Binary_File  --
    -------------------
@@ -126,112 +252,15 @@ package body Yolk.Static_Content is
       GZ_Resource           : constant String :=
                                 Config.Get (Compressed_Cache_Directory)
                                 & URI (Request) & ".gz";
-      --  The path to the GZipped resourc.
+      --  The path to the GZipped resource.
+
       Resource : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
+
       MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
       Minimum_File_Size : constant File_Size :=
                             File_Size (Integer'(Config.Get
                               (Compress_Minimum_File_Size)));
-
-      procedure Compress_And_Cache;
-      --  Compress and cache the requested static file.
-
-      --------------------------
-      --  Compress_And_Cache  --
-      --------------------------
-
-      procedure Compress_And_Cache
-      is
-
-         Cache_Dir : constant String := Containing_Directory (GZ_Resource);
-
-      begin
-
-         if not Exists (Cache_Dir) then
-            Create_Path (Cache_Dir);
-         end if;
-
-         Compress_File :
-         declare
-
-            File_In  : Ada.Streams.Stream_IO.File_Type;
-            File_Out : Ada.Streams.Stream_IO.File_Type;
-            Filter   : ZLib.Filter_Type;
-
-            procedure Data_Read
-              (Item : out Ada.Streams.Stream_Element_Array;
-               Last : out Ada.Streams.Stream_Element_Offset);
-            --  Read data from File_In.
-
-            procedure Data_Write
-              (Item : in Ada.Streams.Stream_Element_Array);
-            --  Write data to File_Out.
-
-            procedure Translate is new ZLib.Generic_Translate
-              (Data_In  => Data_Read,
-               Data_Out => Data_Write);
-            --  Do the actual compression. Use Data_Read to read from File_In
-            --  and Data_Write to write the compressed content to File_Out.
-
-            -----------------
-            --  Data_Read  --
-            -----------------
-
-            procedure Data_Read
-              (Item : out Ada.Streams.Stream_Element_Array;
-               Last : out Ada.Streams.Stream_Element_Offset)
-            is
-            begin
-
-               Ada.Streams.Stream_IO.Read
-                 (File => File_In,
-                  Item => Item,
-                  Last => Last);
-
-            end Data_Read;
-
-            ----------------
-            --  Data_Out  --
-            ----------------
-
-            procedure Data_Write
-              (Item : in Ada.Streams.Stream_Element_Array)
-            is
-            begin
-
-               Ada.Streams.Stream_IO.Write (File => File_Out,
-                                            Item => Item);
-
-            end Data_Write;
-
-         begin
-
-            Ada.Streams.Stream_IO.Open
-              (File => File_In,
-               Mode => Ada.Streams.Stream_IO.In_File,
-               Name => Resource);
-
-            Ada.Streams.Stream_IO.Create
-              (File => File_Out,
-               Mode => Ada.Streams.Stream_IO.Out_File,
-               Name => GZ_Resource);
-
-            ZLib.Deflate_Init
-              (Filter => Filter,
-               Level  => ZLib.Best_Compression,
-               Header => ZLib.GZip);
-
-            Translate (Filter);
-
-            ZLib.Close (Filter);
-
-            Ada.Streams.Stream_IO.Close (File => File_In);
-            Ada.Streams.Stream_IO.Close (File => File_Out);
-
-         end Compress_File;
-
-      end Compress_And_Cache;
 
    begin
 
@@ -267,9 +296,8 @@ package body Yolk.Static_Content is
          if Config.Get (Compress_Static_Content)
            and then Size (Resource) > Minimum_File_Size
          then
-            Lock.Seize;
-            Compress_And_Cache;
-            Lock.Release;
+            GZip_And_Cache.Do_It (GZ_Resource => GZ_Resource,
+                                  Resource    => Resource);
 
             return AWS.Response.File
               (Content_Type  => MIME_Type,

@@ -29,14 +29,8 @@
 
 with AWS.Response;
 with AWS.Status;
-with AWS.Utils;
 
 package Yolk.Static_Content is
-
-   Lock : AWS.Utils.Semaphore;
-   --  This lock is used when the .gz files are created for the first time. We
-   --  don't want more than one task messing around with the Compress_And_Cache
-   --  procedure at the same time.
 
    function Binary_File
      (Request : in AWS.Status.Data)
@@ -48,7 +42,8 @@ package Yolk.Static_Content is
 
    procedure Initialize_Compressed_Cache_Directory;
    --  Initialize the Static_Content package. Basically just delete and
-   --  re-create the Compressed_Cache_Directory.
+   --  re-create the Compressed_Cache_Directory. Should preferably be called
+   --  before any AWS HTTP servers are started.
 
    function Text_File
      (Request : in AWS.Status.Data)
