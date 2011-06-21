@@ -21,6 +21,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+--  Create ATOM XML, as per RFC4287
+
 with Ada.Calendar;
 private with Ada.Containers.Doubly_Linked_Lists;
 private with Ada.Strings.Unbounded;

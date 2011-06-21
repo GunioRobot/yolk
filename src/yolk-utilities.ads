@@ -40,11 +40,11 @@ package Yolk.Utilities is
    function Is_Empty
      (S : in String)
       return Boolean;
-   --  Return True if a trimmed string is empty.
+   --  Trims S (left and right) and return True if empty.
 
    function Is_Empty
      (US : in Unbounded_String)
       return Boolean;
-   --  Return True if a trimmed unbounded string is empty.
+   --  Trims US (left and right) and return True if empty.
 
 end Yolk.Utilities;

@@ -35,9 +35,9 @@ package body Yolk.Whoops is
    ----------------------------------
 
    procedure Unexpected_Exception_Handler
-     (E      : Ada.Exceptions.Exception_Occurrence;
+     (E      : in     Ada.Exceptions.Exception_Occurrence;
       Log    : in out AWS.Log.Object;
-      Error  : AWS.Exceptions.Data;
+      Error  : in     AWS.Exceptions.Data;
       Answer : in out AWS.Response.Data)
    is
 

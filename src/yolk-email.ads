@@ -24,7 +24,6 @@
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with GNATCOLL.Email;
-with GNATCOLL.VFS;
 
 package Yolk.Email is
 
@@ -197,82 +196,6 @@ private
    --    Type_Of_Email:
    --       The kind of email we're dealing with.
 
-   procedure Build_Attachments
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Add attachments to Email.
-
-   procedure Build_Bcc_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the Bcc header and add it to Email.
-
-   procedure Build_Cc_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the Cc header and add it to Email.
-
-   procedure Build_Content_Transfer_Encoding_Header
-     (Charset : in     Character_Set;
-      Email   : in out GNATCOLL.Email.Message);
-   --  Build the Content-Transfer-Encoding header and add it to Email.
-
-   procedure Build_Content_Type_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message;
-      Kind  : in String);
-   --  Build the Content-Type header and add it to Email.
-
-   procedure Build_Custom_Headers
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the custom headers. Custom headers are usually things like
-   --  User-Agent, Organization or X - headers.
-
-   procedure Build_Date_Header
-     (Email : in out GNATCOLL.Email.Message);
-   --  Build the Date header and add it to Email.
-
-   procedure Build_Email_Data
-     (Header   : in out GNATCOLL.Email.Header;
-      List     : in     Email_Data_Container.Vector);
-   --  Construct the actual content for the sender/recipient headers, such as
-   --  To, Cc, Bcc, Reply-To and so on.
-
-   procedure Build_From_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the From header and add it to Email.
-
-   procedure Build_General_Headers
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Add the general headers such as To, From, Date and so on, to the Email.
-
-   procedure Build_MIME_Header
-     (Email : in out GNATCOLL.Email.Message);
-   --  Build the MIME-Version header and add it to Email.
-
-   procedure Build_Reply_To_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the Reply-To header and add it to Email.
-
-   procedure Build_Sender_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the Sender header and add it to Email.
-
-   procedure Build_Subject_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the Subject header and add it to Email.
-
-   procedure Build_To_Header
-     (ES    : in     Structure;
-      Email : in out GNATCOLL.Email.Message);
-   --  Build the To header and add it to Email.
-
    procedure Generate_Text_And_HTML_Email
      (ES : in out Structure);
    --  Generate a text and HTML email using the GNATcoll email facilities.
@@ -300,12 +223,5 @@ private
    procedure Set_Type_Of_Email
      (ES : in out Structure);
    --  Figure out the kind of email ES is.
-
-   function To_Virtual_File
-     (Item : in Attachment_Data)
-      return GNATCOLL.VFS.Virtual_File;
-   --  Convert an Attachment_Data.Path_To_File to a GNATCOLL.VFS Virtual_File.
-   --  Exceptions:
-   --    Attachment_File_Not_Found
 
 end Yolk.Email;

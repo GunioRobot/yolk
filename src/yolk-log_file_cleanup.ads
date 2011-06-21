@@ -21,6 +21,9 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+--  Search for and delete old and excess logfiles in the Log_File_Directory
+--  defined in the server configuration file.
+
 with AWS.Config;
 with AWS.Server;
 
@@ -30,7 +33,5 @@ package Yolk.Log_File_Cleanup is
      (Config_Object           : in AWS.Config.Object;
       Web_Server              : in AWS.Server.HTTP;
       Amount_Of_Files_To_Keep : in Positive);
-   --  Search for and delete old and excess logfiles in the Log_File_Directory
-   --  defined in the server configuration file.
 
 end Yolk.Log_File_Cleanup;

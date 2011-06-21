@@ -33,6 +33,7 @@ package Yolk.Whoops is
       Log    : in out AWS.Log.Object;
       Error  : AWS.Exceptions.Data;
       Answer : in out AWS.Response.Data);
-   --  Unexpected exception handler
+   --  This one takes care of all the exceptions you've failed to catch. It
+   --  logs the problem and return a status code 500 page to the user.
 
 end Yolk.Whoops;
