@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised June 16th.
+Revised June 20th.
  2011
 \end_layout
 
@@ -76,6 +76,10 @@ LatexCommand tableofcontents
 \end_inset
 
 
+\end_layout
+
+\begin_layout Part
+General Information
 \end_layout
 
 \begin_layout Section
@@ -118,7 +122,7 @@ A Yolk application is in reality an AWS application, with some sugar added,
  provide.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 The Yolk demo application
 \end_layout
 
@@ -140,7 +144,7 @@ It is much easier to show how to use Yolk, than it is to write down all
  your own applications.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 The source code
 \end_layout
 
@@ -154,7 +158,7 @@ The Yolk source code is the best documentation there is.
  type and procedure in a package.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Building and installing Yolk
 \end_layout
 
@@ -163,7 +167,7 @@ See the README and INSTALL files.
  These are found in the Yolk root directory.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 The files Yolk depend upon
 \end_layout
 
@@ -180,8 +184,8 @@ config.ini
 \emph on
 configuration/
 \emph default
- directory or the Yolk.Whoops package that expects its template file to be
- found at the path 
+ directory, or the Yolk.Whoops package that expects its template file to
+ be found at the path 
 \emph on
 templates/system/500.tmpl
 \end_layout
@@ -195,10 +199,10 @@ dependencies
 \begin_inset Quotes erd
 \end_inset
 
- will of course be noted accordingly, but instead of forgetting one or more
- in your own application, I'd much rather encourage using the demo application
- as a foundation for your own applications, since all these fixed paths
- and files has been properly added to the demo.
+ will of course be noted accordingly as we go along, but instead of forgetting
+ one or more in your own application, I'd much rather encourage using the
+ demo application as a foundation for your own applications, since all these
+ fixed paths and files has been properly added to the demo.
 \end_layout
 
 \begin_layout Standard
@@ -215,18 +219,31 @@ demo/INSTALL
  files for instructions on how to get it up and running.
 \end_layout
 
-\begin_layout Section
-The Yolk core packages
+\begin_layout Subsection
+The Yolk packages naming
 \end_layout
 
 \begin_layout Standard
-The Yolk core packages are those packages that are considered, well, core
- to Yolk's functionality.
- Here you'll find packages for configuration, log file management, process
- control and similar.
+The Yolk packages are pretty diverse, ranging from process control to sending
+ email.
+ I've tried naming them as sensibly as possible, in the hope that the package
+ names alone give away their function.
+ If I've failed, well, you're just going to have to refer to this document
+ or take a look at the source for yourself.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+The Yolk Packages
+\end_layout
+
+\begin_layout Section
 Yolk
 \end_layout
 
@@ -236,15 +253,21 @@ The Yolk main package currently only contain one thing: The Yolk
 Version
 \emph default
  string.
+ This is used in a few places, for example in the 
+\emph on
+directory.tmpl
+\emph default
+ template file, but it's probably not something that's of vital importance
+ to most applications.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Yolk.Config_File_Parser
 \end_layout
 
 \begin_layout Standard
 This package enable you to access KEY/VALUE pairs in configuration files
- that are in the style:
+ that are written in the style:
 \end_layout
 
 \begin_layout LyX-Code
@@ -260,6 +283,23 @@ KEY VALUE
 \end_layout
 
 \begin_layout Standard
+Key's are case-insensitive, so 
+\emph on
+FOO
+\emph default
+, 
+\emph on
+foo
+\emph default
+ and 
+\emph on
+fOo
+\emph default
+ are all the same.
+
+\emph on
+ 
+\emph default
 Blank lines and comments are ignored and so is pre/postfixed whitespace.
  It is not necessary to quote values that contain whitespace, to this:
 \end_layout
@@ -302,7 +342,7 @@ To clear a default value, simply add the key to the configuration file,
  with no value set.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The generic formal parameters
 \end_layout
 
@@ -371,7 +411,7 @@ Config_File
  used by the Yolk.Configuration package.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Exceptions
 \end_layout
 
@@ -422,7 +462,7 @@ Conversion_Error
  to a Boolean.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Instantiation
 \end_layout
 
@@ -557,7 +597,7 @@ Null_Unbounded_String
  means the value is empty.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Re-loading configuration files
 \end_layout
 
@@ -616,7 +656,7 @@ Unknown_Key
  exception.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Getting values
 \end_layout
 
@@ -685,7 +725,7 @@ Conversion_Error
  exception is raised.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Checking if a KEY has a VALUE
 \end_layout
 
@@ -728,7 +768,7 @@ Basically all this function does is return Boolean True if the value of
  the given key is not a Null_Unbounded_String.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Yolk.Configuration
 \end_layout
 
@@ -807,7 +847,7 @@ I recommend that you take a look at the Yolk demo application to see how
  the Yolk.Configuration package is used.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Get the AWS specific configuration settings
 \end_layout
 
@@ -868,6 +908,286 @@ Config
  instantiation, so you might as well use this as the configuration foundation
  for the AWS HTTP server component of your application.
  Again, see the demo application for examples on how this is done.
+\end_layout
+
+\begin_layout Section
+Yolk.Connect_To_DB
+\end_layout
+
+\begin_layout Standard
+This is a small wrapper for the GNATCOLL.SQL database connection functionality.
+ Basically it hides away the factory, and makes it simple to support connecting,
+ and staying connected, to several databases in your application.
+ Actually the ability to stay connected to several databases in the same
+ application was what drove the development of the Yolk.Connect_To_DB package,
+ as the 
+\emph on
+GNATCOLL.SQL.Exec.Get_Task_Connection
+\emph default
+ function did not support that out of the box.
+\end_layout
+
+\begin_layout Standard
+At the time of writing, GNATcoll supports PostgreSQL and MySQL, but Yolk
+ only supports connecting to PostgreSQL.
+ The reason for this is simple: I don't use MySQL, and if I can't test something
+, I don't feel like adding it to Yolk.
+\end_layout
+
+\begin_layout Subsection
+The Connection_Mapping_Method type
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Connection_Mapping_Method
+\emph default
+ is used when you instantiate a child package of Yolk.Connect_To_DB (currently
+ only Yolk.Connect_To_DB.PostgreSQL).
+ It defines how AWS threads maps to the database connections.
+ There are two different methods of connecting to a database:
+\end_layout
+
+\begin_layout Enumerate
+AWS_Tasks_To_DB
+\end_layout
+
+\begin_layout Enumerate
+DB_Conn_Tasks_To_DB
+\end_layout
+
+\begin_layout Standard
+The first method is the simplest and it's also the method that requires
+ fewest resources.
+ Using method 1.
+ we simply map each AWS thread to a database connection, meaning that if
+ you have 5 AWS threads, you're going to end up with 5 open connections
+ to your database.
+ Whenever an AWS thread ask for a database connection, it always get the
+ same connection.
+ If no connection has been made yet, one is started and mapped to the AWS
+ thread that started it.
+\end_layout
+
+\begin_layout Standard
+This works flawlessly as long as you don't need to connect to more than
+ one database, but it fails miserably if you have more than one database
+ in play.
+ For such cases we need option 2.
+ 
+\end_layout
+
+\begin_layout Standard
+When option two is used, one set of database connection tasks are started
+ for every database you connect to.
+ So if you have an AWS server with 5 threads and you need to connect to
+ two databases, you're going to end up with 5 small tasks whose only purpose
+ in life is to open and maintain a connection to the database.
+ These 5 
+\emph on
+DB_Conn
+\emph default
+ tasks are then mapped to the AWS threads.
+\end_layout
+
+\begin_layout Standard
+This also means that you can only instantiate once using 
+\emph on
+AWS_Tasks_To_DB
+\emph default
+ whereas you can instantiate as many times as you like with 
+\emph on
+DB_Conn_Tasks_To_DB
+\emph default
+.
+ If you need to connect to several databases, make sure that the one you
+ use the most is setup with the 
+\emph on
+AWS_Tasks_To_DB
+\emph default
+ connection mapping.
+ This is the fastest, as we don't have to spend time going through one of
+ the 
+\emph on
+DB_Conn
+\emph default
+ tasks that are necessary with the 
+\emph on
+DB_Conn_Tasks_To_DB
+\emph default
+ method.
+\end_layout
+
+\begin_layout Subsection
+Database credentials
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Set_Credentials
+\emph default
+ function is responsible for setting the credentials necessary to connect
+ to the database.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Connect_To_DB.Set_Credentials
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Host     => "localhost",
+\end_layout
+
+\begin_layout Plain Layout
+
+   Database => "some_database",
+\end_layout
+
+\begin_layout Plain Layout
+
+   User     => "username",
+\end_layout
+
+\begin_layout Plain Layout
+
+   Password => "secret");
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This call return a 
+\emph on
+Credentials
+\emph default
+ type which is then used when instantiating the Yolk.Connect_To_DB.PostgreSQL
+ generic.
+\end_layout
+
+\begin_layout Section
+Yolk.Connect_To_DB.PostgreSQL
+\end_layout
+
+\begin_layout Standard
+Bla.....
+\end_layout
+
+\begin_layout Subsection
+The generic formal parameters
+\end_layout
+
+\begin_layout Standard
+When you're actually going to connect to your PostgreSQL database(s), this
+ is the package you want.
+ It's a generic with two formal parameters:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+generic
+\end_layout
+
+\begin_layout Plain Layout
+
+   DB_Credentials : Credentials;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Task_To_DB_Mapping_Method : Connection_Mapping_Method;    
+\end_layout
+
+\begin_layout Plain Layout
+
+package Yolk.Connect_To_DB.PostgreSQL is
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instantiation is pretty straightforward:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package My_DB is new Connect_To_DB.PostgreSQL      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (DB_Credentials            => Connect_To_DB.Set_Credentials         
+\end_layout
+
+\begin_layout Plain Layout
+
+     (Host     => My.Config.Get (My.DB_Host),          
+\end_layout
+
+\begin_layout Plain Layout
+
+      Database => My.Config.Get (My.DB_Name),          
+\end_layout
+
+\begin_layout Plain Layout
+
+      User     => My.Config.Get (My.DB_User),          
+\end_layout
+
+\begin_layout Plain Layout
+
+      Password => My.Config.Get (My.DB_Password)), 
+\end_layout
+
+\begin_layout Plain Layout
+
+   Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case we've used the 
+\emph on
+AWS_Tasks_To_DB
+\emph default
+ mapping method, so each AWS thread will be mapped to a specific database
+ connection.
 \end_layout
 
 \end_body
