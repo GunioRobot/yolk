@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                      Yolk.Connect_To_DB_PostgreSQL                        --
+--                      Yolk.Connect_To_DB.PostgreSQL                        --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --

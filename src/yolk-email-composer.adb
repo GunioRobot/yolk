@@ -27,6 +27,8 @@ with Yolk.Utilities;
 
 package body Yolk.Email.Composer is
 
+   use Yolk.Utilities;
+
    -------------------------
    --  Add_Custom_Header  --
    -------------------------
@@ -37,8 +39,6 @@ package body Yolk.Email.Composer is
       Value   : in     String;
       Charset : in     Character_Set := US_ASCII)
    is
-
-      use Yolk.Utilities;
 
       New_Header : Header_Data;
 
@@ -61,8 +61,6 @@ package body Yolk.Email.Composer is
       Path_To_File  : in     String;
       Charset       : in     Character_Set := US_ASCII)
    is
-
-      use Yolk.Utilities;
 
       New_Attachment : Attachment_Data;
 
@@ -87,8 +85,6 @@ package body Yolk.Email.Composer is
       Charset   : in     Character_Set := US_ASCII)
    is
 
-      use Yolk.Utilities;
-
       New_From : Email_Data;
 
    begin
@@ -111,8 +107,6 @@ package body Yolk.Email.Composer is
       Kind     : in     Recipient_Kind := To;
       Charset  : in     Character_Set := US_ASCII)
    is
-
-      use Yolk.Utilities;
 
       New_Recipient : Email_Data;
 
@@ -144,8 +138,6 @@ package body Yolk.Email.Composer is
       Charset  : in     Character_Set := US_ASCII)
    is
 
-      use Yolk.Utilities;
-
       New_Reply_To : Email_Data;
 
    begin
@@ -166,8 +158,6 @@ package body Yolk.Email.Composer is
       Host  : in     String;
       Port  : in     Positive := 25)
    is
-
-      use Yolk.Utilities;
 
       New_SMTP : SMTP_Server;
 
@@ -200,8 +190,6 @@ package body Yolk.Email.Composer is
    procedure Send
      (ES : in out Structure)
    is
-
-      use Utilities;
 
       US : Unbounded_String;
 
@@ -427,9 +415,6 @@ package body Yolk.Email.Composer is
       Name       : in     String := "";
       Charset    : in     Character_Set := US_ASCII)
    is
-
-      use Yolk.Utilities;
-
    begin
 
       ES.Sender.Address := TUS (Address);
@@ -447,9 +432,6 @@ package body Yolk.Email.Composer is
       Subject   : in     String;
       Charset   : in     Character_Set := US_ASCII)
    is
-
-      use Yolk.Utilities;
-
    begin
 
       ES.Subject.Content := TUS (Subject);

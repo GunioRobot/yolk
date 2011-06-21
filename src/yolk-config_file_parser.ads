@@ -116,8 +116,4 @@ package Yolk.Config_File_Parser is
    --    Cannot_Open_Ini_File
    --    Unknown_Key
 
-private
-
-   Values : Defaults_Array_Type := Defaults;
-
 end Yolk.Config_File_Parser;

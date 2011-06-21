@@ -21,12 +21,31 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Calendar;
+with Ada.Containers.Ordered_Sets;
 with Ada.Directories;
+with Ada.Strings.Unbounded;
 with AWS.Server.Log;
 with Yolk.Rotating_Log;
 with Yolk.Utilities;
 
 package body Yolk.Log_File_Cleanup is
+
+   use Ada.Strings.Unbounded;
+
+   type File_Info is
+      record
+         File_Name   : Unbounded_String;
+         Mod_Time    : Ada.Calendar.Time;
+      end record;
+
+   function "<"
+     (Left, Right : in File_Info)
+      return Boolean;
+   --  Used by the Ordered_File_Set package to order the File_Info elements.
+
+   package Ordered_File_Set is new Ada.Containers.Ordered_Sets (File_Info);
+   --  A new ordered set package instantiated with File_Info as Element_Type.
 
    ---------
    --  <  --

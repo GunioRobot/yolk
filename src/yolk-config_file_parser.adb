@@ -28,6 +28,8 @@ with Ada.Text_IO;
 
 package body Yolk.Config_File_Parser is
 
+   Values : Defaults_Array_Type := Defaults;
+
    -----------
    --  Get  --
    -----------

@@ -21,6 +21,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+--  Change the owner of the application.
+
 package Yolk.Process_Owner is
 
    Username_Does_Not_Exist : exception;
