@@ -4,9 +4,7 @@ Contents of this README:
 
     1. Introduction
     2. Dependencies
-    3. Using Yolk
-    4. What is in extras/
-    5. References
+    3. References
 
 -------------------
 --  Introduction --
@@ -164,32 +162,6 @@ My ADA_PROJECT_PATH environment variable hence contains this:
 
 If your distribution provides pre-made packages for all of this, you should
 probably use those instead.
-
-------------------
---  Using Yolk  --
-------------------
-
-Read the documentation and the source comments for examples on how to make use
-of Yolk to build solid Ada powered web-applications. It is also highly recommended
-to download the Yolk demo application to get a feel for how Yolk is intended to
-be used. You can get the Yolk demo here:
-
-    $ git clone git://URL
-
---------------------------
---  What is in extras/  --
---------------------------
-
-A Yolk application will almost certainly depend on some of the files found in 
-extras/. Here you'll find an rc script to start/stop your Yolk application,
-you'll find an example set of SSL files for running a HTTPS server in the 
-certificates/ directory, there's a full set of configuration related files in
-the configuration/ directory, the template file used by the AWS status page is
-in the status/ directory, and various system templates are found the templates/
-directory.
-
-If a Yolk packages needs one or more of these files to function properly, it will
-say so in the documentation for the package.
 
 ------------------
 --  References  --
