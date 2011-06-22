@@ -6,8 +6,10 @@ library/*
 
 # demo/
 # Do not track demo build objects.
-demo/build/*
-!demo/build/.gitignore
+demo/build_debug/*
+demo/build_production/*
+!demo/build_debug/.gitignore
+!demo/build_production/.gitignore
 
 # Do not track pid files and the yolk executable in exe/
 demo/exe/yolk_demo

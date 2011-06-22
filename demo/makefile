@@ -22,5 +22,9 @@
 all:
 	gnatmake -P yolk_demo
 
+debug:
+	BUILDTYPE=Debug gnatmake -P yolk_demo
+
 clean:
 	gnatclean -P yolk_demo
+	BUILDTYPE=Debug gnatclean -P yolk_demo

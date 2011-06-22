@@ -25,6 +25,9 @@ with "yolk";
 
 project Yolk_Demo is
 
+   type Build_Type is ("Debug", "Production");
+   Build : Build_Type := External ("BUILDTYPE", "Production");
+
    Source_Options := ("src");
    for Source_Dirs use Source_Options;
 
@@ -32,7 +35,14 @@ project Yolk_Demo is
 
    for Exec_Dir use "exe";
 
-   for Object_Dir use "build";
+   case Build is
+   
+      when "Production" =>
+         for Object_Dir use "build_production";
+      when "Debug" =>
+         for Object_Dir use "build_debug";
+   
+   end case;
 
    package Ide is
 
@@ -42,23 +52,31 @@ project Yolk_Demo is
    end Ide;
 
    package Compiler is
-
-      Common_Options := ("-gnatwa",
-                         "-gnaty3abcdefhiklmnoprstux",
-                         "-Wall",
-                         "-O2",
-                         "-gnat05");
-
-      Valgrind_Options := ("-gnatwa",
-                           "-gnaty3abcdefhiklmnoprstux",
-                           "-Wall",
-                           "-O1",
-                           "-gnat05",
-                           "-g");
-      --  Use this option to check if your application is leaking memory.
-      --    $ valgrind -v --leak-check=full --track-origins=yes yolk_demo
-
-      for Default_Switches ("Ada") use Common_Options;
+      
+      case Build is
+      
+         when "Production" =>
+            for Default_Switches ("Ada") 
+              use ("-gnatwa",
+                   "-gnaty3abcdefhiklmnoprstux",
+                   "-Wall",
+                   "-O2",
+                   "-gnat05");
+         when "Debug" =>
+            for Default_Switches ("Ada") 
+              use ("-gnatwa",
+                   "-gnaty3abcdefhiklmnoprstux",
+                   "-gnata",
+                   "-gnatVa",
+                   "-Wall",
+                   "-O1",
+                   "-gnat05",
+                   "-g");
+            --  Use this option to check if your application is leaking memory.
+            --  Obviously only works if you have valgrind installed.
+            --  $ valgrind -v --leak-check=full --track-origins=yes yolk_demo
+                        
+      end case;
 
    end Compiler;
 
