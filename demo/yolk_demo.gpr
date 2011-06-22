@@ -65,16 +65,13 @@ project Yolk_Demo is
          when "Debug" =>
             for Default_Switches ("Ada") 
               use ("-gnatwa",
-                   "-gnaty3abcdefhiklmnoprstux",
                    "-gnata",
                    "-gnatVa",
+                   "-gnaty3abcdefhiklmnoprstux",
                    "-Wall",
                    "-O1",
                    "-gnat05",
                    "-g");
-            --  Use this option to check if your application is leaking memory.
-            --  Obviously only works if you have valgrind installed.
-            --  $ valgrind -v --leak-check=full --track-origins=yes yolk_demo
                         
       end case;
 

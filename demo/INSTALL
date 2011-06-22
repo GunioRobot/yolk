@@ -8,3 +8,17 @@ Building the Yolk demo is as simple as:
 And that's all. You now have a fully functioning Yolk application in the exe/
 directory. Be sure to adjust the exe/configuration/* config files to match your
 setup.
+
+You can build a debug version of the demo with:
+
+    $ make debug
+
+If you have valgrind available on your system, you can try running this version
+with:
+
+    $ valgrind -v --leak-check=full \
+                  --show-possibly-lost=no \
+                  --track-origins=yes yolk_demo
+
+You'll get some leaks, but they are stable and does not grow over time, so don't
+worry about them.
