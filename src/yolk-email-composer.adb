@@ -21,11 +21,9 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Exceptions;
 with AWS.SMTP.Client;
 with GNATCOLL.Email.Utils;
 with Yolk.Utilities;
-with Yolk.Rotating_Log;
 
 package body Yolk.Email.Composer is
 
@@ -193,9 +191,6 @@ package body Yolk.Email.Composer is
      (ES : in out Structure)
    is
 
-      use Ada.Exceptions;
-      use Yolk.Rotating_Log;
-
       US : Unbounded_String;
 
    begin
@@ -281,10 +276,8 @@ package body Yolk.Email.Composer is
                                      Status => Status);
 
             exception
-               when Event : others =>
+               when others =>
                   Server_Failure := True;
-                  Track (Handle     => Error,
-                         Log_String => Exception_Message (Event));
 
             end;
 
