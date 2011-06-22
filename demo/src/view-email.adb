@@ -118,8 +118,8 @@ package body View.Email is
                --  No recipient address, so obviously we cannot send the email.
 
                Populate_Form (T             => T,
-                           Recip_Name    => P_Recip_Name,
-                           Recip_Address => P_Recip_Address);
+                              Recip_Name    => P_Recip_Name,
+                              Recip_Address => P_Recip_Address);
             end if;
 
          end;
