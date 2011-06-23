@@ -22,6 +22,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Calendar;
+with Yolk.Utilities;
 
 package body View.Syndication is
 
@@ -36,12 +37,29 @@ package body View.Syndication is
 
       use AWS.Response;
       use AWS.Status;
+      use Yolk.Utilities;
+
+      Valid       : Boolean;
+      Atom_Elem   : Unbounded_String;
 
    begin
 
-      return Build_Response (Status_Data => Request,
-                             Content     => Get_XML_String (Feed),
-                             MIME_Type   => Text_XML);
+
+      if Atom_Cache.Is_Valid (Key => AFeed) then
+
+         return Build_Response
+           (Status_Data => Request,
+            Content     => "",
+            MIME_Type   => Text_XML);
+      else
+         Atom_Cache.Write (Key   => AFeed,
+                           Value => TUS (Get_XML_String (Feed)));
+
+         return Build_Response
+           (Status_Data => Request,
+            Content     => "",
+            MIME_Type   => Text_XML);
+      end if;
 
    exception
 

@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               View.Syndication                                  --
+--                         Yolk.Cache.Discrete_Keys                          --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,37 +21,43 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  The syndication resource.
+--  A simple and fairly dumb cache. Elements are accessed using the Key_Type
+--  keys. No checking is done whether a returned element is valid. You have to
+--  check for this manually.
+--  A typical usage flow could be:
+--
+--    if Is_Valid (Key) then
+--       Get_Element (Key)
+--    else
+--       Value := Something;
+--       Set_Element (Key, Value);
+--    end if;
+--
+--  Get_Element will _always_ return whatever is saved at Key position, even if
+--  the element is older that Max_Element_Age. Only by using Is_Valid can
 
-with Ada.Strings.Unbounded;
-with AWS.Response;
-with AWS.Status;
-with Yolk.Cache.Discrete_Keys;
-with Yolk.Syndication.Writer;
+generic
 
-package View.Syndication is
+   type Key_Type is (<>);
+   type Element_Type is private;
+   Max_Element_Age : Duration := 3600.0;
 
-   use Ada.Strings.Unbounded;
-   use Yolk.Syndication.Writer;
+package Yolk.Cache.Discrete_Keys is
 
-   Feed : Atom_Feed := New_Atom_Feed (Base_URI    => "base",
-                                      Language    => "lang",
-                                      Max_Age     => 10.0,
-                                      Min_Entries => 5,
-                                      Max_Entries => 8);
-   --  Declare a new Atom_Feed object.
+   procedure Invalidate
+     (Key : in Key_Type);
 
-   type Cache_Keys is (AFeed);
+   function Is_Valid
+     (Key : in Key_Type)
+      return Boolean;
 
-   package Atom_Cache is new Yolk.Cache.Discrete_Keys
-     (Key_Type        => Cache_Keys,
-      Element_Type    => Unbounded_String);
-   --  Since it's very expensive to construct the Atom XML, we cache it, so we
-   --  rebuild it if the cached version is older than one hour.
+   procedure Read
+     (Key   : in  Key_Type;
+      Valid : out Boolean;
+      Value : out Element_Type);
 
-   function Generate
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data;
-   --  Generate the content for the /syndication resource.
+   procedure Write
+     (Key   : in Key_Type;
+      Value : in Element_Type);
 
-end View.Syndication;
+end Yolk.Cache.Discrete_Keys;
