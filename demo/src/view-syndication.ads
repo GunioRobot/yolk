@@ -23,15 +23,12 @@
 
 --  The syndication resource.
 
-with Ada.Strings.Unbounded;
 with AWS.Response;
 with AWS.Status;
-with Yolk.Cache.Discrete_Keys;
 with Yolk.Syndication.Writer;
 
 package View.Syndication is
 
-   use Ada.Strings.Unbounded;
    use Yolk.Syndication.Writer;
 
    Feed : Atom_Feed := New_Atom_Feed (Base_URI    => "base",
@@ -40,14 +37,6 @@ package View.Syndication is
                                       Min_Entries => 5,
                                       Max_Entries => 8);
    --  Declare a new Atom_Feed object.
-
-   type Cache_Keys is (AFeed);
-
-   package Atom_Cache is new Yolk.Cache.Discrete_Keys
-     (Key_Type        => Cache_Keys,
-      Element_Type    => Unbounded_String);
-   --  Since it's very expensive to construct the Atom XML, we cache it, so we
-   --  rebuild it if the cached version is older than one hour.
 
    function Generate
      (Request : in AWS.Status.Data)

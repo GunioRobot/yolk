@@ -39,27 +39,17 @@ package body View.Syndication is
       use AWS.Status;
       use Yolk.Utilities;
 
-      Valid       : Boolean;
-      Atom_Elem   : Unbounded_String;
-
    begin
 
-
-      if Atom_Cache.Is_Valid (Key => AFeed) then
-
-         return Build_Response
-           (Status_Data => Request,
-            Content     => "",
-            MIME_Type   => Text_XML);
-      else
-         Atom_Cache.Write (Key   => AFeed,
+      if not View_Cache.Is_Valid (Key => Feed_Data) then
+         View_Cache.Write (Key   => Feed_Data,
                            Value => TUS (Get_XML_String (Feed)));
-
-         return Build_Response
-           (Status_Data => Request,
-            Content     => "",
-            MIME_Type   => Text_XML);
       end if;
+
+      return Build_Response
+        (Status_Data => Request,
+         Content     => TS (View_Cache.Read (Key => Feed_Data)),
+         MIME_Type   => Text_XML);
 
    exception
 

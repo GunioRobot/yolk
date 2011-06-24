@@ -22,6 +22,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Calendar;
+with Yolk.Utilities;
 
 package body View.Index is
 
@@ -36,20 +37,29 @@ package body View.Index is
 
       use Ada.Calendar;
       use AWS.Templates;
+      use Yolk.Utilities;
 
       T     : Translate_Set;
-      Now   : constant Time := Clock;
+      Now   : Time;
 
    begin
 
-      Insert (T, Assoc ("YOLK_VERSION", Version));
-      Insert (Set  => T,
-              Item => Assoc ("COPYRIGHT_YEAR", Year (Now)));
+      if not View_Cache2.Is_Valid (Key => "index") then
+         Now := Clock;
+         Insert (T, Assoc ("YOLK_VERSION", Version));
+         Insert (Set  => T,
+                 Item => Assoc ("COPYRIGHT_YEAR", Year (Now)));
+         View_Cache2.Write
+           (Key   => "index",
+            Value => TUS (Parse
+              (Filename     => My.Config.Get (My.Template_Index),
+               Translations => T,
+               Cached       => True)));
+      end if;
 
       return Build_Response
-        (Status_Data   => Request,
-         Template_File => My.Config.Get (My.Template_Index),
-         Translations  => T);
+        (Status_Data => Request,
+         Content     => TS (View_Cache2.Read (Key => "index")));
 
    end Generate;
 

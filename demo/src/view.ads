@@ -24,15 +24,19 @@
 --  The main view file. Resources shared between view.* packages are declared
 --  here.
 
+with Ada.Strings.Unbounded;
 with AWS.MIME;
 with AWS.Status;
 with AWS.Response;
 with AWS.Templates;
 with My_Configuration;
+with Yolk.Cache.Discrete_Keys;
+with Yolk.Cache.String_Keys;
 with Yolk.Connect_To_DB.PostgreSQL;
 
 package View is
 
+   use Ada.Strings.Unbounded;
    use AWS.MIME;
    use Yolk;
 
@@ -48,6 +52,15 @@ package View is
       Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
    --  Note the Tast_To_DB_Mapping_Method. One connection is maintained to the
    --  database per AWS thread.
+
+   type Cache_Keys is (Feed_Data, Index_Data);
+   package View_Cache is new Yolk.Cache.Discrete_Keys
+     (Key_Type        => Cache_Keys,
+      Element_Type    => Unbounded_String);
+
+   package View_Cache2 is new Yolk.Cache.String_Keys
+     (Element_Type    => Unbounded_String);
+   --  Some pages are expensive to build, so we can cache them.
 
    function Build_Response
      (Status_Data    : in AWS.Status.Data;

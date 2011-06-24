@@ -46,10 +46,14 @@ package body Yolk.Cache.Discrete_Keys is
         (Key : in Key_Type)
          return Boolean;
 
+      function Read
+        (Key : in Key_Type)
+         return Element_Type;
+
       procedure Read
-        (Key   : in  Key_Type;
-         Valid : out Boolean;
-         Value : out Element_Type);
+        (Key      : in  Key_Type;
+         Is_Valid : out Boolean;
+         Value    : out Element_Type);
 
       procedure Write
         (Key   : in Key_Type;
@@ -102,17 +106,31 @@ package body Yolk.Cache.Discrete_Keys is
       --  Read  --
       ------------
 
+      function Read
+        (Key : in Key_Type)
+         return Element_Type
+      is
+      begin
+
+         return Element_List (Key).Element;
+
+      end Read;
+
+      ------------
+      --  Read  --
+      ------------
+
       procedure Read
-        (Key   : in  Key_Type;
-         Valid : out Boolean;
-         Value : out Element_Type)
+        (Key      : in  Key_Type;
+         Is_Valid : out Boolean;
+         Value    : out Element_Type)
       is
 
          use Ada.Calendar;
 
       begin
 
-         Valid := Element_List (Key).Has_Element;
+         Is_Valid := Element_List (Key).Has_Element;
          Value := Element_List (Key).Element;
 
       end Read;
@@ -166,16 +184,30 @@ package body Yolk.Cache.Discrete_Keys is
    --  Read  --
    ------------
 
-   procedure Read
-     (Key   : in  Key_Type;
-      Valid : out Boolean;
-      Value : out Element_Type)
+   function Read
+     (Key : in Key_Type)
+      return Element_Type
    is
    begin
 
-      P_Element_List.Read (Key   => Key,
-                           Valid => Valid,
-                           Value => Value);
+      return P_Element_List.Read (Key => Key);
+
+   end Read;
+
+   ------------
+   --  Read  --
+   ------------
+
+   procedure Read
+     (Key      : in  Key_Type;
+      Is_Valid : out Boolean;
+      Value    : out Element_Type)
+   is
+   begin
+
+      P_Element_List.Read (Key      => Key,
+                           Is_Valid => Is_Valid,
+                           Value    => Value);
 
    end Read;
 
