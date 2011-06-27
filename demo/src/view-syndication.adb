@@ -55,8 +55,7 @@ package body View.Syndication is
 
       when Not_Valid_XML =>
          return Build_Response (Status_Data => Request,
-                                Content     => "<p>XML not valid.</p>",
-                                MIME_Type   => Text_HTML);
+                                Content     => "<p>XML not valid.</p>");
 
    end Generate;
 
