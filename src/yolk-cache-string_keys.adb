@@ -60,6 +60,10 @@ package body Yolk.Cache.String_Keys is
 
    protected P_Element_List is
 
+      procedure Cleanup;
+
+      procedure Clear;
+
       procedure Invalidate
         (Key : in String);
 
@@ -72,9 +76,9 @@ package body Yolk.Cache.String_Keys is
          return Element_Type;
 
       procedure Read
-        (Key      : in  String;
-         Is_Valid : out Boolean;
-         Value    : out Element_Type);
+        (Key   : in  String;
+         Valid : out Boolean;
+         Value : out Element_Type);
 
       procedure Write
         (Key   : in String;
@@ -82,7 +86,9 @@ package body Yolk.Cache.String_Keys is
 
    private
 
-      Element_List : Element_Map.Map;
+      Element_List   : Element_Map.Map;
+      Virgin         : Boolean := True;
+      Write_Hits     : Natural := 0;
 
    end P_Element_List;
 
@@ -91,6 +97,33 @@ package body Yolk.Cache.String_Keys is
    ----------------------
 
    protected body P_Element_List is
+
+      ---------------
+      --  Cleanup  --
+      ---------------
+
+      procedure Cleanup
+      is
+
+         --  Cursor : Element_Map.Cursor := Element_List.First;
+
+      begin
+
+         null;
+
+      end Cleanup;
+
+      -------------
+      --  Clear  --
+      -------------
+
+      procedure Clear
+      is
+      begin
+
+         Element_List.Clear;
+
+      end Clear;
 
       ------------------
       --  Invalidate  --
@@ -154,9 +187,9 @@ package body Yolk.Cache.String_Keys is
       ------------
 
       procedure Read
-        (Key      : in  String;
-         Is_Valid : out Boolean;
-         Value    : out Element_Type)
+        (Key   : in  String;
+         Valid : out Boolean;
+         Value : out Element_Type)
       is
 
          use Ada.Calendar;
@@ -164,8 +197,8 @@ package body Yolk.Cache.String_Keys is
 
       begin
 
-         Is_Valid := Element_List.Contains (Key => TUS (Key));
-         if Is_Valid then
+         Valid := Is_Valid (Key => Key);
+         if Valid then
             Value := Element_List.Element (Key => TUS (Key)).Element;
          else
             Value := Null_Container.Element;
@@ -186,6 +219,20 @@ package body Yolk.Cache.String_Keys is
 
       begin
 
+         Write_Hits := Write_Hits + 1;
+
+         if Virgin then
+            Element_List.Reserve_Capacity
+              (Capacity => Count_Type (Reserved_Capacity));
+            Virgin := False;
+         end if;
+
+         if Cleanup_On_Write and Write_Hits >= Cleanup_Interval then
+            Write_Hits := 0;
+
+            Cleanup;
+         end if;
+
          Element_List.Include
            (Key      => TUS (Key),
             New_Item => (Added_Timestamp => Ada.Calendar.Clock,
@@ -194,6 +241,18 @@ package body Yolk.Cache.String_Keys is
       end Write;
 
    end P_Element_List;
+
+   -------------
+   --  Clear  --
+   -------------
+
+   procedure Clear
+   is
+   begin
+
+      P_Element_List.Clear;
+
+   end Clear;
 
    -----------------------
    --  Equivalent_Keys  --
@@ -276,9 +335,9 @@ package body Yolk.Cache.String_Keys is
    is
    begin
 
-      P_Element_List.Read (Key      => Key,
-                           Is_Valid => Is_Valid,
-                           Value    => Value);
+      P_Element_List.Read (Key   => Key,
+                           Valid => Is_Valid,
+                           Value => Value);
 
    end Read;
 

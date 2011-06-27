@@ -34,10 +34,13 @@ generic
    type Key_Type is (<>);
    type Element_Type is private;
    Max_Element_Age : Duration := 3600.0;
-   --  Elements that are older than Max_Element_Age is still returned when
+   --  Elements that are older than Max_Element_Age are still returned when
    --  using the Read function/procedure, but they are not considered valid.
 
 package Yolk.Cache.Discrete_Keys is
+
+   procedure Clear;
+   --  Invalidate entire cache. Clear it out.
 
    procedure Invalidate
      (Key : in Key_Type);
@@ -76,6 +79,8 @@ package Yolk.Cache.Discrete_Keys is
    --  small margin, and only noticeable at high concurrency levels.
    --  If in doubt, use this version of Read, and only consider switching to
    --  the Read function if performance is a problem.
+   --
+   --
    --
    --  WARNING!
    --    Value will contain undefined garbage if Is_Valid is False.

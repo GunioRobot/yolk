@@ -37,11 +37,30 @@
 generic
 
    type Element_Type is private;
+   Cleanup_Interval : Positive := 100;
+   --  Call the Cleanup procedure on every Cleanup_Interval call to Write, ie.
+   --  if Cleanup_Interval is 100, then for every 100 calls to Write, Cleanup
+   --  is called once.
+   --  This only happens if Cleanup_On_Write is True. Else you'll have to do
+   --  this manually.
+   Cleanup_On_Write : Boolean := True;
+   --  Call the Cleanup procedure when Write is called, according to the
+   --  Cleanup_Interval value.
    Max_Element_Age : Duration := 3600.0;
-   --  Elements that are older than Max_Element_Age is still returned when
+   --  Elements that are older than Max_Element_Age are still returned when
    --  using the Read function/procedure, but they are not considered valid.
+   Reserved_Capacity : Positive := 100;
+   --  Set this as close as possible to the expected final size of the cache.
+   --  Setting it too low will result in a performance-loss whenever the
+   --  hashed map has to be resized because new key/value pairs are added.
+   --  Setting it too high will result in wasted resources.
+   --  This setting has NO bearing on the actual size of the cache. The cache
+   --  will happily grow beyond the Reserved_Capacity.
 
 package Yolk.Cache.String_Keys is
+
+   procedure Clear;
+   --  Invalidate entire cache. Clear it out.
 
    procedure Invalidate
      (Key : in String);

@@ -39,6 +39,8 @@ package body Yolk.Cache.Discrete_Keys is
 
    protected P_Element_List is
 
+      procedure Clear;
+
       procedure Invalidate
         (Key : in Key_Type);
 
@@ -51,9 +53,9 @@ package body Yolk.Cache.Discrete_Keys is
          return Element_Type;
 
       procedure Read
-        (Key      : in  Key_Type;
-         Is_Valid : out Boolean;
-         Value    : out Element_Type);
+        (Key   : in  Key_Type;
+         Valid : out Boolean;
+         Value : out Element_Type);
 
       procedure Write
         (Key   : in Key_Type;
@@ -61,7 +63,7 @@ package body Yolk.Cache.Discrete_Keys is
 
    private
 
-      Element_List : Element_Array_Type := (others => Null_Container);
+      Element_List   : Element_Array_Type := (others => Null_Container);
 
    end P_Element_List;
 
@@ -70,6 +72,18 @@ package body Yolk.Cache.Discrete_Keys is
    ----------------------
 
    protected body P_Element_List is
+
+      -------------
+      --  Clear  --
+      -------------
+
+      procedure Clear
+      is
+      begin
+
+         Element_List := (others => Null_Container);
+
+      end Clear;
 
       ------------------
       --  Invalidate  --
@@ -121,16 +135,16 @@ package body Yolk.Cache.Discrete_Keys is
       ------------
 
       procedure Read
-        (Key      : in  Key_Type;
-         Is_Valid : out Boolean;
-         Value    : out Element_Type)
+        (Key   : in  Key_Type;
+         Valid : out Boolean;
+         Value : out Element_Type)
       is
 
          use Ada.Calendar;
 
       begin
 
-         Is_Valid := Element_List (Key).Has_Element;
+         Valid := Is_Valid (Key => Key);
          Value := Element_List (Key).Element;
 
       end Read;
@@ -152,6 +166,18 @@ package body Yolk.Cache.Discrete_Keys is
       end Write;
 
    end P_Element_List;
+
+   -------------
+   --  Clear  --
+   -------------
+
+   procedure Clear
+   is
+   begin
+
+      P_Element_List.Clear;
+
+   end Clear;
 
    ------------------
    --  Invalidate  --
@@ -205,9 +231,9 @@ package body Yolk.Cache.Discrete_Keys is
    is
    begin
 
-      P_Element_List.Read (Key      => Key,
-                           Is_Valid => Is_Valid,
-                           Value    => Value);
+      P_Element_List.Read (Key   => Key,
+                           Valid => Is_Valid,
+                           Value => Value);
 
    end Read;
 
