@@ -41,16 +41,12 @@ package body Yolk.Cache.Discrete_Keys is
 
       procedure Clear;
 
-      procedure Invalidate
+      procedure Clear
         (Key : in Key_Type);
 
       function Is_Valid
         (Key : in Key_Type)
          return Boolean;
-
-      function Read
-        (Key : in Key_Type)
-         return Element_Type;
 
       procedure Read
         (Key   : in  Key_Type;
@@ -85,18 +81,18 @@ package body Yolk.Cache.Discrete_Keys is
 
       end Clear;
 
-      ------------------
-      --  Invalidate  --
-      ------------------
+      -------------
+      --  Clear  --
+      -------------
 
-      procedure Invalidate
+      procedure Clear
         (Key : in Key_Type)
       is
       begin
 
          Element_List (Key) := Null_Container;
 
-      end Invalidate;
+      end Clear;
 
       ----------------
       --  Is_Valid  -   -
@@ -115,20 +111,6 @@ package body Yolk.Cache.Discrete_Keys is
            (Clock - Element_List (Key).Added_Timestamp < Max_Element_Age);
 
       end Is_Valid;
-
-      ------------
-      --  Read  --
-      ------------
-
-      function Read
-        (Key : in Key_Type)
-         return Element_Type
-      is
-      begin
-
-         return Element_List (Key).Element;
-
-      end Read;
 
       ------------
       --  Read  --
@@ -179,18 +161,18 @@ package body Yolk.Cache.Discrete_Keys is
 
    end Clear;
 
-   ------------------
-   --  Invalidate  --
-   ------------------
+   -------------
+   --  Clear  --
+   -------------
 
-   procedure Invalidate
+   procedure Clear
      (Key : in Key_Type)
    is
    begin
 
-      P_Element_List.Invalidate (Key => Key);
+      P_Element_List.Clear (Key => Key);
 
-   end Invalidate;
+   end Clear;
 
    ----------------
    --  Is_Valid  --
@@ -205,20 +187,6 @@ package body Yolk.Cache.Discrete_Keys is
       return P_Element_List.Is_Valid (Key => Key);
 
    end Is_Valid;
-
-   ------------
-   --  Read  --
-   ------------
-
-   function Read
-     (Key : in Key_Type)
-      return Element_Type
-   is
-   begin
-
-      return P_Element_List.Read (Key => Key);
-
-   end Read;
 
    ------------
    --  Read  --

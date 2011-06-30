@@ -39,16 +39,25 @@ package body View.Syndication is
       use AWS.Status;
       use Yolk.Utilities;
 
+      Valid : Boolean := False;
+      Value : Unbounded_String;
+
    begin
 
-      if not View_Cache.Is_Valid (Key => Feed_Data) then
-         View_Cache.Write (Key   => Feed_Data,
-                           Value => TUS (Get_XML_String (Feed)));
+      Cache1.Read (Key      => Feed_Data,
+                   Is_Valid => Valid,
+                   Value    => Value);
+
+      if not Valid then
+         Value := TUS (Get_XML_String (Feed));
+
+         Cache1.Write (Key   => Feed_Data,
+                       Value => Value);
       end if;
 
       return Build_Response
         (Status_Data => Request,
-         Content     => TS (View_Cache.Read (Key => Feed_Data)),
+         Content     => TS (Value),
          MIME_Type   => Text_XML);
 
    exception
@@ -129,7 +138,7 @@ begin
 
       An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "entry/base/",
                                                Language => "entry lang");
-      Success : Boolean;
+      Success  : Boolean;
 
    begin
 

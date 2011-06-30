@@ -53,14 +53,15 @@ package View is
    --  Note the Tast_To_DB_Mapping_Method. One connection is maintained to the
    --  database per AWS thread.
 
-   type Cache_Keys is (Feed_Data, Index_Data);
-   package View_Cache is new Yolk.Cache.Discrete_Keys
+   type Cache_Keys is (Feed_Data);
+   package Cache1 is new Yolk.Cache.Discrete_Keys
      (Key_Type        => Cache_Keys,
       Element_Type    => Unbounded_String);
 
-   package View_Cache2 is new Yolk.Cache.String_Keys
-     (Element_Type    => Unbounded_String);
-   --  Some pages are expensive to build, so we can cache them.
+   package Cache2 is new Yolk.Cache.String_Keys
+     (Element_Type      => Unbounded_String);
+   --  Some pages are expensive to build, so we cache them. Here we test both
+   --  the Discrete_Keys and the String_Keys caches.
 
    function Build_Response
      (Status_Data    : in AWS.Status.Data;

@@ -64,16 +64,12 @@ package body Yolk.Cache.String_Keys is
 
       procedure Clear;
 
-      procedure Invalidate
+      procedure Clear
         (Key : in String);
 
       function Is_Valid
         (Key : in String)
          return Boolean;
-
-      function Read
-        (Key : in String)
-         return Element_Type;
 
       procedure Read
         (Key   : in  String;
@@ -88,7 +84,6 @@ package body Yolk.Cache.String_Keys is
 
       Element_List   : Element_Map.Map;
       Virgin         : Boolean := True;
-      Write_Hits     : Natural := 0;
 
    end P_Element_List;
 
@@ -105,11 +100,25 @@ package body Yolk.Cache.String_Keys is
       procedure Cleanup
       is
 
-         --  Cursor : Element_Map.Cursor := Element_List.First;
+         use Ada.Calendar;
+         use Element_Map;
+
+         Cursor   : Element_Map.Cursor := Element_List.First;
+         Now      : constant Time := Clock;
 
       begin
 
-         null;
+         while Has_Element (Cursor) loop
+            if (Now - Element (Cursor).Added_Timestamp) >= Max_Element_Age then
+               Element_List.Delete (Position => Cursor);
+            end if;
+            Next (Cursor);
+         end loop;
+
+         while Integer (Element_List.Length) >= Cleanup_Size loop
+            Cursor := Element_List.First;
+            Element_List.Delete (Position => Cursor);
+         end loop;
 
       end Cleanup;
 
@@ -125,11 +134,11 @@ package body Yolk.Cache.String_Keys is
 
       end Clear;
 
-      ------------------
-      --  Invalidate  --
-      ------------------
+      -------------
+      --  Clear  --
+      -------------
 
-      procedure Invalidate
+      procedure Clear
         (Key : in String)
       is
 
@@ -139,7 +148,7 @@ package body Yolk.Cache.String_Keys is
 
          Element_List.Exclude (Key => TUS (Key));
 
-      end Invalidate;
+      end Clear;
 
       ----------------
       --  Is_Valid  -   -
@@ -160,27 +169,6 @@ package body Yolk.Cache.String_Keys is
               Max_Element_Age);
 
       end Is_Valid;
-
-      ------------
-      --  Read  --
-      ------------
-
-      function Read
-        (Key : in String)
-         return Element_Type
-      is
-
-         use Yolk.Utilities;
-
-      begin
-
-         if Element_List.Contains (Key => TUS (Key)) then
-            return Element_List.Element (Key => TUS (Key)).Element;
-         else
-            return Null_Container.Element;
-         end if;
-
-      end Read;
 
       ------------
       --  Read  --
@@ -219,17 +207,15 @@ package body Yolk.Cache.String_Keys is
 
       begin
 
-         Write_Hits := Write_Hits + 1;
-
          if Virgin then
             Element_List.Reserve_Capacity
               (Capacity => Count_Type (Reserved_Capacity));
             Virgin := False;
          end if;
 
-         if Cleanup_On_Write and Write_Hits >= Cleanup_Interval then
-            Write_Hits := 0;
-
+         if Cleanup_On_Write and
+           Integer (Element_List.Length) >= Cleanup_Size
+         then
             Cleanup;
          end if;
 
@@ -242,6 +228,18 @@ package body Yolk.Cache.String_Keys is
 
    end P_Element_List;
 
+   ---------------
+   --  Cleanup  --
+   ---------------
+
+   procedure Cleanup
+   is
+   begin
+
+      P_Element_List.Cleanup;
+
+   end Cleanup;
+
    -------------
    --  Clear  --
    -------------
@@ -251,6 +249,19 @@ package body Yolk.Cache.String_Keys is
    begin
 
       P_Element_List.Clear;
+
+   end Clear;
+
+   -------------
+   --  Clear  --
+   -------------
+
+   procedure Clear
+     (Key : in String)
+   is
+   begin
+
+      P_Element_List.Clear (Key => Key);
 
    end Clear;
 
@@ -268,19 +279,6 @@ package body Yolk.Cache.String_Keys is
       return Left = Right;
 
    end Equivalent_Keys;
-
-   ------------------
-   --  Invalidate  --
-   ------------------
-
-   procedure Invalidate
-     (Key : in String)
-   is
-   begin
-
-      P_Element_List.Invalidate (Key => Key);
-
-   end Invalidate;
 
    ----------------
    --  Is_Valid  --
@@ -309,20 +307,6 @@ package body Yolk.Cache.String_Keys is
       return Ada.Strings.Unbounded.Hash (Key => Key);
 
    end Key_Hash;
-
-   ------------
-   --  Read  --
-   ------------
-
-   function Read
-     (Key : in String)
-      return Element_Type
-   is
-   begin
-
-      return P_Element_List.Read (Key => Key);
-
-   end Read;
 
    ------------
    --  Read  --

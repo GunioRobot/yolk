@@ -41,25 +41,34 @@ package body View.Index is
 
       T     : Translate_Set;
       Now   : Time;
+      Valid : Boolean := False;
+      Value : Unbounded_String;
 
    begin
 
-      if not View_Cache2.Is_Valid (Key => "index") then
+      Cache2.Read (Key      => "index",
+                   Is_Valid => Valid,
+                   Value    => Value);
+
+      if not Valid then
          Now := Clock;
          Insert (T, Assoc ("YOLK_VERSION", Version));
          Insert (Set  => T,
                  Item => Assoc ("COPYRIGHT_YEAR", Year (Now)));
-         View_Cache2.Write
+
+         Value := TUS
+           (Parse (Filename     => My.Config.Get (My.Template_Index),
+                   Translations => T,
+                   Cached       => True));
+
+         Cache2.Write
            (Key   => "index",
-            Value => TUS (Parse
-              (Filename     => My.Config.Get (My.Template_Index),
-               Translations => T,
-               Cached       => True)));
+            Value => Value);
       end if;
 
       return Build_Response
         (Status_Data => Request,
-         Content     => TS (View_Cache2.Read (Key => "index")));
+         Content     => TS (Value));
 
    end Generate;
 
