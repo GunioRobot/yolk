@@ -71,6 +71,9 @@ package body Yolk.Cache.String_Keys is
         (Key : in String)
          return Boolean;
 
+      function Length
+        return Natural;
+
       procedure Read
         (Key   : in  String;
          Valid : out Boolean;
@@ -169,6 +172,19 @@ package body Yolk.Cache.String_Keys is
               Max_Element_Age);
 
       end Is_Valid;
+
+      --------------
+      --  Length  --
+      --------------
+
+      function Length
+        return Natural
+      is
+      begin
+
+         return Natural (Element_List.Length);
+
+      end Length;
 
       ------------
       --  Read  --
@@ -307,6 +323,19 @@ package body Yolk.Cache.String_Keys is
       return Ada.Strings.Unbounded.Hash (Key => Key);
 
    end Key_Hash;
+
+   --------------
+   --  Length  --
+   --------------
+
+   function Length
+     return Natural
+   is
+   begin
+
+      return P_Element_List.Length;
+
+   end Length;
 
    ------------
    --  Read  --

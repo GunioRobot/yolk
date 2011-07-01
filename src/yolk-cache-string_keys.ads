@@ -24,9 +24,9 @@
 --  A simple and fairly dumb cache.
 --  No checking is done whether a returned element is valid. You have to check
 --  for this manually.
---  In order for an element to be valid, it must have:
+--  In order for an element to be valid, it must:
 --
---    1. been added to the cache using the Write procedure
+--    1. have been added to the cache using the Write procedure
 --    2. be younger than Max_Element_Age
 --
 --  WARNING!
@@ -84,6 +84,11 @@ package Yolk.Cache.String_Keys is
       return Boolean;
    --  Return True if the element associated with Key is younger than
    --  Max_Element_Age.
+
+   function Length
+     return Natural;
+   --  Return the amount of elements currently in the cache. This counts both
+   --  valid and invalid elements.
 
    procedure Read
      (Key      : in  String;

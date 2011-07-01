@@ -24,9 +24,9 @@
 --  A simple and fairly dumb cache.
 --  No checking is done whether the fetched element is valid. You have to check
 --  for this manually.
---  In order for an element to be valid, it must have:
+--  In order for an element to be valid, it must:
 --
---    1. been added to the cache using the Write procedure
+--    1. have been added to the cache using the Write procedure
 --    2. be younger than Max_Element_Age
 
 generic
