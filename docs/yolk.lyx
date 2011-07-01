@@ -7,9 +7,9 @@
 \language english
 \inputencoding auto
 \font_roman default
-\font_sans default
+\font_sans helvet
 \font_typewriter default
-\font_default_family default
+\font_default_family sfdefault
 \font_sc false
 \font_osf false
 \font_sf_scale 100
@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised June 20th.
+Revised July 1st.
  2011
 \end_layout
 
@@ -175,8 +175,11 @@ The files Yolk depend upon
 When you read this document and the Yolk source code, you'll notice that
  quite a few packages depend on various files being available at specified
  locations.
- This is for example the case with the Yolk.Configuration package, that must
- have a 
+ This is for example the case with the 
+\emph on
+Yolk.Configuration
+\emph default
+ package, that must have a 
 \emph on
 config.ini
 \emph default
@@ -184,8 +187,11 @@ config.ini
 \emph on
 configuration/
 \emph default
- directory, or the Yolk.Whoops package that expects its template file to
- be found at the path 
+ directory, or the 
+\emph on
+Yolk.Whoops
+\emph default
+ package that expects its template file to be found at the path 
 \emph on
 templates/system/500.tmpl
 \end_layout
@@ -206,7 +212,7 @@ dependencies
 \end_layout
 
 \begin_layout Standard
-I do also recommend compiling and running the demo, to make sure your Yolk
+I also recommend compiling and running the demo, to make sure your Yolk
  install is working as intended.
  Just read the 
 \emph on
@@ -257,8 +263,1432 @@ Version
 \emph on
 directory.tmpl
 \emph default
- template file, but it's probably not something that's of vital importance
+ template file, but obviously it's not something that's of vital importance
  to most applications.
+\end_layout
+
+\begin_layout Section
+Yolk.Cache.Discrete_Keys
+\end_layout
+
+\begin_layout Standard
+If a piece of data doesn't change very often and it is expensive to build,
+ then caching it might be worthwhile.
+ Instead of going to file/database on every hit, you simply go to the cache
+ and grab the latest version from there.
+ This is 
+\series bold
+\emph on
+very
+\series default
+\emph default
+ fast, at the cost of some memory.
+\end_layout
+
+\begin_layout Standard
+If you know exactly what you want to cache, the 
+\emph on
+Yolk.Cache.Discrete_Keys
+\emph default
+ package might be just what you need.
+\end_layout
+
+\begin_layout Subsection
+The generic formal parameters
+\end_layout
+
+\begin_layout Standard
+These are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+generic
+\end_layout
+
+\begin_layout Plain Layout
+
+   type Key_Type is (<>);
+\end_layout
+
+\begin_layout Plain Layout
+
+   type Element_Type is private;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Max_Element_Age : Duration := 3600.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+package Yolk.Cache.Discrete_Keys is
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Max_Element_Age
+\emph default
+ defaults to one hour.
+ You should obviously set this to whatever suits your needs.
+ This timer is used for all content in the cache.
+ You cannot set this individually for each element.
+\end_layout
+
+\begin_layout Subsection
+Instantiation
+\end_layout
+
+\begin_layout Standard
+If for example we have two different sets of data (Foo and Bar) that are
+ expensive to build, we can instantiate a 
+\emph on
+Discrete_Keys
+\emph default
+ package to handle this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type Cache_Keys is (Foo, Bar);
+\end_layout
+
+\begin_layout Plain Layout
+
+package My_Cache is new Yolk.Cache.Discrete_Keys
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Key_Type     => Cache_Keys,
+\end_layout
+
+\begin_layout Plain Layout
+
+   Element_Type => Unbounded_String);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And that is all.
+ We now have a 
+\emph on
+My_Cache
+\emph default
+ object that can hold two objects: 
+\emph on
+Foo
+\emph default
+ and 
+\emph on
+Bar
+\emph default
+.
+ These are of the type 
+\emph on
+Unbounded_String
+\emph default
+ and they have a 
+\emph on
+Max_Element_Age
+\emph default
+ of 3600.0 seconds.
+\end_layout
+
+\begin_layout Subsection
+Writing to the cache
+\end_layout
+
+\begin_layout Standard
+Before we can read something from the cache, we must first write something
+ to it:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   Foo_Value : Unbounded_String := To_Unbounded_String ("Foo");
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   My_Cache.Write (Key   => Foo,
+\end_layout
+
+\begin_layout Plain Layout
+
+                   Value => Foo_Value);
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That is all it takes: 
+\begin_inset Quotes eld
+\end_inset
+
+Foo
+\begin_inset Quotes erd
+\end_inset
+
+ is now safely tucked away in the 
+\emph on
+My_Cache
+\emph default
+ object, and will be so for 3600.0 seconds.
+ Calling 
+\emph on
+Write
+\emph default
+ with the 
+\emph on
+Foo 
+\emph default
+key will always overwrite earlier written 
+\emph on
+Foo
+\emph default
+ elements, no matter their age.
+\end_layout
+
+\begin_layout Subsection
+Reading from the cache
+\end_layout
+
+\begin_layout Standard
+A cache obviously only makes sense if you intend to read from it.
+ In our case we want to get our hands on the previously written 
+\begin_inset Quotes eld
+\end_inset
+
+Foo
+\begin_inset Quotes erd
+\end_inset
+
+ value:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   Valid : Boolean := False;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Value : Unbounded_String;
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   My_Cache.Read (Key      => Foo,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Is_Valid => Valid,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Value    => Value);
+\end_layout
+
+\begin_layout Plain Layout
+
+   if Valid then
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  do something interesting with the data
+\end_layout
+
+\begin_layout Plain Layout
+
+   else
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  the Foo data is invalid.
+\end_layout
+
+\begin_layout Plain Layout
+
+   end if;
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order for an element to be valid (the
+\emph on
+ Is_Valid
+\emph default
+ parameter is true), it must:
+\end_layout
+
+\begin_layout Enumerate
+have been added to the cache in the first place
+\end_layout
+
+\begin_layout Enumerate
+be younger than 
+\emph on
+Max_Element_Age
+\end_layout
+
+\begin_layout Standard
+If 
+\emph on
+Is_Valid
+\emph default
+ is 
+\emph on
+False
+\emph default
+, then 
+\emph on
+Value
+\emph default
+ contains undefined garbage.
+\end_layout
+
+\begin_layout Subsection
+Checking if a key is valid
+\end_layout
+
+\begin_layout Standard
+If you need to check whether a specific key exists in the cache and is valid,
+ then you need to use the 
+\emph on
+Is_Valid
+\emph default
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if My_Cache.Is_Valid (Foo) then
+\end_layout
+
+\begin_layout Plain Layout
+
+   --  Foo is good!
+\end_layout
+
+\begin_layout Plain Layout
+
+else
+\end_layout
+
+\begin_layout Plain Layout
+
+   --  Foo is bad!
+\end_layout
+
+\begin_layout Plain Layout
+
+end if;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This follows the same rules as the 
+\emph on
+Is_Valid
+\emph default
+ parameter for the 
+\emph on
+Read
+\emph default
+ procedure.
+\end_layout
+
+\begin_layout Subsection
+Clearing keys and the entire cache
+\end_layout
+
+\begin_layout Standard
+For clearing of keys and the entire cache we have, naturally, two 
+\emph on
+Clear
+\emph default
+ procedures:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+-- First we clear the Foo key
+\end_layout
+
+\begin_layout Plain Layout
+
+My_Cache.Clear (Key => Foo);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+--  And then we clear the entire cache
+\end_layout
+
+\begin_layout Plain Layout
+
+My_Cache.Clear;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And that's all it takes.
+\end_layout
+
+\begin_layout Section
+Yolk.Cache.String_Keys
+\end_layout
+
+\begin_layout Standard
+This package is almost similar to the 
+\emph on
+Yolk.Cache.Discrete_Keys
+\emph default
+ package.
+ The biggest difference is that where the 
+\emph on
+Discrete_Keys
+\emph default
+ cache package requires that you define a type for the keys, this packages
+ takes a regular 
+\emph on
+String
+\emph default
+ as key.
+\end_layout
+
+\begin_layout Standard
+The implications of this difference between the two cache packages are subtle.
+ Both have the same 
+\emph on
+Read
+\emph default
+, 
+\emph on
+Write
+\emph default
+, 
+\emph on
+Is_Valid
+\emph default
+ and 
+\emph on
+Clear
+\emph default
+ procedures and functions, so in that sense the two packages are the same.
+ The biggest difference lies in the available generic formal parameters
+ and the addition of the 
+\emph on
+Cleanup
+\emph default
+ procedure and the 
+\emph on
+Length
+\emph default
+ function.
+\end_layout
+
+\begin_layout Subsection
+The generic formal parameters
+\end_layout
+
+\begin_layout Standard
+These are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+generic
+\end_layout
+
+\begin_layout Plain Layout
+
+   type Element_Type is private;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Cleanup_Size      : Positive := 200;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Cleanup_On_Write  : Boolean  := True;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Max_Element_Age   : Duration := 3600.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Reserved_Capacity : Positive := 100;
+\end_layout
+
+\begin_layout Plain Layout
+
+package Yolk.Cache.Discrete_Keys is
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the amount of elements in the cache >= 
+\emph on
+Cleanup_Size
+\emph default
+, then the 
+\emph on
+Cleanup
+\emph default
+ procedure is called by 
+\emph on
+Write
+\emph default
+, if 
+\emph on
+Cleanup_On_Write
+\emph default
+ is set to Boolean 
+\emph on
+True
+\emph default
+.
+ 
+\emph on
+Cleanup_Size
+\emph default
+ is a sort of failsafe for this cache package.
+ Since we can't know for sure what is being added (we don't know the keys
+ beforehand), we need to make sure it doesn't gobble up all available resources.
+ Set this number high enough that it'll never tricker under normal circumstances
+, but low enough that it'll prevent resource exhaustion in case of errors.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Max_Element_Age
+\emph default
+ defaults to one hour.
+ You should obviously set this to whatever suits your needs.
+ This timer is used for all content in the cache.
+ You cannot set this individually for each element.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Reserved_Capacity
+\emph default
+ should be set as close as possible to the expected final size of the cache.
+ If your best guestimate is 200 elements in the cache, then set this to
+ 200.
+ Note that this setting has no bearing has no bearing on the actual size
+ of the cache.
+ The cache will happily grow beyond the 
+\emph on
+Reserved_Capacity
+\emph default
+ value.
+\end_layout
+
+\begin_layout Subsection
+Instantiation
+\end_layout
+
+\begin_layout Standard
+Instantiating 
+\emph on
+String_Keys
+\emph default
+ is done like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package My_Cache is new Yolk.Cache.String_Keys
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Element_Type      => Unbounded_String,
+\end_layout
+
+\begin_layout Plain Layout
+
+   Reserved_Capacity => 200);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And that is all.
+ We now have a 
+\emph on
+My_Cache
+\emph default
+ object that can hold 200 objects of the type 
+\emph on
+Unbounded_String
+\emph default
+, all of which have a 
+\emph on
+Max_Element_Age
+\emph default
+ of 3600.0 seconds.
+ 
+\end_layout
+
+\begin_layout Subsection
+Writing to the cache
+\end_layout
+
+\begin_layout Standard
+Before we can read something from the cache, we must first write something
+ to it:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   Value : Unbounded_String := To_Unbounded_String ("42");
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   My_Cache.Write (Key   => "Foo",
+\end_layout
+
+\begin_layout Plain Layout
+
+                   Value => Value);
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That is all it takes: 
+\begin_inset Quotes eld
+\end_inset
+
+42
+\begin_inset Quotes erd
+\end_inset
+
+ is now safely tucked away in the 
+\emph on
+My_Cache
+\emph default
+ object under the key 
+\begin_inset Quotes eld
+\end_inset
+
+Foo
+\begin_inset Quotes erd
+\end_inset
+
+, and will be so for 3600.0 seconds.
+ Calling 
+\emph on
+Write
+\emph default
+ with the 
+\begin_inset Quotes eld
+\end_inset
+
+Foo
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph on
+ 
+\emph default
+String will always overwrite earlier written 
+\begin_inset Quotes eld
+\end_inset
+
+Foo
+\begin_inset Quotes erd
+\end_inset
+
+ elements, no matter their age.
+\end_layout
+
+\begin_layout Subsection
+Reading from the cache
+\end_layout
+
+\begin_layout Standard
+A cache obviously only makes sense if you intend to read from it.
+ In our case we want to get our hands on the previously written 
+\begin_inset Quotes eld
+\end_inset
+
+Foo
+\begin_inset Quotes erd
+\end_inset
+
+ value:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   Valid : Boolean := False;
+\end_layout
+
+\begin_layout Plain Layout
+
+   Value : Unbounded_String;
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   My_Cache.Read (Key      => "Foo",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Is_Valid => Valid,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Value    => Value);
+\end_layout
+
+\begin_layout Plain Layout
+
+   if Valid then
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  do something interesting with the data
+\end_layout
+
+\begin_layout Plain Layout
+
+   else
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  the Foo data is invalid.
+\end_layout
+
+\begin_layout Plain Layout
+
+   end if;
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order for an element to be valid (the
+\emph on
+ Is_Valid
+\emph default
+ parameter is true), it must:
+\end_layout
+
+\begin_layout Enumerate
+have been added to the cache in the first place
+\end_layout
+
+\begin_layout Enumerate
+be younger than 
+\emph on
+Max_Element_Age
+\end_layout
+
+\begin_layout Standard
+If 
+\emph on
+Is_Valid
+\emph default
+ is 
+\emph on
+False
+\emph default
+, then 
+\emph on
+Value
+\emph default
+ contains undefined garbage.
+\end_layout
+
+\begin_layout Subsection
+Checking if a key is valid
+\end_layout
+
+\begin_layout Standard
+If you need to check whether a specific key exists in the cache and is valid,
+ then you need to use the 
+\emph on
+Is_Valid
+\emph default
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if My_Cache.Is_Valid ("Foo") then
+\end_layout
+
+\begin_layout Plain Layout
+
+   --  Foo is good!
+\end_layout
+
+\begin_layout Plain Layout
+
+else
+\end_layout
+
+\begin_layout Plain Layout
+
+   --  Foo is bad!
+\end_layout
+
+\begin_layout Plain Layout
+
+end if;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This follows the same rules as the 
+\emph on
+Is_Valid
+\emph default
+ parameter for the 
+\emph on
+Read
+\emph default
+ procedure.
+\end_layout
+
+\begin_layout Subsection
+Clearing keys and the entire cache
+\end_layout
+
+\begin_layout Standard
+For clearing of keys and the entire cache we have, naturally, two 
+\emph on
+Clear
+\emph default
+ procedures:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+-- First we clear the Foo key
+\end_layout
+
+\begin_layout Plain Layout
+
+My_Cache.Clear (Key => "Foo");
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+--  And then we clear the entire cache
+\end_layout
+
+\begin_layout Plain Layout
+
+My_Cache.Clear;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And that's all it takes.
+\end_layout
+
+\begin_layout Subsection
+How much is in there?
+\end_layout
+
+\begin_layout Standard
+With the 
+\emph on
+Discrete_Keys
+\emph default
+ cache we obviously always now the exact amount of keys available, since
+ we've defined the keys ourselves.
+ This is not the case with the 
+\emph on
+String_Keys
+\emph default
+ cache, where any String can be a key.
+ If we need to know how many elements that are currently in the cache, we
+ call the 
+\emph on
+Length
+\emph default
+ function:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if My_Cache.Length > 1000 then
+\end_layout
+
+\begin_layout Plain Layout
+
+   --  Woa! Lots of stuff in the cache..
+\end_layout
+
+\begin_layout Plain Layout
+
+end if;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that 
+\emph on
+Length
+\emph default
+ count both valid and invalid elements.
+\end_layout
+
+\begin_layout Subsection
+Cleanup - Keeping cache size in check
+\end_layout
+
+\begin_layout Standard
+if 
+\emph on
+Cleanup_On_Write
+\emph default
+ is 
+\emph on
+True
+\emph default
+, then 
+\emph on
+Cleanup
+\emph default
+ is called by 
+\emph on
+Write 
+\emph default
+whenever the size of the cache reach 
+\emph on
+Cleanup_Size
+\emph default
+.
+ It is of course also possible to call it manually:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if My_Cache.Length > 1000 then
+\end_layout
+
+\begin_layout Plain Layout
+
+   My_Cache.Cleanup;
+\end_layout
+
+\begin_layout Plain Layout
+
+end if;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you've set 
+\emph on
+Cleanup_On_Write
+\emph default
+ to Boolean 
+\emph on
+False
+\emph default
+ and the String keys are coming from outside sources, then you really should
+ make sure you call 
+\emph on
+Cleanup
+\emph default
+ on a regular basis.
+ 
 \end_layout
 
 \begin_layout Section
@@ -283,7 +1713,7 @@ KEY VALUE
 \end_layout
 
 \begin_layout Standard
-Key's are case-insensitive, so 
+Keys are case-insensitive, so 
 \emph on
 FOO
 \emph default
@@ -351,8 +1781,21 @@ These are:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -401,6 +1844,11 @@ package Yolk.Config_File_Parser is
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 Note that the 
 \emph on
@@ -416,8 +1864,11 @@ Exceptions
 \end_layout
 
 \begin_layout Standard
-There are 3 different exceptions that can be raised by the Yolk.Config_File_Parse
-r package.
+There are 3 different exceptions that can be raised by the 
+\emph on
+Yolk.Config_File_Parser
+\emph default
+ package.
  These are:
 \end_layout
 
@@ -467,13 +1918,30 @@ Instantiation
 \end_layout
 
 \begin_layout Standard
-Yolk.Config_File_Parser is a generic package, so in order to use it, you
- have to instantiate it, like this:
+
+\emph on
+Yolk.Config_File_Parser
+\emph default
+ is a generic package, so in order to use it, you have to instantiate it,
+ like this:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -574,6 +2042,11 @@ end My_Configuration;
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 Here we instantiate the 
 \emph on
@@ -614,14 +2087,32 @@ Config
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
 \begin_layout Plain Layout
 
 My_Configuration.Config.Load_File ("new_config.ini");
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -671,14 +2162,32 @@ Foo
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
 \begin_layout Plain Layout
 
 My_Configuration.Config.Get (Foo);
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -715,8 +2224,11 @@ Unbounded_String
 \end_layout
 
 \begin_layout Standard
-Empty keys simply return an empty String or a Null_Unbounded_String, depending
- on the target type.
+Empty keys simply return an empty String or a 
+\emph on
+Null_Unbounded_String
+\emph default
+, depending on the target type.
  If a key is empty and the target type is not a String or an Unbounded_String,
  then the 
 \emph on
@@ -738,8 +2250,21 @@ Has_Value
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -763,9 +2288,18 @@ end if;
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 Basically all this function does is return Boolean True if the value of
- the given key is not a Null_Unbounded_String.
+ the given key is not a 
+\emph on
+Null_Unbounded_String
+\emph default
+.
 \end_layout
 
 \begin_layout Section
@@ -773,16 +2307,32 @@ Yolk.Configuration
 \end_layout
 
 \begin_layout Standard
-This package is a bit of an oddball, as all it does is instantiate the Yolk.Confi
-g_File_Parser generic with the default AWS and Yolk configuration values.
- This is used by Yolk internally, but also by the AWS component of your
- application.
+This package is a bit of an oddball, as all it does is instantiate the 
+\emph on
+Yolk.Config_File_Parser
+\emph default
+ generic with the default AWS and Yolk configuration values.
+ This is used by Yolk internally, but also possibly by the AWS component
+ of your application.
  The instantiation looks like this:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -809,6 +2359,11 @@ package Config is new Config_File_Parser
 \begin_layout Plain Layout
 
    Config_File => "configuration/config.ini");
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -843,8 +2398,11 @@ config.ini
 \end_layout
 
 \begin_layout Standard
-I recommend that you take a look at the Yolk demo application to see how
- the Yolk.Configuration package is used.
+I recommend taking a look at the Yolk demo application to see how the 
+\emph on
+Yolk.Configuration
+\emph default
+ package is used.
 \end_layout
 
 \begin_layout Subsection
@@ -852,10 +2410,16 @@ Get the AWS specific configuration settings
 \end_layout
 
 \begin_layout Standard
-When you start an AWS server, you need to give it an AWS.Config.Object with
- all the necessary configuration settings.
- This is already handled for you in Yolk.Configuration, all you have to do
- is call the 
+When you start an AWS server, you need to give it an 
+\emph on
+AWS.Config.Object
+\emph default
+ with all the necessary configuration settings.
+ This is already handled for you in 
+\emph on
+Yolk.Configuration
+\emph default
+, all you have to do is call the 
 \emph on
 Get_AWS_Configuration
 \emph default
@@ -863,8 +2427,21 @@ Get_AWS_Configuration
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -898,6 +2475,11 @@ AWS.Server.Start (Web_Server => Web_Server,
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 You're not forced to use this, if you don't want to.
  But even if you don't, you'll still have to make a valid configuration
@@ -915,12 +2497,19 @@ Yolk.Connect_To_DB
 \end_layout
 
 \begin_layout Standard
-This is a small wrapper for the GNATCOLL.SQL database connection functionality.
+This is a small wrapper for the 
+\emph on
+GNATCOLL.SQL
+\emph default
+ database connection functionality.
  Basically it hides away the factory, and makes it simple to support connecting,
  and staying connected, to several databases in your application.
  Actually the ability to stay connected to several databases in the same
- application was what drove the development of the Yolk.Connect_To_DB package,
- as the 
+ application was what drove the development of the 
+\emph on
+Yolk.Connect_To_DB
+\emph default
+ package, as the 
 \emph on
 GNATCOLL.SQL.Exec.Get_Task_Connection
 \emph default
@@ -930,8 +2519,9 @@ GNATCOLL.SQL.Exec.Get_Task_Connection
 \begin_layout Standard
 At the time of writing, GNATcoll supports PostgreSQL and MySQL, but Yolk
  only supports connecting to PostgreSQL.
- The reason for this is simple: I don't use MySQL, and if I can't test something
-, I don't feel like adding it to Yolk.
+ The reason for this is simple: I don't use MySQL now and I don't plan on
+ using it in the future, and if I can't test something, I don't feel like
+ adding it to Yolk.
 \end_layout
 
 \begin_layout Subsection
@@ -939,13 +2529,12 @@ The Connection_Mapping_Method type
 \end_layout
 
 \begin_layout Standard
-The 
+To define how AWS threads are mapped to the database connections, you need
+ to understand the 
 \emph on
 Connection_Mapping_Method
 \emph default
- is used when you instantiate a child package of Yolk.Connect_To_DB (currently
- only Yolk.Connect_To_DB.PostgreSQL).
- It defines how AWS threads maps to the database connections.
+ type.
  There are two different methods of connecting to a database:
 \end_layout
 
@@ -979,8 +2568,9 @@ This works flawlessly as long as you don't need to connect to more than
 \end_layout
 
 \begin_layout Standard
-When option two is used, one set of database connection tasks are started
- for every database you connect to.
+When option 2.
+ is used, one set of database connection tasks are started for every database
+ you connect to.
  So if you have an AWS server with 5 threads and you need to connect to
  two databases, you're going to end up with 5 small tasks whose only purpose
  in life is to open and maintain a connection to the database.
@@ -988,7 +2578,11 @@ When option two is used, one set of database connection tasks are started
 \emph on
 DB_Conn
 \emph default
- tasks are then mapped to the AWS threads.
+ tasks are then mapped to the AWS threads using the 
+\emph on
+Ada.Task_Attributes
+\emph default
+ package.
 \end_layout
 
 \begin_layout Standard
@@ -1007,8 +2601,8 @@ DB_Conn_Tasks_To_DB
 AWS_Tasks_To_DB
 \emph default
  connection mapping.
- This is the fastest, as we don't have to spend time going through one of
- the 
+ This is the fastest and most resource efficient method, as we don't have
+ to spend time going through one of the 
 \emph on
 DB_Conn
 \emph default
@@ -1033,8 +2627,21 @@ Set_Credentials
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -1068,12 +2675,20 @@ Connect_To_DB.Set_Credentials
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 This call return a 
 \emph on
-Credentials
+Yolk.Connect_To_DB.Credentials
 \emph default
- type which is then used when instantiating the Yolk.Connect_To_DB.PostgreSQL
+ type which is then used when instantiating the 
+\emph on
+Yolk.Connect_To_DB.PostgreSQL
+\emph default
  generic.
 \end_layout
 
@@ -1082,7 +2697,16 @@ Yolk.Connect_To_DB.PostgreSQL
 \end_layout
 
 \begin_layout Standard
-Bla.....
+When instantiated, this package provides a single function: 
+\emph on
+Connection
+\emph default
+.
+ This function return a 
+\emph on
+GNATCOLL.SQL.Exec.Database_Connection
+\emph default
+ type, which is then used to interact with your database.
 \end_layout
 
 \begin_layout Subsection
@@ -1096,8 +2720,21 @@ When you're actually going to connect to your PostgreSQL database(s), this
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -1123,7 +2760,17 @@ package Yolk.Connect_To_DB.PostgreSQL is
 
 \begin_layout Plain Layout
 
-...
+   function Connection return GNATCOLL.SQL.Exec.Database_Connection;
+\end_layout
+
+\begin_layout Plain Layout
+
+end Yolk.Connect_To_DB.PostgreSQL;
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1136,8 +2783,21 @@ Instantiation is pretty straightforward:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
 \begin_inset listings
-lstparams "basicstyle={\sffamily},language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em"
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
 inline false
 status open
 
@@ -1181,6 +2841,11 @@ package My_DB is new Connect_To_DB.PostgreSQL
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 In this case we've used the 
 \emph on
@@ -1188,6 +2853,79 @@ AWS_Tasks_To_DB
 \emph default
  mapping method, so each AWS thread will be mapped to a specific database
  connection.
+\end_layout
+
+\begin_layout Subsection
+Connecting to the database
+\end_layout
+
+\begin_layout Standard
+With the 
+\emph on
+My_DB
+\emph default
+ package up and running, connecting to the database is done like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DB_Conn : constant Database_Connection := My_DB.Connection;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+You can now use the 
+\emph on
+DB_Conn
+\emph default
+ connection just as if you'd created the 
+\emph on
+Database_Connection
+\emph default
+ object using the method described in the 
+\begin_inset CommandInset href
+LatexCommand href
+name "GNAT Component Collection (GNATcoll) manual"
+target "https://www.adacore.com/wp-content/files/auto_update/gnatcoll-docs/gnatcoll.html#Database-interface"
+
+\end_inset
+
+.
+ There's also a usage example in the Yolk demo.
+ Take a look at the 
+\emph on
+View.DB_Test
+\emph default
+ package.
 \end_layout
 
 \end_body
