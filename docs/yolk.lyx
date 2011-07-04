@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised July 1st.
+Revised July 4th.
  2011
 \end_layout
 
@@ -2647,7 +2647,7 @@ status open
 
 \begin_layout Plain Layout
 
-Connect_To_DB.Set_Credentials
+Yolk.Connect_To_DB.Set_Credentials
 \end_layout
 
 \begin_layout Plain Layout
@@ -2926,6 +2926,1269 @@ target "https://www.adacore.com/wp-content/files/auto_update/gnatcoll-docs/gnatc
 View.DB_Test
 \emph default
  package.
+\end_layout
+
+\begin_layout Section
+Yolk.Email
+\end_layout
+
+\begin_layout Standard
+Using 
+\emph on
+Yolk.Email
+\emph default
+ and the child package 
+\emph on
+Yolk.Email.Composer
+\emph default
+ you can build and send more or less any kind of email.
+ The 
+\emph on
+Yolk.Email
+\emph default
+ package define 4 exceptions and 3 types.
+ The facilities for actually constructing and sending the email are found
+ in 
+\emph on
+Yolk.Email.Composer
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Exceptions
+\end_layout
+
+\begin_layout Standard
+These are:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Attachment_File_Not_Found
+\emph default
+.
+ Is raised if a file attachment is not found at the given path.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+No_Address_Set
+\emph default
+.
+ Is raised if the address component of a To, Reply-To, From, Bcc/Cc header
+ is missing.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+No_Sender_Set_With_Multiple_From
+\emph default
+.
+ Is raised when an email contains multiple From headers but no Sender header,
+ as per RFC-5322, 3.6.2.
+ http://tools.ietf.org/html/rfc5322
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+No_SMTP_Host_Set
+\emph default
+.
+ Is raised if the SMTP host list is empty, ie.
+ no SMTP host has been set for sending the email.
+\end_layout
+
+\begin_layout Subsection
+The Yolk.Email types
+\end_layout
+
+\begin_layout Standard
+When using 
+\emph on
+Yolk.Email.Composer
+\emph default
+ to build and send emails, three types declared in 
+\emph on
+Yolk.Email
+\emph default
+ are central:
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+Character_Set
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+Recipient_Kind
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+Structure
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Character_Set
+\emph default
+ type define what character set is used when data is added to an email 
+\emph on
+Structure
+\emph default
+ object.
+ For example looking at the 
+\emph on
+Yolk.Email.Composer.Add_From
+\emph default
+ procedure, we see that the 
+\emph on
+Charset
+\emph default
+ parameter defaults to 
+\emph on
+US_ASCII
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Add_From      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (ES        : in out Structure;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Address   : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Name      : in     String := "";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Charset   : in     Character_Set := US_ASCII);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This does not mean that 
+\emph on
+Yolk.Email.Composer.Add_From
+\emph default
+ will encode 
+\emph on
+Name
+\emph default
+ as 
+\emph on
+US_ASCII
+\emph default
+, instead it means that the data given in 
+\emph on
+Name
+\emph default
+ is already encoded as 
+\emph on
+US_ASCII
+\emph default
+.
+ So if 
+\emph on
+Name
+\emph default
+ had contained an ISO-8859-1 encoded String, then the call would've looked
+ like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   use Yolk.Email;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email : Structure;
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Add_From      
+\end_layout
+
+\begin_layout Plain Layout
+
+     (ES        => Email,       
+\end_layout
+
+\begin_layout Plain Layout
+
+      Address   => "thomas@12boo.net",
+\end_layout
+
+\begin_layout Plain Layout
+
+      Name      => "Thomas Løcke",
+\end_layout
+
+\begin_layout Plain Layout
+
+      Charset   => ISO_8859_1);
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case you will end up with a From header looking like this:
+\end_layout
+
+\begin_layout LyX-Code
+From: =?ISO-8859-1?Q?Thomas_L=F8cke?= <thomas@12boo.net>
+\end_layout
+
+\begin_layout Standard
+So bear in mind that it is your responsibility to encode that data as you
+ need, and then set the 
+\emph on
+Character_Set
+\emph default
+ parameters accordingly.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Recipient_Kind
+\emph default
+ type define the kind of recipient that is being added to an email.
+ If you've worked with email, these three should be familiar to you:
+\end_layout
+
+\begin_layout Enumerate
+Bcc
+\end_layout
+
+\begin_layout Enumerate
+Cc
+\end_layout
+
+\begin_layout Enumerate
+To
+\end_layout
+
+\begin_layout Standard
+When adding recipients to an email 
+\emph on
+Structure
+\emph default
+ the default is To, but since not all recipients are equal, you have the
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Structure
+\emph default
+ type is at the core of it all.
+ You declare an object to be of the 
+\emph on
+Structure
+\emph default
+ type, and then you use the 
+\emph on
+Yolk.Email.Composer
+\emph default
+ facilities to build and send the email.
+\end_layout
+
+\begin_layout Section
+Yolk.Email.Composer
+\end_layout
+
+\begin_layout Standard
+The actual tools for building and sending an email is found in this package.
+ Here are tools for building emails from the ground up and there are a few
+ convenience procedures if you just need to send a simple email with no
+ bells or whistles.
+\end_layout
+
+\begin_layout Standard
+I'm not going to go through ever procedure in this package, instead I'll
+ show an example on how to build an email from the ground up and how to
+ use one of the convenience procedures.
+\end_layout
+
+\begin_layout Subsection
+Building and sending an email, the easy way
+\end_layout
+
+\begin_layout Standard
+There are two convenience procedures in 
+\emph on
+Yolk.Email.Composer
+\emph default
+ for sending emails without having to do a whole lot of work/thinking.
+ They are both named 
+\emph on
+Send
+\emph default
+ and they both look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Send      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (ES             : in out Structure;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   From_Address   : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   From_Name      : in     String := "";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   To_Address     : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   To_Name        : in     String := "";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Subject        : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Text_Part      : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   SMTP_Server    : in     String := "localhost";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   SMTP_Port      : in     Positive := 25;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Charset        : in     Character_Set := US_ASCII);    
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+procedure Send      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (ES             : in out Structure;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   From_Address   : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   From_Name      : in     String := "";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   To_Address     : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   To_Name        : in     String := "";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Subject        : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Text_Part      : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   HTML_Part      : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   SMTP_Server    : in     String := "localhost";       
+\end_layout
+
+\begin_layout Plain Layout
+
+   SMTP_Port      : in     Positive := 25;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Charset        : in     Character_Set := US_ASCII);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, the only difference between these two is that the first
+ one sends plain text emails, while the second one sends 
+\emph on
+multipart/alternative
+\emph default
+ with both plain text and HTML parts.
+ Usage is as simple as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   use Yolk.Email;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email : Structure;
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Send (ES           => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  From_Address => "thomas@12boo.net",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  From_Name    => "Thomas Løcke",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  To_Address   => "tl@ada-dk.org",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  To_Name      => "Me",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Subject      => "Is this thing on?",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Text_Part    => "Hey you!",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Charset      => ISO_8859_1);
+\end_layout
+
+\begin_layout Plain Layout
+
+               
+\end_layout
+
+\begin_layout Plain Layout
+
+   if Composer.Is_Send (Email) then
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  Success!               
+\end_layout
+
+\begin_layout Plain Layout
+
+   else                   
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  Failure!
+\end_layout
+
+\begin_layout Plain Layout
+
+   end if;
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is possible, and allowed, to call some of the various other procedures
+ prior to calling one of these.
+ If for example you want to add a custom header, it can be done like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   use Yolk.Email;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email : Structure;
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Add_Custom_Header (ES      => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                               Name    => "User-Agent",
+\end_layout
+
+\begin_layout Plain Layout
+
+                               Value   => "My User Agent");
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Send (ES           => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  From_Address => "thomas@12boo.net",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  From_Name    => "Thomas Løcke",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  To_Address   => "tl@ada-dk.org",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  To_Name      => "Me",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Subject      => "Is this thing on?",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Text_Part    => "Hey you!",
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Charset      => ISO_8859_1);
+\end_layout
+
+\begin_layout Plain Layout
+
+               
+\end_layout
+
+\begin_layout Plain Layout
+
+   if Composer.Is_Send (Email) then
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  Success!               
+\end_layout
+
+\begin_layout Plain Layout
+
+   else                   
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  Failure!
+\end_layout
+
+\begin_layout Plain Layout
+
+   end if;
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And with that, the header 
+\emph on
+User-Agent:
+\emph default
+ is now added to the email:
+\end_layout
+
+\begin_layout LyX-Code
+User-Agent: My User Agent
+\end_layout
+
+\begin_layout Standard
+It hardly gets any easier than that.
+ Lets move on and see how the above is accomplished the hard way.
+\end_layout
+
+\begin_layout Subsection
+Building and sending email, the hard way
+\end_layout
+
+\begin_layout Standard
+It is possible to build an email from the ground up, which obviously allows
+ for a more fine grained control over what is added.
+ It is also a bit more complicated, but not much.
+ Lets try and mimick the easy examples, the 
+\begin_inset Quotes eld
+\end_inset
+
+hard
+\begin_inset Quotes erd
+\end_inset
+
+ way:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+   use Yolk.Email;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email : Structure;
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Add_Custom_Header (ES      => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                               Name    => "User-Agent",
+\end_layout
+
+\begin_layout Plain Layout
+
+                               Value   => "My User Agent");
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Add_From (ES      => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                      Address => "thomas@12boo.net",
+\end_layout
+
+\begin_layout Plain Layout
+
+                      Name    => "Thomas Løcke",
+\end_layout
+
+\begin_layout Plain Layout
+
+                      Charset => ISO_8859_1);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Add_Recipient (ES      => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                           Address => "tl@ada-dk.org",
+\end_layout
+
+\begin_layout Plain Layout
+
+                           Name    => "Me");
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Set_Subject (ES      => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                         Subject => "Is this thing on?");
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Set_Text_Part (ES => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                           Part => "Hey you!");
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Add_SMTP_Server (ES   => Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+                             Host => "localhost");
+\end_layout
+
+\begin_layout Plain Layout
+
+                           
+\end_layout
+
+\begin_layout Plain Layout
+
+   Composer.Send (ES => Email);
+\end_layout
+
+\begin_layout Plain Layout
+
+               
+\end_layout
+
+\begin_layout Plain Layout
+
+   if Composer.Is_Send (Email) then
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  Success!               
+\end_layout
+
+\begin_layout Plain Layout
+
+   else                   
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  Failure!
+\end_layout
+
+\begin_layout Plain Layout
+
+   end if;
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Harder yes, but really not all that much more difficult.
+\end_layout
+
+\begin_layout Section
+Yolk.Handlers
+\end_layout
+
+\begin_layout Standard
+Most web applications will need to handle various static content, such as
+ PNG, HTML and CSS files.
+ 
+\emph on
+Yolk.Handlers
+\emph default
+ helps you accomplish that, so you don't have to build your own handlers
+ for these kinds of files.
+\end_layout
+
+\begin_layout Standard
+The following filetypes are supported by 
+\emph on
+Yolk.Handlers
+\emph default
+:
+\end_layout
+
+\begin_layout Itemize
+CSS
+\end_layout
+
+\begin_layout Itemize
+GIF
+\end_layout
+
+\begin_layout Itemize
+HTML
+\end_layout
+
+\begin_layout Itemize
+ICO
+\end_layout
+
+\begin_layout Itemize
+JPG
+\end_layout
+
+\begin_layout Itemize
+JS
+\end_layout
+
+\begin_layout Itemize
+PNG
+\end_layout
+
+\begin_layout Itemize
+SVG
+\end_layout
+
+\begin_layout Itemize
+XML
+\end_layout
+
+\begin_layout Itemize
+XSL
+\end_layout
+
+\begin_layout Standard
+The filetypes that are textual, are compressed according to the 
+\emph on
+Yolk.Configuration
+\emph default
+ setting 
+\emph on
+Compress_Static_Content
+\emph default
+ parameter, and the various URI's for these filetypes are also defined in
+ 
+\emph on
+Yolk.Configuration
+\emph default
+ by the 
+\emph on
+Handler_*
+\emph default
+ parameters.
+\end_layout
+
+\begin_layout Standard
+There's only one procedure in this package:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Set (RH : out AWS.Services.Dispatchers.URI.Handler);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you take a look at the demo application, you see that this procedure
+ is called in 
+\emph on
+yolk_demo.adb
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Yolk_Demo
+\end_layout
+
+\begin_layout Plain Layout
+
+is
+\end_layout
+
+\begin_layout Plain Layout
+
+   ...
+\end_layout
+
+\begin_layout Plain Layout
+
+   Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
