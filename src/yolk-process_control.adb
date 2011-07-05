@@ -162,10 +162,9 @@ package body Yolk.Process_Control is
    begin
 
       if not Wait_Called then
+         Wait_Called := True;
          Controller.Start;
          Controller.Check;
-
-         Wait_Called := True;
       end if;
 
    end Wait;
