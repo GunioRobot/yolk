@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised July 4th.
+Revised July 5th.
  2011
 \end_layout
 
@@ -4078,8 +4078,8 @@ Yolk.Configuration
 \emph on
 Compress_Static_Content
 \emph default
- parameter, and the various URI's for these filetypes are also defined in
- 
+ parameter, and the various regular expressions for identifying these filetypes
+ are also defined in 
 \emph on
 Yolk.Configuration
 \emph default
@@ -4088,10 +4088,19 @@ Yolk.Configuration
 Handler_*
 \emph default
  parameters.
+ These regular expressions are registered by the 
+\emph on
+AWS.Services.Dispatchers.URI.Register_Regexp
+\emph default
+ procedure.
 \end_layout
 
 \begin_layout Standard
-There's only one procedure in this package:
+There's only one procedure in the 
+\emph on
+Yolk.Handlers
+\emph default
+ package:
 \end_layout
 
 \begin_layout Standard
@@ -4129,12 +4138,29 @@ procedure Set (RH : out AWS.Services.Dispatchers.URI.Handler);
 \end_layout
 
 \begin_layout Standard
-If you take a look at the demo application, you see that this procedure
- is called in 
+You can see an example on how this is used in the demo file 
 \emph on
-yolk_demo.adb
+my_handlers.adb
 \emph default
-:
+.
+ There's really very little reason not to use this package for handling
+ of static content, but it is of course not mandatory.
+\end_layout
+
+\begin_layout Section
+Yolk.Log_File_Cleanup
+\end_layout
+
+\begin_layout Standard
+House-keeping is, in my humble opinion, a rather important task, and when
+ dealing with HTTP servers, one of those tasks involve keeping an eye on
+ the ever growing amount of log files.
+ To help automate this task we have the 
+\emph on
+Yolk.Log_File_Cleanup
+\emph default
+ package.
+ This package contains one procedure:
 \end_layout
 
 \begin_layout Standard
@@ -4158,27 +4184,313 @@ status open
 
 \begin_layout Plain Layout
 
-procedure Yolk_Demo
+procedure Clean_Up      
 \end_layout
 
 \begin_layout Plain Layout
 
-is
+  (Config_Object           : in AWS.Config.Object;       
 \end_layout
 
 \begin_layout Plain Layout
 
-   ...
+   Web_Server              : in AWS.Server.HTTP;
 \end_layout
 
 \begin_layout Plain Layout
 
-   Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
+   Amount_Of_Files_To_Keep : in Positive);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Whenever this is called, the 
+\emph on
+Log_File_Directory
+\emph default
+ is traversed and if more files than 
+\emph on
+Amount_Of_Files_To_Keep
+\emph default
+ is found, then the oldest of these are deleted until the amount equals
+ 
+\emph on
+Amount_Of_Files_To_Keep
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+In the demo file 
+\emph on
+yolk_demo.adb
+\emph default
+ you can see an example on how to call this procedure using a task that
+ wakes up according to the configuration setting 
+\emph on
+Log_File_Cleanup_Interval
+\emph default
+.
+\end_layout
+
+\begin_layout Section
+Yolk.Not_Found
+\end_layout
+
+\begin_layout Standard
+This job of this package is to return a HTTP 404 status code and an accompanying
+ simple not found HTML page.
+ It's sole function 
+\emph on
+Generate
+\emph default
+ is about as simple as they come:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function Generate      
 \end_layout
 
 \begin_layout Plain Layout
 
-   
+  (Request : in AWS.Status.Data)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return AWS.Response.Data;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It relies on the template file 
+\emph on
+demo/exe/templates/system/404.tmpl
+\emph default
+ to generate the generic 404 HTML page, so if you want to use 
+\emph on
+Yolk.Not_Found
+\emph default
+ in your own application, then remember to bring along this file.
+ Where the 
+\emph on
+404.tmpl
+\emph default
+ is placed is defined in the configuration parameter 
+\emph on
+System_Templates_Path
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Also worth noting is that the 
+\emph on
+Yolk.Not_Found.Generate
+\emph default
+ function is used as the default callback in the demo application.
+ This means that all requested resources that doesn't match a registered
+ dispatcher, is served by 
+\emph on
+Yolk.Not_Found.Generate
+\emph default
+ ie.
+ a 404 is returned.
+ See the 
+\emph on
+demo/src/my_handlers.adb
+\emph default
+ file for more information.
+\end_layout
+
+\begin_layout Section
+Yolk.Process_Control
+\end_layout
+
+\begin_layout Standard
+With 
+\emph on
+Yolk.Process_Control
+\emph default
+ you get the ability to control your application using the SIGINT, SIGPWR
+ and SIGTERM signals.
+ You also get a PID file placed next to your executable, which coupled with
+ the 
+\emph on
+demo/tools/rc.yolk
+\emph default
+ script gives you a rather nice and simple way of starting and stopping
+ your application.
+\end_layout
+
+\begin_layout Subsection
+Exceptions
+\end_layout
+
+\begin_layout Standard
+These are:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Cannot_Create_PID_File
+\emph default
+.
+ Is raised if the PID file cannot be created, eg.
+ if the application lacks permissions to write to the directory where the
+ executable is located.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Cannot_Delete_PID_File
+\emph default
+.
+ Is raised if the PID file cannot be deleted, eg.
+ if the application lacks permissions to write to the directory where the
+ executable is located, or to the PID file itself.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+PID_File_Exists
+\emph default
+.
+ Is raised when the PID file already exists, ie.
+ the application is already running or it was shutdown incorrectly.
+\end_layout
+
+\begin_layout Subsection
+Using Yolk.Process_Control
+\end_layout
+
+\begin_layout Standard
+When you use the 
+\emph on
+Yolk.Process_Control
+\emph default
+ package the 
+\emph on
+Unreserve_All_Interrupts
+\emph default
+ pragma is used.
+ This means that depending on the compiler used one or more interrupt signals
+ may be affected.
+ In the case of the GNAT compiler, this is specifically mentioned in the
+ source of the 
+\emph on
+Ada.Interrupts.Names
+\emph default
+ package:
+\end_layout
+
+\begin_layout Quote
+-- The pragma Unreserve_All_Interrupts affects the following signal(s):
+\end_layout
+
+\begin_layout Quote
+-- SIGINT: made available for Ada handler
+\end_layout
+
+\begin_layout Standard
+Since neither SIGPWR or SIGTERM are reserved by the compiler, the 
+\emph on
+Yolk.Process_Control
+\emph default
+ package is able to assume control of these signals.
+ You can read more about the 
+\begin_inset CommandInset href
+LatexCommand href
+name "pragma Unreserve_All_Interrupts here"
+target "http://gcc.gnu.org/onlinedocs/gnat_rm/Pragma-Unreserve_005fAll_005fInterrupts.html"
+
+\end_inset
+
+.
+ If you compile Yolk with a different compiler than GNAT, then please check
+ if one of the affected signals are reserved.
+\end_layout
+
+\begin_layout Standard
+There are two procedures in the 
+\emph on
+Yolk.Process_Control
+\emph default
+ package:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Stop;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+procedure Wait;
 \end_layout
 
 \end_inset
