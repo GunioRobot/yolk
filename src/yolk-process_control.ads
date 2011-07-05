@@ -23,7 +23,7 @@
 -------------------------------------------------------------------------------
 
 --  The Process_Control package enables us to stop the server with the
---  SIGHUP, SIGINT and SIGTERM signals.
+--  SIGINT, SIGPWR and SIGTERM signals.
 --  It is also this package that is responsible for creating the PID file,
 --  which by default is always placed in the same directory as the executable.
 --  Change the PID constant if you want/need it placed elsewhere.
@@ -31,7 +31,8 @@
 package Yolk.Process_Control is
 
    pragma Unreserve_All_Interrupts;
-   --  Make sure that GNAT does not handle any interrupts automatically.
+   --  Make sure that GNAT does not handle SIGINT interrupts automatically.
+   --  Check your compiler for reserved signals.
 
    Cannot_Create_PID_File  : exception;
    --  Is raised if the PID file cannot be created, eg. the server lacks
