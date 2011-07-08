@@ -87,10 +87,8 @@ My usual modus operandi for setting up these 6 things goes something like this:
             $ ./configure --prefix=/usr/gnat \
                                 --disable-gtk \
                                 --disable-pygtk \
-                                --without-python \
-                                --with-postgresql \
-                                --without-sqlite \
-                                --disable-syslog
+                                --with-python \
+                                --with-postgresql
 
         You should of course adjust the above configuration options to fit your
         needs, just make sure PostgreSQL support is enabled.
