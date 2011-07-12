@@ -15,8 +15,5 @@ demo/build_production/*
 demo/exe/yolk_demo
 demo/exe/*.pid
 
-# Do not track .pem files in exe/certificates
-demo/exe/certificates/*.pem
-
 # Do not track the log files
 demo/exe/logs/*.log
