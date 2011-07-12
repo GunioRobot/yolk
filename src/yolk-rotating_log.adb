@@ -123,7 +123,6 @@ package body Yolk.Rotating_Log is
    procedure Register_Rotating_Log_Stream;
    --  Register a GNAT.Traces stream that can send its output to a rotating
    --  log.
-   --  See the configuration/GNATCOLL.SQL.Logs.ini file for more information.
 
    overriding
    function Supports_Color

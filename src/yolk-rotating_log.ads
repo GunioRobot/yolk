@@ -48,20 +48,23 @@ package Yolk.Rotating_Log is
    --  by calling the Track procedure.
    --
    --  IMPORTANT:
-   --    The Error and Info handles should _not_ be removed.
+   --    The Error and Info handles should _not_ be removed, as they are used
+   --    throughout the Yolk packages.
    --
    --  NOTE:
    --    The GNATCOLL_SQL value is special. This handle is locked to the
    --    GNATCOLL.SQL traces, so if you want to access the output from
    --    the SQL, SQL.SELECT and SQL.ERROR traces, then you must have this
    --    value defined and a valid GNATCOLL_Traces_Ini_File value.
-   --    See comments for Register_Rotating_Log_Stream for more info.
+   --    See the demo/exe/configuration/GNATCOLL.SQL.Logs.ini file for more
+   --    information.
 
    procedure Start_Rotating_Logs
      (Called_From_Main_Task_Exception_Handler : Boolean := False);
    --  Parse the GNATCOLL_Traces_Ini_File (if it exists) and setup the
    --  Log_Objects_List array according to the Trace_Handles type.
-   --  The GNATCOLL_Traces_Ini_File is defined in configuration/config.ini.
+   --  The path to the GNATCOLL_Traces_Ini_File is defined in the
+   --  Yolk.Configuration package.
    --  Calling this more than once does nothing.
    --  Exceptions:
    --    Cannot_Create_Log_File
