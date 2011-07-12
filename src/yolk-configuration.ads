@@ -240,7 +240,7 @@ package Yolk.Configuration is
                        Session_Name
                        => TUS ("Yolk"),
                        Status_Page
-                       => TUS ("status/aws_status.thtml"),
+                       => TUS ("templates/system/aws_status.thtml"),
                        System_Templates_Path
                        => TUS ("templates/system"),
                        Transient_Cleanup_Interval
