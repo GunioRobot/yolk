@@ -31,7 +31,7 @@ package body Yolk.Process_Control is
    use Ada.Command_Line;
    use Ada.Directories;
 
-   type State is (Running, Shutdown, Stopped);
+   type Controller_State is (Running, Shutdown, Stopped);
 
    PID : constant String   :=
            Compose
@@ -40,8 +40,8 @@ package body Yolk.Process_Control is
    --  Path to the PID file. Is set to /path/to/executable/<programname>.pid
 
    Wait_Called : Boolean := False;
-   --  Is set to True when Wait is called the first time. This is used to test
-   --  if we've already called Wait earlier, and if so, ignore the call.
+   --  Is set to True when Wait has been called. This is used to test if we've
+   --  already called Wait earlier, and if so, ignore the call.
 
    procedure Create_PID_File;
    procedure Delete_PID_File;
@@ -61,27 +61,25 @@ package body Yolk.Process_Control is
    protected Controller is
 
       entry Check;
-      --  If AWS_State is Shutdown the entry barrier is True then
-      --  Delete_PID_File is called and the Wait procedure completes as it is
-      --  no longer waiting for Check to complete.
+      --  If Controller_State is Shutdown then Delete_PID_File is called and
+      --  the Wait procedure completes.
 
       procedure Handle_Kill;
-      --  Set AWS_State to Shutdown.
+      --  Set Controller.State to Shutdown.
 
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGINT);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGTERM);
       pragma Attach_Handler (Handle_Kill, Ada.Interrupts.Names.SIGPWR);
-      --  Handles the SIGINT, SIGTERM and SIGPWR signals. These
-      --  signalhandlers stops the AWS server and subsequently the entire
-      --  server.
+      --  Handles the SIGINT, SIGTERM and SIGPWR signals. These signalhandlers
+      --  change the Controller.State to Shutdown.
 
       entry Start;
-      --  Called by Wait. Set AWS_State to Running and calls Create_PID_File.
+      --  Called by Wait. Set Controller.State to Running and calls
+      --  Create_PID_File.
 
    private
 
-      AWS_State : State := Stopped;
-      --  What state the AWS server is in.
+      State : Controller_State := Stopped;
 
    end Controller;
 
@@ -164,7 +162,11 @@ package body Yolk.Process_Control is
       if not Wait_Called then
          Wait_Called := True;
          Controller.Start;
+
          Controller.Check;
+         --  We'll hang here until Controller.State is Shutdown.
+
+         Wait_Called := False;
       end if;
 
    end Wait;
@@ -179,11 +181,12 @@ package body Yolk.Process_Control is
       --  Check  --
       -------------
 
-      entry Check when AWS_State = Shutdown
+      entry Check when State = Shutdown
       is
       begin
 
          Delete_PID_File;
+         State := Stopped;
 
       end Check;
 
@@ -191,11 +194,11 @@ package body Yolk.Process_Control is
       --  Start  --
       -------------
 
-      entry Start when AWS_State = Stopped
+      entry Start when State = Stopped
       is
       begin
 
-         AWS_State := Running;
+         State := Running;
          Create_PID_File;
 
       end Start;
@@ -207,8 +210,8 @@ package body Yolk.Process_Control is
       procedure Handle_Kill is
       begin
 
-         if AWS_State /= Shutdown then
-            AWS_State := Shutdown;
+         if State /= Shutdown then
+            State := Shutdown;
          end if;
 
       end Handle_Kill;

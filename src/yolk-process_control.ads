@@ -50,8 +50,11 @@ package Yolk.Process_Control is
    procedure Wait;
    --  Wait until either Stop or Controller.Handle_Kill is called. This
    --  procedure is basically what keeps the application running. It's a
-   --  replacement for a loop in the main program file. It should only ever be
-   --  called once, so when it's called the first time, the private Wait_Called
-   --  variable is set to True. Further calls to Wait are ignored.
+   --  replacement for a loop in the main program file.
+   --  Wait completes when either Stop is called or the application receives
+   --  one of the SIGINT, SIGPWR or SIGTERM signals. After this, wait can be
+   --  called again.
+   --  Calling Wait multiple times in a row does nothing. Calls proceeding the
+   --  first call are ignored.
 
 end Yolk.Process_Control;
