@@ -269,7 +269,7 @@ begin
 
    Wait;
    --  This is the main "loop". We will wait here as long as the
-   --  Yolk.Process_Control.Controller.Check entry barrier is false.
+   --  Yolk.Process_Control.Controller.Check entry barrier is False.
 
    Stop_Server;
    --  Shutdown requested in Yolk.Process_Control.Controller, so we will
