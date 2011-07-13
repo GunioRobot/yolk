@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised July 12th.
+Revised July 13th.
  2011
 \end_layout
 
@@ -2502,10 +2502,13 @@ This is a small wrapper for the
 GNATCOLL.SQL
 \emph default
  database connection functionality.
- Basically it hides away the factory, and makes it simple to support connecting,
- and staying connected, to several databases in your application.
- Actually the ability to stay connected to several databases in the same
- application was what drove the development of the 
+ Once you've connected to the database, you use plain 
+\emph on
+GNATCOLL.SQL
+\emph default
+ tools to query/update your database.
+ The ability to stay connected to several databases in the same application
+ was what drove the development of the 
 \emph on
 Yolk.Connect_To_DB
 \emph default
@@ -2517,11 +2520,11 @@ GNATCOLL.SQL.Exec.Get_Task_Connection
 \end_layout
 
 \begin_layout Standard
-At the time of writing, GNATcoll supports PostgreSQL and MySQL, but Yolk
+At the time of writing, GNATcoll supports PostgreSQL and SQLite, but Yolk
  only supports connecting to PostgreSQL.
- The reason for this is simple: I don't use MySQL now and I don't plan on
- using it in the future, and if I can't test something, I don't feel like
- adding it to Yolk.
+ The reason for this is simple: I don't use SQLite now and I don't plan
+ on using it in the future, and if I can't test something, I don't feel
+ like adding it to Yolk.
 \end_layout
 
 \begin_layout Subsection
@@ -2941,8 +2944,29 @@ Yolk.Email
 \emph on
 Yolk.Email.Composer
 \emph default
- you can build and send more or less any kind of email.
- The 
+ you can build and send more or less any kind of email:
+\end_layout
+
+\begin_layout Itemize
+Plain text
+\end_layout
+
+\begin_layout Itemize
+Multipart/Alternative
+\end_layout
+
+\begin_layout Itemize
+Multipart/Mixed
+\end_layout
+
+\begin_layout Standard
+The package supports adding multiple SMTP servers, meaning you can add as
+ many as you need, and the email will then be send via the first one that
+ accepts it.
+\end_layout
+
+\begin_layout Standard
+The 
 \emph on
 Yolk.Email
 \emph default
@@ -4213,11 +4237,15 @@ procedure Clean_Up
 \end_layout
 
 \begin_layout Standard
-Whenever this is called, the 
+Whenever the 
+\emph on
+Clean_Up
+\emph default
+ procedure is called, the 
 \emph on
 Log_File_Directory
 \emph default
- is traversed and if more files than 
+ is traversed and if more log files than 
 \emph on
 Amount_Of_Files_To_Keep
 \emph default
@@ -4232,10 +4260,10 @@ Amount_Of_Files_To_Keep
 \begin_layout Standard
 In the demo file 
 \emph on
-yolk_demo.adb
+demo/src/yolk_demo.adb
 \emph default
- you can see an example on how to call this procedure using a task that
- wakes up according to the configuration setting 
+ there's an example on how to call this procedure using a task that wakes
+ up according to the configuration setting 
 \emph on
 Log_File_Cleanup_Interval
 \emph default
@@ -4501,6 +4529,122 @@ procedure Wait;
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+When you call the 
+\emph on
+Wait
+\emph default
+ procedure, you basically enter an endless loop that doesn't stop until
+\end_layout
+
+\begin_layout Enumerate
+The 
+\emph on
+Stop
+\emph default
+ procedure is called
+\end_layout
+
+\begin_layout Enumerate
+The application receives a SIGINT, SIGPWR or SIGTERM signal
+\end_layout
+
+\begin_layout Standard
+This is quite handy for applications, that need some sort of loop to keep
+ them from terminating.
+ You can see an example on how this can be done in the 
+\emph on
+demo/src/yolk_demo.adb
+\emph default
+ file.
+\end_layout
+
+\begin_layout Standard
+When 
+\emph on
+Wait
+\emph default
+ is called, subsequent calls to 
+\emph on
+Wait
+\emph default
+ are ignored, unless a call to 
+\emph on
+Stop
+\emph default
+ has been made or the application has received one of the SIGINT, SIGPWR
+ or SIGTERM signals.
+ So it's perfectly valid to do:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Wait;
+\end_layout
+
+\begin_layout Plain Layout
+
+--  Stop called from somewhere in the app
+\end_layout
+
+\begin_layout Plain Layout
+
+--  Do something...
+\end_layout
+
+\begin_layout Plain Layout
+
+Wait;
+\end_layout
+
+\begin_layout Plain Layout
+
+--  The app receives a SIGINT signal
+\end_layout
+
+\begin_layout Plain Layout
+
+--  Do something...
+\end_layout
+
+\begin_layout Plain Layout
+
+Wait;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Whether or not this is actually useful I don't know, but it is possible.
 \end_layout
 
 \end_body
