@@ -4647,5 +4647,188 @@ Wait;
 Whether or not this is actually useful I don't know, but it is possible.
 \end_layout
 
+\begin_layout Section
+Yolk.Process_Owner
+\end_layout
+
+\begin_layout Standard
+When it is necessary to change the owner of a process, the 
+\emph on
+Yolk.Process_Owner
+\emph default
+ package is the solution.
+ Obviously this can also be done when starting the application, using various
+ shell tricks, but I find it it much cleaner to just let the application
+ handle it by itself.
+\end_layout
+
+\begin_layout Subsection
+Exceptions
+\end_layout
+
+\begin_layout Standard
+There's only one:
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+Username_Does_Not_Exist
+\emph default
+.
+ This is raised if the given username doesn't exist on the system.
+\end_layout
+
+\begin_layout Subsection
+Using Yolk.Process_Owner
+\end_layout
+
+\begin_layout Standard
+There's only a single procedure in this package and its specification looks
+ like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Set_User      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Username : in String);    
+\end_layout
+
+\begin_layout Plain Layout
+
+  --  Set the process owner to Username.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please note that when changing the user ID of the application with 
+\emph on
+Set_User
+\emph default
+, the group ID is changed to the first group the given user is a member
+ of.
+\end_layout
+
+\begin_layout Standard
+Usage is as simple as expected:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+   Set_User (Username => "billybob");
+\end_layout
+
+\begin_layout Plain Layout
+
+exception
+\end_layout
+
+\begin_layout Plain Layout
+
+   when Username_Does_Not_Exist =>
+\end_layout
+
+\begin_layout Plain Layout
+
+      --  User is missing.
+ Do something!
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the file 
+\emph on
+demo/src/yolk_demo.adb
+\emph default
+ you'll find that 
+\emph on
+Yolk.Process_Owner.Set_User
+\emph default
+ is used in conjunction with the 
+\emph on
+Yolk.Configuration.Yolk_User
+\emph default
+ parameter.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \end_body
 \end_document
