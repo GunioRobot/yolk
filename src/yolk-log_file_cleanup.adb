@@ -73,11 +73,11 @@ package body Yolk.Log_File_Cleanup is
 
    end "<";
 
-   ----------------
-   --  Clean_Up  --
-   ----------------
+   --------------
+   --  Delete  --
+   --------------
 
-   procedure Clean_Up
+   procedure Delete
      (Config_Object            : in AWS.Config.Object;
       Web_Server               : in AWS.Server.HTTP;
       Amount_Of_Files_To_Keep  : in Positive)
@@ -210,6 +210,6 @@ package body Yolk.Log_File_Cleanup is
       Do_It (Prefix => AWS.Config.Error_Log_Filename_Prefix (Config_Object),
              Kind   => "Error Log");
 
-   end Clean_Up;
+   end Delete;
 
 end Yolk.Log_File_Cleanup;

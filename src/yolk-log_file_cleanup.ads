@@ -29,7 +29,7 @@ with AWS.Server;
 
 package Yolk.Log_File_Cleanup is
 
-   procedure Clean_Up
+   procedure Delete
      (Config_Object           : in AWS.Config.Object;
       Web_Server              : in AWS.Server.HTTP;
       Amount_Of_Files_To_Keep : in Positive);
