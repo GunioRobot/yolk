@@ -71,8 +71,9 @@ is
       entry Start;
       entry Stop;
    end Log_File_Monitor;
-   --  This task monitors the Log_File_Directory and deletes excess/old log
-   --  files.
+   --  This task monitors the Log_File_Directory and deletes excess/old AWS
+   --  access and error log files using the Yolk.Log_File_Cleanup.Delete
+   --  procedure.
 
    --------------------
    --  Start_Server  --
@@ -184,9 +185,9 @@ is
                Track (Handle     => Info,
                       Log_String => "Logfile monitor started.");
 
-               Clean_Up (Config_Object             => Web_Server_Config,
-                         Web_Server                => Web_Server,
-                         Amount_Of_Files_To_Keep   => Files_To_Keep);
+               Delete (Config_Object             => Web_Server_Config,
+                       Web_Server                => Web_Server,
+                       Amount_Of_Files_To_Keep   => Files_To_Keep);
                --  Do an initial clean-up.
             end Start;
          or
@@ -200,9 +201,9 @@ is
             delay Interval;
 
             if Good_To_Go then
-               Clean_Up (Config_Object             => Web_Server_Config,
-                         Web_Server                => Web_Server,
-                         Amount_Of_Files_To_Keep   => Files_To_Keep);
+               Delete (Config_Object             => Web_Server_Config,
+                       Web_Server                => Web_Server,
+                       Amount_Of_Files_To_Keep   => Files_To_Keep);
             end if;
          end select;
 
