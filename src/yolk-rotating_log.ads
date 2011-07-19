@@ -36,7 +36,7 @@ package Yolk.Rotating_Log is
    type Trace_Handles is (Error, Info, SQL);
    --  Here we define the log tracks. For each value defined in this type, a
    --  corresponding log file is created, which we can add data to by calling
-   --  the Track procedure.
+   --  the Trace procedure.
    --
    --  IMPORTANT:
    --    The Error and Info handles should _not_ be removed, as they are used
@@ -48,7 +48,7 @@ package Yolk.Rotating_Log is
    --    track.
 
    procedure Start_Rotating_Logs
-     (Called_From_Main_Task_Exception_Handler : Boolean := False);
+     (Emit_Warning_If_Already_Running : Boolean := True);
    --  Creates the three rotating log files, according to the Trace_Handles
    --  type. Also activates the GNATCOLL.SQL logging system if the following
    --  Yolk.Configuration parameters are True:
@@ -67,10 +67,10 @@ package Yolk.Rotating_Log is
    --  Exceptions:
    --    Cannot_Create_Log_File
 
-   procedure Track
+   procedure Trace
      (Handle       : in Trace_Handles;
       Log_String   : in String);
-   --  Add Log_String to Handle. Calling Track before having called
+   --  Add Log_String to Handle. Calling Trace before having called
    --  Start_Rotating_Logs will raise a Cannot_Write_To_Log_File exception.
    --  Exception:
    --    Cannot_Write_To_Log_File

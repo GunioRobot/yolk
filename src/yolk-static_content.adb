@@ -214,7 +214,7 @@ package body Yolk.Static_Content is
            and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
          then
             Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
-            Track
+            Trace
               (Handle     => Info,
                Log_String => Config.Get (Compressed_Cache_Directory)
                & " deleted by Yolk.Static_Content.Initialize");
@@ -222,12 +222,12 @@ package body Yolk.Static_Content is
 
          Create_Path
            (New_Directory => Config.Get (Compressed_Cache_Directory));
-         Track
+         Trace
            (Handle     => Info,
             Log_String => Config.Get (Compressed_Cache_Directory)
             & " created by Yolk.Static_Content.Initialize");
       else
-         Track
+         Trace
            (Handle     => Error,
             Log_String => "Static content compressed cache already " &
             "initialized");
@@ -283,7 +283,7 @@ package body Yolk.Static_Content is
          then
             --  Not so good. Log to ERROR track and return un-compressed
             --  content.
-            Track
+            Trace
               (Handle     => Error,
                Log_String => GZ_Resource
                & " exists and is not an ordinary file");

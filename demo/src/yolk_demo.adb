@@ -113,10 +113,10 @@ is
       AWS.Server.Log.Start_Error (Web_Server);
       --  Start the access and error logs.
 
-      Track (Handle     => Info,
+      Trace (Handle     => Info,
              Log_String => "Started " &
              AWS.Config.Server_Name (Web_Server_Config));
-      Track (Handle     => Info,
+      Trace (Handle     => Info,
              Log_String => "Yolk version " & Yolk.Version);
 
    end Start_Server;
@@ -146,7 +146,7 @@ is
       end if;
       AWS.Server.Log.Stop_Error (Web_Server);
 
-      Track (Handle     => Info,
+      Trace (Handle     => Info,
              Log_String => "Stopped " &
              AWS.Config.Server_Name (Web_Server_Config));
 
@@ -182,7 +182,7 @@ is
             accept Start do
                Good_To_Go := True;
 
-               Track (Handle     => Info,
+               Trace (Handle     => Info,
                       Log_String => "Logfile monitor started.");
 
                Delete (Config_Object             => Web_Server_Config,
@@ -194,7 +194,7 @@ is
             accept Stop do
                Exit_Loop := True;
 
-               Track (Handle     => Info,
+               Trace (Handle     => Info,
                       Log_String => "Logfile monitor stopped.");
             end Stop;
          or
@@ -217,7 +217,7 @@ begin
    --  Switch user.
 
    Start_Rotating_Logs;
-   --  Fire up the rotating log system. Calls to Yolk.Rotating_Log.Track up
+   --  Fire up the rotating log system. Calls to Yolk.Rotating_Log.Trace up
    --  until this point will fail, so please avoid those.
 
    Initialize_Compressed_Cache_Directory;
@@ -226,12 +226,12 @@ begin
 
    for Key in Keys'Range loop
       if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then
-         Track (Handle     => Info,
+         Trace (Handle     => Info,
                 Log_String => "Configuration key " &
                 Keys'Image (Key) & " is not default value.");
-         Track (Handle     => Info,
+         Trace (Handle     => Info,
                 Log_String => "    Default is: " & TS (Default_Values (Key)));
-         Track (Handle     => Info,
+         Trace (Handle     => Info,
                 Log_String => "    Set value is: " & TS (Config.Get (Key)));
       end if;
    end loop;
@@ -261,7 +261,7 @@ begin
    Start_Server;
    --  Start the server.
 
-   Track (Handle     => Info,
+   Trace (Handle     => Info,
           Log_String => "Starting " &
           AWS.Config.Server_Name (Web_Server_Config) &
           ". Listening on port" &
@@ -281,13 +281,10 @@ begin
 
 exception
    when Event : others =>
-      Start_Rotating_Logs (Called_From_Main_Task_Exception_Handler => True);
-      --  We might end up down here before the Yolk.Rotating_Logs system has
-      --  been started, so we try to start it. If it's already running, all
-      --  this call will do is make a note of that in the log.
-      Track (Handle     => Error,
+      Start_Rotating_Logs (Emit_Warning_If_Already_Running => False);
+      Trace (Handle     => Error,
              Log_String => Exception_Information (Event));
-      --  Write the exception information to the rotating Error log track.
+      --  Write the exception information to the rotating Error log trace.
       Stop_Server;
       Log_File_Monitor.Stop;
       --  First stop the server, then stop the log file monitor task.

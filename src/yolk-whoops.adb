@@ -55,36 +55,36 @@ package body Yolk.Whoops is
    begin
 
       if Error.Fatal then
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "");
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "-- FATAL Unexpected Exception Begin --");
-         Track (Handle     => Yolk.Rotating_Log.Error,
+         Trace (Handle     => Yolk.Rotating_Log.Error,
                 Log_String => Exception_Information (E));
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "We have a serious problem. One of the AWS" &
                 "slots have died.");
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "Slot " & Positive'Image (Error.Slot) &
                 " is dead now.");
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "-- FATAL Unexpected Exception End --");
       else
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "");
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "-- Unexpected Exception Begin --");
-         Track (Handle     => Yolk.Rotating_Log.Error,
+         Trace (Handle     => Yolk.Rotating_Log.Error,
                 Log_String => Exception_Information (E));
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => " Client: " & Peername (S));
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => " Method: " & Method (S));
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => " URI: " & URI (S));
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => " HTTP version: " & HTTP_Version (S));
-         Track (Handle     => Rotating_Log.Error,
+         Trace (Handle     => Rotating_Log.Error,
                 Log_String => "-- Unexpected Exception End --");
       end if;
 

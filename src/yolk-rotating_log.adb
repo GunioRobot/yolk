@@ -133,7 +133,7 @@ package body Yolk.Rotating_Log is
    function Supports_Time
      (Stream : Rotating_Log_Record)
       return Boolean;
-   --  Should we output time? No. Time is set in the Track procedure. Always
+   --  Should we output time? No. Time is set in the Trace procedure. Always
    --  return False.
 
    ------------------
@@ -172,7 +172,7 @@ package body Yolk.Rotating_Log is
 
    begin
 
-      Track (Handle     => SQL,
+      Trace (Handle     => SQL,
              Log_String => To_String (Stream.Buffer));
       Stream.Buffer := Null_Unbounded_String;
 
@@ -218,7 +218,7 @@ package body Yolk.Rotating_Log is
    ---------------------------
 
    procedure Start_Rotating_Logs
-     (Called_From_Main_Task_Exception_Handler : Boolean := False)
+     (Emit_Warning_If_Already_Running : Boolean := True)
    is
 
       use Ada.Text_IO;
@@ -277,10 +277,8 @@ package body Yolk.Rotating_Log is
                Log_Objects_List (Handle).Get_Slot & ".log");
          end loop;
       else
-         --  We've already started the rotating log system earlier. Lets log
-         --  This second call.
-         if not Called_From_Main_Task_Exception_Handler then
-            Track (Handle     => Info,
+         if Emit_Warning_If_Already_Running then
+            Trace (Handle     => Info,
                    Log_String => "Rotating log system already started.");
          end if;
       end if;
@@ -331,10 +329,10 @@ package body Yolk.Rotating_Log is
    end Supports_Time;
 
    -------------
-   --  Track  --
+   --  Trace  --
    -------------
 
-   procedure Track
+   procedure Trace
      (Handle       : in Trace_Handles;
       Log_String   : in String)
    is
@@ -357,7 +355,7 @@ package body Yolk.Rotating_Log is
          raise Cannot_Write_To_Log_File with
            "Handle: " & Trace_Handles'Image (Handle) & " and slot: ";
 
-   end Track;
+   end Trace;
 
    ------------------
    --  Log_Object  --

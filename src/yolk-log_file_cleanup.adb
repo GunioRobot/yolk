@@ -156,7 +156,7 @@ package body Yolk.Log_File_Cleanup is
 
       begin
 
-         Track (Handle     => Info,
+         Trace (Handle     => Info,
                 Log_String => "Searching for old " & Kind & " files.");
 
          Search (Directory => AWS.Config.Log_File_Directory (Config_Object),
@@ -178,7 +178,7 @@ package body Yolk.Log_File_Cleanup is
 
                exception
                   when others =>
-                     Track
+                     Trace
                        (Handle     => Error,
                         Log_String => "Cannot delete file " & To_String
                           (File_Set.Last_Element.File_Name));
@@ -188,13 +188,13 @@ package body Yolk.Log_File_Cleanup is
                File_Set.Delete_Last;
                --  Delete the last File_Info element from the set.
 
-               Track
+               Trace
                  (Handle     => Info,
                   Log_String =>
                     "Deleted " & To_String (File_Set.Last_Element.File_Name));
             end loop;
          else
-            Track (Handle     => Info,
+            Trace (Handle     => Info,
                    Log_String => "No " & Kind & " files deleted.");
          end if;
 
