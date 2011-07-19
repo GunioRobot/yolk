@@ -36,6 +36,10 @@ package Yolk.Configuration is
    use Yolk.Utilities;
 
    type Keys is (Accept_Queue_Size, --  AWS
+                 Activate_Rotating_SQL_Log,
+                 Activate_Rotating_SQL_Cache_Log,
+                 Activate_Rotating_SQL_Error_Log,
+                 Activate_Rotating_SQL_Select_Log,
                  Admin_Password, --  AWS
                  Admin_URI, --  AWS
                  Amount_Of_Log_Files_To_Keep,
@@ -59,7 +63,6 @@ package Yolk.Configuration is
                  Force_Server_Response_Timeout, --  AWS
                  Force_Wait_For_Client_Timeout, --  AWS
                  Free_Slots_Keep_Alive_Limit, --  AWS
-                 GNATCOLL_Traces_Ini_File,
                  Handler_CSS,
                  Handler_GIF,
                  Handler_HTML,
@@ -113,6 +116,14 @@ package Yolk.Configuration is
    Default_Values : constant Defaults_Array :=
                       (Accept_Queue_Size
                        => TUS ("64"),
+                       Activate_Rotating_SQL_Log
+                       => TUS ("True"),
+                       Activate_Rotating_SQL_Cache_Log
+                       => TUS ("True"),
+                       Activate_Rotating_SQL_Error_Log
+                       => TUS ("True"),
+                       Activate_Rotating_SQL_Select_Log
+                       => TUS ("True"),
                        Admin_Password
                        => TUS ("0ac9c9d0c0b1ee058b65ae70c9aeb3a7"),
                        Admin_URI
@@ -159,8 +170,6 @@ package Yolk.Configuration is
                        => TUS ("2.0"),
                        Free_Slots_Keep_Alive_Limit
                        => TUS ("1"),
-                       GNATCOLL_Traces_Ini_File
-                       => TUS ("configuration/GNATCOLL.SQL.Logs.ini"),
                        Handler_CSS
                        => TUS ("\.css$"),
                        Handler_GIF

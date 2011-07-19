@@ -24,7 +24,6 @@
 with Ada.Calendar;
 with Ada.Calendar.Formatting;
 with Ada.Calendar.Time_Zones;
-with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
@@ -42,9 +41,9 @@ package body Yolk.Rotating_Log is
    Is_Started : Boolean := False;
    --  Is set to True when Start is called the first time.
 
-   Stream_Rotating_Log : constant String := "rotating_log";
-   --  Name of the stream. This is used in the GNAT.Traces configuration files
-   --  or calls to Create to send a stream to a rotating log.
+   Stream_Rotating_Log : constant String := "yolk-rotating_log";
+   --  Name of the stream. This is used in the calls to Create to send a stream
+   --  to a rotating log.
    --  You must have called Register_Rotating_Log_Stream first.
    --  See Register_Rotating_Log_Stream.
 
@@ -98,7 +97,6 @@ package body Yolk.Rotating_Log is
    type Rotating_Log_Record is new GNATCOLL.Traces.Trace_Stream_Record
    with
       record
-         Handle : Trace_Handles;
          Buffer : Ada.Strings.Unbounded.Unbounded_String;
       end record;
 
@@ -174,7 +172,7 @@ package body Yolk.Rotating_Log is
 
    begin
 
-      Track (Handle     => GNATCOLL_SQL,
+      Track (Handle     => SQL,
              Log_String => To_String (Stream.Buffer));
       Stream.Buffer := Null_Unbounded_String;
 
@@ -223,7 +221,6 @@ package body Yolk.Rotating_Log is
      (Called_From_Main_Task_Exception_Handler : Boolean := False)
    is
 
-      use Ada.Directories;
       use Ada.Text_IO;
       use GNATCOLL.Traces;
 
@@ -236,14 +233,35 @@ package body Yolk.Rotating_Log is
       if not Is_Started then
          Is_Started := True;
 
-         if Exists (Name => Config.Get (GNATCOLL_Traces_Ini_File)) then
-            Register_Rotating_Log_Stream;
-            Parse_Config_File (Config.Get (GNATCOLL_Traces_Ini_File));
-         end if;
+         Register_Rotating_Log_Stream;
+
+         GNATCOLL.Traces.Set_Active
+           (Handle => GNATCOLL.Traces.Create
+              (Unit_Name => "SQL",
+               Stream    => "&yolk-rotating_log"),
+            Active => Config.Get (Activate_Rotating_SQL_Log));
+
+         GNATCOLL.Traces.Set_Active
+           (Handle => GNATCOLL.Traces.Create
+              (Unit_Name => "SQL.SELECT",
+               Stream    => "&yolk-rotating_log"),
+            Active => Config.Get (Activate_Rotating_SQL_Select_Log));
+
+         GNATCOLL.Traces.Set_Active
+           (Handle => GNATCOLL.Traces.Create
+              (Unit_Name => "SQL.ERROR",
+               Stream    => "&yolk-rotating_log"),
+            Active => Config.Get (Activate_Rotating_SQL_Error_Log));
+
+         GNATCOLL.Traces.Set_Active
+           (Handle => GNATCOLL.Traces.Create
+              (Unit_Name => "SQL.CACHE",
+               Stream    => "&yolk-rotating_log"),
+            Active => Config.Get (Activate_Rotating_SQL_Cache_Log));
 
          for Handle in Trace_Handles loop
             A_Handle := Handle;
-            --  We need this in case an exception is raised. See the
+            --  We need this assignment in case an exception is raised. See the
             --  when others exception handler further down.
 
             Log_Objects_List (Handle) := new Log_Object;
@@ -262,7 +280,7 @@ package body Yolk.Rotating_Log is
          --  We've already started the rotating log system earlier. Lets log
          --  This second call.
          if not Called_From_Main_Task_Exception_Handler then
-            Track (Handle     => Error,
+            Track (Handle     => Info,
                    Log_String => "Rotating log system already started.");
          end if;
       end if;
@@ -464,7 +482,7 @@ package body Yolk.Rotating_Log is
               Item => " ");
          Circa_Length := Circa_Length + 20;
 
-         if Handle /= GNATCOLL_SQL then
+         if Handle /= SQL then
             Put (File => Get_File_Access.all,
                  Item => "[");
             EIO.Put (File => Get_File_Access.all,
