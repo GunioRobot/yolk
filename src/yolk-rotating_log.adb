@@ -341,10 +341,10 @@ package body Yolk.Rotating_Log is
 
    begin
 
+      --  We ignore calls to Trace if Start_Rotating_Logs hasn't been called
+      --  yet.
       if Is_Started then
          Log.Write (Log_String => Log_String);
-      else
-         raise Cannot_Write_To_Log_File with "Rotating logs not started";
       end if;
 
    exception
