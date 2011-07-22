@@ -218,7 +218,7 @@ begin
 
    Start_Rotating_Logs;
    --  Fire up the rotating log system. Calls to Yolk.Rotating_Log.Trace up
-   --  until this point will fail, so please avoid those.
+   --  until this point are silently ignored.
 
    Initialize_Compressed_Cache_Directory;
    --  Delete old compressed content and create a clean directory for compres-
