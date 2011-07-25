@@ -141,7 +141,8 @@ My usual modus operandi for setting up these 6 things goes something like this:
 
     5.  Add /usr/gnat/bin to your PATH environment variable.
 
-    6.  Add /usr/gnat/lib/gnat to your ADA_PROJECT_PATH environment variable.
+    6.  Add /usr/gnat/lib/gnat to your GPR_PROJECT_PATH and ADA_PROJECT_PATH 
+        environment variables.
 
 Don't take the above for gospel. You should _always_ read all the accompanying
 documentation for the software you're trying to install.
@@ -154,7 +155,8 @@ XML/Ada, Florist and GNATcoll project files available in these directories:
     /usr/gnat/lib/gnat/florist.gpr
     /usr/gnat/lib/gnat/gnatcoll_postgresql.gpr
 
-My ADA_PROJECT_PATH environment variable hence contains this:
+My GPR_PROJECT_PATH / ADA_PROJECT_PATH environment variables hence contains 
+this:
 
     /usr/gnat/lib/gnat
 

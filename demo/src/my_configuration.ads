@@ -52,13 +52,13 @@ package My_Configuration is
 
    Default_Values : constant Defaults_Array :=
                       (DB_Host
-                       => TUS (""),
+                       => TUS ("localhost"),
                        DB_Name
-                       => TUS (""),
+                       => TUS ("yolk"),
                        DB_User
-                       => TUS (""),
+                       => TUS ("adauser"),
                        DB_Password
-                       => TUS (""),
+                       => TUS ("secret"),
                        Handler_DB_Test
                        => TUS ("/dbtest"),
                        Handler_Dir

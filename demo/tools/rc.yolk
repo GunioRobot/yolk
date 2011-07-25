@@ -161,7 +161,6 @@ yolk_restart() {
 
     yolk_stop
     sleep 1
-    echo "${NAME_OF_APPLICATION} stopped"
     yolk_start
 
     exit 1
