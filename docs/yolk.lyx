@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised July 22nd.
+Revised July 27th.
  2011
 \end_layout
 
@@ -4171,6 +4171,14 @@ my_handlers.adb
  of static content, but it is of course not mandatory.
 \end_layout
 
+\begin_layout Standard
+This package makes use of the 
+\emph on
+Yolk.Static_Content
+\emph default
+ package for the actual delivery of the content to the user.
+\end_layout
+
 \begin_layout Section
 Yolk.Log_File_Cleanup
 \end_layout
@@ -4891,7 +4899,12 @@ Max_Slot_Count
 \emph on
 Foo-rotating-INFO-1.log
 \emph default
- (if your application is named Foo) and when that file reach the 
+ for the 
+\emph on
+Info
+\emph default
+ trace (if your application is named Foo) and when that file reaches the
+ 
 \emph on
 Rotating_Log_Size_Limit
 \emph default
@@ -4933,7 +4946,7 @@ GNATCOLL.SQL
 \emph on
 demo/exe/configuration/config.ini
 \emph default
- for how to enable/disable this output.
+ for how to enable/disable the different levels of SQL related log data.
 \end_layout
 
 \begin_layout Subsection
@@ -4972,7 +4985,7 @@ It's not enough to simply
 with
 \emph default
  the package, you have to start the rotating log system before you can actually
- use it for anything.
+ use it.
  This is done with the aptly named 
 \emph on
 Start_Rotating_Logs
@@ -5032,7 +5045,11 @@ False
 \emph on
 Start_Rotating_Logs
 \emph default
- won't emit a warning message on the Info trace.
+ won't emit a warning message on the 
+\emph on
+Info
+\emph default
+ trace.
 \end_layout
 
 \begin_layout Subsection
@@ -5091,6 +5108,735 @@ procedure Trace
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+It should be obvious how this procedure is used.
+ Note that the configuration setting 
+\emph on
+Immediate_Flush
+\emph default
+ controls whether or not the 
+\emph on
+Log_String
+\emph default
+ is written to file immediately or if a buffer is used.
+\end_layout
+
+\begin_layout Section
+Yolk.Static_Content
+\end_layout
+
+\begin_layout Standard
+Most web applications have a lot of static content, ie.
+ stuff that doesn't change.
+ Things like PNG's, HTML, CSS and Javascript.
+ These are content types that are common for most websites, so a application
+ is going to have to handle these in some way.
+ This is where 
+\emph on
+Yolk.Static_Content
+\emph default
+ comes in.
+ Two kinds of files are handled by 
+\emph on
+Yolk.Static_Content
+\emph default
+:
+\end_layout
+
+\begin_layout Itemize
+Compressable (XML, HTML, CSS, JS and so on)
+\end_layout
+
+\begin_layout Itemize
+Non-compressable (PNG, JPG, GIF, ICO and so on)
+\end_layout
+
+\begin_layout Standard
+It is up to you, the user, to decide whether a specific kind of file is
+ compressable or not - the package does not make any such assumptions.
+ The difference between the two, is that compressable files are compressed
+ prior to delivery, if the clients HTTP request includes a 
+\emph on
+Accept-Encoding: gzip
+\emph default
+ header.
+ Non-compressable files are simply returned as is.
+ For both kinds, a generic 404 is returned if the requested file doesn't
+ exist.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Yolk.Static_Content
+\emph default
+ is affected by four configuration settings:
+\end_layout
+
+\begin_layout Itemize
+Compressed_Cache_Directory
+\end_layout
+
+\begin_layout Itemize
+Compressed_Max_Age
+\end_layout
+
+\begin_layout Itemize
+Compress_Minimum_File_Size
+\end_layout
+
+\begin_layout Itemize
+WWW_Root
+\end_layout
+
+\begin_layout Standard
+You should carefully read the 
+\emph on
+demo/exe/configuration/config.ini
+\emph default
+ file for information on what exactly these do.
+\end_layout
+
+\begin_layout Subsection
+Initializing the compressed cache directory
+\end_layout
+
+\begin_layout Standard
+The configuration parameter 
+\emph on
+Compressed_Cache_Directory
+\emph default
+ defines where the compressed version of the static content is saved.
+ When your application is started, this directory may or may not exist,
+ and it may or may not contain various compressed files.
+ To make sure that the directory exists and is empty, you should call the
+ 
+\emph on
+Initialize_Compressed_Cache_Directory
+\emph default
+ procedure:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Initialize_Compressed_Cache_Directory
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Log_To_Info_Trace : in Boolean := True);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This procedure creates the compressed cache directory, if it doesn't already
+ exist, and if it exists, it deletes everything in it.
+ So basically you're left with an empty directory after a call to this procedure.
+ Calling it repeatedly will simply wipe out the compressed cache directory.
+ This is a threadsafe operation.
+\end_layout
+
+\begin_layout Standard
+If 
+\emph on
+Log_To_Info_Trace
+\emph default
+ is 
+\emph on
+False
+\emph default
+ then no information about the deletion and creation of the compressed cache
+ directory is logged to the rotating log Info trace.
+\end_layout
+
+\begin_layout Standard
+Calling 
+\emph on
+Initialize_Compressed_Cache_Directory
+\emph default
+ is of course only necessary if you plan on using the 
+\emph on
+Yolk.Static_Content.Compressable
+\emph default
+ function.
+\end_layout
+
+\begin_layout Subsection
+Yolk.Static_Content.Compressable
+\end_layout
+
+\begin_layout Standard
+If your application contains a bunch of compressable files of significant
+ size, you can save a lot of bandwidth by using the 
+\emph on
+Compressable
+\emph default
+ function to serve them:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function Compressable      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Request : in AWS.Status.Data)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return AWS.Response.Data;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A natural place to call this function would be where you define your content
+ handlers, as seen in this, slightly altered, excerpt from the 
+\emph on
+Yolk.Handlers
+\emph default
+ package:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+declare
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   package SC renames Yolk.Static_Content;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+begin
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   AWS.Services.Dispatchers.URI.Register_Regexp         
+\end_layout
+
+\begin_layout Plain Layout
+
+     (Dispatcher  => Resource_Handlers,          
+\end_layout
+
+\begin_layout Plain Layout
+
+      URI         => "
+\backslash
+.css$",          
+\end_layout
+
+\begin_layout Plain Layout
+
+      Action      => Create (Callback => SC.Compressable'Access));
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   AWS.Services.Dispatchers.URI.Register_Regexp         
+\end_layout
+
+\begin_layout Plain Layout
+
+     (Dispatcher  => Resource_Handlers,          
+\end_layout
+
+\begin_layout Plain Layout
+
+      URI         => "
+\backslash
+.html$",          
+\end_layout
+
+\begin_layout Plain Layout
+
+      Action      => Create (Callback => SC.Compressable'Access));
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+end;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here you can see that we've defined some content handlers for CSS and HTML
+ files based on a few simple regular expressions, and whenever a resource
+ is requested that matches one of these, the corresponding 
+\emph on
+Action
+\emph default
+ callback is called, which in this example is the 
+\emph on
+Compressable
+\emph default
+ function.
+ The following steps are then taken:
+\end_layout
+
+\begin_layout Enumerate
+Does the requested resource exist and is it an ordinary file?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If no, then return a 404 message
+\end_layout
+
+\begin_layout Enumerate
+if yes, then proceed to 2
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Does the client support compressed content?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If no, then return the requested resource un-compressed
+\end_layout
+
+\begin_layout Enumerate
+if yes, then proceed to 3
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Is there a compressed version of the resource available on disk?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+if no, then make one, save it to disk, and return it
+\end_layout
+
+\begin_layout Enumerate
+If yes, then proceed to 4
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Is the age of the compressed file <= Compressed_Max_Age?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If no, then delete the current file, build a new one and return it
+\end_layout
+
+\begin_layout Enumerate
+If yes, then return it
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+And that's really all there is to it.
+ Note that 
+\emph on
+Compressable
+\emph default
+ always looks for requested content in the 
+\emph on
+WWW_Root
+\emph default
+ directory, so if the user requests the file 
+\emph on
+/css/index.css
+\emph default
+, then the path is going to be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+WWW_Root & "/css/index.ss";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the default configuration value for 
+\emph on
+WWW_Root
+\emph default
+, we'll end up with the path:
+\end_layout
+
+\begin_layout LyX-Code
+static_content/css/index.css
+\end_layout
+
+\begin_layout Standard
+The compressed version of 
+\emph on
+index.css
+\emph default
+ is saved as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Compressed_Cache_Directory & "/css/index.css" & ".gz";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the default configuration value for 
+\emph on
+Compressed_Cache_Directory
+\emph default
+, we'll end up with the path:
+\end_layout
+
+\begin_layout LyX-Code
+static_content/compressed_cache/css/index.css.gz
+\end_layout
+
+\begin_layout Standard
+In these two cases the paths are relative to the executable, but you can
+ of course also define 
+\emph on
+WWW_Root
+\emph default
+ and 
+\emph on
+Compressed_Cache_Directory
+\emph default
+ as absolute paths in the configuration file.
+\end_layout
+
+\begin_layout Subsection
+Yolk.Static_Content.Non_Compressable
+\end_layout
+
+\begin_layout Standard
+A lot of static content really doesn't benefit from any further compression.
+ This is the case for PNG files, JPEG files and a whole lot of other kinds
+ of files.
+ Static content that has already been compressed, should be handled by the
+ 
+\emph on
+Non_Compressable
+\emph default
+ function:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function Non_Compressable      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Request : in AWS.Status.Data)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return AWS.Response.Data;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A call to 
+\emph on
+Non_Compressable
+\emph default
+ is much simpler compared to a call to it's sibling function 
+\emph on
+Compressable
+\emph default
+:
+\end_layout
+
+\begin_layout Enumerate
+Does the requested resource exist and is it an ordinary file?
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If no, then return a 404 message
+\end_layout
+
+\begin_layout Enumerate
+if yes, then return the file
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+And that's it.
+ Either the resource is there, or it isn't.
+ If the requested resource is 
+\emph on
+/css/index.css
+\emph default
+, then the 
+\emph on
+Non_Compressable
+\emph default
+ function searches for the resource in:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+WWW_Root & "/css/index.ss";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the default configuration value for 
+\emph on
+WWW_Root
+\emph default
+, we'll end up with the path:
+\end_layout
+
+\begin_layout LyX-Code
+static_content/css/index.css
+\end_layout
+
+\begin_layout Standard
+Just as with 
+\emph on
+Compressable
+\emph default
+ a natural place to use 
+\emph on
+Non_Compressable
+\emph default
+ is where you define you content handlers, but it can obviously be used
+ wherever your application handles requests for static content.
 \end_layout
 
 \end_body
