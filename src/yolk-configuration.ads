@@ -51,8 +51,8 @@ package Yolk.Configuration is
                  Cleaner_Server_Response_Timeout, --  AWS
                  Cleaner_Wait_For_Client_Timeout, --  AWS
                  Compressed_Cache_Directory,
+                 Compressed_Max_Age,
                  Compress_Minimum_File_Size,
-                 Compress_Static_Content,
                  Context_Lifetime, --  AWS
                  Enable_Access_Log,
                  Error_Log_Filename_Prefix, -- AWS
@@ -146,10 +146,10 @@ package Yolk.Configuration is
                        => TUS ("80.0"),
                        Compressed_Cache_Directory
                        => TUS ("static_content/compressed_cache"),
+                       Compressed_Max_Age
+                       => TUS ("86400"),
                        Compress_Minimum_File_Size
                        => TUS ("200"),
-                       Compress_Static_Content
-                       => TUS ("True"),
                        Context_Lifetime
                        => TUS ("28800.0"),
                        Enable_Access_Log

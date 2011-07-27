@@ -23,35 +23,31 @@
 
 --  Static content such as images, HTML and XML files are handled here. The
 --  paths to where the server is supposed to look for the content is defined
---  in the configuration/config.ini file.
---  If enabled in the config.ini file, files with text content will be
---  pre-compressed and saved in the Compressed_Cache_Directory.
+--  by the WWW_Root configuration parameter.
+--  Compressed content is saved in the Compressed_Cache_Directory.
 
 with AWS.Response;
 with AWS.Status;
 
 package Yolk.Static_Content is
 
-   function Binary_File
+   function Non_Compressable
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Load various binary static content. The regex'es and dispatchers for
-   --  these files are defined in the Yolk.Handlers package.
-   --  NOTE:
-   --    Content handled by Binary_File will _not_ be pre-compressed.
+   --  Return non-compressed content.
 
-   procedure Initialize_Compressed_Cache_Directory;
-   --  Initialize the Static_Content package. Basically just delete and
-   --  re-create the Compressed_Cache_Directory. Should preferably be called
-   --  before any AWS HTTP servers are started.
+   procedure Initialize_Compressed_Cache_Directory
+     (Log_To_Info_Trace : in Boolean := True);
+   --  Delete and re-create the Compressed_Cache_Directory. Should preferably
+   --  be called before any AWS HTTP servers are started.
+   --  This is a threadsafe operation, and it can be repeated as often as
+   --  need be.
 
-   function Text_File
+   function Compressable
      (Request : in AWS.Status.Data)
       return AWS.Response.Data;
-   --  Load various text static content and compress/cache files. The regex'es
-   --  and dispatchers for these files are defined in the Yolk.Handlers
-   --  package.
-   --  NOTE:
-   --    Content handled by Text_file will _always_ be pre-compressed.
+   --  Return compressed content. This function saves a pre-compressed version
+   --  of the requested resource for future use. This compressed file times out
+   --  according to the Compressed_Max_Age configuration setting.
 
 end Yolk.Static_Content;

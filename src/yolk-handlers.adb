@@ -45,52 +45,52 @@ package body Yolk.Handlers is
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_CSS),
-         Action      => Create (Callback => SC.Text_File'Access));
+         Action      => Create (Callback => SC.Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_GIF),
-         Action      => Create (Callback => SC.Binary_File'Access));
+         Action      => Create (Callback => SC.Non_Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_HTML),
-         Action      => Create (Callback => SC.Text_File'Access));
+         Action      => Create (Callback => SC.Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_ICO),
-         Action      => Create (Callback => SC.Binary_File'Access));
+         Action      => Create (Callback => SC.Non_Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JPG),
-         Action      => Create (Callback => SC.Binary_File'Access));
+         Action      => Create (Callback => SC.Non_Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_JS),
-         Action      => Create (Callback => SC.Text_File'Access));
+         Action      => Create (Callback => SC.Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_PNG),
-         Action      => Create (Callback => SC.Binary_File'Access));
+         Action      => Create (Callback => SC.Non_Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_SVG),
-         Action      => Create (Callback => SC.Text_File'Access));
+         Action      => Create (Callback => SC.Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XML),
-         Action      => Create (Callback => SC.Text_File'Access));
+         Action      => Create (Callback => SC.Compressable'Access));
 
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XSL),
-         Action      => Create (Callback => SC.Text_File'Access));
+         Action      => Create (Callback => SC.Compressable'Access));
 
    end Set;
 

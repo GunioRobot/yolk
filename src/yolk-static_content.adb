@@ -21,6 +21,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Calendar;
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with AWS.Messages;
@@ -32,11 +33,6 @@ with Yolk.Rotating_Log;
 
 package body Yolk.Static_Content is
 
-   Has_Been_Initialized : Boolean := False;
-   --  Is set to True when Initialize_Compressed_Cache_Directory is called the
-   --  first time. Subsequent calls to Initialize_Compressed_Cache_Directory
-   --  are ignored.
-
    protected GZip_And_Cache is
 
       procedure Do_It
@@ -46,10 +42,130 @@ package body Yolk.Static_Content is
       --  then this procedure takes care of GZip'ing the Resource and saving
       --  it to disk as a .gz file.
 
+      procedure Initialize
+        (Log_It : in Boolean := True);
+      --  Delete and re-create the Compressed_Cache_Directory.
+
    end GZip_And_Cache;
-   --  Handle GZip'ing and saving of compressable resources. This is done in
-   --  a protected object so we don't get multiple threads all trying to
-   --  compress the same resources at the same time.
+   --  Handle GZip'ing, saving and deletion of compressable resources. This is
+   --  done in a protected object so we don't get multiple threads all trying
+   --  to save/delete the same resources at the same time.
+
+   function Good_Age
+     (Resource : in String)
+      return Boolean;
+   --  Return True if the age of Resource is younger than the configuration
+   --  parameter Compressed_Max_Age. If Compressed_Max_Age is 0, then always
+   --  return True.
+
+   --------------------
+   --  Compressable  --
+   --------------------
+
+   function Compressable
+     (Request : in AWS.Status.Data)
+      return AWS.Response.Data
+   is
+
+      use Ada.Directories;
+      use AWS.Messages;
+      use AWS.Status;
+      use Yolk.Rotating_Log;
+      use Yolk.Configuration;
+
+      GZ_Resource : constant String :=
+                      Config.Get (Compressed_Cache_Directory)
+                      & URI (Request) & ".gz";
+      --  The path to the GZipped resource.
+
+      Resource : constant String := Config.Get (WWW_Root) & URI (Request);
+      --  The path to the requested resource.
+
+      MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
+      Minimum_File_Size : constant File_Size :=
+                            File_Size (Integer'(Config.Get
+                              (Compress_Minimum_File_Size)));
+
+   begin
+
+      if not Exists (Resource)
+        or else Kind (Resource) /= Ordinary_File
+      then
+         return Yolk.Not_Found.Generate (Request);
+      end if;
+
+      if Is_Supported (Request, GZip) then
+         if Exists (GZ_Resource)
+           and then Kind (GZ_Resource) = Ordinary_File
+         then
+            if Good_Age (Resource => GZ_Resource) then
+               return AWS.Response.File
+                 (Content_Type  => MIME_Type,
+                  Filename      => GZ_Resource,
+                  Encoding      => GZip);
+            else
+               Delete_File (GZ_Resource);
+            end if;
+         elsif Exists (GZ_Resource)
+           and then Kind (GZ_Resource) /= Ordinary_File
+         then
+            --  Not so good. Log to ERROR track and return un-compressed
+            --  content.
+            Trace
+              (Handle     => Error,
+               Log_String => GZ_Resource
+               & " exists and is not an ordinary file");
+
+            return AWS.Response.File
+              (Content_Type  => MIME_Type,
+               Filename      => Resource);
+         end if;
+
+         if Size (Resource) > Minimum_File_Size then
+            GZip_And_Cache.Do_It (GZ_Resource => GZ_Resource,
+                                  Resource    => Resource);
+
+            return AWS.Response.File
+              (Content_Type  => MIME_Type,
+               Filename      => GZ_Resource,
+               Encoding      => GZip);
+         end if;
+      end if;
+
+      return AWS.Response.File
+        (Content_Type  => MIME_Type,
+         Filename      => Resource);
+
+   end Compressable;
+
+   ----------------
+   --  Good_Age  --
+   ----------------
+
+   function Good_Age
+     (Resource : in String)
+      return Boolean
+   is
+
+      use Ada.Calendar;
+      use Ada.Directories;
+      use Yolk.Configuration;
+
+   begin
+
+      if Config.Get (Compressed_Max_Age) <= 0 then
+         return True;
+      end if;
+
+      if
+        Clock - Modification_Time (Resource) > Config.Get (Compressed_Max_Age)
+      then
+         return False;
+      end if;
+
+      return True;
+
+   end Good_Age;
 
    ----------------------
    --  GZip_And_Cache  --
@@ -161,13 +277,65 @@ package body Yolk.Static_Content is
 
       end Do_It;
 
+      ------------------
+      --  Initialize  --
+      ------------------
+
+      procedure Initialize
+        (Log_It : in Boolean := True)
+      is
+
+         use Ada.Directories;
+         use Yolk.Rotating_Log;
+         use Yolk.Configuration;
+
+      begin
+
+         if Exists (Config.Get (Compressed_Cache_Directory))
+           and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
+         then
+            Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
+
+            if Log_It then
+               Trace
+                 (Handle     => Info,
+                  Log_String => Config.Get (Compressed_Cache_Directory)
+                  & " deleted by Yolk.Static_Content.Initialize");
+            end if;
+         end if;
+
+         Create_Path
+           (New_Directory => Config.Get (Compressed_Cache_Directory));
+
+         if Log_It then
+            Trace
+              (Handle     => Info,
+               Log_String => Config.Get (Compressed_Cache_Directory)
+               & " created by Yolk.Static_Content.Initialize");
+         end if;
+
+      end Initialize;
+
    end GZip_And_Cache;
 
-   -------------------
-   --  Binary_File  --
-   -------------------
+   ---------------------------------------------
+   --  Initialize_Compressed_Cache_Directory  --
+   ---------------------------------------------
 
-   function Binary_File
+   procedure Initialize_Compressed_Cache_Directory
+     (Log_To_Info_Trace : in Boolean := True)
+   is
+   begin
+
+      GZip_And_Cache.Initialize (Log_It => Log_To_Info_Trace);
+
+   end Initialize_Compressed_Cache_Directory;
+
+   ------------------------
+   --  Non_Compressable  --
+   ------------------------
+
+   function Non_Compressable
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
@@ -192,124 +360,6 @@ package body Yolk.Static_Content is
         (Content_Type  => Content_Type (Resource),
          Filename      => Resource);
 
-   end Binary_File;
-
-   ---------------------------------------------
-   --  Initialize_Compressed_Cache_Directory  --
-   ---------------------------------------------
-
-   procedure Initialize_Compressed_Cache_Directory
-   is
-
-      use Ada.Directories;
-      use Yolk.Rotating_Log;
-      use Yolk.Configuration;
-
-   begin
-
-      if not Has_Been_Initialized then
-         Has_Been_Initialized := True;
-
-         if Exists (Config.Get (Compressed_Cache_Directory))
-           and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
-         then
-            Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
-            Trace
-              (Handle     => Info,
-               Log_String => Config.Get (Compressed_Cache_Directory)
-               & " deleted by Yolk.Static_Content.Initialize");
-         end if;
-
-         Create_Path
-           (New_Directory => Config.Get (Compressed_Cache_Directory));
-         Trace
-           (Handle     => Info,
-            Log_String => Config.Get (Compressed_Cache_Directory)
-            & " created by Yolk.Static_Content.Initialize");
-      else
-         Trace
-           (Handle     => Error,
-            Log_String => "Static content compressed cache already " &
-            "initialized");
-      end if;
-   end Initialize_Compressed_Cache_Directory;
-
-   -----------------
-   --  Text_File  --
-   -----------------
-
-   function Text_File
-     (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-
-      use Ada.Directories;
-      use AWS.Messages;
-      use AWS.Status;
-      use Yolk.Rotating_Log;
-      use Yolk.Configuration;
-
-      GZ_Resource           : constant String :=
-                                Config.Get (Compressed_Cache_Directory)
-                                & URI (Request) & ".gz";
-      --  The path to the GZipped resource.
-
-      Resource : constant String := Config.Get (WWW_Root) & URI (Request);
-      --  The path to the requested resource.
-
-      MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
-      Minimum_File_Size : constant File_Size :=
-                            File_Size (Integer'(Config.Get
-                              (Compress_Minimum_File_Size)));
-
-   begin
-
-      if not Exists (Resource)
-        or else Kind (Resource) /= Ordinary_File
-      then
-         return Yolk.Not_Found.Generate (Request);
-      end if;
-
-      if Is_Supported (Request, GZip) then
-         if Exists (GZ_Resource)
-           and then Kind (GZ_Resource) = Ordinary_File
-         then
-            return AWS.Response.File
-              (Content_Type  => MIME_Type,
-               Filename      => GZ_Resource,
-               Encoding      => GZip);
-         elsif Exists (GZ_Resource)
-           and then Kind (GZ_Resource) /= Ordinary_File
-         then
-            --  Not so good. Log to ERROR track and return un-compressed
-            --  content.
-            Trace
-              (Handle     => Error,
-               Log_String => GZ_Resource
-               & " exists and is not an ordinary file");
-
-            return AWS.Response.File
-              (Content_Type  => MIME_Type,
-               Filename      => Resource);
-         end if;
-
-         if Config.Get (Compress_Static_Content)
-           and then Size (Resource) > Minimum_File_Size
-         then
-            GZip_And_Cache.Do_It (GZ_Resource => GZ_Resource,
-                                  Resource    => Resource);
-
-            return AWS.Response.File
-              (Content_Type  => MIME_Type,
-               Filename      => GZ_Resource,
-               Encoding      => GZip);
-         end if;
-      end if;
-
-      return AWS.Response.File
-        (Content_Type  => MIME_Type,
-         Filename      => Resource);
-
-   end Text_File;
+   end Non_Compressable;
 
 end Yolk.Static_Content;
