@@ -25,6 +25,7 @@ with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Interrupts.Names;
 with Ada.Text_IO;
+with POSIX.Process_Identification;
 
 package body Yolk.Process_Control is
 
@@ -48,11 +49,6 @@ package body Yolk.Process_Control is
    --  Create and delete the PID file. This file is per default placed in the
    --  same directory as the server executable itself. This can be changed by
    --  altering the PID constant.
-
-   function getpid return Integer;
-   pragma Import (C, getpid);
-   function Get_PID return Integer renames getpid;
-   --  Return the PID number of the process.
 
    ------------------
    --  Controller  --
@@ -91,8 +87,8 @@ package body Yolk.Process_Control is
    is
 
       use Ada.Text_IO;
+      use POSIX.Process_Identification;
 
-      package IIO is new Ada.Text_IO.Integer_IO (Natural);
       File  : File_Type;
 
    begin
@@ -103,9 +99,8 @@ package body Yolk.Process_Control is
 
       Create (File => File,
               Name => PID);
-      IIO.Put (File => File,
-               Item => Get_PID,
-               Width => 0);
+      Set_Output (File => File);
+      Put (Image (Get_Process_ID));
       Close (File);
 
    exception
