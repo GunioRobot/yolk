@@ -130,7 +130,6 @@ package body Yolk.Syndication.Writer is
      (Feed     : in out Atom_Feed;
       Term     : in     String;
       Base_URI : in     String := None;
-      Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None)
@@ -141,7 +140,6 @@ package body Yolk.Syndication.Writer is
         (Value => Atom_Category'(Common =>
                                    Atom_Common'(Base_URI => TUS (Base_URI),
                                                 Language => TUS (Language)),
-                                 Content  => TUS (Content),
                                  Label    => TUS (Label),
                                  Scheme   => TUS (Scheme),
                                  Term     => TUS (Term)));
@@ -156,7 +154,6 @@ package body Yolk.Syndication.Writer is
      (Entr     : in out Atom_Entry;
       Term     : in     String;
       Base_URI : in     String := None;
-      Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None)
@@ -167,7 +164,6 @@ package body Yolk.Syndication.Writer is
         (New_Item => Atom_Category'(Common =>
                                       Atom_Common'(Base_URI => TUS (Base_URI),
                                                    Language => TUS (Language)),
-                                    Content  => TUS (Content),
                                     Label    => TUS (Label),
                                     Scheme   => TUS (Scheme),
                                     Term     => TUS (Term)));
@@ -182,7 +178,6 @@ package body Yolk.Syndication.Writer is
      (Entr     : in out Atom_Entry;
       Term     : in     String;
       Base_URI : in     String := None;
-      Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None)
@@ -193,7 +188,6 @@ package body Yolk.Syndication.Writer is
         (New_Item => Atom_Category'(Common =>
                                       Atom_Common'(Base_URI => TUS (Base_URI),
                                                    Language => TUS (Language)),
-                                    Content  => TUS (Content),
                                     Label    => TUS (Label),
                                     Scheme   => TUS (Scheme),
                                     Term     => TUS (Term)));
@@ -296,7 +290,6 @@ package body Yolk.Syndication.Writer is
      (Feed      : in out Atom_Feed;
       Href      : in     String;
       Base_URI  : in     String := None;
-      Content   : in     String := None;
       Hreflang  : in     String := None;
       Language  : in     String := None;
       Length    : in     Natural := 0;
@@ -310,7 +303,6 @@ package body Yolk.Syndication.Writer is
         (Value => Atom_Link'(Common =>
                                Atom_Common'(Base_URI => TUS (Base_URI),
                                             Language => TUS (Language)),
-                             Content   => TUS (Content),
                              Href      => TUS (Href),
                              Hreflang  => TUS (Hreflang),
                              Length    => Length,
@@ -328,7 +320,6 @@ package body Yolk.Syndication.Writer is
      (Entr      : in out Atom_Entry;
       Href      : in     String;
       Base_URI  : in     String := None;
-      Content   : in     String := None;
       Hreflang  : in     String := None;
       Language  : in     String := None;
       Length    : in     Natural := 0;
@@ -342,7 +333,6 @@ package body Yolk.Syndication.Writer is
         (New_Item => Atom_Link'(Common =>
                                   Atom_Common'(Base_URI => TUS (Base_URI),
                                                Language => TUS (Language)),
-                                Content   => TUS (Content),
                                 Href      => TUS (Href),
                                 Hreflang  => TUS (Hreflang),
                                 Length    => Length,
@@ -360,7 +350,6 @@ package body Yolk.Syndication.Writer is
      (Entr      : in out Atom_Entry;
       Href      : in     String;
       Base_URI  : in     String := None;
-      Content   : in     String := None;
       Hreflang  : in     String := None;
       Language  : in     String := None;
       Length    : in     Natural := 0;
@@ -374,7 +363,6 @@ package body Yolk.Syndication.Writer is
         (New_Item => Atom_Link'(Common =>
                                   Atom_Common'(Base_URI => TUS (Base_URI),
                                                Language => TUS (Language)),
-                                Content   => TUS (Content),
                                 Href      => TUS (Href),
                                 Hreflang  => TUS (Hreflang),
                                 Length    => Length,
@@ -1503,9 +1491,9 @@ package body Yolk.Syndication.Writer is
          --  Add a generic element to Parent. A generic element has the
          --  following structure:
          --
-         --    <Elem_Name base="Common.Base_URI" lang="Common.Language">
-         --       Data
-         --    </Elem_Name>
+         --  <Elem_Name xml:base="Common.Base_URI" xml:lang="Common.Language">
+         --     Data
+         --  </Elem_Name>
 
          procedure Create_Link_Elements
            (List   : in Link_List.List;
@@ -1581,11 +1569,11 @@ package body Yolk.Syndication.Writer is
                               Value => TS (A_Category.Term));
 
                Attribute (Elem  => Category_Node,
-                          Name  => "base",
+                          Name  => "xml:base",
                           Value => TS (A_Category.Common.Base_URI));
 
                Attribute (Elem  => Category_Node,
-                          Name  => "lang",
+                          Name  => "xml:lang",
                           Value => TS (A_Category.Common.Language));
 
                Attribute (Elem  => Category_Node,
@@ -1595,14 +1583,6 @@ package body Yolk.Syndication.Writer is
                Attribute (Elem  => Category_Node,
                           Name  => "scheme",
                           Value => TS (A_Category.Scheme));
-
-               if A_Category.Content /= Null_Unbounded_String then
-                  Category_Node := Append_Child
-                    (N         => Category_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Category.Content)));
-               end if;
 
                Category_List.Next (C);
             end loop;
@@ -1637,11 +1617,11 @@ package body Yolk.Syndication.Writer is
                                                   Tag_Name => "content"));
 
                   Attribute (Elem  => Content_Node,
-                             Name  => "base",
+                             Name  => "xml:base",
                              Value => TS (Entry_Content.Common.Base_URI));
 
                   Attribute (Elem  => Content_Node,
-                             Name  => "lang",
+                             Name  => "xml:lang",
                              Value => TS (Entry_Content.Common.Language));
 
                   Attribute (Elem  => Content_Node,
@@ -1683,11 +1663,11 @@ package body Yolk.Syndication.Writer is
                                                Tag_Name => "generator"));
 
                Attribute (Elem  => Generator_Node,
-                          Name  => "base",
+                          Name  => "xml:base",
                           Value => TS (A_Generator.Common.Base_URI));
 
                Attribute (Elem  => Generator_Node,
-                          Name  => "lang",
+                          Name  => "xml:lang",
                           Value => TS (A_Generator.Common.Language));
 
                Attribute (Elem  => Generator_Node,
@@ -1728,11 +1708,11 @@ package body Yolk.Syndication.Writer is
                                             Tag_Name => Elem_Name));
 
             Attribute (Elem  => Elem_Node,
-                       Name  => "base",
+                       Name  => "xml:base",
                        Value => TS (Common.Base_URI));
 
             Attribute (Elem  => Elem_Node,
-                       Name  => "lang",
+                       Name  => "xml:lang",
                        Value => TS (Common.Language));
 
             Elem_Node := Append_Child
@@ -1820,14 +1800,6 @@ package body Yolk.Syndication.Writer is
                           Name  => "title",
                           Value => TS (A_Link.Title));
 
-               if A_Link.Content /= Null_Unbounded_String then
-                  Link_Node := Append_Child
-                    (N         => Link_Node,
-                     New_Child => Create_Text_Node
-                       (Doc  => Doc,
-                        Data => TS (A_Link.Content)));
-               end if;
-
                Link_List.Next (C);
             end loop;
 
@@ -1861,11 +1833,11 @@ package body Yolk.Syndication.Writer is
                                                Tag_Name => Elem_Name));
 
                Attribute (Elem  => Person_Node,
-                          Name  => "base",
+                          Name  => "xml:base",
                           Value => TS (A_Person.Common.Base_URI));
 
                Attribute (Elem  => Person_Node,
-                          Name  => "lang",
+                          Name  => "xml:lang",
                           Value => TS (A_Person.Common.Language));
 
                Elem_Node := Append_Child
@@ -1925,11 +1897,11 @@ package body Yolk.Syndication.Writer is
                                             Tag_Name => "source"));
 
             Attribute (Elem  => Source_Node,
-                       Name  => "base",
+                       Name  => "xml:base",
                        Value => TS (Source.Common.Base_URI));
 
             Attribute (Elem  => Source_Node,
-                       Name  => "lang",
+                       Name  => "xml:lang",
                        Value => TS (Source.Common.Language));
 
             Create_Person_Elements (Elem_Name   => "author",
@@ -2023,11 +1995,11 @@ package body Yolk.Syndication.Writer is
                                             Tag_Name => Elem_Name));
 
             Attribute (Elem  => Elem_Node,
-                       Name  => "base",
+                       Name  => "xml:base",
                        Value => TS (Common.Base_URI));
 
             Attribute (Elem  => Elem_Node,
-                       Name  => "lang",
+                       Name  => "xml:lang",
                        Value => TS (Common.Language));
 
             case Text_Kind is
@@ -2079,11 +2051,11 @@ package body Yolk.Syndication.Writer is
                         Value => XMLNS);
 
          Attribute (Elem  => Feed_Node,
-                    Name  => "base",
+                    Name  => "xml:base",
                     Value => TS (Common.Base_URI));
 
          Attribute (Elem  => Feed_Node,
-                    Name  => "lang",
+                    Name  => "xml:lang",
                     Value => TS (Common.Language));
 
          --  feed:author elements
@@ -2183,11 +2155,11 @@ package body Yolk.Syndication.Writer is
                                                Tag_Name => "entry"));
 
                Attribute (Elem  => Entry_Node,
-                          Name  => "base",
+                          Name  => "xml:base",
                           Value => TS (An_Entry.Common.Base_URI));
 
                Attribute (Elem  => Entry_Node,
-                          Name  => "lang",
+                          Name  => "xml:lang",
                           Value => TS (An_Entry.Common.Language));
 
                --  entry:author elements

@@ -161,16 +161,12 @@ package Yolk.Syndication.Writer is
      (Feed     : in out Atom_Feed;
       Term     : in     String;
       Base_URI : in     String := None;
-      Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None);
    --  Add a category to the feed/entry. The category element conveys
    --  information about a category associated with an entry or feed.
    --
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
    --  Term:
    --    A string that identifies the category to which the entry belongs.
    --  Label:
@@ -185,16 +181,12 @@ package Yolk.Syndication.Writer is
      (Entr     : in out Atom_Entry;
       Term     : in     String;
       Base_URI : in     String := None;
-      Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None);
    --  Add a category to the feed/entry. The category element conveys
    --  information about a category associated with an entry or feed.
    --
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
    --  Term:
    --    A string that identifies the category to which the entry belongs.
    --  Label:
@@ -209,16 +201,12 @@ package Yolk.Syndication.Writer is
      (Entr     : in out Atom_Entry;
       Term     : in     String;
       Base_URI : in     String := None;
-      Content  : in     String := None;
       Label    : in     String := None;
       Language : in     String := None;
       Scheme   : in     String := None);
    --  Add a category to the feed/entry. The category element conveys
    --  information about a category associated with an entry or feed.
    --
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
    --  Term:
    --    A string that identifies the category to which the entry belongs.
    --  Label:
@@ -337,7 +325,6 @@ package Yolk.Syndication.Writer is
      (Feed      : in out Atom_Feed;
       Href      : in     String;
       Base_URI  : in     String := None;
-      Content   : in     String := None;
       Hreflang  : in     String := None;
       Language  : in     String := None;
       Length    : in     Natural := 0;
@@ -348,9 +335,6 @@ package Yolk.Syndication.Writer is
    --
    --  Base_URI:
    --    See Set_Common.
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
    --  Href:
    --    Contains the link's IRI.
    --  Hreflang:
@@ -383,7 +367,6 @@ package Yolk.Syndication.Writer is
      (Entr      : in out Atom_Entry;
       Href      : in     String;
       Base_URI  : in     String := None;
-      Content   : in     String := None;
       Hreflang  : in     String := None;
       Language  : in     String := None;
       Length    : in     Natural := 0;
@@ -394,9 +377,6 @@ package Yolk.Syndication.Writer is
    --
    --  Base_URI:
    --    See Set_Common.
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
    --  Href:
    --    Contains the link's IRI.
    --  Hreflang:
@@ -429,7 +409,6 @@ package Yolk.Syndication.Writer is
      (Entr      : in out Atom_Entry;
       Href      : in     String;
       Base_URI  : in     String := None;
-      Content   : in     String := None;
       Hreflang  : in     String := None;
       Language  : in     String := None;
       Length    : in     Natural := 0;
@@ -440,9 +419,6 @@ package Yolk.Syndication.Writer is
    --
    --  Base_URI:
    --    See Set_Common.
-   --  Content:
-   --    No meaning is assigned to this by RFC4287. Should probably be left
-   --    empty.
    --  Href:
    --    Contains the link's IRI.
    --  Hreflang:
@@ -685,7 +661,7 @@ package Yolk.Syndication.Writer is
       Id       : in     String;
       Base_URI : in     String := None;
       Language : in     String := None);
-   --  Conveys a permanent, universally unique identifier for the entry.
+   --  Conveys a permanent, universally unique identifier for the feed.
    --  Its content MUST be an IRI, as defined by [RFC3987]. Note that the
    --  definition of "IRI" excludes relative references. Though the IRI might
    --  use a dereferencable scheme, Atom Processors MUST NOT assume it can be
@@ -1011,7 +987,6 @@ private
    type Atom_Category is
       record
          Common   : Atom_Common;
-         Content  : Unbounded_String;
          Label    : Unbounded_String;
          Scheme   : Unbounded_String;
          Term     : Unbounded_String;
@@ -1055,7 +1030,6 @@ private
    type Atom_Link is
       record
          Common      : Atom_Common;
-         Content     : Unbounded_String;
          Href        : Unbounded_String;
          Hreflang    : Unbounded_String;
          Length      : Natural;

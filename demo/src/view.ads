@@ -61,7 +61,7 @@ package View is
    package Cache2 is new Yolk.Cache.String_Keys
      (Element_Type      => Unbounded_String);
    --  Some pages are expensive to build, so we cache them. Here we test both
-   --  the Discrete_Keys and the String_Keys caches.
+   --  the Discrete_Keys (Cache1) and the String_Keys (Cache2) caches.
 
    function Build_Response
      (Status_Data    : in AWS.Status.Data;

@@ -72,20 +72,24 @@ begin
 
    --  Lets build the ATOM feed. This is a rather involved process, since there
    --  are quite a lot of XML elements to take care of in the ATOM RFC.
-   --  The feed built here is use more or less every available element. This is
-   --  _not_ required by RFC 4287,I've merely done so for completeness of the
-   --  example.
+   --  The feed built here is using more or less every available element. This
+   --  is _not_ required by RFC 4287, I've merely done so for completeness of
+   --  the example.
    --
-   --  http://tools.ietf.org/html/rfc4287
+   --  This feed validates according to the W3C feed validator:
+   --    http://validator.w3.org/feed/
+   --
+   --  The Atom RFC can be found here:
+   --    http://tools.ietf.org/html/rfc4287
 
    Set_Id (Feed     => Feed,
-           Id       => "/some/id/uri",
-           Base_URI => "/",
-           Language => "da");
+           Id       => "http://id/uri",
+           Base_URI => "/base/id",
+           Language => "en");
    Set_Title (Feed       => Feed,
               Title      => "Some title",
-              Base_URI   => "/",
-              Language   => "da",
+              Base_URI   => "/base/title",
+              Language   => "en",
               Title_Kind => Text);
    Add_Author (Feed     => Feed,
                Name     => "Thomas Locke");
@@ -95,91 +99,93 @@ begin
                     Name => "Trine Locke");
    Set_Generator (Feed => Feed,
                   Agent => "Yolk Syndication",
-                  Base_URI => "/",
-                  Language => "da",
-                  URI      => "/some/uri",
-                  Version  => "0.21");
+                  Base_URI => "/base/generator",
+                  Language => "en",
+                  URI      => "http://generator/URI",
+                  Version  => Version);
 
    Set_Icon (Feed     => Feed,
-             URI      => "icon URI");
+             URI      => "http://icon/URI");
+
+   Add_Link (Feed => Feed,
+             Href => "http://one.pancon.dk/syndication",
+             Rel => Self);
 
    Add_Link (Feed => Feed,
              Href => "link_one",
-             Base_URI  => "base",
-             Content   => "content",
-             Hreflang  => "hreflang",
-             Language  => "lang",
+             Base_URI  => "/base/link",
+             Hreflang  => "en",
+             Language  => "en",
              Length    => 1,
-             Mime_Type => "mime",
+             Mime_Type => "text/html",
              Rel       => Alternate,
              Title     => "Title");
    Add_Link (Feed => Feed,
-             Href => "link_two");
+             Href => "http://link_two");
 
    Set_Logo (Feed     => Feed,
-             URI      => "logo/uri",
-             Base_URI => "base",
-             Language => "da");
+             URI      => "http://logo/uri",
+             Base_URI => "/base/logo",
+             Language => "en");
 
    Set_Rights (Feed        => Feed,
                Rights      => "Some rights",
-               Base_URI    => "base/",
+               Base_URI    => "/base/rights",
                Language    => "da",
                Rights_Kind => Text);
 
    Set_Subtitle (Feed          => Feed,
                  Subtitle      => "Some subtitle",
-                 Base_URI      => "base/",
+                 Base_URI      => "/base/subtitle",
                  Language      => "da",
                  Subtitle_Kind => Text);
 
    --  With the basic feed elements out of the way, it is time to add an entry.
    declare
 
-      An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "entry/base/",
-                                               Language => "entry lang");
+      An_Entry : Atom_Entry := New_Atom_Entry (Base_URI => "/base/entry",
+                                               Language => "en");
       Success  : Boolean;
 
    begin
 
       Add_Author (Entr     => An_Entry,
                   Name     => "Thomas Locke",
-                  Base_URI => "author/base",
+                  Base_URI => "/base/author",
                   Email    => "thomas@loecke.dk",
-                  Language => "da",
+                  Language => "en",
                   URI      => "http://12boo.net");
 
       Add_Category (Entr     => An_Entry,
                     Term     => "entry category",
-                    Base_URI => "/",
-                    Content  => "undefined content",
+                    Base_URI => "/base/category",
                     Label    => "A label",
-                    Language => "da",
-                    Scheme   => "URI to scheme");
+                    Language => "en",
+                    Scheme   => "http://URI/to/scheme");
 
       Add_Contributor (Entr     => An_Entry,
-                       Name     => "Con Thomas Locke",
-                       Base_URI => "base/con",
-                       Email    => "con email",
-                       Language => "con lan",
-                       URI      => "con URI");
+                       Name     => "Contributor Thomas Locke",
+                       Base_URI => "/base/contributor",
+                       Email    => "thomas@12boo.net",
+                       Language => "en",
+                       URI      => "http://contributor/URI");
 
       Set_Content_OutOfLine (Entr      => An_Entry,
-                             Mime_Type => "OutOfLine Content",
-                             Source    => "SomeURL",
-                             Base_URI  => "OutOfLine/base",
-                             Language  => "OutOfLine/lang");
+                             Mime_Type => "text/html",
+                             Source    => "http://some/URL",
+                             Base_URI  => "/base/outofline",
+                             Language  => "en");
 
       Set_Common_Source (Entr     => An_Entry,
-                         Base_URI => "source/base",
-                         Language => "source/lang");
+                         Base_URI => "/base/source",
+                         Language => "en");
 
       Add_Author_Source (Entr     => An_Entry,
                          Name     => "Thomas Locke",
-                         Base_URI => "author/base",
-                         Email    => "thomas@responsum.dk",
-                         Language => "author/lang",
-                         URI      => "author URI");
+                         Base_URI => "/base/author",
+                         Email    => "thomas@12boo.net",
+                         Language => "en",
+                         URI      => "http://author/URI");
 
       Add_Category_Source (Entr     => An_Entry,
                            Term     => "Source category");
@@ -188,106 +194,104 @@ begin
                               Name     => "Thomas Locke");
 
       Set_Generator_Source (Entr     => An_Entry,
-                            Agent    => "source generator",
-                            Base_URI => "generator/base",
-                            Language => "generator/lang",
-                            URI      => "generator/uri",
-                            Version  => "generator/version");
+                            Agent    => "Yolk",
+                            Base_URI => "/base/generator",
+                            Language => "en",
+                            URI      => "http://generator/URI",
+                            Version  => Version);
 
       Set_Icon_Source (Entr     => An_Entry,
-                       URI      => "icon source URI",
-                       Base_URI => "icon/base",
-                       Language => "icon/lang");
+                       URI      => "http://icon/URI",
+                       Base_URI => "/base/icon",
+                       Language => "en");
 
       Set_Id_Source (Entr     => An_Entry,
-                     Id       => "source Id URI",
-                     Base_URI => "id/base",
-                     Language => "id/lang");
+                     Id       => "http://source/id/URI",
+                     Base_URI => "/base/id",
+                     Language => "en");
 
       Add_Link_Source (Entr      => An_Entry,
-                       Href      => "source link",
-                       Base_URI  => "link/base",
-                       Content   => "source content",
-                       Hreflang  => "source hreflang",
-                       Language  => "link/lang",
+                       Href      => "http://source/link",
+                       Base_URI  => "/base/link",
+                       Hreflang  => "en",
+                       Language  => "en",
                        Length    => 1,
-                       Mime_Type => "source mime",
+                       Mime_Type => "text/html",
                        Rel       => Alternate,
-                       Title     => "source link title");
+                       Title     => "Source Link Title");
 
       Set_Logo_Source (Entr     => An_Entry,
-                       URI      => "logo source URI",
-                       Base_URI => "logo/base",
-                       Language => "logo/lang");
+                       URI      => "http://logo/source/URI",
+                       Base_URI => "/base/logo",
+                       Language => "en");
 
       Set_Rights_Source (Entr        => An_Entry,
-                         Rights      => "source rights",
-                         Base_URI    => "rights/base",
-                         Language    => "rights/lang",
+                         Rights      => "Source Rrights",
+                         Base_URI    => "/base/rights",
+                         Language    => "en",
                          Rights_Kind => Text);
 
       Set_Subtitle_Source (Entr          => An_Entry,
-                           Subtitle      => "source subtitle",
-                           Base_URI      => "subtitle/base",
-                           Language      => "subtitle/lang",
+                           Subtitle      => "Source Subtitle",
+                           Base_URI      => "/base/subtitle",
+                           Language      => "en",
                            Subtitle_Kind => Text);
 
       Set_Title_Source (Entr       => An_Entry,
-                        Title      => "source title",
-                        Base_URI   => "title/base",
-                        Language   => "title/lang",
+                        Title      => "Source Title",
+                        Base_URI   => "/base/title",
+                        Language   => "en",
                         Title_Kind => Text);
 
       Set_Updated_Source (Entr        => An_Entry,
                           Update_Time => Ada.Calendar.Clock,
-                          Base_URI    => "updated/base",
-                          Language    => "updated/lang");
+                          Base_URI    => "/base/updated",
+                          Language    => "en");
 
       Set_Id (Entr     => An_Entry,
-              Id       => "id URI",
-              Base_URI => "id/base",
-              Language => "id/lang");
+              Id       => "http://entry/id/URI",
+              Base_URI => "/base/Id",
+              Language => "en");
 
       Add_Link (Entr      => An_Entry,
-                Href      => "/",
-                Base_URI  => "base",
-                Content   => "content",
-                Hreflang  => "hreflang",
-                Language  => "lang",
+                Href      => "http://a/link",
+                Base_URI  => "/base/link",
+                Hreflang  => "en",
+                Language  => "en",
                 Length    => 1,
-                Mime_Type => "mime",
+                Mime_Type => "text/html",
                 Rel       => Alternate,
-                Title     => "Title");
+                Title     => "Link Title");
       Add_Link (Entr => An_Entry,
-                Href => "entry link_two");
+                Href => "http://another/link");
 
       Set_Published (Entr           => An_Entry,
                      Published_Time => Ada.Calendar.Clock,
-                     Base_URI       => "published/base",
-                     Language       => "published/language");
+                     Base_URI       => "/base/updated",
+                     Language       => "en");
 
       Set_Rights (Entr        => An_Entry,
                   Rights      => "Some entry rights",
-                  Base_URI    => "entryrights/base",
-                  Language    => "entryrights/lang",
+                  Base_URI    => "/base/entryrights",
+                  Language    => "en",
                   Rights_Kind => Text);
 
       Set_Summary (Entr         => An_Entry,
                    Summary      => "<b>An</b> entry summary",
-                   Base_URI     => "summary/base",
-                   Language     => "summary/lang",
+                   Base_URI     => "/base/entryrights",
+                   Language     => "en",
                    Summary_Kind => Xhtml);
 
       Set_Title (Entr       => An_Entry,
-                 Title      => "Entry Title (link go back to /)",
-                 Base_URI   => "entrytitle/base",
-                 Language   => "entrytitle/lang",
+                 Title      => "Entry Title (click to go back to /)",
+                 Base_URI   => "/base/entrytitle",
+                 Language   => "en",
                  Title_Kind => Text);
 
       Set_Updated (Entr        => An_Entry,
                    Update_Time => Ada.Calendar.Clock,
-                   Base_URI    => "updated/base",
-                   Language    => "updated/language");
+                   Base_URI    => "/base/updated",
+                   Language    => "en");
 
       Add_Entry (Feed        => Feed,
                  Entr        => An_Entry,
