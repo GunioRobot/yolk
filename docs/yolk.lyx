@@ -5839,5 +5839,63 @@ Non_Compressable
  wherever your application handles requests for static content.
 \end_layout
 
+\begin_layout Section
+Yolk.Syndication
+\end_layout
+
+\begin_layout Standard
+The Atom Syndication Format (
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC4287"
+target "http://tools.ietf.org/html/rfc4287"
+
+\end_inset
+
+) XML-based document format that describes lists of related information
+ known as "feeds".
+ Atom documents are used by many web applications as a means of publishing
+ information to users.
+ It's not a complicated format, but it does require a bit of work to construct
+ a proper Atom feed by hand, and since I try my best to avoid work, I made
+ the 
+\emph on
+Yolk.Syndication
+\emph default
+ package.
+ This package makes it easy to put together an Atom feed document, and have
+ it delivered as a string or an XML/Ada DOM object.
+\end_layout
+
+\begin_layout Standard
+Before you start using this package, you're still going to need some basic
+ knowledge about the Atom format, because 
+\emph on
+Yolk.Syndication
+\emph default
+ simply help you construct the XML - it does not check that the XML is valid
+ Atom XML, ie.
+ that the Atom rules have been followed, so if the Atom specification says
+ that
+\end_layout
+
+\begin_layout Quotation
+atom:feed elements MUST contain exactly one atom:id element.
+\end_layout
+
+\begin_layout Standard
+then it is your job to make sure that your Atom feed has exactly one ID.
+ So before venturing into the realm of Atom, it's probably a good idea to
+ read 
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC4287"
+target "http://tools.ietf.org/html/rfc4287"
+
+\end_inset
+
+ for a good understanding of the requirements of this document format.
+\end_layout
+
 \end_body
 \end_document
