@@ -5844,7 +5844,7 @@ Yolk.Syndication
 \end_layout
 
 \begin_layout Standard
-The Atom Syndication Format (
+The Atom Syndication format (
 \begin_inset CommandInset href
 LatexCommand href
 name "RFC4287"
@@ -5852,7 +5852,7 @@ target "http://tools.ietf.org/html/rfc4287"
 
 \end_inset
 
-) XML-based document format that describes lists of related information
+) is an XML-based document format that describes lists of related information
  known as "feeds".
  Atom documents are used by many web applications as a means of publishing
  information to users.
@@ -5868,13 +5868,12 @@ Yolk.Syndication
 \end_layout
 
 \begin_layout Standard
-Before you start using this package, you're still going to need some basic
- knowledge about the Atom format, because 
+
 \emph on
 Yolk.Syndication
 \emph default
- simply help you construct the XML - it does not check that the XML is valid
- Atom XML, ie.
+ help you construct the Atom XML - it does not check that the resulting
+ XML is valid Atom XML, ie.
  that the Atom rules have been followed, so if the Atom specification says
  that
 \end_layout
@@ -5894,7 +5893,685 @@ target "http://tools.ietf.org/html/rfc4287"
 
 \end_inset
 
- for a good understanding of the requirements of this document format.
+ for a good understanding of the requirements for this document format.
+\end_layout
+
+\begin_layout Subsection
+Exceptions
+\end_layout
+
+\begin_layout Standard
+There's one exception in this package:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Not_Valid_XML
+\emph default
+.
+ Is raised when some Xhtml content is not valid XML.
+ This exception can be raised by all procedures that can take Xhtml as content.
+\end_layout
+
+\begin_layout Subsection
+The Yolk.Syndication types
+\end_layout
+
+\begin_layout Standard
+There are 4 important types in this package:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Text_Kinds
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Relation_Kind
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Atom_Entry
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Atom_Feed
+\end_layout
+
+\begin_layout Standard
+A few of the procedures in 
+\emph on
+Yolk.Syndication
+\emph default
+ has parameters of the 
+\emph on
+Text_Kinds
+\emph default
+ type.
+ This identifies the kind of data that is being added, with possible values
+ being 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Text
+\emph default
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Html
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Xhtml
+\end_layout
+
+\begin_layout Standard
+Hopefully it's obvious what each of the refer to.
+ Procedures that have parameters of this type always add data to the feed
+ that can be interpreted as one of these three kinds of text.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Relation_Kind
+\emph default
+ type is used in correlation with links that are added to the feed.
+ It identifies how the link relates to the current feed/entry.
+ There are 5 possible relations:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Alternate
+\emph default
+: Signifies that the link points to an alternate version of the resource
+ described by the containing element.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Related
+\emph default
+: Signifies that the link points to a resource that is related to, but not
+ the same as, the resource described by the containing element.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Self
+\emph default
+: Signifies that the link points to a resource that is equivalent to the
+ resource described by the containing element.
+ All feeds should have one link with a 
+\emph on
+Self
+\emph default
+ relation.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Enclosure
+\emph default
+: Signifies that the link points to a resource that is related to, but not
+ the same as, the resource described by the containing element.
+ It also signifies that the resource potentially is large in size and might
+ require special handling.
+ If 
+\emph on
+Enclosure
+\emph default
+ is used, then usually the 
+\emph on
+Length
+\emph default
+ parameter is set to hint at the size of the resource.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Via
+\emph default
+: Signifies that the resource provided by the containing element originates
+ in the URI given by the 
+\emph on
+Href
+\emph default
+ parameter of the link element.
+\end_layout
+
+\begin_layout Standard
+Finally we have the 
+\emph on
+Atom_Entry
+\emph default
+ and 
+\emph on
+Atom_Feed
+\emph default
+ types.
+ These are core to the functionality of 
+\emph on
+Yolk.Syndication
+\emph default
+, and every single procedure and function in the package use one or the
+ other.
+ These two types are 
+\emph on
+limited private
+\emph default
+, so the only way to declare an object of either one, is by calling the
+ 
+\emph on
+New_Atom_Feed
+\emph default
+ and 
+\emph on
+New_Atom_Entry
+\emph default
+ functions respectively.
+\end_layout
+
+\begin_layout Subsection
+Yolk.Syndication.New_Atom_Feed
+\end_layout
+
+\begin_layout Standard
+This function initialize an 
+\emph on
+Atom_Feed
+\emph default
+ type, and its specification looks like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function New_Atom_Feed      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Base_URI    : in String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language    : in String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Max_Age     : in Duration := 5_616_000.0;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Max_Entries : in Positive := 100;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Min_Entries : in Positive := 10)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return Atom_Feed;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Base_URI
+\emph default
+ parameter establish a base for resolving relative references in the feed.
+ The 
+\emph on
+Language
+\emph default
+ parameter indicates the natural language used in the feed.
+ 
+\emph on
+Max_Age
+\emph default
+ is a duration that determine when an entry in the feed is old enough to
+ be deleted.
+ 
+\emph on
+Max_Entries
+\emph default
+ is the amount of entries kept in the feed.
+ If there are more than this amount of entries in the feed, then the oldest
+ are deleted until the feed contains 
+\emph on
+Max_Entries
+\emph default
+ entries again.
+ 
+\emph on
+Min_Entries
+\emph default
+ is the minimum amount of entries that must be present in the feed, before
+ we bother deleting entries whose age is > 
+\emph on
+Max_Age
+\emph default
+.
+ If there are less than 
+\emph on
+Min_Entries
+\emph default
+ entries in the feed, then we keep even a 100 year old entry.
+\end_layout
+
+\begin_layout Standard
+What these parameters hints at, is that some automatic maintenance is done
+ when using 
+\emph on
+Yolk.Syndication
+\emph default
+, and this is indeed true.
+ Usually you do not want a feed to grow forever, and instead of having to
+ manually clear away old stuff, 
+\emph on
+Yolk.Syndication
+\emph default
+ handles all this for you, according to the values given when you instantiate
+ an 
+\emph on
+Atom_Feed
+\emph default
+ object using 
+\emph on
+New_Atom_Feed
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Yolk.Syndication.New_Atom_Entry
+\end_layout
+
+\begin_layout Standard
+This function initialize and 
+\emph on
+Atom_Entry
+\emph default
+ type, and its specification looks like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function New_Atom_Entry      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Base_URI : in String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language : in String := None)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return Atom_Entry;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, it's a lot simpler than the 
+\emph on
+New_Atom_Feed
+\emph default
+ function.
+ This is of course because all the automatic maintenance related parameters
+ have already been set by they 
+\emph on
+New_Atom_Feed
+\emph default
+ function.
+ All that is left is to define the 
+\emph on
+Base_URI
+\emph default
+ and the natural 
+\emph on
+Language
+\emph default
+ used by the entry.
+\end_layout
+
+\begin_layout Subsection
+Building a simple Atom feed
+\end_layout
+
+\begin_layout Standard
+There are far too many procedures in 
+\emph on
+Yolk.Syndication
+\emph default
+ to go through here, so instead of explaining what they all do, I'm going
+ to show how to build a simple Atom feed:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=XML,showstringspaces=false,tabsize=2,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<?xml version="1.0" encoding="utf-8"?>    
+\end_layout
+
+\begin_layout Plain Layout
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  <title>Example Feed</title>      
+\end_layout
+
+\begin_layout Plain Layout
+
+  <link href="http://example.org/"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+  <updated>2003-12-13T18:30:02Z</updated>      
+\end_layout
+
+\begin_layout Plain Layout
+
+  <author>        
+\end_layout
+
+\begin_layout Plain Layout
+
+    <name>John Doe</name>      
+\end_layout
+
+\begin_layout Plain Layout
+
+  </author>      
+\end_layout
+
+\begin_layout Plain Layout
+
+  <id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6</id>
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+  <entry>       
+\end_layout
+
+\begin_layout Plain Layout
+
+    <title>Atom-Powered Robots Run Amok</title>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <link href="http://example.org/2003/12/13/atom03"/>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+\end_layout
+
+\begin_layout Plain Layout
+
+    <updated>2003-12-13T18:30:02Z</updated>        
+\end_layout
+
+\begin_layout Plain Layout
+
+    <summary>Some text.</summary>      
+\end_layout
+
+\begin_layout Plain Layout
+
+  </entry>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+</feed>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This small example tells us two core things about Atom:
+\end_layout
+
+\begin_layout Enumerate
+There's always one 
+\emph on
+feed
+\emph default
+ root element with some metadata associated with it.
+\end_layout
+
+\begin_layout Enumerate
+There's one or more 
+\emph on
+entry
+\emph default
+ elements that is the content of the feed.
+\end_layout
+
+\begin_layout Standard
+An XML document without the 
+\emph on
+feed
+\emph default
+ root element and one or more 
+\emph on
+entry
+\emph default
+ elements simply isn't a proper Atom document.
+ In 
+\emph on
+Yolk.Syndication
+\emph default
+ everything centers around the two types:
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+Atom_Feed
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+Atom_Entry
+\end_layout
+
+\begin_layout Standard
+Every single procedure and function in the package revolves around either
+ 
+\emph on
+Atom_Feed
+\emph default
+ or 
+\emph on
+Atom_Entry
+\emph default
+ types.
+ Lets see the code needed to create the above Atom example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function New_Atom_Entry      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Base_URI : in String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language : in String := None)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return Atom_Entry;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
