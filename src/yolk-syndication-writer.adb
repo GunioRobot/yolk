@@ -523,133 +523,42 @@ package body Yolk.Syndication.Writer is
       Language : in String := None)
       return Atom_Entry
    is
-
-      use Ada.Calendar;
-
-      Now : constant Time := Clock;
-
    begin
 
-      return An_Entry : Atom_Entry do
-         An_Entry := (Authors       => Person_List.Empty_List,
-                      Categories    => Category_List.Empty_List,
-                      Common        =>
-                        Atom_Common'(Base_URI => TUS (Base_URI),
-                                     Language => TUS (Language)),
-                      Content       =>
-                        Atom_Entry_Content'(
-                          Common        =>
-                            Atom_Common'(Base_URI => Null_Unbounded_String,
-                                         Language => Null_Unbounded_String),
-                          Content       => Null_Unbounded_String,
-                          Content_Kind  => Text,
-                          Mime_Type     => Null_Unbounded_String,
-                          Source        => Null_Unbounded_String),
-                      Contributors  => Person_List.Empty_List,
-                      Id            =>
-                        Atom_Id'(Common =>
-                                   Atom_Common'(Base_URI =>
-                                                  Null_Unbounded_String,
-                                                Language =>
-                                                  Null_Unbounded_String),
-                                 URI    => Null_Unbounded_String),
-                      Links         => Link_List.Empty_List,
-                      Published     =>
-                        Atom_Date'(Common     =>
-                                     Atom_Common'(Base_URI =>
-                                                    Null_Unbounded_String,
-                                                  Language =>
-                                                    Null_Unbounded_String),
-                                   Time_Stamp => Now),
-                      Rights        =>
-                        Atom_Text'(Common       =>
-                                     Atom_Common'(Base_URI =>
-                                                    Null_Unbounded_String,
-                                                  Language =>
-                                                    Null_Unbounded_String),
-                                   Text_Content => Null_Unbounded_String,
-                                   Text_Kind    => Text),
-                      Source        =>
-                        Atom_Entry_Source'
-                          (Authors      => Person_List.Empty_List,
-                           Categories   => Category_List.Empty_List,
-                           Common       => Atom_Common'
-                             (Base_URI => Null_Unbounded_String,
-                              Language => Null_Unbounded_String),
-                           Contributors => Person_List.Empty_List,
-                           Generator    => Atom_Generator'
-                             (Agent   => Null_Unbounded_String,
-                              Common  => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              URI     => Null_Unbounded_String,
-                              Version => Null_Unbounded_String),
-                           Icon         => Atom_Icon'
-                             (Common => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              URI    => Null_Unbounded_String),
-                           Id           => Atom_Id'
-                             (Common => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              URI    => Null_Unbounded_String),
-                           Links        => Link_List.Empty_List,
-                           Logo         => Atom_Logo'
-                             (Common => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              URI    => Null_Unbounded_String),
-                           Rights       => Atom_Text'
-                             (Common       => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              Text_Content => Null_Unbounded_String,
-                              Text_Kind    => Text),
-                           Subtitle     => Atom_Text'
-                             (Common       => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              Text_Content => Null_Unbounded_String,
-                              Text_Kind    => Text),
-                           Title        => Atom_Text'
-                             (Common       => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              Text_Content => Null_Unbounded_String,
-                              Text_Kind    => Text),
-                           Updated      => Atom_Date'
-                             (Common     => Atom_Common'
-                                (Base_URI => Null_Unbounded_String,
-                                 Language => Null_Unbounded_String),
-                              Time_Stamp => Now)),
-                      Summary       =>
-                        Atom_Text'(Common       =>
-                                     Atom_Common'(Base_URI =>
-                                                    Null_Unbounded_String,
-                                                  Language =>
-                                                    Null_Unbounded_String),
-                                   Text_Content => Null_Unbounded_String,
-                                   Text_Kind    => Text),
-                      Title         =>
-                        Atom_Text'(Common       =>
-                                     Atom_Common'(Base_URI =>
-                                                    Null_Unbounded_String,
-                                                  Language =>
-                                                    Null_Unbounded_String),
-                                   Text_Content => Null_Unbounded_String,
-                                   Text_Kind    => Text),
-                      Updated       =>
-                        Atom_Date'(Common     =>
-                                     Atom_Common'(Base_URI =>
-                                                    Null_Unbounded_String,
-                                                  Language =>
-                                                    Null_Unbounded_String),
-                                   Time_Stamp => Now));
+      return An_Entry : Atom_Entry := Null_Atom_Entry do
+         if Base_URI /= None then
+            An_Entry.Common.Base_URI := TUS (Base_URI);
+         end if;
 
+         if Language /= None then
+            An_Entry.Common.Language := TUS (Language);
+         end if;
       end return;
 
    end New_Atom_Entry;
+
+   -----------------------------
+   --  New_Atom_Entry_Source  --
+   -----------------------------
+
+   function New_Atom_Entry_Source
+     (Base_URI : in String := None;
+      Language : in String := None)
+      return Atom_Entry_Source
+   is
+   begin
+
+      return Source : Atom_Entry_Source := Null_Atom_Entry_Source do
+         if Base_URI /= None then
+            Source.Common.Base_URI := TUS (Base_URI);
+         end if;
+
+         if Language /= None then
+            Source.Common.Language := TUS (Language);
+         end if;
+      end return;
+
+   end New_Atom_Entry_Source;
 
    ---------------------
    --  New_Atom_Feed  --
@@ -983,6 +892,7 @@ package body Yolk.Syndication.Writer is
       Entr.Published := Atom_Date'(Common     =>
                                      Atom_Common'(Base_URI => TUS (Base_URI),
                                                   Language => TUS (Language)),
+                                   Is_Set     => True,
                                    Time_Stamp => Published_Time);
 
    end Set_Published;
@@ -1198,6 +1108,7 @@ package body Yolk.Syndication.Writer is
         (Value => Atom_Date'(Common =>
                                Atom_Common'(Base_URI => TUS (Base_URI),
                                             Language => TUS (Language)),
+                             Is_Set     => True,
                              Time_Stamp => Update_Time));
 
    end Set_Updated;
@@ -1217,6 +1128,7 @@ package body Yolk.Syndication.Writer is
       Entr.Updated := Atom_Date'(Common     =>
                                    Atom_Common'(Base_URI => TUS (Base_URI),
                                                 Language => TUS (Language)),
+                                 Is_Set     => True,
                                  Time_Stamp => Update_Time);
 
    end Set_Updated;
@@ -1237,6 +1149,7 @@ package body Yolk.Syndication.Writer is
         (Common     =>
            Atom_Common'(Base_URI => TUS (Base_URI),
                         Language => TUS (Language)),
+         Is_Set     => True,
          Time_Stamp => Update_Time);
 
    end Set_Updated_Source;
@@ -1925,11 +1838,12 @@ package body Yolk.Syndication.Writer is
                                        Parent    => Source_Node);
             end if;
 
-            Create_Generic_Element (Common    => Source.Id.Common,
-                                    Data      => TS (Source.Id.URI),
-                                    Elem_Name => "id",
-                                    Parent    => Source_Node);
-
+            if Source.Id.URI /= Null_Unbounded_String then
+               Create_Generic_Element (Common    => Source.Id.Common,
+                                       Data      => TS (Source.Id.URI),
+                                       Elem_Name => "id",
+                                       Parent    => Source_Node);
+            end if;
             Create_Link_Elements (List   => Source.Links,
                                   Parent => Source_Node);
 
@@ -1958,18 +1872,23 @@ package body Yolk.Syndication.Writer is
                   Text_Kind => Source.Subtitle.Text_Kind);
             end if;
 
-            Create_Text_Construct (Common    => Source.Title.Common,
-                                   Data      => TS (Source.Title.Text_Content),
-                                   Elem_Name => "title",
-                                   Parent    => Source_Node,
-                                   Text_Kind => Source.Title.Text_Kind);
+            if Source.Title.Text_Content /= Null_Unbounded_String then
+               Create_Text_Construct
+                 (Common    => Source.Title.Common,
+                  Data      => TS (Source.Title.Text_Content),
+                  Elem_Name => "title",
+                  Parent    => Source_Node,
+                  Text_Kind => Source.Title.Text_Kind);
+            end if;
 
-            Create_Generic_Element
-              (Common    => Source.Updated.Common,
-               Data      =>
-                 Atom_Date_Image (Time_Stamp => Source.Updated.Time_Stamp),
-               Elem_Name => "updated",
-               Parent    => Source_Node);
+            if Source.Updated.Is_Set then
+               Create_Generic_Element
+                 (Common    => Source.Updated.Common,
+                  Data      =>
+                    Atom_Date_Image (Time_Stamp => Source.Updated.Time_Stamp),
+                  Elem_Name => "updated",
+                  Parent    => Source_Node);
+            end if;
 
          end Create_Source_Element;
 
