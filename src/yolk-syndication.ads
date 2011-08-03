@@ -436,7 +436,7 @@ private
 
    package Entry_List is new Doubly_Linked_Lists (Atom_Entry, Equal_Entry);
 
-   protected type PT_Atom_Feed is
+   protected type Protected_Atom_Feed is
 
       procedure Add_Author
         (Value : in Atom_Person);
@@ -519,11 +519,11 @@ private
       Title          : Atom_Text;
       Updated        : Atom_Date;
 
-   end PT_Atom_Feed;
+   end Protected_Atom_Feed;
 
    type Atom_Feed is
       record
-         PAF : PT_Atom_Feed;
+         PAF : Protected_Atom_Feed;
       end record;
 
 end Yolk.Syndication;
