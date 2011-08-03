@@ -24,6 +24,7 @@
 with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Interrupts.Names;
+with Ada.Strings.Fixed;
 with Ada.Text_IO;
 with POSIX.Process_Identification;
 
@@ -86,6 +87,7 @@ package body Yolk.Process_Control is
    procedure Create_PID_File
    is
 
+      use Ada.Strings;
       use Ada.Text_IO;
       use POSIX.Process_Identification;
 
@@ -99,8 +101,8 @@ package body Yolk.Process_Control is
 
       Create (File => File,
               Name => PID);
-      Set_Output (File => File);
-      Put (Image (Get_Process_ID));
+      Put (File => File,
+           Item => Fixed.Trim (Image (Get_Process_ID), Both));
       Close (File);
 
    exception
