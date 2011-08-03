@@ -23,9 +23,13 @@ include makefile.setup
 
 all:
 	gnatmake -P yolk_build
+	
+debug:
+	BUILDTYPE=Debug gnatmake -P yolk_build
 
 clean:
 	gnatclean -P yolk_build
+	BUILDTYPE=Debug gnatclean -P yolk_build
 
 distclean: clean
 	rm -rf $(prefix)/yolk
