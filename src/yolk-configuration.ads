@@ -171,25 +171,25 @@ package Yolk.Configuration is
                        Free_Slots_Keep_Alive_Limit
                        => TUS ("1"),
                        Handler_CSS
-                       => TUS ("\.css$"),
+                       => TUS (".*\.css$"),
                        Handler_GIF
-                       => TUS ("\.gif$"),
+                       => TUS (".*\.gif$"),
                        Handler_HTML
-                       => TUS ("\.html$"),
+                       => TUS (".*\.html$"),
                        Handler_ICO
-                       => TUS ("\.ico$"),
+                       => TUS (".*\.ico$"),
                        Handler_JPG
-                       => TUS ("\.jpg$"),
+                       => TUS (".*\.jpg$"),
                        Handler_JS
-                       => TUS ("\.js$"),
+                       => TUS (".*\.js$"),
                        Handler_PNG
-                       => TUS ("\.png$"),
+                       => TUS (".*\.png$"),
                        Handler_SVG
-                       => TUS ("\.svg$"),
+                       => TUS (".*\.svg$"),
                        Handler_XML
-                       => TUS ("\.xml$"),
+                       => TUS (".*\.xml$"),
                        Handler_XSL
-                       => TUS ("\.xsl$"),
+                       => TUS (".*\.xsl$"),
                        Hotplug_Port
                        => TUS ("8888"),
                        Immediate_Flush
