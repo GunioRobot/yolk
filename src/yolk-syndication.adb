@@ -78,7 +78,7 @@ package body Yolk.Syndication is
    is
    begin
 
-      return Source          : Atom_Entry_Source := Null_Atom_Entry_Source do
+      return Source : Atom_Entry_Source := Null_Atom_Entry_Source do
          if Base_URI /= None then
             Source.Common.Base_URI := TUS (Base_URI);
          end if;
@@ -86,6 +86,7 @@ package body Yolk.Syndication is
          if Language /= None then
             Source.Common.Language := TUS (Language);
          end if;
+         null;
       end return;
 
    end New_Atom_Entry_Source;
@@ -167,16 +168,15 @@ package body Yolk.Syndication is
       -----------------
 
       procedure Add_Entry
-        (Value       : in Yolk.Syndication.Atom_Entry;
-         Entry_Added : out Boolean)
+        (Value : in Yolk.Syndication.Atom_Entry)
       is
 
          use Ada.Calendar;
          use Entry_List;
 
          procedure Insert_Entry
-           (Value : in Atom_Entry;
-            Done  : out Boolean);
+           (Value : in     Atom_Entry;
+            Done  :    out Boolean);
          --  Insert the Value into List sorted by Atom_Entry.Updated
 
          --------------------
@@ -184,20 +184,26 @@ package body Yolk.Syndication is
          --------------------
 
          procedure Insert_Entry
-           (Value : in Atom_Entry;
-            Done  : out Boolean)
+           (Value : in     Atom_Entry;
+            Done  :    out Boolean)
          is
 
-            C : Cursor;
+            Appendable  : Boolean := False;
+            C           : Cursor;
 
          begin
 
             if Entries.Is_Empty then
-               Entries.Append (New_Item => Value);
-               Done := True;
-            elsif Value.Updated.Time_Stamp <=
-              Entries.Last_Element.Updated.Time_Stamp
-            then
+               Appendable := True;
+            else
+               if Value.Updated.Time_Stamp <=
+                 Entries.Last_Element.Updated.Time_Stamp
+               then
+                  Appendable := True;
+               end if;
+            end if;
+
+            if Appendable then
                Entries.Append (New_Item => Value);
                Done := True;
             elsif Value.Updated.Time_Stamp >=
@@ -223,13 +229,12 @@ package body Yolk.Syndication is
 
          end Insert_Entry;
 
-         C       : Cursor;
-         Counter : Natural := Natural (Entries.Length);
-         Now     : constant Time := Clock;
+         C           : Cursor;
+         Counter     : Natural       := Natural (Entries.Length);
+         Entry_Added : Boolean       := False;
+         Now         : constant Time := Clock;
 
       begin
-
-         Entry_Added := False;
 
          C := Find (Container => Entries,
                     Item      => Value);
@@ -283,6 +288,18 @@ package body Yolk.Syndication is
          Links.Append (Value);
 
       end Add_Link;
+
+      -------------------------
+      --  Amount_Of_Entries  --
+      -------------------------
+
+      function Amount_Of_Entries return Natural
+      is
+      begin
+
+         return Natural (Entries.Length);
+
+      end Amount_Of_Entries;
 
       ------------------------
       --  Clear_Entry_List  --
@@ -362,7 +379,9 @@ package body Yolk.Syndication is
       --  Get_String  --
       ------------------
 
-      function Get_String return String
+      function Get_String
+        (Pretty_Print : in Boolean := False)
+         return String
       is
 
          use Ada.Streams;
@@ -442,7 +461,7 @@ package body Yolk.Syndication is
                                N                      => Doc,
                                Print_Comments         => False,
                                Print_XML_Declaration  => False,
-                               Pretty_Print           => True);
+                               Pretty_Print           => Pretty_Print);
 
          Free (Doc);
 

@@ -67,14 +67,14 @@ package Yolk.Syndication.Writer is
    --  URI:
    --    conveys an IRI associated with the person.
 
-   procedure Add_Author_Source
+   procedure Add_Author
      (Entry_Source : in out Atom_Entry_Source;
       Name         : in     String;
       Base_URI     : in     String := None;
       Email        : in     String := None;
       Language     : in     String := None;
       URI          : in     String := None);
-   --  Add an author to the feed/entry.
+   --  Add a source author to the entry.
    --
    --  Name:
    --    conveys a human - readable name for the person. The content of
@@ -128,7 +128,7 @@ package Yolk.Syndication.Writer is
    --  Scheme:
    --    An IRI that identifies a categorization scheme.
 
-   procedure Add_Category_Source
+   procedure Add_Category
      (Entry_Source : in out Atom_Entry_Source;
       Term         : in     String;
       Base_URI     : in     String := None;
@@ -194,7 +194,7 @@ package Yolk.Syndication.Writer is
    --  URI:
    --    conveys an IRI associated with the person.
 
-   procedure Add_Contributor_Source
+   procedure Add_Contributor
      (Entry_Source : in out Atom_Entry_Source;
       Name         : in     String;
       Base_URI     : in     String := None;
@@ -219,8 +219,8 @@ package Yolk.Syndication.Writer is
 
    procedure Add_Entry
      (Feed        : in out Atom_Feed;
-      Entr        : in     Atom_Entry;
-      Entry_Added : out    Boolean);
+      Entr        : in out Atom_Entry;
+      Clear_Entry : in     Boolean := False);
    --  Add an entry element to the atom:feed element, placing it in the list
    --  according to its Atom_Entry.Updated value. Entries are sorted in the
    --  list with newest first. If an entry's Updated time is older than
@@ -246,11 +246,13 @@ package Yolk.Syndication.Writer is
    --  No entries are deleted from the list of entries as long as the list is
    --  shorter than Min_Entries.
    --
-   --  Entry_Added is set to True of the entry was successfully added.
-   --
    --  The Feed updated timestamp is set to the entries updated timestamp if
    --  the entry has been successfully added to the entry list and the entry
    --  updated timestamp is newer than the current Feed updated timestamp.
+   --
+   --  If Clear_Entry is True, then Entr is set to Null_Atom_Entry after the
+   --  entry has  been added to Feed. This is handy if you're in a loop adding
+   --  multiple entries, using the same Atom_Entry object.
 
    procedure Add_Link
      (Feed      : in out Atom_Feed;
@@ -336,7 +338,7 @@ package Yolk.Syndication.Writer is
    --    "&lt;" represent their corresponding characters ("&" and "<"), not
    --    markup.
 
-   procedure Add_Link_Source
+   procedure Add_Link
      (Entry_Source : in out Atom_Entry_Source;
       Href         : in     String;
       Base_URI     : in     String := None;
@@ -378,13 +380,30 @@ package Yolk.Syndication.Writer is
    --    "&lt;" represent their corresponding characters ("&" and "<"), not
    --    markup.
 
+   function Amount_Of_Entries
+     (Feed : in Atom_Feed)
+      return Natural;
+   --  Return the amount of entries in the Feed object.
+
+   procedure Clear_Entry
+     (Entr : in out Atom_Entry);
+   --  Reset an Atom_Entry object to it's pristine state. This means getting
+   --  rid of all data, and effectively bringing it back to how it was when
+   --  it was originally created by the New_Atom_Entry function.
+
+   procedure Clear_Entry_Source
+     (Entry_Source : in out Atom_Entry_Source);
+   --  Reset an Atom_Entry_Source object to it's pristine state. This means
+   --  getting rid of all data, and effectively bringing it back to how it was
+   --  when it was originally created by the New_Atom_Entry_Source function.
+
    procedure Clear_Entry_List
      (Feed : in out Atom_Feed);
    --  Remove all entries from the Feed.
 
    procedure Delete_Entry
-     (Feed  : in out Atom_Feed;
-      Id    : in     String);
+     (Feed : in out Atom_Feed;
+      Id   : in     String);
    --  Delete all entries from Feed where the Atom_Entry.Id = Id. Match must
    --  be exact. "foo" is _not_ the same as "Foo".
 
@@ -394,9 +413,12 @@ package Yolk.Syndication.Writer is
    --  Return the Atom XML DOM document.
 
    function Get_XML_String
-     (Feed : in Atom_Feed)
+     (Feed         : in Atom_Feed;
+      Pretty_Print : in Boolean := False)
       return String;
    --  Return the Atom XML string.
+   --  If Pretty_Print is True, then the XML output is indented properly. Only
+   --  use this for debugging purposes, as it mangles whitespace.
 
    procedure Set_Common
      (Feed     : in out Atom_Feed;
@@ -415,7 +437,7 @@ package Yolk.Syndication.Writer is
    --    The language context is only significant for elements and
    --    attributes declared to be "language sensitive".
 
-   procedure Set_Common_Source
+   procedure Set_Common
      (Entry_Source : in out Atom_Entry_Source;
       Base_URI     : in     String := None;
       Language     : in     String := None);
@@ -443,10 +465,10 @@ package Yolk.Syndication.Writer is
 
    procedure Set_Content_Inline
      (Entr      : in out Atom_Entry;
-      Content   : in String;
-      Mime_Type : in String;
-      Base_URI  : in String := None;
-      Language  : String := None);
+      Content   : in     String;
+      Mime_Type : in     String;
+      Base_URI  : in     String := None;
+      Language  : in     String := None);
    --  Add a content element to the atom:entry element. Use this procedure if
    --  the content is of a MIME media type that is _not_ Text, Html or Xhtml.
    --  If the value of Mime_Type is _not_ an XML or text/ media type, then the
@@ -454,21 +476,27 @@ package Yolk.Syndication.Writer is
 
    procedure Set_Content_OutOfLine
      (Entr      : in out Atom_Entry;
-      Mime_Type : in String;
-      Source    : in String;
-      Base_URI  : in String := None;
-      Language  : in String := None);
+      Mime_Type : in     String;
+      Source    : in     String;
+      Base_URI  : in     String := None;
+      Language  : in     String := None);
    --  Add a content element to the atom:entry element. Use this procedure if
    --  the content of the entry is found at the Source IRI.
 
    procedure Set_Entry_Source
-     (Entr         : in out Atom_Entry;
-      Entry_Source : in     Atom_Entry_Source);
+     (Entr               : in out Atom_Entry;
+      Source             : in out Atom_Entry_Source;
+      Clear_Entry_Source : in     Boolean := False);
    --  If an entry is copied from another feed, it's possible to add the
    --  metadata of the originating feed to the entry. This is done using an
    --  Atom_Entry_Source object and its accompanying procedures. When the
    --  Atom_Entry_Source object has been build, you add it to the entry using
    --  this procedure.
+   --
+   --  If Clear_Entry_Source is True then Source is set to
+   --  Null_Atom_Entry_Source after the entry source has  been added to Entr.
+   --  This is handy if you're in a loop adding multiple entries, using the
+   --  same Atom_Entry_Source object.
 
    procedure Set_Generator
      (Feed     : in out Atom_Feed;
@@ -491,7 +519,7 @@ package Yolk.Syndication.Writer is
    --  Version:
    --    The version of the Agent.
 
-   procedure Set_Generator_Source
+   procedure Set_Generator
      (Entry_Source : in out Atom_Entry_Source;
       Agent        : in     String;
       Base_URI     : in     String := None;
@@ -529,7 +557,7 @@ package Yolk.Syndication.Writer is
    --    feed. The image SHOULD have an aspect ratio of one (horizontal) to one
    --    (vertical) and SHOULD be suitable for presentation at a small size.
 
-   procedure Set_Icon_Source
+   procedure Set_Icon
      (Entry_Source : in out Atom_Entry_Source;
       URI          : in     String;
       Base_URI     : in     String := None;
@@ -595,7 +623,7 @@ package Yolk.Syndication.Writer is
    --  Language:
    --    See Set_Common.
 
-   procedure Set_Id_Source
+   procedure Set_Id
      (Entry_Source : in out Atom_Entry_Source;
       Id           : in     String;
       Base_URI     : in     String := None;
@@ -634,7 +662,7 @@ package Yolk.Syndication.Writer is
    --  URI:
    --    The URL to the image.
 
-   procedure Set_Logo_Source
+   procedure Set_Logo
      (Entry_Source : in out Atom_Entry_Source;
       URI          : in     String;
       Base_URI     : in     String := None;
@@ -700,7 +728,7 @@ package Yolk.Syndication.Writer is
    --  Rights_Kind:
    --    The rights kind. See Content_Type.
 
-   procedure Set_Rights_Source
+   procedure Set_Rights
      (Entry_Source : in out Atom_Entry_Source;
       Rights       : in     String;
       Base_URI     : in     String := None;
@@ -735,7 +763,7 @@ package Yolk.Syndication.Writer is
    --  Subtitle_Kind:
    --    The rights kind. See Content_Type.
 
-   procedure Set_Subtitle_Source
+   procedure Set_Subtitle
      (Entry_Source   : in out Atom_Entry_Source;
       Subtitle       : in     String;
       Base_URI       : in     String := None;
@@ -803,7 +831,7 @@ package Yolk.Syndication.Writer is
    --  Title_Kind:
    --    The title kind. See Content_Type.
 
-   procedure Set_Title_Source
+   procedure Set_Title
      (Entry_Source : in out Atom_Entry_Source;
       Title        : in     String;
       Base_URI     : in     String := None;
@@ -850,7 +878,7 @@ package Yolk.Syndication.Writer is
    --  Language:
    --    See Set_Common.
 
-   procedure Set_Updated_Source
+   procedure Set_Updated
      (Entry_Source : in out Atom_Entry_Source;
       Update_Time  : in     Ada.Calendar.Time;
       Base_URI     : in     String := None;

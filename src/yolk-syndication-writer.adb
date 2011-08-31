@@ -75,11 +75,11 @@ package body Yolk.Syndication.Writer is
 
    end Add_Author;
 
-   -------------------------
-   --  Add_Author_Source  --
-   -------------------------
+   ------------------
+   --  Add_Author  --
+   ------------------
 
-   procedure Add_Author_Source
+   procedure Add_Author
      (Entry_Source : in out Atom_Entry_Source;
       Name         : in     String;
       Base_URI     : in     String := None;
@@ -97,7 +97,7 @@ package body Yolk.Syndication.Writer is
                                   Email  => TUS (Email),
                                   URI    => TUS (URI)));
 
-   end Add_Author_Source;
+   end Add_Author;
 
    --------------------
    --  Add_Category  --
@@ -147,11 +147,11 @@ package body Yolk.Syndication.Writer is
 
    end Add_Category;
 
-   ---------------------------
-   --  Add_Category_Source  --
-   ---------------------------
+   --------------------
+   --  Add_Category  --
+   --------------------
 
-   procedure Add_Category_Source
+   procedure Add_Category
      (Entry_Source : in out Atom_Entry_Source;
       Term         : in     String;
       Base_URI     : in     String := None;
@@ -169,7 +169,7 @@ package body Yolk.Syndication.Writer is
                                     Scheme   => TUS (Scheme),
                                     Term     => TUS (Term)));
 
-   end Add_Category_Source;
+   end Add_Category;
 
    -----------------------
    --  Add_Contributor  --
@@ -219,11 +219,11 @@ package body Yolk.Syndication.Writer is
 
    end Add_Contributor;
 
-   ------------------------------
-   --  Add_Contributor_Source  --
-   ------------------------------
+   -----------------------
+   --  Add_Contributor  --
+   -----------------------
 
-   procedure Add_Contributor_Source
+   procedure Add_Contributor
      (Entry_Source : in out Atom_Entry_Source;
       Name         : in     String;
       Base_URI     : in     String := None;
@@ -241,7 +241,7 @@ package body Yolk.Syndication.Writer is
                                   Email  => TUS (Email),
                                   URI    => TUS (URI)));
 
-   end Add_Contributor_Source;
+   end Add_Contributor;
 
    -----------------
    --  Add_Entry  --
@@ -249,13 +249,16 @@ package body Yolk.Syndication.Writer is
 
    procedure Add_Entry
      (Feed        : in out Atom_Feed;
-      Entr        : in     Atom_Entry;
-      Entry_Added : out    Boolean)
+      Entr        : in out Atom_Entry;
+      Clear_Entry : in Boolean := False)
    is
    begin
 
-      Feed.PAF.Add_Entry (Value       => Entr,
-                          Entry_Added => Entry_Added);
+      Feed.PAF.Add_Entry (Value => Entr);
+
+      if Clear_Entry then
+         Entr := Null_Atom_Entry;
+      end if;
 
    end Add_Entry;
 
@@ -319,11 +322,11 @@ package body Yolk.Syndication.Writer is
 
    end Add_Link;
 
-   -----------------------
-   --  Add_Link_Source  --
-   -----------------------
+   ----------------
+   --  Add_Link  --
+   ----------------
 
-   procedure Add_Link_Source
+   procedure Add_Link
      (Entry_Source : in out Atom_Entry_Source;
       Href         : in     String;
       Base_URI     : in     String := None;
@@ -347,7 +350,34 @@ package body Yolk.Syndication.Writer is
                                 Rel       => Rel,
                                 Title     => TUS (Title)));
 
-   end Add_Link_Source;
+   end Add_Link;
+
+   -------------------------
+   --  Amount_Of_Entries  --
+   -------------------------
+
+   function Amount_Of_Entries
+     (Feed : in Atom_Feed)
+      return Natural
+   is
+   begin
+
+      return Feed.PAF.Amount_Of_Entries;
+
+   end Amount_Of_Entries;
+
+   -------------------
+   --  Clear_Entry  --
+   -------------------
+
+   procedure Clear_Entry
+     (Entr : in out Atom_Entry)
+   is
+   begin
+
+      Entr := Null_Atom_Entry;
+
+   end Clear_Entry;
 
    ------------------------
    --  Clear_Entry_List  --
@@ -361,6 +391,19 @@ package body Yolk.Syndication.Writer is
       Feed.PAF.Clear_Entry_List;
 
    end Clear_Entry_List;
+
+   --------------------------
+   --  Clear_Entry_Source  --
+   --------------------------
+
+   procedure Clear_Entry_Source
+     (Entry_Source : in out Atom_Entry_Source)
+   is
+   begin
+
+      Entry_Source := Null_Atom_Entry_Source;
+
+   end Clear_Entry_Source;
 
    --------------------
    --  Delete_Entry  --
@@ -395,12 +438,13 @@ package body Yolk.Syndication.Writer is
    ----------------------
 
    function Get_XML_String
-     (Feed : in Atom_Feed)
+     (Feed         : in Atom_Feed;
+      Pretty_Print : in Boolean := False)
       return String
    is
    begin
 
-      return Feed.PAF.Get_String;
+      return Feed.PAF.Get_String (Pretty_Print => Pretty_Print);
 
    end Get_XML_String;
 
@@ -420,11 +464,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Common;
 
-   -------------------------
-   --  Set_Common_Source  --
-   -------------------------
+   ------------------
+   --  Set_Common  --
+   ------------------
 
-   procedure Set_Common_Source
+   procedure Set_Common
      (Entry_Source : in out Atom_Entry_Source;
       Base_URI     : in     String := None;
       Language     : in     String := None)
@@ -432,9 +476,9 @@ package body Yolk.Syndication.Writer is
    begin
 
       Entry_Source.Common := Atom_Common'(Base_URI => TUS (Base_URI),
-                                         Language => TUS (Language));
+                                          Language => TUS (Language));
 
-   end Set_Common_Source;
+   end Set_Common;
 
    -------------------
    --  Set_Content  --
@@ -513,12 +557,17 @@ package body Yolk.Syndication.Writer is
    ------------------------
 
    procedure Set_Entry_Source
-     (Entr         : in out Atom_Entry;
-      Entry_Source : in     Atom_Entry_Source)
+     (Entr               : in out Atom_Entry;
+      Source             : in out Atom_Entry_Source;
+      Clear_Entry_Source : in     Boolean := False)
    is
    begin
 
-      Entr.Source := Entry_Source;
+      Entr.Source := Source;
+
+      if Clear_Entry_Source then
+         Entr.Source := Null_Atom_Entry_Source;
+      end if;
 
    end Set_Entry_Source;
 
@@ -546,11 +595,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Generator;
 
-   ----------------------------
-   --  Set_Generator_Source  --
-   ----------------------------
+   ---------------------
+   --  Set_Generator  --
+   ---------------------
 
-   procedure Set_Generator_Source
+   procedure Set_Generator
      (Entry_Source : in out Atom_Entry_Source;
       Agent        : in     String;
       Base_URI     : in     String := None;
@@ -568,7 +617,7 @@ package body Yolk.Syndication.Writer is
          URI     => TUS (URI),
          Version => TUS (Version));
 
-   end Set_Generator_Source;
+   end Set_Generator;
 
    ----------------
    --  Set_Icon  --
@@ -590,11 +639,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Icon;
 
-   -----------------------
-   --  Set_Icon_Source  --
-   -----------------------
+   ----------------
+   --  Set_Icon  --
+   ----------------
 
-   procedure Set_Icon_Source
+   procedure Set_Icon
      (Entry_Source : in out Atom_Entry_Source;
       URI          : in     String;
       Base_URI     : in     String := None;
@@ -608,7 +657,7 @@ package body Yolk.Syndication.Writer is
                         Language => TUS (Language)),
          URI    => TUS (URI));
 
-   end Set_Icon_Source;
+   end Set_Icon;
 
    --------------
    --  Set_Id  --
@@ -649,11 +698,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Id;
 
-   ---------------------
-   --  Set_Id_Source  --
-   ---------------------
+   --------------
+   --  Set_Id  --
+   --------------
 
-   procedure Set_Id_Source
+   procedure Set_Id
      (Entry_Source : in out Atom_Entry_Source;
       Id           : in     String;
       Base_URI     : in     String := None;
@@ -666,7 +715,7 @@ package body Yolk.Syndication.Writer is
                                                  Language => TUS (Language)),
                                   URI    => TUS (Id));
 
-   end Set_Id_Source;
+   end Set_Id;
 
    ----------------
    --  Set_Logo  --
@@ -688,11 +737,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Logo;
 
-   -----------------------
-   --  Set_Logo_Source  --
-   -----------------------
+   ----------------
+   --  Set_Logo  --
+   ----------------
 
-   procedure Set_Logo_Source
+   procedure Set_Logo
      (Entry_Source : in out Atom_Entry_Source;
       URI          : in String;
       Base_URI     : in String := None;
@@ -706,7 +755,7 @@ package body Yolk.Syndication.Writer is
                         Language => TUS (Language)),
          URI    => TUS (URI));
 
-   end Set_Logo_Source;
+   end Set_Logo;
 
    ---------------------
    --  Set_Published  --
@@ -771,11 +820,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Rights;
 
-   -------------------------
-   --  Set_Rights_Source  --
-   -------------------------
+   ------------------
+   --  Set_Rights  --
+   ------------------
 
-   procedure Set_Rights_Source
+   procedure Set_Rights
      (Entry_Source : in out Atom_Entry_Source;
       Rights       : in String;
       Base_URI     : in String := None;
@@ -791,7 +840,7 @@ package body Yolk.Syndication.Writer is
          Text_Content => TUS (Rights),
          Text_Kind    => Rights_Kind);
 
-   end Set_Rights_Source;
+   end Set_Rights;
 
    --------------------
    --  Set_Subtitle  --
@@ -815,11 +864,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Subtitle;
 
-   ---------------------------
-   --  Set_Subtitle_Source  --
-   ---------------------------
+   --------------------
+   --  Set_Subtitle  --
+   --------------------
 
-   procedure Set_Subtitle_Source
+   procedure Set_Subtitle
      (Entry_Source  : in out Atom_Entry_Source;
       Subtitle      : in String;
       Base_URI      : in String := None;
@@ -835,7 +884,7 @@ package body Yolk.Syndication.Writer is
          Text_Content => TUS (Subtitle),
          Text_Kind    => Subtitle_Kind);
 
-   end Set_Subtitle_Source;
+   end Set_Subtitle;
 
    -----------------
    --  Set_Summary  --
@@ -901,11 +950,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Title;
 
-   ------------------------
-   --  Set_Title_Source  --
-   ------------------------
+   -----------------
+   --  Set_Title  --
+   -----------------
 
-   procedure Set_Title_Source
+   procedure Set_Title
      (Entry_Source : in out Atom_Entry_Source;
       Title        : in     String;
       Base_URI     : in     String := None;
@@ -921,7 +970,7 @@ package body Yolk.Syndication.Writer is
          Text_Content => TUS (Title),
          Text_Kind    => Title_Kind);
 
-   end Set_Title_Source;
+   end Set_Title;
 
    -------------------
    --  Set_Updated  --
@@ -964,11 +1013,11 @@ package body Yolk.Syndication.Writer is
 
    end Set_Updated;
 
-   --------------------------
-   --  Set_Updated_Source  --
-   --------------------------
+   -------------------
+   --  Set_Updated  --
+   -------------------
 
-   procedure Set_Updated_Source
+   procedure Set_Updated
      (Entry_Source : in out Atom_Entry_Source;
       Update_Time  : in     Ada.Calendar.Time;
       Base_URI     : in     String := None;
@@ -983,6 +1032,6 @@ package body Yolk.Syndication.Writer is
          Is_Set     => True,
          Time_Stamp => Update_Time);
 
-   end Set_Updated_Source;
+   end Set_Updated;
 
 end Yolk.Syndication.Writer;

@@ -108,16 +108,16 @@ package Yolk.Syndication is
    --       identifies a resource that is the source of the information
    --       provided in the containing element.
 
-   type Atom_Entry is limited private;
-   --  The atom:entry object.
+   type Atom_Entry is private;
+   --  The atom:entry object. This type is _not_ thread safe.
 
-   type Atom_Entry_Source is limited private;
-   --  The atom:source object.
+   type Atom_Entry_Source is private;
+   --  The atom:source object. This type is _not_ thread safe.
 
    type Atom_Feed is limited private;
-   --  The atom:feed object.
+   --  The atom:feed object. This type is thread safe.
 
-   Q : Character renames Ada.Characters.Latin_1.Quotation;
+   Q             : Character renames Ada.Characters.Latin_1.Quotation;
 
    None     : constant String := "";
    PI       : constant String := "<?xml version="
@@ -448,11 +448,12 @@ private
         (Value : in Atom_Person);
 
       procedure Add_Entry
-        (Value       : in Yolk.Syndication.Atom_Entry;
-         Entry_Added : out Boolean);
+        (Value : in Yolk.Syndication.Atom_Entry);
 
       procedure Add_Link
         (Value : in Atom_Link);
+
+      function Amount_Of_Entries return Natural;
 
       procedure Clear_Entry_List;
 
@@ -461,7 +462,9 @@ private
 
       function Get_DOM return DOM.Core.Document;
 
-      function Get_String return String;
+      function Get_String
+        (Pretty_Print : in Boolean := False)
+         return String;
 
       procedure Set_Common
         (Value : in Atom_Common);

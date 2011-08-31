@@ -249,9 +249,11 @@ package body Yolk.Syndication.DOM_Builder is
                                    Parent => Entry_Node);
 
          --  entry:content element
-         Create_Content_Element (Doc            => Doc,
-                                 Entry_Content  => An_Entry.Content,
-                                 Parent         => Entry_Node);
+         if An_Entry.Content.Content /= Null_Unbounded_String then
+            Create_Content_Element (Doc            => Doc,
+                                    Entry_Content  => An_Entry.Content,
+                                    Parent         => Entry_Node);
+         end if;
 
          --  entry:contributor elements
          Create_Person_Elements (Doc       => Doc,
@@ -260,11 +262,13 @@ package body Yolk.Syndication.DOM_Builder is
                                  Parent    => Entry_Node);
 
          --  entry:id element
-         Create_Generic_Element (Common    => An_Entry.Id.Common,
-                                 Data      => TS (An_Entry.Id.URI),
-                                 Doc       => Doc,
-                                 Elem_Name => "id",
-                                 Parent    => Entry_Node);
+         if An_Entry.Id.URI /= Null_Unbounded_String then
+            Create_Generic_Element (Common    => An_Entry.Id.Common,
+                                    Data      => TS (An_Entry.Id.URI),
+                                    Doc       => Doc,
+                                    Elem_Name => "id",
+                                    Parent    => Entry_Node);
+         end if;
 
          --  entry:link elements
          Create_Link_Elements (Doc    => Doc,
@@ -272,13 +276,15 @@ package body Yolk.Syndication.DOM_Builder is
                                Parent => Entry_Node);
 
          --  entry:published element
-         Create_Generic_Element
-           (Common    => An_Entry.Published.Common,
-            Data      => Atom_Date_Image
-              (Time_Stamp => An_Entry.Published.Time_Stamp),
-            Doc       => Doc,
-            Elem_Name => "published",
-            Parent    => Entry_Node);
+         if An_Entry.Updated.Is_Set then
+            Create_Generic_Element
+              (Common    => An_Entry.Published.Common,
+               Data      => Atom_Date_Image
+                 (Time_Stamp => An_Entry.Published.Time_Stamp),
+               Doc       => Doc,
+               Elem_Name => "published",
+               Parent    => Entry_Node);
+         end if;
 
          --  entry:rights
          if An_Entry.Rights.Text_Content /= Null_Unbounded_String then
@@ -299,22 +305,26 @@ package body Yolk.Syndication.DOM_Builder is
          end if;
 
          --  entry:summary element
-         Create_Text_Construct
-           (Common    => An_Entry.Summary.Common,
-            Data      => TS (An_Entry.Summary.Text_Content),
-            Doc       => Doc,
-            Elem_Name => "summary",
-            Parent    => Entry_Node,
-            Text_Kind => An_Entry.Summary.Text_Kind);
+         if An_Entry.Summary.Text_Content /= Null_Unbounded_String then
+            Create_Text_Construct
+              (Common    => An_Entry.Summary.Common,
+               Data      => TS (An_Entry.Summary.Text_Content),
+               Doc       => Doc,
+               Elem_Name => "summary",
+               Parent    => Entry_Node,
+               Text_Kind => An_Entry.Summary.Text_Kind);
+         end if;
 
          --  entry:title element
-         Create_Text_Construct
-           (Common    => An_Entry.Title.Common,
-            Data      => TS (An_Entry.Title.Text_Content),
-            Doc       => Doc,
-            Elem_Name => "title",
-            Parent    => Entry_Node,
-            Text_Kind => An_Entry.Title.Text_Kind);
+         if An_Entry.Title.Text_Content /= Null_Unbounded_String then
+            Create_Text_Construct
+              (Common    => An_Entry.Title.Common,
+               Data      => TS (An_Entry.Title.Text_Content),
+               Doc       => Doc,
+               Elem_Name => "title",
+               Parent    => Entry_Node,
+               Text_Kind => An_Entry.Title.Text_Kind);
+         end if;
 
          --  entry:updated element
          if An_Entry.Updated.Is_Set then
@@ -595,6 +605,7 @@ package body Yolk.Syndication.DOM_Builder is
             Parent    => Feed_Node);
       end if;
 
+      --  feed:entry elements
       Create_Entry_Elements (Doc     => Doc,
                              Entries => Entries,
                              Parent  => Feed_Node);
@@ -728,6 +739,14 @@ package body Yolk.Syndication.DOM_Builder is
             New_Child => Create_Element (Doc      => Doc,
                                          Tag_Name => "link"));
 
+         Attribute (Elem  => Link_Node,
+                    Name  => "xml:base",
+                    Value => TS (A_Link.Common.Base_URI));
+
+         Attribute (Elem  => Link_Node,
+                    Name  => "xml:lang",
+                    Value => TS (A_Link.Common.Language));
+
          case A_Link.Rel is
          when Alternate =>
             Set_Attribute (Elem  => Link_Node,
@@ -787,7 +806,7 @@ package body Yolk.Syndication.DOM_Builder is
 
    function Create_Node_From_String
      (XML_String : in String)
-   return DOM.Core.Node
+      return DOM.Core.Node
    is
 
       use DOM.Core;
