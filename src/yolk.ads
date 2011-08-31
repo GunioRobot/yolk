@@ -21,6 +21,6 @@ package Yolk is
 
    pragma Pure;
 
-   Version : constant String := "0.51";
+   Version : constant String := "0.60";
 
 end Yolk;
