@@ -25,18 +25,18 @@
 
 with AWS.Response;
 with AWS.Status;
-with Yolk.Syndication.Writer;
+with Yolk.Syndication;
 
 package View.Syndication is
 
-   use Yolk.Syndication.Writer;
+   use Yolk.Syndication;
 
-   Feed : Atom_Feed := New_Atom_Feed (Base_URI    => "/base",
-                                      Language    => "en",
-                                      Max_Age     => 10.0,
-                                      Min_Entries => 5,
-                                      Max_Entries => 8);
    --  Declare a new Atom_Feed object.
+   Feed              : Atom_Feed := New_Atom_Feed (Max_Entries => 10,
+                                                   Min_Entries => 5);
+
+   procedure Add_Entry_To_Feed;
+   --  Add a new entry to Feed.
 
    function Generate
      (Request : in AWS.Status.Data)

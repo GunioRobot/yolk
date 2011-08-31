@@ -56,7 +56,8 @@ package View is
    type Cache_Keys is (Feed_Data);
    package Cache1 is new Yolk.Cache.Discrete_Keys
      (Key_Type        => Cache_Keys,
-      Element_Type    => Unbounded_String);
+      Element_Type    => Unbounded_String,
+      Max_Element_Age => 10.0);
 
    package Cache2 is new Yolk.Cache.String_Keys
      (Element_Type      => Unbounded_String);
