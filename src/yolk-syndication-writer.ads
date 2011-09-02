@@ -262,7 +262,7 @@ package Yolk.Syndication.Writer is
       Language  : in     String := None;
       Length    : in     Natural := 0;
       Mime_Type : in     String := None;
-      Rel       : in     Relation_Kind := Alternate;
+      Rel       : in     Relation_Kinds := Alternate;
       Title     : in     String := None);
    --  Defines a reference from an entry or feed to a Web resource.
    --
@@ -304,7 +304,7 @@ package Yolk.Syndication.Writer is
       Language  : in     String := None;
       Length    : in     Natural := 0;
       Mime_Type : in     String := None;
-      Rel       : in     Relation_Kind := Alternate;
+      Rel       : in     Relation_Kinds := Alternate;
       Title     : in     String := None);
    --  Defines a reference from an entry or feed to a Web resource.
    --
@@ -346,7 +346,7 @@ package Yolk.Syndication.Writer is
       Language     : in     String := None;
       Length       : in     Natural := 0;
       Mime_Type    : in     String := None;
-      Rel          : in     Relation_Kind := Alternate;
+      Rel          : in     Relation_Kinds := Alternate;
       Title        : in     String := None);
    --  Defines a reference from an entry or feed to a Web resource.
    --
@@ -384,18 +384,6 @@ package Yolk.Syndication.Writer is
      (Feed : in Atom_Feed)
       return Natural;
    --  Return the amount of entries in the Feed object.
-
-   procedure Clear_Entry
-     (Entr : in out Atom_Entry);
-   --  Reset an Atom_Entry object to it's pristine state. This means getting
-   --  rid of all data, and effectively bringing it back to how it was when
-   --  it was originally created by the New_Atom_Entry function.
-
-   procedure Clear_Entry_Source
-     (Entry_Source : in out Atom_Entry_Source);
-   --  Reset an Atom_Entry_Source object to it's pristine state. This means
-   --  getting rid of all data, and effectively bringing it back to how it was
-   --  when it was originally created by the New_Atom_Entry_Source function.
 
    procedure Clear_Entry_List
      (Feed : in out Atom_Feed);

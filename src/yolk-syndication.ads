@@ -79,7 +79,7 @@ package Yolk.Syndication is
    --    versions of characters such as "&" and ">" represent those characters,
    --    not markup.
 
-   type Relation_Kind is (Alternate, Related, Self, Enclosure, Via);
+   type Relation_Kinds is (Alternate, Related, Self, Enclosure, Via);
    --  There are five values for the Registry of Link Relations:
    --
    --    Alternate:
@@ -257,7 +257,7 @@ private
          Hreflang    : Unbounded_String;
          Length      : Natural;
          Mime_Type   : Unbounded_String;
-         Rel         : Relation_Kind;
+         Rel         : Relation_Kinds;
          Title       : Unbounded_String;
       end record;
 

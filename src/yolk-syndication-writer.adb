@@ -274,7 +274,7 @@ package body Yolk.Syndication.Writer is
       Language  : in     String := None;
       Length    : in     Natural := 0;
       Mime_Type : in     String := None;
-      Rel       : in     Relation_Kind := Alternate;
+      Rel       : in     Relation_Kinds := Alternate;
       Title     : in     String := None)
    is
    begin
@@ -304,7 +304,7 @@ package body Yolk.Syndication.Writer is
       Language  : in     String := None;
       Length    : in     Natural := 0;
       Mime_Type : in     String := None;
-      Rel       : in     Relation_Kind := Alternate;
+      Rel       : in     Relation_Kinds := Alternate;
       Title     : in     String := None)
    is
    begin
@@ -334,7 +334,7 @@ package body Yolk.Syndication.Writer is
       Language     : in     String := None;
       Length       : in     Natural := 0;
       Mime_Type    : in     String := None;
-      Rel          : in     Relation_Kind := Alternate;
+      Rel          : in     Relation_Kinds := Alternate;
       Title        : in     String := None)
    is
    begin
@@ -366,19 +366,6 @@ package body Yolk.Syndication.Writer is
 
    end Amount_Of_Entries;
 
-   -------------------
-   --  Clear_Entry  --
-   -------------------
-
-   procedure Clear_Entry
-     (Entr : in out Atom_Entry)
-   is
-   begin
-
-      Entr := Null_Atom_Entry;
-
-   end Clear_Entry;
-
    ------------------------
    --  Clear_Entry_List  --
    ------------------------
@@ -391,19 +378,6 @@ package body Yolk.Syndication.Writer is
       Feed.PAF.Clear_Entry_List;
 
    end Clear_Entry_List;
-
-   --------------------------
-   --  Clear_Entry_Source  --
-   --------------------------
-
-   procedure Clear_Entry_Source
-     (Entry_Source : in out Atom_Entry_Source)
-   is
-   begin
-
-      Entry_Source := Null_Atom_Entry_Source;
-
-   end Clear_Entry_Source;
 
    --------------------
    --  Delete_Entry  --
