@@ -51,8 +51,8 @@ Yolk might work with other versions of the above software, but those are the
 versions I've tested it with.
 
 The path to the AWS, GNATcoll, Florist and XML/Ada project files must be added
-to the ADA_PROJECT_PATH environment variable, or else your Yolk project wont
-compile.
+to the GPR_PROJECT_PATH and ADA_PROJECT_PATH environment variables, or else your 
+Yolk project wont compile.
 
 My usual modus operandi for setting up these 6 things goes something like this:
 
