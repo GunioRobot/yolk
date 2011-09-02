@@ -51,7 +51,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised July 27th.
+Revised september 1st.
  2011
 \end_layout
 
@@ -109,7 +109,7 @@ target "http://libre.adacore.com/libre/tools/gnat-component-collection/"
 , but it does make the job of building complete web-applications a bit simpler.
  Things like changing user for the running application, accessing multiple
  databases, automatically cleaning up log files, adding basic static content
- handlers and building ATOM syndication XML are all handled by Yolk.
+ handlers and building Atom syndication XML are all handled by Yolk.
 \end_layout
 
 \begin_layout Standard
@@ -154,8 +154,8 @@ The Yolk source code is the best documentation there is.
  so I'll strongly suggest having the source code available as you read this
  document.
  What you will find in this document are short descriptions of what a package
- is meant to do and small usage examples, not a complete rundown of every
- type and procedure in a package.
+ is meant to do and perhaps small usage examples, not a complete rundown
+ of every type and procedure in a package.
 \end_layout
 
 \begin_layout Subsection
@@ -5863,8 +5863,16 @@ target "http://tools.ietf.org/html/rfc4287"
 Yolk.Syndication
 \emph default
  package.
- This package makes it easy to put together an Atom feed document, and have
- it delivered as a string or an XML/Ada DOM object.
+ This package makes it 
+\begin_inset Quotes eld
+\end_inset
+
+easy
+\begin_inset Quotes erd
+\end_inset
+
+ to put together an Atom feed document, and have it delivered as a string
+ or an XML/Ada DOM object.
 \end_layout
 
 \begin_layout Standard
@@ -5872,13 +5880,13 @@ Yolk.Syndication
 \emph on
 Yolk.Syndication
 \emph default
- help you construct the Atom XML - it does not check that the resulting
+ helps you construct the Atom XML - it does not check that the resulting
  XML is valid Atom XML, ie.
  that the Atom rules have been followed, so if the Atom specification says
  that
 \end_layout
 
-\begin_layout Quotation
+\begin_layout Quote
 atom:feed elements MUST contain exactly one atom:id element.
 \end_layout
 
@@ -5894,6 +5902,41 @@ target "http://tools.ietf.org/html/rfc4287"
 \end_inset
 
  for a good understanding of the requirements for this document format.
+ A basic example of how to build an Atom feed can be found in the Yolk demo
+ application.
+\end_layout
+
+\begin_layout Standard
+There are two packages in the 
+\emph on
+Yolk.Syndication
+\emph default
+ hierarchy:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Yolk.Syndication
+\emph default
+ - Here the necessary types and exceptions are defined.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Yolk.Syndication.Writer
+\emph default
+ - Here the functions and procedures for actually creating an Atom feed
+ is are defined.
+\end_layout
+
+\begin_layout Standard
+When time permits, I'll add a 
+\emph on
+Yolk.Syndication.Reader
+\emph default
+ package for extraction of data from an Atom feed.
 \end_layout
 
 \begin_layout Subsection
@@ -5919,7 +5962,7 @@ The Yolk.Syndication types
 \end_layout
 
 \begin_layout Standard
-There are 4 important types in this package:
+There are 5 important types in this package:
 \end_layout
 
 \begin_layout Itemize
@@ -5931,7 +5974,7 @@ Text_Kinds
 \begin_layout Itemize
 
 \emph on
-Relation_Kind
+Relation_Kinds
 \end_layout
 
 \begin_layout Itemize
@@ -5943,13 +5986,19 @@ Atom_Entry
 \begin_layout Itemize
 
 \emph on
+Atom_Entry_Source
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
 Atom_Feed
 \end_layout
 
 \begin_layout Standard
 A few of the procedures in 
 \emph on
-Yolk.Syndication
+Yolk.Syndication.Writer
 \emph default
  has parameters of the 
 \emph on
@@ -5981,15 +6030,19 @@ Xhtml
 \end_layout
 
 \begin_layout Standard
-Hopefully it's obvious what each of the refer to.
- Procedures that have parameters of this type always add data to the feed
- that can be interpreted as one of these three kinds of text.
+Hopefully it's obvious what each of these refers to.
+ Procedures that have parameters of the 
+\emph on
+Text_Kinds
+\emph default
+ type always add data to the feed that can be interpreted as one of these
+ three kinds of text.
 \end_layout
 
 \begin_layout Standard
 The 
 \emph on
-Relation_Kind
+Relation_Kinds
 \emph default
  type is used in correlation with links that are added to the feed.
  It identifies how the link relates to the current feed/entry.
@@ -6062,35 +6115,70 @@ Href
 \end_layout
 
 \begin_layout Standard
-Finally we have the 
+Finally we have the most important types:
+\end_layout
+
+\begin_layout Itemize
+
 \emph on
 Atom_Entry
 \emph default
- and 
+: An entry in a feed.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Atom_Entry_Source
+\emph default
+: The origin of an entry.
+\end_layout
+
+\begin_layout Itemize
+
 \emph on
 Atom_Feed
 \emph default
- types.
- These are core to the functionality of 
+: The Atom feed.
+\end_layout
+
+\begin_layout Standard
+These are core to the functionality of 
 \emph on
 Yolk.Syndication
 \emph default
-, and every single procedure and function in the package use one or the
- other.
- These two types are 
+, and every single procedure and function in the 
 \emph on
-limited private
+Yolk.Syndication.Writer
+\emph default
+ package use one or the other.
+ These three types are 
+\emph on
+private
 \emph default
 , so the only way to declare an object of either one, is by calling the
  
 \emph on
 New_Atom_Feed
 \emph default
- and 
+, 
 \emph on
 New_Atom_Entry
 \emph default
+ or 
+\emph on
+New_Atom_Entry_Source
+\emph default
  functions respectively.
+\end_layout
+
+\begin_layout Standard
+Note that only 
+\emph on
+Atom_Feed
+\emph default
+ is thread safe.
+ The two entry related types are not.
 \end_layout
 
 \begin_layout Subsection
@@ -6323,206 +6411,15 @@ Language
 \end_layout
 
 \begin_layout Subsection
-Building a simple Atom feed
+Yolk.Syndication.New_Atom_Entry_Source
 \end_layout
 
 \begin_layout Standard
-There are far too many procedures in 
+This function initialize and 
 \emph on
-Yolk.Syndication
+Atom_Entry_Source
 \emph default
- to go through here, so instead of explaining what they all do, I'm going
- to show how to build a simple Atom feed:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\small\sffamily},frame=tblr,language=XML,showstringspaces=false,tabsize=2,xleftmargin=1em,xrightmargin=1em"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-<?xml version="1.0" encoding="utf-8"?>    
-\end_layout
-
-\begin_layout Plain Layout
-
-<feed xmlns="http://www.w3.org/2005/Atom">
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-  <title>Example Feed</title>      
-\end_layout
-
-\begin_layout Plain Layout
-
-  <link href="http://example.org/"/>
-\end_layout
-
-\begin_layout Plain Layout
-
-  <updated>2003-12-13T18:30:02Z</updated>      
-\end_layout
-
-\begin_layout Plain Layout
-
-  <author>        
-\end_layout
-
-\begin_layout Plain Layout
-
-    <name>John Doe</name>      
-\end_layout
-
-\begin_layout Plain Layout
-
-  </author>      
-\end_layout
-
-\begin_layout Plain Layout
-
-  <id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6</id>
-\end_layout
-
-\begin_layout Plain Layout
-
-     
-\end_layout
-
-\begin_layout Plain Layout
-
-  <entry>       
-\end_layout
-
-\begin_layout Plain Layout
-
-    <title>Atom-Powered Robots Run Amok</title>
-\end_layout
-
-\begin_layout Plain Layout
-
-    <link href="http://example.org/2003/12/13/atom03"/>
-\end_layout
-
-\begin_layout Plain Layout
-
-    <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
-\end_layout
-
-\begin_layout Plain Layout
-
-    <updated>2003-12-13T18:30:02Z</updated>        
-\end_layout
-
-\begin_layout Plain Layout
-
-    <summary>Some text.</summary>      
-\end_layout
-
-\begin_layout Plain Layout
-
-  </entry>
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-</feed>
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This small example tells us two core things about Atom:
-\end_layout
-
-\begin_layout Enumerate
-There's always one 
-\emph on
-feed
-\emph default
- root element with some metadata associated with it.
-\end_layout
-
-\begin_layout Enumerate
-There's one or more 
-\emph on
-entry
-\emph default
- elements that is the content of the feed.
-\end_layout
-
-\begin_layout Standard
-An XML document without the 
-\emph on
-feed
-\emph default
- root element and one or more 
-\emph on
-entry
-\emph default
- elements simply isn't a proper Atom document.
- In 
-\emph on
-Yolk.Syndication
-\emph default
- everything centers around the two types:
-\end_layout
-
-\begin_layout Enumerate
-
-\emph on
-Atom_Feed
-\end_layout
-
-\begin_layout Enumerate
-
-\emph on
-Atom_Entry
-\end_layout
-
-\begin_layout Standard
-Every single procedure and function in the package revolves around either
- 
-\emph on
-Atom_Feed
-\emph default
- or 
-\emph on
-Atom_Entry
-\emph default
- types.
- Lets see the code needed to create the above Atom example:
+ type, and its specification looks like this:
 \end_layout
 
 \begin_layout Standard
@@ -6546,7 +6443,7 @@ status open
 
 \begin_layout Plain Layout
 
-function New_Atom_Entry      
+function New_Atom_Entry_Source      
 \end_layout
 
 \begin_layout Plain Layout
@@ -6561,7 +6458,7 @@ function New_Atom_Entry
 
 \begin_layout Plain Layout
 
-   return Atom_Entry;
+   return Atom_Entry_Source;
 \end_layout
 
 \end_inset
@@ -6572,6 +6469,816 @@ function New_Atom_Entry
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+As you can see, this is very similar to the 
+\emph on
+New_Atom_Entry
+\emph default
+ function, since its job is to return an 
+\emph on
+Atom_Entry_Source
+\emph default
+ object, which is basically just an object that describes the origins of
+ a feed entry.
+\end_layout
+
+\begin_layout Subsection
+Yolk.Syndication.Writer
+\end_layout
+
+\begin_layout Standard
+In this package we find all the tools necessary to build the Atom XML.
+ There are far too many subprograms in 
+\emph on
+Yolk.Syndication.Writer
+\emph default
+ to list here, so instead I'll refer you to the source code.
+ All the subprograms in this package work on one of the 
+\emph on
+Atom_Feed
+\emph default
+, 
+\emph on
+Atom_Entry
+\emph default
+ or 
+\emph on
+Atom_Entry_Source
+\emph default
+ types, for example if you want to set a title on your feed, you'll use
+ the 
+\emph on
+Set_Title
+\emph default
+ procedure:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Set_Title      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed       : in out Atom_Feed;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Title      : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Base_URI   : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language   : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Title_Kind : in     Text_Kinds := Text);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Or if the title is for an entry, then:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Set_Title      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Entr       : in out Atom_Entry;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Title      : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Base_URI   : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language   : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Title_Kind : in     Text_Kinds := Text);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Or we could add an author to the feed/entry/entry source:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Add_Author      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed     : in out Atom_Feed;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Name     : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Base_URI : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email    : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   URI      : in     String := None);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+procedure Add_Author      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Entr     : in out Atom_Entry;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Name     : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Base_URI : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email    : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   URI      : in     String := None);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+procedure Add_Author      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Entry_Source : in out Atom_Entry_Source;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Name         : in     String;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Base_URI     : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Email        : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Language     : in     String := None;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   URI          : in     String := None);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There's actually a hint about the kind of XML element that is being produced
+ by these procedures.
+ If the name of the procedure starts with 
+\emph on
+Set_
+\emph default
+ then it hints at an XML element of which there's only ever one.
+ So 
+\emph on
+Set_Title
+\emph default
+ create a 
+\emph on
+<title>Foo</title>
+\emph default
+ element, and if called again, overwrites the previous value, whereas if
+ the name of procedure starts with 
+\emph on
+Add_
+\emph default
+ then the Atom specification allows for multiples of these, as can be seen
+ with the 
+\emph on
+Add_Author
+\emph default
+ procedure.
+ Calling this one creates an 
+\emph on
+<author>
+\emph default
+ element, and calling it again simply adds one more author to the feed/entry/ent
+ry source.
+\end_layout
+
+\begin_layout Standard
+Most of the subprograms in this package deals directly with building the
+ Atom XML, but there are a few exceptions.
+ We'll go over these now.
+\end_layout
+
+\begin_layout Subsection
+Counting the amount of entries in a feed
+\end_layout
+
+\begin_layout Standard
+If you need to know how many entries that are currently in a feed, the you
+ can use the 
+\emph on
+Yolk.Syndication.Writer.Amount_Of_Entries
+\emph default
+ function:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function Amount_Of_Entries      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed : in Atom_Feed)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return Natural;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Clearing and deleting entries
+\end_layout
+
+\begin_layout Standard
+There are two procedures available for clearing and deleting entries, one
+ for clearing all entries away, and one for deleting entries based on their
+ Id.
+ Lets start with the one that clears out everything:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Clear_Entry_List      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed : in out Atom_Feed);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calling 
+\emph on
+Clear_Entry_List
+\emph default
+ deletes every single entry that has been added to the 
+\emph on
+Feed
+\emph default
+ object so far.
+ A less destructive procedure is 
+\emph on
+Delete_Entry
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Delete_Entry      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed : in out Atom_Feed;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Id   : in     String);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using this one, you can delete all entries whose Id is 
+\emph on
+Id
+\emph default
+.
+ Note that the match must be exact, so case matters.
+ FOO is not the same as foo.
+\end_layout
+
+\begin_layout Subsection
+Getting the Atom feed
+\end_layout
+
+\begin_layout Standard
+When you've added titles, authors, categories, entries and content to your
+ feed, the next step is turning it into XML.
+ This can be done in one of two ways:
+\end_layout
+
+\begin_layout Enumerate
+As string XML.
+\end_layout
+
+\begin_layout Enumerate
+As an XML/Ada DOM XML object.
+\end_layout
+
+\begin_layout Standard
+The string XML is obviously for the final audience, whereas the DOM XML
+ is useful if you need to do some further work on the feed before releasing
+ it on the world.
+ Here they are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function Get_XML_DOM      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed : in Atom_Feed)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return DOM.Core.Document;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function Get_XML_String      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Feed         : in Atom_Feed;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Pretty_Print : in Boolean := False)       
+\end_layout
+
+\begin_layout Plain Layout
+
+   return String;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that if 
+\emph on
+Pretty_Print
+\emph default
+ is 
+\emph on
+True
+\emph default
+ then whitespace is going get mangled according to these rules:
+\end_layout
+
+\begin_layout Quote
+If Pretty_Print is true, then the XML nodes will be indented so that children
+ nodes are to the right of their parents.
+ It is set to False by default because its use changes the document (addition
+ or removal of whitespaces among other things), which in general has no
+ effect for automatic tools reading the document.
+ All whitespaces are modified outside of elements containing nothing but
+ text nodes.
+ For text nodes, leading and trailing whitespaces are also deleted.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Get_XML_String
+\emph default
+ relies on the 
+\emph on
+Write
+\emph default
+ function from XML/Ada to generate its output, and the above quote is taken
+ straight from the XML/Ada source comments.
+ It's also worth noting that 
+\emph on
+Get_XML_String
+\emph default
+ and 
+\emph on
+Get_XML_DOM
+\emph default
+ both are pretty resource-hungry, so it's probably best to cache the results
+ for later use, instead of calling them on each and every hit.
+\end_layout
+
+\begin_layout Section
+Yolk.Utilities
+\end_layout
+
+\begin_layout Standard
+This package contains various support functionality or simple renames of
+ other subprograms, such as renaming the unyielding 
+\emph on
+To_Unbounded_String
+\emph default
+ function to the more manageable 
+\emph on
+TUS
+\emph default
+.
+ Check the 
+\emph on
+yolk-utilities.ads
+\emph default
+ source file for more information.
+\end_layout
+
+\begin_layout Section
+Yolk.Whoops
+\end_layout
+
+\begin_layout Standard
+This package contains one single procedure: 
+\emph on
+Unexpected_Exception_Handler
+\emph default
+.
+ I suspect the name gives away exactly what this procedure does.
+ It looks like this:'
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+procedure Unexpected_Exception_Handler      
+\end_layout
+
+\begin_layout Plain Layout
+
+  (E      : Ada.Exceptions.Exception_Occurrence;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Log    : in out AWS.Log.Object;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Error  : AWS.Exceptions.Data;       
+\end_layout
+
+\begin_layout Plain Layout
+
+   Answer : in out AWS.Response.Data);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can use this procedure to catch any and all exceptions you've failed
+ to catch in your application, ie.
+ the ones AWS pickup and fail to do anything sensible with.
+ When 
+\emph on
+Unexpected_Reception_Handler
+\emph default
+ catch an exception, two things happen:
+\end_layout
+
+\begin_layout Enumerate
+The exception is logged to the rotating log system in the 
+\emph on
+Error
+\emph default
+ trace.
+\end_layout
+
+\begin_layout Enumerate
+A HTTP status code 500 is returned to the user.
+\end_layout
+
+\begin_layout Standard
+The template used to create the HTTP code 500 error message is
+\emph on
+ demo/exe/templates/system/500.tmpl
+\emph default
+.
+ You can of course change this to match the look and feel of your application.
+ The path to the 
+\emph on
+500.tmpl
+\emph default
+ file is set by the configuration setting 
+\emph on
+System_Templates_Path
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+You can see an example on how to use this procedure in the file 
+\emph on
+demo/src/yolk_demo.adb
+\emph default
+.
 \end_layout
 
 \end_body

@@ -1,6 +1,6 @@
 Yolk Manual
 
-Revised July 27th. 2011
+Revised september 1st. 2011
 
 
 
@@ -70,6 +70,18 @@ Part II The Yolk Packages
         17.1 Initializing the compressed cache directory
         17.2 Yolk.Static_Content.Compressable
         17.3 Yolk.Static_Content.Non_Compressable
+    18 Yolk.Syndication
+        18.1 Exceptions
+        18.2 The Yolk.Syndication types
+        18.3 Yolk.Syndication.New_Atom_Feed
+        18.4 Yolk.Syndication.New_Atom_Entry
+        18.5 Yolk.Syndication.New_Atom_Entry_Source
+        18.6 Yolk.Syndication.Writer
+        18.7 Counting the amount of entries in a feed
+        18.8 Clearing and deleting entries
+        18.9 Getting the Atom feed
+    19 Yolk.Utilities
+    20 Yolk.Whoops
 
 
 
@@ -87,7 +99,7 @@ that can't be accomplished simply by using [http://libre.adacore.com/libre/tools
 a bit simpler. Things like changing user for the running 
 application, accessing multiple databases, automatically cleaning 
 up log files, adding basic static content handlers and building 
-ATOM syndication XML are all handled by Yolk.
+Atom syndication XML are all handled by Yolk.
 
 A Yolk application is in reality an AWS application, with some 
 sugar added, so you're not really building a Yolk 
@@ -118,9 +130,9 @@ The Yolk source code is the best documentation there is. This
 document is never going to be as comprehensive as the actual 
 source, so I'll strongly suggest having the source code available 
 as you read this document. What you will find in this document 
-are short descriptions of what a package is meant to do and small 
-usage examples, not a complete rundown of every type and 
-procedure in a package.
+are short descriptions of what a package is meant to do and 
+perhaps small usage examples, not a complete rundown of every 
+type and procedure in a package.
 
 1.3 Building and installing Yolk
 
@@ -1817,4 +1829,436 @@ Just as with Compressable a natural place to use Non_Compressable
 is where you define you content handlers, but it can obviously be 
 used wherever your application handles requests for static 
 content.
+
+18 Yolk.Syndication
+
+The Atom Syndication format ([http://tools.ietf.org/html/rfc4287||RFC4287]
+) is an XML-based document format that describes lists of related 
+information known as "feeds". Atom documents are used by many web 
+applications as a means of publishing information to users. It's 
+not a complicated format, but it does require a bit of work to 
+construct a proper Atom feed by hand, and since I try my best to 
+avoid work, I made the Yolk.Syndication package. This package 
+makes it “easy” to put together an Atom feed document, and have 
+it delivered as a string or an XML/Ada DOM object.
+
+Yolk.Syndication helps you construct the Atom XML - it does not 
+check that the resulting XML is valid Atom XML, ie. that the Atom 
+rules have been followed, so if the Atom specification says that
+
+atom:feed elements MUST contain exactly one atom:id element.
+
+then it is your job to make sure that your Atom feed has exactly 
+one ID. So before venturing into the realm of Atom, it's probably 
+a good idea to read [http://tools.ietf.org/html/rfc4287||RFC4287] 
+for a good understanding of the requirements for this document 
+format. A basic example of how to build an Atom feed can be found 
+in the Yolk demo application.
+
+There are two packages in the Yolk.Syndication hierarchy:
+
+• Yolk.Syndication - Here the necessary types and exceptions are 
+  defined.
+
+• Yolk.Syndication.Writer - Here the functions and procedures for 
+  actually creating an Atom feed is are defined.
+
+When time permits, I'll add a Yolk.Syndication.Reader package for 
+extraction of data from an Atom feed.
+
+18.1 Exceptions
+
+There's one exception in this package:
+
+• Not_Valid_XML. Is raised when some Xhtml content is not valid 
+  XML. This exception can be raised by all procedures that can 
+  take Xhtml as content.
+
+18.2 The Yolk.Syndication types
+
+There are 5 important types in this package:
+
+• Text_Kinds
+
+• Relation_Kinds
+
+• Atom_Entry
+
+• Atom_Entry_Source
+
+• Atom_Feed
+
+A few of the procedures in Yolk.Syndication.Writer has parameters 
+of the Text_Kinds type. This identifies the kind of data that is 
+being added, with possible values being 
+
+• Text 
+
+• Html
+
+• Xhtml
+
+Hopefully it's obvious what each of these refers to. Procedures 
+that have parameters of the Text_Kinds type always add data to 
+the feed that can be interpreted as one of these three kinds of 
+text.
+
+The Relation_Kinds type is used in correlation with links that 
+are added to the feed. It identifies how the link relates to the 
+current feed/entry. There are 5 possible relations:
+
+• Alternate: Signifies that the link points to an alternate 
+  version of the resource described by the containing element.
+
+• Related: Signifies that the link points to a resource that is 
+  related to, but not the same as, the resource described by the 
+  containing element.
+
+• Self: Signifies that the link points to a resource that is 
+  equivalent to the resource described by the containing element. 
+  All feeds should have one link with a Self relation.
+
+• Enclosure: Signifies that the link points to a resource that is 
+  related to, but not the same as, the resource described by the 
+  containing element. It also signifies that the resource 
+  potentially is large in size and might require special 
+  handling. If Enclosure is used, then usually the Length 
+  parameter is set to hint at the size of the resource.
+
+• Via: Signifies that the resource provided by the containing 
+  element originates in the URI given by the Href parameter of 
+  the link element.
+
+Finally we have the most important types:
+
+• Atom_Entry: An entry in a feed.
+
+• Atom_Entry_Source: The origin of an entry.
+
+• Atom_Feed: The Atom feed.
+
+These are core to the functionality of Yolk.Syndication, and 
+every single procedure and function in the 
+Yolk.Syndication.Writer package use one or the other. These three 
+types are private, so the only way to declare an object of either 
+one, is by calling the New_Atom_Feed, New_Atom_Entry or 
+New_Atom_Entry_Source functions respectively.
+
+Note that only Atom_Feed is thread safe. The two entry related 
+types are not.
+
+18.3 Yolk.Syndication.New_Atom_Feed
+
+This function initialize an Atom_Feed type, and its specification 
+looks like this:
+
+function New_Atom_Feed      
+
+  (Base_URI    : in String := None;       
+
+   Language    : in String := None;       
+
+   Max_Age     : in Duration := 5_616_000.0;       
+
+   Max_Entries : in Positive := 100;       
+
+   Min_Entries : in Positive := 10)       
+
+   return Atom_Feed;
+
+
+The Base_URI parameter establish a base for resolving relative 
+references in the feed. The Language parameter indicates the 
+natural language used in the feed. Max_Age is a duration that 
+determine when an entry in the feed is old enough to be deleted. 
+Max_Entries is the amount of entries kept in the feed. If there 
+are more than this amount of entries in the feed, then the oldest 
+are deleted until the feed contains Max_Entries entries again. 
+Min_Entries is the minimum amount of entries that must be present 
+in the feed, before we bother deleting entries whose age is > 
+Max_Age. If there are less than Min_Entries entries in the feed, 
+then we keep even a 100 year old entry.
+
+What these parameters hints at, is that some automatic 
+maintenance is done when using Yolk.Syndication, and this is 
+indeed true. Usually you do not want a feed to grow forever, and 
+instead of having to manually clear away old stuff, 
+Yolk.Syndication handles all this for you, according to the 
+values given when you instantiate an Atom_Feed object using 
+New_Atom_Feed.
+
+18.4 Yolk.Syndication.New_Atom_Entry
+
+This function initialize and Atom_Entry type, and its 
+specification looks like this:
+
+function New_Atom_Entry      
+
+  (Base_URI : in String := None;       
+
+   Language : in String := None)       
+
+   return Atom_Entry;
+
+
+As you can see, it's a lot simpler than the New_Atom_Feed 
+function. This is of course because all the automatic maintenance 
+related parameters have already been set by they New_Atom_Feed 
+function. All that is left is to define the Base_URI and the 
+natural Language used by the entry.
+
+18.5 Yolk.Syndication.New_Atom_Entry_Source
+
+This function initialize and Atom_Entry_Source type, and its 
+specification looks like this:
+
+function New_Atom_Entry_Source      
+
+  (Base_URI : in String := None;       
+
+   Language : in String := None)       
+
+   return Atom_Entry_Source;
+
+
+As you can see, this is very similar to the New_Atom_Entry 
+function, since its job is to return an Atom_Entry_Source object, 
+which is basically just an object that describes the origins of a 
+feed entry.
+
+18.6 Yolk.Syndication.Writer
+
+In this package we find all the tools necessary to build the Atom 
+XML. There are far too many subprograms in 
+Yolk.Syndication.Writer to list here, so instead I'll refer you 
+to the source code. All the subprograms in this package work on 
+one of the Atom_Feed, Atom_Entry or Atom_Entry_Source types, for 
+example if you want to set a title on your feed, you'll use the 
+Set_Title procedure:
+
+procedure Set_Title      
+
+  (Feed       : in out Atom_Feed;       
+
+   Title      : in     String;       
+
+   Base_URI   : in     String := None;       
+
+   Language   : in     String := None;       
+
+   Title_Kind : in     Text_Kinds := Text);
+
+
+Or if the title is for an entry, then:
+
+procedure Set_Title      
+
+  (Entr       : in out Atom_Entry;       
+
+   Title      : in     String;       
+
+   Base_URI   : in     String := None;       
+
+   Language   : in     String := None;       
+
+   Title_Kind : in     Text_Kinds := Text);
+
+
+Or we could add an author to the feed/entry/entry source:
+
+procedure Add_Author      
+
+  (Feed     : in out Atom_Feed;       
+
+   Name     : in     String;       
+
+   Base_URI : in     String := None;       
+
+   Email    : in     String := None;       
+
+   Language : in     String := None;       
+
+   URI      : in     String := None);
+
+
+
+procedure Add_Author      
+
+  (Entr     : in out Atom_Entry;       
+
+   Name     : in     String;       
+
+   Base_URI : in     String := None;       
+
+   Email    : in     String := None;       
+
+   Language : in     String := None;       
+
+   URI      : in     String := None);
+
+
+
+procedure Add_Author      
+
+  (Entry_Source : in out Atom_Entry_Source;       
+
+   Name         : in     String;       
+
+   Base_URI     : in     String := None;       
+
+   Email        : in     String := None;       
+
+   Language     : in     String := None;       
+
+   URI          : in     String := None);
+
+
+There's actually a hint about the kind of XML element that is 
+being produced by these procedures. If the name of the procedure 
+starts with Set_ then it hints at an XML element of which there's 
+only ever one. So Set_Title create a <title>Foo</title> element, 
+and if called again, overwrites the previous value, whereas if 
+the name of procedure starts with Add_ then the Atom 
+specification allows for multiples of these, as can be seen with 
+the Add_Author procedure. Calling this one creates an <author> 
+element, and calling it again simply adds one more author to the 
+feed/entry/entry source.
+
+Most of the subprograms in this package deals directly with 
+building the Atom XML, but there are a few exceptions. We'll go 
+over these now.
+
+18.7 Counting the amount of entries in a feed
+
+If you need to know how many entries that are currently in a 
+feed, the you can use the 
+Yolk.Syndication.Writer.Amount_Of_Entries function:
+
+function Amount_Of_Entries      
+
+  (Feed : in Atom_Feed)       
+
+   return Natural;
+
+
+18.8 Clearing and deleting entries
+
+There are two procedures available for clearing and deleting 
+entries, one for clearing all entries away, and one for deleting 
+entries based on their Id. Lets start with the one that clears 
+out everything:
+
+procedure Clear_Entry_List      
+
+  (Feed : in out Atom_Feed);
+
+
+Calling Clear_Entry_List deletes every single entry that has been 
+added to the Feed object so far. A less destructive procedure is 
+Delete_Entry:
+
+procedure Delete_Entry      
+
+  (Feed : in out Atom_Feed;       
+
+   Id   : in     String);
+
+
+Using this one, you can delete all entries whose Id is Id. Note 
+that the match must be exact, so case matters. FOO is not the 
+same as foo.
+
+18.9 Getting the Atom feed
+
+When you've added titles, authors, categories, entries and 
+content to your feed, the next step is turning it into XML. This 
+can be done in one of two ways:
+
+1. As string XML.
+
+2. As an XML/Ada DOM XML object.
+
+The string XML is obviously for the final audience, whereas the 
+DOM XML is useful if you need to do some further work on the feed 
+before releasing it on the world. Here they are:
+
+function Get_XML_DOM      
+
+  (Feed : in Atom_Feed)       
+
+   return DOM.Core.Document;
+
+
+
+function Get_XML_String      
+
+  (Feed         : in Atom_Feed;       
+
+   Pretty_Print : in Boolean := False)       
+
+   return String;
+
+
+Note that if Pretty_Print is True then whitespace is going get 
+mangled according to these rules:
+
+If Pretty_Print is true, then the XML nodes will be indented so 
+that children nodes are to the right of their parents. It is set 
+to False by default because its use changes the document 
+(addition or removal of whitespaces among other things), which in 
+general has no effect for automatic tools reading the document. 
+All whitespaces are modified outside of elements containing 
+nothing but text nodes. For text nodes, leading and trailing 
+whitespaces are also deleted.
+
+Get_XML_String relies on the Write function from XML/Ada to 
+generate its output, and the above quote is taken straight from 
+the XML/Ada source comments. It's also worth noting that 
+Get_XML_String and Get_XML_DOM both are pretty resource-hungry, 
+so it's probably best to cache the results for later use, instead 
+of calling them on each and every hit.
+
+19 Yolk.Utilities
+
+This package contains various support functionality or simple 
+renames of other subprograms, such as renaming the unyielding 
+To_Unbounded_String function to the more manageable TUS. Check 
+the yolk-utilities.ads source file for more information.
+
+20 Yolk.Whoops
+
+This package contains one single procedure: 
+Unexpected_Exception_Handler. I suspect the name gives away 
+exactly what this procedure does. It looks like this:'
+
+procedure Unexpected_Exception_Handler      
+
+  (E      : Ada.Exceptions.Exception_Occurrence;       
+
+   Log    : in out AWS.Log.Object;       
+
+   Error  : AWS.Exceptions.Data;       
+
+   Answer : in out AWS.Response.Data);
+
+
+You can use this procedure to catch any and all exceptions you've 
+failed to catch in your application, ie. the ones AWS pickup and 
+fail to do anything sensible with. When 
+Unexpected_Reception_Handler catch an exception, two things 
+happen:
+
+1. The exception is logged to the rotating log system in the 
+  Error trace.
+
+2. A HTTP status code 500 is returned to the user.
+
+The template used to create the HTTP code 500 error message is 
+demo/exe/templates/system/500.tmpl. You can of course change this 
+to match the look and feel of your application. The path to the 
+500.tmpl file is set by the configuration setting 
+System_Templates_Path. 
+
+You can see an example on how to use this procedure in the file 
+demo/src/yolk_demo.adb.
 
