@@ -4,7 +4,7 @@
 #                                                                             #
 #                                Make File                                    #
 #                                                                             #
-#                    Copyright (C) 2010-2011, Thomas Løcke                    #
+#                    Copyright (C) 2010-2011, Thomas LÃ¸cke                    #
 #                                                                             #
 #   Yolk is free software;  you can  redistribute it  and/or modify it under  #
 #   terms of the  GNU General Public License as published  by the Free Soft-  #
@@ -23,7 +23,7 @@ include makefile.setup
 
 all:
 	gnatmake -P yolk_build
-	
+
 debug:
 	BUILDTYPE=Debug gnatmake -P yolk_build
 
