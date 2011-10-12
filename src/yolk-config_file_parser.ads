@@ -6,7 +6,7 @@
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
---                   Copyright (C) 2010-2011, Thomas Løcke                   --
+--                   Copyright (C) 2010-2011, Thomas LÃ¸cke                   --
 --                                                                           --
 --  Yolk is free software;  you can  redistribute it  and/or modify it under --
 --  terms of the  GNU General Public License as published  by the Free Soft- --
@@ -56,7 +56,7 @@
 --  value.
 --
 --  To clear a default value, simply add the key to the configuration file,
---  with no value set. Conversely, you must omit (or comment) keys for whích
+--  with no value set. Conversely, you must omit (or comment) keys for which
 --  you want to use the default value.
 
 with Ada.Strings.Unbounded;
