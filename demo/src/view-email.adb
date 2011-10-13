@@ -99,7 +99,7 @@ package body View.Email is
                               Text_Part    => "Test email from Yolk",
                               SMTP_Server  => My.Config.Get (My.SMTP_Host),
                               SMTP_Port    => My.Config.Get (My.SMTP_Port),
-                              Charset      => ISO_8859_1);
+                              Charset      => UTF8);
 
                if Composer.Is_Send (Email) then
                   Insert (T, Assoc ("IS_SEND", True));

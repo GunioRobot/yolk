@@ -154,13 +154,13 @@ begin
               Title => "The Yolk Atom Feed Demo");
 
    Add_Author (Feed => Feed,
-               Name => "Thomas Locke");
+               Name => "Thomas Løcke");
 
    Add_Category (Feed => Feed,
                  Term => "A Feed Category Term");
 
    Add_Contributor (Feed => Feed,
-                    Name => "Trine Locke");
+                    Name => "Trine Løcke");
 
    Set_Generator (Feed    => Feed,
                   Agent   => "Yolk Syndication",
