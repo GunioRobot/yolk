@@ -6,7 +6,7 @@
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
---                   Copyright (C) 2010-2011, Thomas Løcke                   --
+--                   Copyright (C) 2010-2011, Thomas LÃ¸cke                   --
 --                                                                           --
 --  Yolk is free software;  you can  redistribute it  and/or modify it under --
 --  terms of the  GNU General Public License as published  by the Free Soft- --
@@ -92,7 +92,7 @@ package body View.Email is
                                            Value   => "Yolk " & Version);
                Composer.Send (ES           => Email,
                               From_Address => "thomas@12boo.net",
-                              From_Name    => "Thomas Løcke",
+                              From_Name    => "Thomas LÃ¸cke",
                               To_Address   => P_Recip_Address,
                               To_Name      => P_Recip_Name,
                               Subject      => "Test email",
