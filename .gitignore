@@ -17,3 +17,7 @@ demo/exe/*.pid
 
 # Do not track the log files
 demo/exe/logs/*.log
+
+# Do not track emacs temporary and backup files
+\#*#
+\*~
