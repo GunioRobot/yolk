@@ -88,7 +88,9 @@ My usual modus operandi for setting up these 6 things goes something like this:
                                 --disable-gtk \
                                 --disable-pygtk \
                                 --with-python \
-                                --with-postgresql
+                                --with-postgresql \
+                                --disable-projects \
+                                --without-gmp
 
         You should of course adjust the above configuration options to fit your
         needs, just make sure PostgreSQL support is enabled.
