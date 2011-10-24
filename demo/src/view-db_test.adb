@@ -36,7 +36,6 @@ package body View.DB_Test is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use AWS.Templates;
       use Database;
       use GNATCOLL.SQL;
@@ -66,9 +65,7 @@ package body View.DB_Test is
 
       Messages : Vector_Tag;
       T        : Translate_Set;
-
    begin
-
       if DB_Conn.Check_Connection then
          Insert (T, Assoc ("DB_SETUP", True));
 
@@ -138,7 +135,6 @@ package body View.DB_Test is
         (Status_Data   => Request,
          Template_File => My.Config.Get (My.Template_DB_Test),
          Translations  => T);
-
    end Generate;
 
 end View.DB_Test;

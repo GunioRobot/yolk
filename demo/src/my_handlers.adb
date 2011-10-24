@@ -40,14 +40,11 @@ package body My_Handlers is
    procedure Set
      (RH : out AWS.Services.Dispatchers.URI.Handler)
    is
-
       use AWS.Dispatchers.Callback;
       use Yolk;
 
       package My renames My_Configuration;
-
    begin
-
       -----------------------------------------
       --  Unknown Resource (404) Dispatcher  --
       -----------------------------------------
@@ -100,7 +97,6 @@ package body My_Handlers is
 
       Handlers.Set (RH => RH);
       --  Set the generic content handlers defined in Yolk.Handlers.
-
    end Set;
 
 end My_Handlers;

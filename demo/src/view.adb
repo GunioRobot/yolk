@@ -36,18 +36,14 @@ package body View is
       MIME_Type      : in String := Text_HTML)
       return AWS.Response.Data
    is
-
       use AWS.Templates;
-
    begin
-
       return Build_Response (Status_Data => Status_Data,
                              Content     => Parse
                                (Filename     => Template_File,
                                 Translations => Translations,
                                 Cached       => True),
                              MIME_Type   => MIME_Type);
-
    end Build_Response;
 
    ----------------------
@@ -60,7 +56,6 @@ package body View is
       MIME_Type   : in String := Text_HTML)
       return AWS.Response.Data
    is
-
       use AWS.Messages;
       use AWS.Response;
       use AWS.Status;
@@ -68,9 +63,7 @@ package body View is
 
       Encoding : Content_Encoding := Identity;
       --  Default to no encoding.
-
    begin
-
       if Is_Supported (Status_Data, GZip) then
          Encoding := GZip;
          --  GZip is supported by the client.
@@ -79,7 +72,6 @@ package body View is
       return Build (Content_Type  => MIME_Type,
                     Message_Body  => Content,
                     Encoding      => Encoding);
-
    end Build_Response;
 
 end View;

@@ -38,29 +38,30 @@ package body Yolk.Cache.Discrete_Keys is
    pragma Unmodified (Null_Container);
 
    protected P_Element_List is
-
       procedure Clear;
+      --  ????
 
       procedure Clear
         (Key : in Key_Type);
+      --  ????
 
       function Is_Valid
         (Key : in Key_Type)
          return Boolean;
+      --  ????
 
       procedure Read
         (Key   : in  Key_Type;
          Valid : out Boolean;
          Value : out Element_Type);
+      --  ????
 
       procedure Write
         (Key   : in Key_Type;
          Value : in Element_Type);
-
+      --  ????
    private
-
       Element_List   : Element_Array_Type := (others => Null_Container);
-
    end P_Element_List;
 
    ----------------------
@@ -68,7 +69,6 @@ package body Yolk.Cache.Discrete_Keys is
    ----------------------
 
    protected body P_Element_List is
-
       -------------
       --  Clear  --
       -------------
@@ -76,9 +76,7 @@ package body Yolk.Cache.Discrete_Keys is
       procedure Clear
       is
       begin
-
          Element_List := (others => Null_Container);
-
       end Clear;
 
       -------------
@@ -89,9 +87,7 @@ package body Yolk.Cache.Discrete_Keys is
         (Key : in Key_Type)
       is
       begin
-
          Element_List (Key) := Null_Container;
-
       end Clear;
 
       ----------------
@@ -102,14 +98,10 @@ package body Yolk.Cache.Discrete_Keys is
         (Key : in Key_Type)
          return Boolean
       is
-
          use Ada.Calendar;
-
       begin
-
          return (Element_List (Key).Has_Element) and then
            (Clock - Element_List (Key).Added_Timestamp < Max_Element_Age);
-
       end Is_Valid;
 
       ------------
@@ -121,14 +113,10 @@ package body Yolk.Cache.Discrete_Keys is
          Valid : out Boolean;
          Value : out Element_Type)
       is
-
          use Ada.Calendar;
-
       begin
-
          Valid := Is_Valid (Key => Key);
          Value := Element_List (Key).Element;
-
       end Read;
 
       -------------
@@ -140,11 +128,9 @@ package body Yolk.Cache.Discrete_Keys is
          Value : in Element_Type)
       is
       begin
-
          Element_List (Key) := (Added_Timestamp => Ada.Calendar.Clock,
                                 Element         => Value,
                                 Has_Element     => True);
-
       end Write;
 
    end P_Element_List;
@@ -156,9 +142,7 @@ package body Yolk.Cache.Discrete_Keys is
    procedure Clear
    is
    begin
-
       P_Element_List.Clear;
-
    end Clear;
 
    -------------
@@ -169,9 +153,7 @@ package body Yolk.Cache.Discrete_Keys is
      (Key : in Key_Type)
    is
    begin
-
       P_Element_List.Clear (Key => Key);
-
    end Clear;
 
    ----------------
@@ -183,9 +165,7 @@ package body Yolk.Cache.Discrete_Keys is
       return Boolean
    is
    begin
-
       return P_Element_List.Is_Valid (Key => Key);
-
    end Is_Valid;
 
    ------------
@@ -198,11 +178,9 @@ package body Yolk.Cache.Discrete_Keys is
       Value    : out Element_Type)
    is
    begin
-
       P_Element_List.Read (Key   => Key,
                            Valid => Is_Valid,
                            Value => Value);
-
    end Read;
 
    -------------
@@ -214,10 +192,8 @@ package body Yolk.Cache.Discrete_Keys is
       Value : in Element_Type)
    is
    begin
-
       P_Element_List.Write (Key   => Key,
                             Value => Value);
-
    end Write;
 
 end Yolk.Cache.Discrete_Keys;

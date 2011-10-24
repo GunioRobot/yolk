@@ -48,13 +48,16 @@ generic
    --  deleted until the size is 1 lower than Cleanup_Size.
    --  Obviously it makes little sense to set this number below the value of
    --  Reserved_Capacity.
+
    Cleanup_On_Write : Boolean := True;
    --  Call the Cleanup procedure when Write is called and the size of the
    --  cache is >= Cleanup_Size. If Cleanup_On_Write is False, Cleanup is not
    --  called automatically, and you'll have to manage the size of the cache
    --  manually.
+
    Max_Element_Age : Duration := 3600.0;
    ---  Elements that are older than Max_Element_Age are considered invalid.
+
    Reserved_Capacity : Positive := 100;
    --  Set this as close as possible to the expected final size of the cache.
    --  Setting it too low will result in a performance-loss whenever the

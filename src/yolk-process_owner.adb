@@ -34,16 +34,13 @@ package body Yolk.Process_Owner is
    procedure Set_User
      (Username : in String)
    is
-
       use POSIX;
       use POSIX.Process_Identification;
       use POSIX.User_Database;
 
       User_DI     : User_Database_Item;
       P_Username  : constant POSIX_String := To_POSIX_String (Username);
-
    begin
-
       User_DI := Get_User_Database_Item (Name => P_Username);
       Set_Group_ID (ID => Group_ID_Of (DB_Item => User_DI));
       --  Set gid first, else we might end up not having permission to set it

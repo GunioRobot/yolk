@@ -43,11 +43,8 @@ package body Yolk.Connect_To_DB.PostgreSQL is
 
    function Connection return GNATCOLL.SQL.Exec.Database_Connection
    is
-
       use GNATCOLL.SQL.Exec;
-
    begin
-
       case Task_To_DB_Mapping_Method is
          when AWS_Tasks_To_DB =>
             --  We map AWS tasks directly to the GNATCOLL database connections.
@@ -58,12 +55,9 @@ package body Yolk.Connect_To_DB.PostgreSQL is
             --  Map AWS tasks to DB_Conn tasks, and use the DB_Conn tasks to
             --  fetch the database connection.
             declare
-
                A_Connection   : Database_Connection;
                A_DB_Task      : DB_Conn_Access;
-
             begin
-
                A_DB_Task := Task_Association.Value;
 
                if A_DB_Task = Null_DB_Conn_Access then
@@ -75,10 +69,8 @@ package body Yolk.Connect_To_DB.PostgreSQL is
                                 Desc => DB_Description);
 
                return A_Connection;
-
             end;
       end case;
-
    end Connection;
 
    ------------------
@@ -87,11 +79,8 @@ package body Yolk.Connect_To_DB.PostgreSQL is
 
    procedure Initialize
    is
-
       use GNATCOLL.SQL.Exec;
-
    begin
-
       if Task_To_DB_Mapping_Method = AWS_Tasks_To_DB
         and then AWS_Tasks_To_DB_Already_Used
       then
@@ -112,11 +101,9 @@ package body Yolk.Connect_To_DB.PostgreSQL is
          --  We only accept _one_ instantation using the AWS_Tasks_To_DB
          --  method.
       end if;
-
    end Initialize;
 
 begin
-
    Initialize;
 
 end Yolk.Connect_To_DB.PostgreSQL;

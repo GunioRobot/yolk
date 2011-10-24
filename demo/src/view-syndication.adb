@@ -38,12 +38,9 @@ package body View.Syndication is
 
    procedure Add_Entry_To_Feed
    is
-
       Feed_Entry        : Atom_Entry        := New_Atom_Entry;
       Feed_Entry_Source : Atom_Entry_Source := New_Atom_Entry_Source;
-
    begin
-
       --  Populate the feed with an entry.
       Set_Title (Entr  => Feed_Entry,
                  Title => "Go Back To Demo Page [" &
@@ -83,7 +80,6 @@ package body View.Syndication is
       Add_Entry (Feed        => Feed,
                  Entr        => Feed_Entry,
                  Clear_Entry => True);
-
    end Add_Entry_To_Feed;
 
    ---------------
@@ -94,16 +90,13 @@ package body View.Syndication is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use AWS.Response;
       use AWS.Status;
       use Yolk.Utilities;
 
       Valid : Boolean := False;
       Value : Unbounded_String;
-
    begin
-
       Cache1.Read (Key      => Feed_Data,
                    Is_Valid => Valid,
                    Value    => Value);
@@ -123,15 +116,11 @@ package body View.Syndication is
          MIME_Type   => Text_XML);
 
    exception
-
       when Not_Valid_XML =>
          return Build_Response (Status_Data => Request,
                                 Content     => "<p>XML not valid.</p>");
-
    end Generate;
-
 begin
-
    --  Lets build the ATOM feed. This is a rather involved process, since there
    --  are quite a lot of XML elements to take care of in the ATOM RFC.
    --  The feed built here is not using all the available Atom elements, just

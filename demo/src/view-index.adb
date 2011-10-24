@@ -34,7 +34,6 @@ package body View.Index is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use Ada.Calendar;
       use AWS.Templates;
       use Yolk.Utilities;
@@ -43,9 +42,7 @@ package body View.Index is
       Now   : Time;
       Valid : Boolean := False;
       Value : Unbounded_String;
-
    begin
-
       Cache2.Read (Key      => "index",
                    Is_Valid => Valid,
                    Value    => Value);
@@ -69,7 +66,6 @@ package body View.Index is
       return Build_Response
         (Status_Data => Request,
          Content     => TS (Value));
-
    end Generate;
 
 end View.Index;

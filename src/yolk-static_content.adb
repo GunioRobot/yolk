@@ -34,7 +34,6 @@ with Yolk.Rotating_Log;
 package body Yolk.Static_Content is
 
    protected GZip_And_Cache is
-
       procedure Do_It
         (GZ_Resource : in String;
          Resource    : in String);
@@ -45,7 +44,6 @@ package body Yolk.Static_Content is
       procedure Initialize
         (Log_It : in Boolean := True);
       --  Delete and re-create the Compressed_Cache_Directory.
-
    end GZip_And_Cache;
    --  Handle GZip'ing, saving and deletion of compressable resources. This is
    --  done in a protected object so we don't get multiple threads all trying
@@ -66,7 +64,6 @@ package body Yolk.Static_Content is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use Ada.Directories;
       use AWS.Messages;
       use AWS.Status;
@@ -85,9 +82,7 @@ package body Yolk.Static_Content is
       Minimum_File_Size : constant File_Size :=
                             File_Size (Integer'(Config.Get
                               (Compress_Minimum_File_Size)));
-
    begin
-
       if not Exists (Resource)
         or else Kind (Resource) /= Ordinary_File
       then
@@ -135,7 +130,6 @@ package body Yolk.Static_Content is
       return AWS.Response.File
         (Content_Type  => MIME_Type,
          Filename      => Resource);
-
    end Compressable;
 
    ----------------
@@ -146,13 +140,10 @@ package body Yolk.Static_Content is
      (Resource : in String)
       return Boolean
    is
-
       use Ada.Calendar;
       use Ada.Directories;
       use Yolk.Configuration;
-
    begin
-
       if Config.Get (Compressed_Max_Age) <= 0 then
          return True;
       end if;
@@ -164,7 +155,6 @@ package body Yolk.Static_Content is
       end if;
 
       return True;
-
    end Good_Age;
 
    ----------------------
@@ -172,18 +162,14 @@ package body Yolk.Static_Content is
    ----------------------
 
    protected body GZip_And_Cache is
-
       procedure Do_It
         (GZ_Resource : in String;
          Resource    : in String)
       is
-
          use Ada.Directories;
 
          Cache_Dir : constant String := Containing_Directory (GZ_Resource);
-
       begin
-
          if Exists (GZ_Resource) then
             return;
             --  We only need to continue if the GZ_Resource doesn't exist. It
@@ -198,7 +184,6 @@ package body Yolk.Static_Content is
 
          Compress_File :
          declare
-
             File_In  : Ada.Streams.Stream_IO.File_Type;
             File_Out : Ada.Streams.Stream_IO.File_Type;
             Filter   : ZLib.Filter_Type;
@@ -227,12 +212,10 @@ package body Yolk.Static_Content is
                Last : out Ada.Streams.Stream_Element_Offset)
             is
             begin
-
                Ada.Streams.Stream_IO.Read
                  (File => File_In,
                   Item => Item,
                   Last => Last);
-
             end Data_Read;
 
             ----------------
@@ -243,14 +226,10 @@ package body Yolk.Static_Content is
               (Item : in Ada.Streams.Stream_Element_Array)
             is
             begin
-
                Ada.Streams.Stream_IO.Write (File => File_Out,
                                             Item => Item);
-
             end Data_Write;
-
          begin
-
             Ada.Streams.Stream_IO.Open
               (File => File_In,
                Mode => Ada.Streams.Stream_IO.In_File,
@@ -272,9 +251,7 @@ package body Yolk.Static_Content is
 
             Ada.Streams.Stream_IO.Close (File => File_In);
             Ada.Streams.Stream_IO.Close (File => File_Out);
-
          end Compress_File;
-
       end Do_It;
 
       ------------------
@@ -284,13 +261,10 @@ package body Yolk.Static_Content is
       procedure Initialize
         (Log_It : in Boolean := True)
       is
-
          use Ada.Directories;
          use Yolk.Rotating_Log;
          use Yolk.Configuration;
-
       begin
-
          if Exists (Config.Get (Compressed_Cache_Directory))
            and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
          then
@@ -313,9 +287,7 @@ package body Yolk.Static_Content is
                Log_String => Config.Get (Compressed_Cache_Directory)
                & " created by Yolk.Static_Content.Initialize");
          end if;
-
       end Initialize;
-
    end GZip_And_Cache;
 
    ---------------------------------------------
@@ -326,9 +298,7 @@ package body Yolk.Static_Content is
      (Log_To_Info_Trace : in Boolean := True)
    is
    begin
-
       GZip_And_Cache.Initialize (Log_It => Log_To_Info_Trace);
-
    end Initialize_Compressed_Cache_Directory;
 
    ------------------------
@@ -339,7 +309,6 @@ package body Yolk.Static_Content is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use Ada.Directories;
       use AWS.MIME;
       use AWS.Status;
@@ -347,9 +316,7 @@ package body Yolk.Static_Content is
 
       Resource : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
-
    begin
-
       if not Exists (Resource)
         or else Kind (Resource) /= Ordinary_File
       then
@@ -359,7 +326,6 @@ package body Yolk.Static_Content is
       return AWS.Response.File
         (Content_Type  => Content_Type (Resource),
          Filename      => Resource);
-
    end Non_Compressable;
 
 end Yolk.Static_Content;

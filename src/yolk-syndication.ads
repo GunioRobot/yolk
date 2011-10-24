@@ -437,73 +437,92 @@ private
    package Entry_List is new Doubly_Linked_Lists (Atom_Entry, Equal_Entry);
 
    protected type Protected_Atom_Feed is
-
       procedure Add_Author
         (Value : in Atom_Person);
+      --  ????
 
       procedure Add_Category
         (Value : in Atom_Category);
+      --  ????
 
       procedure Add_Contributor
         (Value : in Atom_Person);
+      --  ????
 
       procedure Add_Entry
         (Value : in Yolk.Syndication.Atom_Entry);
+      --  ????
 
       procedure Add_Link
         (Value : in Atom_Link);
+      --  ????
 
       function Amount_Of_Entries return Natural;
+      --  ????
 
       procedure Clear_Entry_List;
+      --  ????
 
       procedure Delete_Entry
         (Id : in String);
+      --  ????
 
       function Get_DOM return DOM.Core.Document;
+      --  ????
 
       function Get_String
         (Pretty_Print : in Boolean := False)
          return String;
+      --  ????
 
       procedure Set_Common
         (Value : in Atom_Common);
+      --  ????
 
       procedure Set_Generator
         (Value : in Atom_Generator);
+      --  ????
 
       procedure Set_Icon
         (Value : in Atom_Icon);
+      --  ????
 
       procedure Set_Id
         (Value : in Atom_Id);
+      --  ????
 
       procedure Set_Logo
         (Value : in Atom_Logo);
+      --  ????
 
       procedure Set_Max_Age
         (Value : in Duration);
+      --  ????
 
       procedure Set_Max_Entries
         (Value : in Positive);
+      --  ????
 
       procedure Set_Min_Entries
         (Value : in Positive);
+      --  ????
 
       procedure Set_Rights
         (Value : in Atom_Text);
+      --  ????
 
       procedure Set_Subtitle
         (Value : in Atom_Text);
+      --  ????
 
       procedure Set_Title
         (Value : in Atom_Text);
+      --  ????
 
       procedure Set_Updated_Time
         (Value : in Atom_Date);
-
+      --  ????
    private
-
       Authors        : Person_List.List;
       Categories     : Category_List.List;
       Common         : Atom_Common;
@@ -521,7 +540,6 @@ private
       Subtitle       : Atom_Text;
       Title          : Atom_Text;
       Updated        : Atom_Date;
-
    end Protected_Atom_Feed;
 
    type Atom_Feed is

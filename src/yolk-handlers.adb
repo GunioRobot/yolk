@@ -34,14 +34,11 @@ package body Yolk.Handlers is
    procedure Set
      (RH : out AWS.Services.Dispatchers.URI.Handler)
    is
-
       use AWS.Dispatchers.Callback;
       use Yolk.Configuration;
 
       package SC renames Yolk.Static_Content;
-
    begin
-
       AWS.Services.Dispatchers.URI.Register_Regexp
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_CSS),
@@ -91,7 +88,6 @@ package body Yolk.Handlers is
         (Dispatcher  => RH,
          URI         => Config.Get (Handler_XSL),
          Action      => Create (Callback => SC.Compressable'Access));
-
    end Set;
 
 end Yolk.Handlers;

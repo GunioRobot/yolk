@@ -39,9 +39,7 @@ package body Yolk.Syndication is
       return Boolean
    is
    begin
-
       return Left.Id.URI = Right.Id.URI;
-
    end Equal_Entry;
 
    ----------------------
@@ -54,8 +52,7 @@ package body Yolk.Syndication is
       return Atom_Entry
    is
    begin
-
-      return An_Entry          : Atom_Entry := Null_Atom_Entry do
+      return An_Entry : Atom_Entry := Null_Atom_Entry do
          if Base_URI /= None then
             An_Entry.Common.Base_URI := TUS (Base_URI);
          end if;
@@ -64,7 +61,6 @@ package body Yolk.Syndication is
             An_Entry.Common.Language := TUS (Language);
          end if;
       end return;
-
    end New_Atom_Entry;
 
    -----------------------------
@@ -77,7 +73,6 @@ package body Yolk.Syndication is
       return Atom_Entry_Source
    is
    begin
-
       return Source : Atom_Entry_Source := Null_Atom_Entry_Source do
          if Base_URI /= None then
             Source.Common.Base_URI := TUS (Base_URI);
@@ -88,7 +83,6 @@ package body Yolk.Syndication is
          end if;
          null;
       end return;
-
    end New_Atom_Entry_Source;
 
    ---------------------
@@ -103,19 +97,15 @@ package body Yolk.Syndication is
       Min_Entries : in Positive := 10)
       return Atom_Feed
    is
-
       Common : constant Atom_Common := (Base_URI => TUS (Base_URI),
                                         Language => TUS (Language));
-
    begin
-
       return Feed : Atom_Feed do
          Feed.PAF.Set_Common (Value => Common);
          Feed.PAF.Set_Max_age (Value => Max_Age);
          Feed.PAF.Set_Max_Entries (Value => Max_Entries);
          Feed.PAF.Set_Min_Entries (Value => Min_Entries);
       end return;
-
    end New_Atom_Feed;
 
    ---------------------------
@@ -123,7 +113,6 @@ package body Yolk.Syndication is
    ---------------------------
 
    protected body Protected_Atom_Feed is
-
       ------------------
       --  Add_Author  --
       ------------------
@@ -132,9 +121,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Person)
       is
       begin
-
          Authors.Append (Value);
-
       end Add_Author;
 
       --------------------
@@ -145,9 +132,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Category)
       is
       begin
-
          Categories.Append (Value);
-
       end Add_Category;
 
       -----------------------
@@ -158,9 +143,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Person)
       is
       begin
-
          Contributors.Append (Value);
-
       end Add_Contributor;
 
       -----------------
@@ -170,7 +153,6 @@ package body Yolk.Syndication is
       procedure Add_Entry
         (Value : in Yolk.Syndication.Atom_Entry)
       is
-
          use Ada.Calendar;
          use Entry_List;
 
@@ -187,12 +169,9 @@ package body Yolk.Syndication is
            (Value : in     Atom_Entry;
             Done  :    out Boolean)
          is
-
             Appendable  : Boolean := False;
             C           : Cursor;
-
          begin
-
             if Entries.Is_Empty then
                Appendable := True;
             else
@@ -226,16 +205,13 @@ package body Yolk.Syndication is
                   Next (C);
                end loop;
             end if;
-
          end Insert_Entry;
 
          C           : Cursor;
          Counter     : Natural       := Natural (Entries.Length);
          Entry_Added : Boolean       := False;
          Now         : constant Time := Clock;
-
       begin
-
          C := Find (Container => Entries,
                     Item      => Value);
          if  C /= No_Element then
@@ -273,7 +249,6 @@ package body Yolk.Syndication is
          then
             Updated.Time_Stamp := Value.Updated.Time_Stamp;
          end if;
-
       end Add_Entry;
 
       ----------------
@@ -284,9 +259,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Link)
       is
       begin
-
          Links.Append (Value);
-
       end Add_Link;
 
       -------------------------
@@ -296,9 +269,7 @@ package body Yolk.Syndication is
       function Amount_Of_Entries return Natural
       is
       begin
-
          return Natural (Entries.Length);
-
       end Amount_Of_Entries;
 
       ------------------------
@@ -308,9 +279,7 @@ package body Yolk.Syndication is
       procedure Clear_Entry_List
       is
       begin
-
          Entries.Clear;
-
       end Clear_Entry_List;
 
       --------------------
@@ -320,13 +289,10 @@ package body Yolk.Syndication is
       procedure Delete_Entry
         (Id : in String)
       is
-
          use Entry_List;
 
          C : Cursor;
-
       begin
-
          C := Entries.First;
          while Has_Element (C) loop
             if Element (C).Id.URI = TUS (Id) then
@@ -335,7 +301,6 @@ package body Yolk.Syndication is
 
             Next (C);
          end loop;
-
       end Delete_Entry;
 
       ---------------
@@ -344,15 +309,12 @@ package body Yolk.Syndication is
 
       function Get_DOM return DOM.Core.Document
       is
-
          use DOM.Core;
          use Yolk.Syndication.DOM_Builder;
 
          Doc       : Document;
          Impl      : DOM_Implementation;
-
       begin
-
          Doc := Create_Document (Implementation => Impl);
 
          Create_Feed_Element (Authors      => Authors,
@@ -372,7 +334,6 @@ package body Yolk.Syndication is
                               Updated      => Updated);
 
          return Doc;
-
       end Get_DOM;
 
       ------------------
@@ -383,7 +344,6 @@ package body Yolk.Syndication is
         (Pretty_Print : in Boolean := False)
          return String
       is
-
          use Ada.Streams;
          use DOM.Core.Nodes;
 
@@ -410,15 +370,12 @@ package body Yolk.Syndication is
             Item   :    out Stream_Element_Array;
             Last   :    out Stream_Element_Offset)
          is
-
             Str : constant String := Slice
               (Stream.Str,
                Stream.Read_Index,
                Stream.Read_Index + Item'Length - 1);
             J   : Stream_Element_Offset := Item'First;
-
          begin
-
             for S in Str'Range loop
                Item (J) := Stream_Element (Character'Pos (Str (S)));
                J := J + 1;
@@ -426,7 +383,6 @@ package body Yolk.Syndication is
 
             Last := Item'First + Str'Length - 1;
             Stream.Read_Index := Stream.Read_Index + Item'Length;
-
          end Read;
 
          -----------
@@ -437,26 +393,20 @@ package body Yolk.Syndication is
            (Stream : in out String_Stream_Type;
             Item   : Stream_Element_Array)
          is
-
             Str : String (1 .. Integer (Item'Length));
             S   : Integer := Str'First;
-
          begin
-
             for J in Item'Range loop
                Str (S) := Character'Val (Item (J));
                S := S + 1;
             end loop;
 
             Append (Stream.Str, Str);
-
          end Write;
 
          Output   : aliased String_Stream_Type;
          Doc      : DOM.Core.Document := Get_DOM;
-
       begin
-
          DOM.Core.Nodes.Write (Stream                 => Output'Access,
                                N                      => Doc,
                                Print_Comments         => False,
@@ -466,7 +416,6 @@ package body Yolk.Syndication is
          Free (Doc);
 
          return PI & TS (Output.Str);
-
       end Get_String;
 
       ------------------
@@ -477,9 +426,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Common)
       is
       begin
-
          Common := Value;
-
       end Set_Common;
 
       ---------------------
@@ -490,9 +437,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Generator)
       is
       begin
-
          Generator := Value;
-
       end Set_Generator;
 
       ----------------
@@ -503,9 +448,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Icon)
       is
       begin
-
          Icon := Value;
-
       end Set_Icon;
 
       --------------
@@ -516,9 +459,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Id)
       is
       begin
-
          Id := Value;
-
       end Set_Id;
 
       ----------------
@@ -529,9 +470,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Logo)
       is
       begin
-
          Logo := Value;
-
       end Set_Logo;
 
       -------------------
@@ -542,9 +481,7 @@ package body Yolk.Syndication is
         (Value : in Duration)
       is
       begin
-
          Max_Entry_Age := Value;
-
       end Set_Max_Age;
 
       -----------------------
@@ -555,9 +492,7 @@ package body Yolk.Syndication is
         (Value : in Positive)
       is
       begin
-
          Max_Entries := Value;
-
       end Set_Max_Entries;
 
       -----------------------
@@ -568,9 +503,7 @@ package body Yolk.Syndication is
         (Value : in Positive)
       is
       begin
-
          Min_Entries := Value;
-
       end Set_Min_Entries;
 
       ------------------
@@ -581,9 +514,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Text)
       is
       begin
-
          Rights := Value;
-
       end Set_Rights;
 
       --------------------
@@ -594,9 +525,7 @@ package body Yolk.Syndication is
         (Value : in Atom_Text)
       is
       begin
-
          Subtitle := Value;
-
       end Set_Subtitle;
 
       -----------------
@@ -607,9 +536,7 @@ package body Yolk.Syndication is
         (Value : Atom_Text)
       is
       begin
-
          Title := Value;
-
       end Set_Title;
 
       -------------------
@@ -619,15 +546,10 @@ package body Yolk.Syndication is
       procedure Set_Updated_Time
         (Value : in Atom_Date)
       is
-
          use Ada.Calendar;
-
       begin
-
          Updated := Value;
-
       end Set_Updated_Time;
-
    end Protected_Atom_Feed;
 
 end Yolk.Syndication;

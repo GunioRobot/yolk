@@ -41,8 +41,7 @@ with Yolk.Static_Content;
 with Yolk.Utilities;
 with Yolk.Whoops;
 
-procedure Yolk_Demo
-is
+procedure Yolk_Demo is
 
    use Ada.Exceptions;
    use My_Handlers;
@@ -85,11 +84,8 @@ is
 
    procedure Start_Server
    is
-
       use Ada.Directories;
-
    begin
-
       if AWS.Config.Session (Web_Server_Config)
         and then Exists (Config.Get (Session_Data_File))
       then
@@ -118,7 +114,6 @@ is
              AWS.Config.Server_Name (Web_Server_Config));
       Trace (Handle     => Info,
              Log_String => "Yolk version " & Yolk.Version);
-
    end Start_Server;
 
    -------------------
@@ -132,7 +127,6 @@ is
    procedure Stop_Server
    is
    begin
-
       if AWS.Config.Session (Web_Server_Config) then
          AWS.Session.Save (Config.Get (Session_Data_File));
          --  If sessions are enabled, then save the session data to the
@@ -149,7 +143,6 @@ is
       Trace (Handle     => Info,
              Log_String => "Stopped " &
              AWS.Config.Server_Name (Web_Server_Config));
-
    end Stop_Server;
 
    ----------------------
@@ -158,7 +151,6 @@ is
 
    task body Log_File_Monitor
    is
-
       use AWS.Config;
       use Yolk.Log_File_Cleanup;
 
@@ -171,11 +163,8 @@ is
       Interval       : constant Duration :=
                          Config.Get (Log_File_Cleanup_Interval);
       --  How often do we check for excess/old logfiles?
-
    begin
-
       loop
-
          exit when Exit_Loop;
 
          select
@@ -206,13 +195,9 @@ is
                        Amount_Of_Files_To_Keep   => Files_To_Keep);
             end if;
          end select;
-
       end loop;
-
    end Log_File_Monitor;
-
 begin
-
    Set_User (Username => Config.Get (Yolk_User));
    --  Switch user.
 

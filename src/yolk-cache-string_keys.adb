@@ -59,35 +59,38 @@ package body Yolk.Cache.String_Keys is
       Equivalent_Keys => Equivalent_Keys);
 
    protected P_Element_List is
-
       procedure Cleanup;
+      --  ????
 
       procedure Clear;
+      --  ????
 
       procedure Clear
         (Key : in String);
+      --  ????
 
       function Is_Valid
         (Key : in String)
          return Boolean;
+      --  ????
 
       function Length
         return Natural;
+      --  ????
 
       procedure Read
         (Key   : in  String;
          Valid : out Boolean;
          Value : out Element_Type);
+      --  ????
 
       procedure Write
         (Key   : in String;
          Value : in Element_Type);
-
+      --  ????
    private
-
       Element_List   : Element_Map.Map;
       Virgin         : Boolean := True;
-
    end P_Element_List;
 
    ----------------------
@@ -95,22 +98,18 @@ package body Yolk.Cache.String_Keys is
    ----------------------
 
    protected body P_Element_List is
-
       ---------------
       --  Cleanup  --
       ---------------
 
       procedure Cleanup
       is
-
          use Ada.Calendar;
          use Element_Map;
 
          Cursor   : Element_Map.Cursor := Element_List.First;
          Now      : constant Time := Clock;
-
       begin
-
          while Has_Element (Cursor) loop
             if (Now - Element (Cursor).Added_Timestamp) >= Max_Element_Age then
                Element_List.Delete (Position => Cursor);
@@ -122,7 +121,6 @@ package body Yolk.Cache.String_Keys is
             Cursor := Element_List.First;
             Element_List.Delete (Position => Cursor);
          end loop;
-
       end Cleanup;
 
       -------------
@@ -132,9 +130,7 @@ package body Yolk.Cache.String_Keys is
       procedure Clear
       is
       begin
-
          Element_List.Clear;
-
       end Clear;
 
       -------------
@@ -144,13 +140,9 @@ package body Yolk.Cache.String_Keys is
       procedure Clear
         (Key : in String)
       is
-
          use Yolk.Utilities;
-
       begin
-
          Element_List.Exclude (Key => TUS (Key));
-
       end Clear;
 
       ----------------
@@ -161,16 +153,12 @@ package body Yolk.Cache.String_Keys is
         (Key : in String)
          return Boolean
       is
-
          use Ada.Calendar;
          use Yolk.Utilities;
-
       begin
-
          return (Element_List.Contains (Key => TUS (Key))) and then
            (Clock - Element_List.Element (Key => TUS (Key)).Added_Timestamp <
               Max_Element_Age);
-
       end Is_Valid;
 
       --------------
@@ -181,9 +169,7 @@ package body Yolk.Cache.String_Keys is
         return Natural
       is
       begin
-
          return Natural (Element_List.Length);
-
       end Length;
 
       ------------
@@ -195,19 +181,16 @@ package body Yolk.Cache.String_Keys is
          Valid : out Boolean;
          Value : out Element_Type)
       is
-
          use Ada.Calendar;
          use Yolk.Utilities;
-
       begin
-
          Valid := Is_Valid (Key => Key);
+
          if Valid then
             Value := Element_List.Element (Key => TUS (Key)).Element;
          else
             Value := Null_Container.Element;
          end if;
-
       end Read;
 
       -------------
@@ -218,11 +201,8 @@ package body Yolk.Cache.String_Keys is
         (Key   : in String;
          Value : in Element_Type)
       is
-
          use Yolk.Utilities;
-
       begin
-
          if Virgin then
             Element_List.Reserve_Capacity
               (Capacity => Count_Type (Reserved_Capacity));
@@ -239,7 +219,6 @@ package body Yolk.Cache.String_Keys is
            (Key      => TUS (Key),
             New_Item => (Added_Timestamp => Ada.Calendar.Clock,
                          Element         => Value));
-
       end Write;
 
    end P_Element_List;
@@ -251,9 +230,7 @@ package body Yolk.Cache.String_Keys is
    procedure Cleanup
    is
    begin
-
       P_Element_List.Cleanup;
-
    end Cleanup;
 
    -------------
@@ -263,9 +240,7 @@ package body Yolk.Cache.String_Keys is
    procedure Clear
    is
    begin
-
       P_Element_List.Clear;
-
    end Clear;
 
    -------------
@@ -276,9 +251,7 @@ package body Yolk.Cache.String_Keys is
      (Key : in String)
    is
    begin
-
       P_Element_List.Clear (Key => Key);
-
    end Clear;
 
    -----------------------
@@ -291,9 +264,7 @@ package body Yolk.Cache.String_Keys is
       return Boolean
    is
    begin
-
       return Left = Right;
-
    end Equivalent_Keys;
 
    ----------------
@@ -305,9 +276,7 @@ package body Yolk.Cache.String_Keys is
       return Boolean
    is
    begin
-
       return P_Element_List.Is_Valid (Key => Key);
-
    end Is_Valid;
 
    ----------------
@@ -319,9 +288,7 @@ package body Yolk.Cache.String_Keys is
       return Hash_Type
    is
    begin
-
       return Ada.Strings.Unbounded.Hash (Key => Key);
-
    end Key_Hash;
 
    --------------
@@ -332,9 +299,7 @@ package body Yolk.Cache.String_Keys is
      return Natural
    is
    begin
-
       return P_Element_List.Length;
-
    end Length;
 
    ------------
@@ -347,11 +312,9 @@ package body Yolk.Cache.String_Keys is
       Value    : out Element_Type)
    is
    begin
-
       P_Element_List.Read (Key   => Key,
                            Valid => Is_Valid,
                            Value => Value);
-
    end Read;
 
    -------------
@@ -363,10 +326,8 @@ package body Yolk.Cache.String_Keys is
       Value : in Element_Type)
    is
    begin
-
       P_Element_List.Write (Key   => Key,
                             Value => Value);
-
    end Write;
 
 end Yolk.Cache.String_Keys;

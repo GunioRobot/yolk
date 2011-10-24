@@ -29,6 +29,7 @@ with AWS.Status;
 package View.DB_Test is
 
    type Str_Ptr is access all String;
+
    Names : constant array (Integer range 1 .. 5) of Str_Ptr :=
              (1 => new String'("Billy"),
               2 => new String'("David"),

@@ -33,20 +33,16 @@ package body Yolk.Connect_To_DB is
      (Desc : in GNATCOLL.SQL.Exec.Database_Description)
       return GNATCOLL.SQL.Exec.Database_Connection
    is
-
       use GNATCOLL.SQL.Exec;
       use GNATCOLL.SQL.Postgres;
 
       DBMS : constant String := Get_DBMS (Desc);
-
    begin
-
       if DBMS = DBMS_Postgresql then
          return Build_Postgres_Connection (Desc);
       else
          return null;
       end if;
-
    end Database_Connection_Factory;
 
    ---------------
@@ -55,21 +51,16 @@ package body Yolk.Connect_To_DB is
 
    task body DB_Conn
    is
-
       use GNATCOLL.SQL.Exec;
-
    begin
-
       loop
          select
             accept Fetch (Conn : out Database_Connection;
                           Desc : in Database_Description)
             do
-
                Conn := Get_Task_Connection
                  (Description  => Desc,
                   Factory      => Database_Connection_Factory'Access);
-
             end Fetch;
          or
             terminate;
@@ -77,7 +68,6 @@ package body Yolk.Connect_To_DB is
             --  end, ie. the server is being shut down.
          end select;
       end loop;
-
    end DB_Conn;
 
    -----------------------
@@ -91,21 +81,17 @@ package body Yolk.Connect_To_DB is
       Password      : in String)
       return Credentials
    is
-
       C : Credentials (Host_Length     => Host'Length,
                        Database_Length => Database'Length,
                        User_Length     => User'Length,
                        Password_Length => Password'Length);
-
    begin
-
       C.Host       := Host;
       C.Database   := Database;
       C.User       := User;
       C.Password   := Password;
 
       return C;
-
    end Set_Credentials;
 
 end Yolk.Connect_To_DB;

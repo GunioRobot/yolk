@@ -32,8 +32,8 @@ package View.Syndication is
    use Yolk.Syndication;
 
    --  Declare a new Atom_Feed object.
-   Feed              : Atom_Feed := New_Atom_Feed (Max_Entries => 10,
-                                                   Min_Entries => 5);
+   Feed : Atom_Feed := New_Atom_Feed (Max_Entries => 10,
+                                      Min_Entries => 5);
 
    procedure Add_Entry_To_Feed;
    --  Add a new entry to Feed.

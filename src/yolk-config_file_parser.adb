@@ -39,13 +39,11 @@ package body Yolk.Config_File_Parser is
       return Boolean
    is
    begin
-
       return Boolean'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
          raise Conversion_Error with Key_Type'Image (Key);
-
    end Get;
 
    -----------
@@ -57,13 +55,11 @@ package body Yolk.Config_File_Parser is
       return Duration
    is
    begin
-
       return Duration'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
          raise Conversion_Error with Key_Type'Image (Key);
-
    end Get;
 
    -----------
@@ -75,13 +71,11 @@ package body Yolk.Config_File_Parser is
       return Float
    is
    begin
-
       return Float'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
          raise Conversion_Error with Key_Type'Image (Key);
-
    end Get;
 
    -----------
@@ -93,13 +87,11 @@ package body Yolk.Config_File_Parser is
       return Integer
    is
    begin
-
       return Integer'Value (To_String (Values (Key)));
 
    exception
       when Constraint_Error =>
          raise Conversion_Error with Key_Type'Image (Key);
-
    end Get;
 
    -----------
@@ -111,9 +103,7 @@ package body Yolk.Config_File_Parser is
       return String
    is
    begin
-
       return To_String (Values (Key));
-
    end Get;
 
    -----------
@@ -125,9 +115,7 @@ package body Yolk.Config_File_Parser is
       return Unbounded_String
    is
    begin
-
       return Values (Key);
-
    end Get;
 
    ---------------------------
@@ -139,9 +127,7 @@ package body Yolk.Config_File_Parser is
       return Boolean
    is
    begin
-
       return Values (Key) /= Null_Unbounded_String;
-
    end Has_Non_Empty_Value;
 
    -----------------
@@ -151,7 +137,6 @@ package body Yolk.Config_File_Parser is
    procedure Load_File
      (Config_File : in String)
    is
-
       use Ada.Strings;
       use Ada.Text_IO;
 
@@ -171,11 +156,8 @@ package body Yolk.Config_File_Parser is
         (Line : in String)
          return String
       is
-
          Key_End : Natural;
-
       begin
-
          if Line /= "" then
             Key_End := Fixed.Index (Source => Line,
                                     Set    => Maps.To_Set (Space),
@@ -186,7 +168,6 @@ package body Yolk.Config_File_Parser is
          end if;
 
          return Line;
-
       end Get_Key;
 
       -----------------
@@ -206,13 +187,11 @@ package body Yolk.Config_File_Parser is
          return Unbounded_String
       is
       begin
-
          if Key /= Line then
             return To_Unbounded_String (Line (Key'Last + 2 .. Line'Last));
          end if;
 
          return Null_Unbounded_String;
-
       end Get_Value;
 
       -------------------------------
@@ -230,7 +209,6 @@ package body Yolk.Config_File_Parser is
          return Boolean
       is
       begin
-
          if Line'Length = 0 then
             return False;
          end if;
@@ -246,30 +224,21 @@ package body Yolk.Config_File_Parser is
          end if;
 
          return True;
-
       end Is_Not_Empty_Or_Comment;
-
    begin
-
       Open (File => File,
             Mode => In_File,
             Name => Config_File);
 
       while not End_Of_File (File => File) loop
          declare
-
             Line  : constant String := Fixed.Trim (Get_Line (File), Both);
-
          begin
-
             if Is_Not_Empty_Or_Comment (Line) then
                declare
-
                   Key   : constant String := Get_Key (Line);
                   Value : constant Unbounded_String := Get_Value (Key, Line);
-
                begin
-
                   Values (Key_Type'Value (Key)) := Value;
 
                exception
@@ -277,10 +246,8 @@ package body Yolk.Config_File_Parser is
                      raise Unknown_Key with
                        "Unknown configuration key '" & Key & "' in file "
                          & Config_File;
-
                end;
             end if;
-
          end;
       end loop;
 
@@ -289,11 +256,8 @@ package body Yolk.Config_File_Parser is
    exception
       when Name_Error | Use_Error | Device_Error =>
          raise Cannot_Open_Config_File with Config_File;
-
    end Load_File;
-
 begin
-
    Load_File (Config_File => Config_File);
 
 end Yolk.Config_File_Parser;

@@ -39,17 +39,13 @@ package body Yolk.Email.Composer is
       Value   : in     String;
       Charset : in     Character_Set := US_ASCII)
    is
-
       New_Header : Header_Data;
-
    begin
-
       New_Header.Charset := Charset;
       New_Header.Name := TUS (Name);
       New_Header.Value := TUS (Value);
 
       ES.Custom_Headers.Append (New_Header);
-
    end Add_Custom_Header;
 
    ---------------------------
@@ -61,17 +57,13 @@ package body Yolk.Email.Composer is
       Path_To_File  : in     String;
       Charset       : in     Character_Set := US_ASCII)
    is
-
       New_Attachment : Attachment_Data;
-
    begin
-
       New_Attachment.Charset        := Charset;
       New_Attachment.Path_To_File   := TUS (Path_To_File);
       ES.Attachment_List.Append (New_Attachment);
 
       ES.Has_Attachment := True;
-
    end Add_File_Attachment;
 
    ----------------
@@ -84,16 +76,12 @@ package body Yolk.Email.Composer is
       Name      : in     String := "";
       Charset   : in     Character_Set := US_ASCII)
    is
-
       New_From : Email_Data;
-
    begin
-
       New_From.Address  := TUS (Address);
       New_From.Charset  := Charset;
       New_From.Name     := TUS (Name);
       ES.From_List.Append (New_Item => New_From);
-
    end Add_From;
 
    ---------------------
@@ -107,11 +95,8 @@ package body Yolk.Email.Composer is
       Kind     : in     Recipient_Kind := To;
       Charset  : in     Character_Set := US_ASCII)
    is
-
       New_Recipient : Email_Data;
-
    begin
-
       New_Recipient.Address   := TUS (Address);
       New_Recipient.Charset   := Charset;
       New_Recipient.Name      := TUS (Name);
@@ -124,7 +109,6 @@ package body Yolk.Email.Composer is
          when To =>
             ES.To_List.Append (New_Item => New_Recipient);
       end case;
-
    end Add_Recipient;
 
    --------------------
@@ -137,16 +121,12 @@ package body Yolk.Email.Composer is
       Name     : in     String := "";
       Charset  : in     Character_Set := US_ASCII)
    is
-
       New_Reply_To : Email_Data;
-
    begin
-
       New_Reply_To.Address := TUS (Address);
       New_Reply_To.Charset := Charset;
       New_Reply_To.Name    := TUS (Name);
       ES.Reply_To_List.Append (New_Item => New_Reply_To);
-
    end Add_Reply_To;
 
    -----------------------
@@ -158,15 +138,11 @@ package body Yolk.Email.Composer is
       Host  : in     String;
       Port  : in     Positive := 25)
    is
-
       New_SMTP : SMTP_Server;
-
    begin
-
       New_SMTP.Host := TUS (Host);
       New_SMTP.Port := Port;
       ES.SMTP_List.Append (New_Item => New_SMTP);
-
    end Add_SMTP_Server;
 
    ---------------
@@ -178,9 +154,7 @@ package body Yolk.Email.Composer is
       return Boolean
    is
    begin
-
       return ES.Email_Is_Sent;
-
    end Is_Send;
 
    ------------
@@ -190,11 +164,8 @@ package body Yolk.Email.Composer is
    procedure Send
      (ES : in out Structure)
    is
-
       US : Unbounded_String;
-
    begin
-
       Set_Type_Of_Email (ES => ES);
 
       case ES.Type_Of_Email is
@@ -217,7 +188,6 @@ package body Yolk.Email.Composer is
 
       Do_The_Actual_Sending :
       declare
-
          From              : AWS.SMTP.E_Mail_Data;
          To_Count          : Natural := Natural (ES.Bcc_List.Length) +
            Natural (ES.Cc_List.Length) + Natural (ES.To_List.Length);
@@ -225,9 +195,7 @@ package body Yolk.Email.Composer is
          Server            : AWS.SMTP.Receiver;
          Server_Failure    : Boolean := False;
          Status            : AWS.SMTP.Status;
-
       begin
-
          if ES.Sender.Address /= Null_Unbounded_String then
             From := AWS.SMTP.E_Mail (Name    => "",
                                      Address => TS (ES.Sender.Address));
@@ -268,7 +236,6 @@ package body Yolk.Email.Composer is
 
             declare
             begin
-
                AWS.SMTP.Client.Send (Server => Server,
                                      From   => From,
                                      To     => Recipients,
@@ -278,7 +245,6 @@ package body Yolk.Email.Composer is
             exception
                when others =>
                   Server_Failure := True;
-
             end;
 
             if Server_Failure then
@@ -291,9 +257,7 @@ package body Yolk.Email.Composer is
                end if;
             end if;
          end loop;
-
       end Do_The_Actual_Sending;
-
    end Send;
 
    ------------
@@ -313,7 +277,6 @@ package body Yolk.Email.Composer is
       Charset        : in     Character_Set := US_ASCII)
    is
    begin
-
       Add_From (ES      => ES,
                 Address => From_Address,
                 Name    => From_Name,
@@ -338,7 +301,6 @@ package body Yolk.Email.Composer is
                        Port => SMTP_Port);
 
       Send (ES => ES);
-
    end Send;
 
    ------------
@@ -359,7 +321,6 @@ package body Yolk.Email.Composer is
       Charset        : in     Character_Set := US_ASCII)
    is
    begin
-
       Set_HTML_Part (ES      => ES,
                      Part    => HTML_Part,
                      Charset => Charset);
@@ -374,7 +335,6 @@ package body Yolk.Email.Composer is
             SMTP_Server  => SMTP_Server,
             SMTP_Port    => SMTP_Port,
             Charset      => Charset);
-
    end Send;
 
    ---------------------
@@ -386,13 +346,10 @@ package body Yolk.Email.Composer is
       Part       : in     String;
       Charset    : in     Character_Set := US_ASCII)
    is
-
       use GNATCOLL.Email.Utils;
 
       US : Unbounded_String;
-
    begin
-
       Encode (Str     => Part,
               Charset => Get_Charset (Charset => Charset),
               Header  => False,
@@ -402,7 +359,6 @@ package body Yolk.Email.Composer is
       ES.HTML_Part.Charset := Charset;
 
       ES.Has_HTML_Part := True;
-
    end Set_HTML_Part;
 
    ------------------
@@ -416,11 +372,9 @@ package body Yolk.Email.Composer is
       Charset    : in     Character_Set := US_ASCII)
    is
    begin
-
       ES.Sender.Address := TUS (Address);
       ES.Sender.Charset := Charset;
       ES.Sender.Name    := TUS (Name);
-
    end Set_Sender;
 
    -------------------
@@ -433,10 +387,8 @@ package body Yolk.Email.Composer is
       Charset   : in     Character_Set := US_ASCII)
    is
    begin
-
       ES.Subject.Content := TUS (Subject);
       ES.Subject.Charset := Charset;
-
    end Set_Subject;
 
    ---------------------
@@ -448,13 +400,10 @@ package body Yolk.Email.Composer is
       Part       : in     String;
       Charset    : in     Character_Set := US_ASCII)
    is
-
       use GNATCOLL.Email.Utils;
 
       US : Unbounded_String;
-
    begin
-
       Encode (Str     => Part,
               Charset => Get_Charset (Charset => Charset),
               Header  => False,
@@ -464,7 +413,6 @@ package body Yolk.Email.Composer is
       ES.Text_Part.Charset := Charset;
 
       ES.Has_Text_Part := True;
-
    end Set_Text_Part;
 
 end Yolk.Email.Composer;

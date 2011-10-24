@@ -31,11 +31,8 @@ package body Yolk.Configuration is
 
    function Get_AWS_Configuration return AWS.Config.Object
    is
-
       Object : AWS.Config.Object;
-
    begin
-
       AWS.Config.Set.Accept_Queue_Size
         (O     => Object,
          Value => Config.Get (Accept_Queue_Size));
@@ -231,7 +228,6 @@ package body Yolk.Configuration is
          Value => Config.Get (WWW_Root));
 
       return Object;
-
    end Get_AWS_Configuration;
 
 end Yolk.Configuration;

@@ -50,7 +50,6 @@ package body Yolk.Rotating_Log is
    type Access_File is access all Ada.Text_IO.File_Type;
 
    protected type Log_Object is
-
       function Get_File_Access return Access_File;
       --  Return access to an Ada.Text_IO.File_Type.
 
@@ -69,15 +68,12 @@ package body Yolk.Rotating_Log is
 
       procedure Write
         (Log_String : in String);
-
    private
-
       Current_Slot   : Positive := 1;
       File           : Access_File;
       Handle         : Trace_Handles;
       Size           : Natural := 0;
       Slot_Max       : Positive := Config.Get (Max_Slot_Count);
-
    end Log_Object;
 
    type Access_Log_Object is access all Log_Object;
@@ -145,19 +141,15 @@ package body Yolk.Rotating_Log is
       Args : in String)
       return GNATCOLL.Traces.Trace_Stream
    is
-
       use GNATCOLL.Traces;
 
       pragma Unreferenced (Fact);
       pragma Unreferenced (Args);
 
       Self : Access_Rotating_Log_Record;
-
    begin
-
       Self := new Rotating_Log_Record;
       return Trace_Stream (Self);
-
    end New_Stream;
 
    ---------------
@@ -167,15 +159,11 @@ package body Yolk.Rotating_Log is
    procedure Newline
      (Stream : in out Rotating_Log_Record)
    is
-
       use Ada.Strings.Unbounded;
-
    begin
-
       Trace (Handle     => SQL,
              Log_String => To_String (Stream.Buffer));
       Stream.Buffer := Null_Unbounded_String;
-
    end Newline;
 
    -----------
@@ -187,13 +175,9 @@ package body Yolk.Rotating_Log is
      (Stream      : in out Rotating_Log_Record;
       Log_String  : in     String)
    is
-
       use Ada.Strings.Unbounded;
-
    begin
-
       Append (Stream.Buffer, Log_String);
-
    end Put;
 
    ------------------------------------
@@ -202,15 +186,11 @@ package body Yolk.Rotating_Log is
 
    procedure Register_Rotating_Log_Stream
    is
-
       use GNATCOLL.Traces;
 
       Fact : constant Stream_Factory_Access := new Factory;
-
    begin
-
       Register_Stream_Factory (Stream_Rotating_Log, Fact);
-
    end Register_Rotating_Log_Stream;
 
    ---------------------------
@@ -220,16 +200,13 @@ package body Yolk.Rotating_Log is
    procedure Start_Rotating_Logs
      (Emit_Warning_If_Already_Running : Boolean := True)
    is
-
       use Ada.Text_IO;
       use GNATCOLL.Traces;
 
       A_Handle : Trace_Handles := Trace_Handles'First;
       --  Set A_Handle to Trace_Handles'First to avoid a "'A_Handle' may be
       --  used uninitialized in this function" warning.
-
    begin
-
       if not Is_Started then
          Is_Started := True;
 
@@ -291,7 +268,6 @@ package body Yolk.Rotating_Log is
          raise Cannot_Create_Log_File with
            "Handle: " & Trace_Handles'Image (A_Handle) & " and slot: "
            & Log_Objects_List (A_Handle).Get_Slot;
-
    end Start_Rotating_Logs;
 
    ----------------------
@@ -302,13 +278,9 @@ package body Yolk.Rotating_Log is
      (Stream : Rotating_Log_Record)
       return Boolean
    is
-
       pragma Unreferenced (Stream);
-
    begin
-
       return False;
-
    end Supports_Color;
 
    ---------------------
@@ -319,13 +291,9 @@ package body Yolk.Rotating_Log is
      (Stream : Rotating_Log_Record)
       return Boolean
    is
-
       pragma Unreferenced (Stream);
-
    begin
-
       return False;
-
    end Supports_Time;
 
    -------------
@@ -336,11 +304,8 @@ package body Yolk.Rotating_Log is
      (Handle       : in Trace_Handles;
       Log_String   : in String)
    is
-
       Log : constant Access_Log_Object := Log_Objects_List (Handle);
-
    begin
-
       --  We ignore calls to Trace if Start_Rotating_Logs hasn't been called
       --  yet.
       if Is_Started then
@@ -354,7 +319,6 @@ package body Yolk.Rotating_Log is
          Process_Control.Stop;
          raise Cannot_Write_To_Log_File with
            "Handle: " & Trace_Handles'Image (Handle) & " and slot: ";
-
    end Trace;
 
    ------------------
@@ -362,7 +326,6 @@ package body Yolk.Rotating_Log is
    ------------------
 
    protected body Log_Object is
-
       -----------------------
       --  Get_File_Access  --
       -----------------------
@@ -370,9 +333,7 @@ package body Yolk.Rotating_Log is
       function Get_File_Access return Access_File
       is
       begin
-
          return File;
-
       end Get_File_Access;
 
       ----------------
@@ -381,15 +342,11 @@ package body Yolk.Rotating_Log is
 
       function Get_Slot return String
       is
-
          use Ada.Strings;
          use Ada.Strings.Fixed;
-
       begin
-
          return Trim (Source => Current_Slot'Img,
                       Side   => Left);
-
       end Get_Slot;
 
       -------------------------
@@ -399,7 +356,6 @@ package body Yolk.Rotating_Log is
       procedure Move_To_Next_Slot
       is
       begin
-
          if Current_Slot = Slot_Max then
             Current_Slot := 1;
          else
@@ -407,7 +363,6 @@ package body Yolk.Rotating_Log is
          end if;
 
          Size := 0;
-
       end Move_To_Next_Slot;
 
       -----------------------
@@ -416,13 +371,9 @@ package body Yolk.Rotating_Log is
 
       procedure Set_File_Access
       is
-
          use Ada.Text_IO;
-
       begin
-
          File := new File_Type;
-
       end Set_File_Access;
 
       ------------------
@@ -433,9 +384,7 @@ package body Yolk.Rotating_Log is
         (A_Handle : in Trace_Handles)
       is
       begin
-
          Handle := A_Handle;
-
       end Set_Handle;
 
       -------------
@@ -445,7 +394,6 @@ package body Yolk.Rotating_Log is
       procedure Write
         (Log_String : in String)
       is
-
          use Ada.Calendar;
          use Ada.Calendar.Formatting;
          use Ada.Calendar.Time_Zones;
@@ -454,9 +402,7 @@ package body Yolk.Rotating_Log is
          Circa_Length   : Natural := Log_String'Length;
          Now            : constant Time := Clock;
          Offset         : constant Time_Offset := UTC_Time_Offset;
-
       begin
-
          if Size > Config.Get (Rotating_Log_Size_Limit) then
             if Is_Open (File => Get_File_Access.all) then
                Close (File => Get_File_Access.all);
@@ -498,9 +444,7 @@ package body Yolk.Rotating_Log is
          end if;
 
          Size := Size + Circa_Length;
-
       end Write;
-
    end Log_Object;
 
 end Yolk.Rotating_Log;

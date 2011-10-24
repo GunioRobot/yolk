@@ -55,11 +55,8 @@ package body Yolk.Log_File_Cleanup is
      (Left, Right : in File_Info)
       return Boolean
    is
-
       use Ada.Calendar;
-
    begin
-
       if Left.Mod_Time /= Right.Mod_Time then
          return Left.Mod_Time > Right.Mod_Time;
          --  Put the newest files at the top of the set.
@@ -70,7 +67,6 @@ package body Yolk.Log_File_Cleanup is
          --  matching modification time are the two currently running AWS
          --  log files. I hope.
       end if;
-
    end "<";
 
    --------------
@@ -82,7 +78,6 @@ package body Yolk.Log_File_Cleanup is
       Web_Server               : in AWS.Server.HTTP;
       Amount_Of_Files_To_Keep  : in Positive)
    is
-
       use Ada.Containers;
       use Ada.Directories;
 
@@ -103,7 +98,6 @@ package body Yolk.Log_File_Cleanup is
       procedure Add_File_To_Set
         (Search_Item : in Directory_Entry_Type)
       is
-
          use Ada.Calendar;
          use Yolk.Utilities;
 
@@ -115,9 +109,7 @@ package body Yolk.Log_File_Cleanup is
                                      AWS.Server.Log.Name (Web_Server);
          Current_Error_Log_File  : constant String :=
                                      AWS.Server.Log.Error_Name (Web_Server);
-
       begin
-
          if Found_File /= Current_Log_File and
            Found_File /= Current_Error_Log_File
          then
@@ -128,7 +120,6 @@ package body Yolk.Log_File_Cleanup is
 
             File_Set.Insert (New_Item => A_File);
          end if;
-
       end Add_File_To_Set;
 
       -------------
@@ -147,15 +138,12 @@ package body Yolk.Log_File_Cleanup is
         (Prefix : in String;
          Kind   : in String)
       is
-
          use Yolk.Rotating_Log;
 
          Filter : constant Filter_Type := (Ordinary_File => True,
                                            Special_File  => False,
                                            Directory     => False);
-
       begin
-
          Trace (Handle     => Info,
                 Log_String => "Searching for old " & Kind & " files.");
 
@@ -171,7 +159,6 @@ package body Yolk.Log_File_Cleanup is
                Delete_File_Block :
                declare
                begin
-
                   Delete_File
                     (Name => To_String (File_Set.Last_Element.File_Name));
                   --  Delete the actual file.
@@ -182,7 +169,6 @@ package body Yolk.Log_File_Cleanup is
                        (Handle     => Error,
                         Log_String => "Cannot delete file " & To_String
                           (File_Set.Last_Element.File_Name));
-
                end Delete_File_Block;
 
                File_Set.Delete_Last;
@@ -197,11 +183,8 @@ package body Yolk.Log_File_Cleanup is
             Trace (Handle     => Info,
                    Log_String => "No " & Kind & " files deleted.");
          end if;
-
       end Do_It;
-
    begin
-
       Do_It (Prefix => AWS.Config.Log_Filename_Prefix (Config_Object),
              Kind   => "Access Log");
 
@@ -209,7 +192,6 @@ package body Yolk.Log_File_Cleanup is
 
       Do_It (Prefix => AWS.Config.Error_Log_Filename_Prefix (Config_Object),
              Kind   => "Error Log");
-
    end Delete;
 
 end Yolk.Log_File_Cleanup;

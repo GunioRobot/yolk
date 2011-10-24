@@ -36,7 +36,6 @@ package body View.Dir is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use Ada.Directories;
       use Yolk.Configuration;
 
@@ -45,9 +44,7 @@ package body View.Dir is
         := URL (5 .. (URL'Length));
       --  Get rid of the /dir part of the URL
       Parent_Directory  : constant String := Config.Get (WWW_Root);
-
    begin
-
       if not Exists (Parent_Directory & Resource) then
          return Not_Found.Generate (Request);
       end if;
@@ -55,13 +52,10 @@ package body View.Dir is
       case Kind (Parent_Directory & Resource) is
          when Directory =>
             declare
-
                use AWS.Templates;
 
                T : Translate_Set;
-
             begin
-
                T := AWS.Services.Directory.Browse
                  (Directory_Name => Parent_Directory & Resource,
                   Request        => Request);
@@ -73,7 +67,6 @@ package body View.Dir is
                   Template_File =>
                     Config.Get (System_Templates_Path) & "/directory.tmpl",
                   Translations  => T);
-
             end;
          when Ordinary_File =>
             return AWS.Response.File
@@ -82,7 +75,6 @@ package body View.Dir is
          when others =>
             return Not_Found.Generate (Request);
       end case;
-
    end Generate;
 
 end View.Dir;

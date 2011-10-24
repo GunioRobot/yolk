@@ -33,13 +33,9 @@ package body Yolk.Utilities is
      (S : in String)
       return Boolean
    is
-
       use Ada.Strings;
-
    begin
-
       return Fixed.Trim (S, Both) = "";
-
    end Is_Empty;
 
    --------------
@@ -50,13 +46,9 @@ package body Yolk.Utilities is
      (US : in Unbounded_String)
       return Boolean
    is
-
       use Ada.Strings;
-
    begin
-
       return Trim (US, Both) = "";
-
    end Is_Empty;
 
 end Yolk.Utilities;

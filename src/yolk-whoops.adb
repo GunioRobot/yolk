@@ -40,7 +40,6 @@ package body Yolk.Whoops is
       Error  : in     AWS.Exceptions.Data;
       Answer : in out AWS.Response.Data)
    is
-
       pragma Unreferenced (Log);
 
       use Ada.Exceptions;
@@ -51,9 +50,7 @@ package body Yolk.Whoops is
 
       S : Data renames Error.Request;
       T : Translate_Set;
-
    begin
-
       if Error.Fatal then
          Trace (Handle     => Rotating_Log.Error,
                 Log_String => "");
@@ -98,7 +95,6 @@ package body Yolk.Whoops is
             Translations => T,
             Cached       => True),
          Status_Code   => AWS.Messages.S500);
-
    end Unexpected_Exception_Handler;
 
 end Yolk.Whoops;

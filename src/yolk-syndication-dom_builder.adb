@@ -42,20 +42,16 @@ package body Yolk.Syndication.DOM_Builder is
      (Time_Stamp : in Ada.Calendar.Time)
       return String
    is
-
       use Ada.Calendar.Formatting;
 
       Atom_Time : String (1 .. 20);
-
    begin
-
       Atom_Time (1 .. 19) := Image (Date                  => Time_Stamp,
                                     Include_Time_Fraction => False);
       Atom_Time (11) := 'T';
       Atom_Time (20) := 'Z';
 
       return Atom_Time;
-
    end Atom_Date_Image;
 
    -----------------
@@ -67,17 +63,13 @@ package body Yolk.Syndication.DOM_Builder is
       Name  : in String;
       Value : in String)
    is
-
       use DOM.Core.Elements;
-
    begin
-
       if Value /= "" then
          Set_Attribute (Elem  => Elem,
                         Name  => Name,
                         Value => Value);
       end if;
-
    end Attribute;
 
    --------------------------------
@@ -89,7 +81,6 @@ package body Yolk.Syndication.DOM_Builder is
       List   : in Category_List.List;
       Parent : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Elements;
@@ -99,9 +90,7 @@ package body Yolk.Syndication.DOM_Builder is
       A_Category     : Atom_Category;
       C              : Category_List.Cursor := List.First;
       Category_Node  : Node;
-
    begin
-
       loop
          exit when not Category_List.Has_Element (C);
 
@@ -134,7 +123,6 @@ package body Yolk.Syndication.DOM_Builder is
 
          Category_List.Next (C);
       end loop;
-
    end Create_Category_Elements;
 
    ------------------------------
@@ -146,16 +134,13 @@ package body Yolk.Syndication.DOM_Builder is
       Entry_Content : in Atom_Entry_Content;
       Parent        : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Nodes;
       use Yolk.Utilities;
 
       Content_Node : Node;
-
    begin
-
       case Entry_Content.Content_Kind is
          when Text | Html | Xhtml =>
             Create_Text_Construct
@@ -195,7 +180,6 @@ package body Yolk.Syndication.DOM_Builder is
                      Data => TS (Entry_Content.Content)));
             end if;
       end case;
-
    end Create_Content_Element;
 
    -----------------------------
@@ -207,7 +191,6 @@ package body Yolk.Syndication.DOM_Builder is
       Entries : in Entry_List.List;
       Parent  : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Nodes;
@@ -216,9 +199,7 @@ package body Yolk.Syndication.DOM_Builder is
       An_Entry   : Atom_Entry;
       C          : Entry_List.Cursor := Entries.First;
       Entry_Node : Node;
-
    begin
-
       loop
          exit when not Entry_List.Has_Element (C);
 
@@ -339,7 +320,6 @@ package body Yolk.Syndication.DOM_Builder is
 
          Entry_List.Next (C);
       end loop;
-
    end Create_Entry_Elements;
 
    -----------------------------------
@@ -351,16 +331,13 @@ package body Yolk.Syndication.DOM_Builder is
       Source : in Atom_Entry_Source;
       Parent : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Nodes;
       use Yolk.Utilities;
 
       Source_Node : Node;
-
    begin
-
       Source_Node := Append_Child
         (N         => Parent,
          New_Child => Create_Element (Doc      => Doc,
@@ -458,7 +435,6 @@ package body Yolk.Syndication.DOM_Builder is
             Elem_Name => "updated",
             Parent    => Source_Node);
       end if;
-
    end Create_Entry_Source_Element;
 
    ---------------------------
@@ -482,7 +458,6 @@ package body Yolk.Syndication.DOM_Builder is
       Title        : in Atom_Text;
       Updated      : in Atom_Date)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Elements;
@@ -490,9 +465,7 @@ package body Yolk.Syndication.DOM_Builder is
       use Yolk.Utilities;
 
       Feed_Node : Node;
-
    begin
-
       --  feed element
       Feed_Node := Append_Child
         (N         => Doc,
@@ -609,7 +582,6 @@ package body Yolk.Syndication.DOM_Builder is
       Create_Entry_Elements (Doc     => Doc,
                              Entries => Entries,
                              Parent  => Feed_Node);
-
    end Create_Feed_Element;
 
    --------------------------------
@@ -621,16 +593,13 @@ package body Yolk.Syndication.DOM_Builder is
       Doc         : in DOM.Core.Document;
       Parent      : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Nodes;
       use Yolk.Utilities;
 
       Generator_Node : Node;
-
    begin
-
       if A_Generator.Agent /= Null_Unbounded_String then
          Generator_Node := Append_Child
            (N         => Parent,
@@ -659,7 +628,6 @@ package body Yolk.Syndication.DOM_Builder is
               (Doc  => Doc,
                Data => TS (A_Generator.Agent)));
       end if;
-
    end Create_Generator_Element;
 
    ------------------------------
@@ -673,16 +641,13 @@ package body Yolk.Syndication.DOM_Builder is
       Elem_Name : in String;
       Parent    : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Nodes;
       use Yolk.Utilities;
 
       Elem_Node : Node;
-
    begin
-
       Elem_Node := Append_Child
         (N         => Parent,
          New_Child => Create_Element (Doc      => Doc,
@@ -703,7 +668,6 @@ package body Yolk.Syndication.DOM_Builder is
       pragma Unreferenced (Elem_Node);
       --  We need this because XML/Ada have no Append_Child procedures,
       --  which obviously is annoying as hell.
-
    end Create_Generic_Element;
 
    ----------------------------
@@ -715,7 +679,6 @@ package body Yolk.Syndication.DOM_Builder is
       List   : in Link_List.List;
       Parent : in DOM.Core.Node)
    is
-
       use Ada.Strings;
       use DOM.Core;
       use DOM.Core.Documents;
@@ -726,9 +689,7 @@ package body Yolk.Syndication.DOM_Builder is
       A_Link      : Atom_Link;
       C           : Link_List.Cursor := List.First;
       Link_Node   : Node;
-
    begin
-
       loop
          exit when not Link_List.Has_Element (C);
 
@@ -797,7 +758,6 @@ package body Yolk.Syndication.DOM_Builder is
 
          Link_List.Next (C);
       end loop;
-
    end Create_Link_Elements;
 
    -------------------------------
@@ -808,7 +768,6 @@ package body Yolk.Syndication.DOM_Builder is
      (XML_String : in String)
       return DOM.Core.Node
    is
-
       use DOM.Core;
       use DOM.Core.Nodes;
       use DOM.Readers;
@@ -817,9 +776,7 @@ package body Yolk.Syndication.DOM_Builder is
 
       Input  : String_Input;
       Reader : Tree_Reader;
-
    begin
-
       return Fragment : Node do
          Open (Str      => XML_String,
                Encoding => Unicode.CES.Utf8.Utf8_Encoding,
@@ -840,12 +797,9 @@ package body Yolk.Syndication.DOM_Builder is
          Fragment := Get_Tree (Read => Reader);
 
       exception
-
          when others =>
             raise Not_Valid_XML with XML_String;
-
       end return;
-
    end Create_Node_From_String;
 
    ------------------------------
@@ -858,7 +812,6 @@ package body Yolk.Syndication.DOM_Builder is
       List      : in Person_List.List;
       Parent    : in DOM.Core.Node)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Nodes;
@@ -868,9 +821,7 @@ package body Yolk.Syndication.DOM_Builder is
       Person_Node : Node;
       C           : Person_List.Cursor := List.First;
       Elem_Node   : Node;
-
    begin
-
       loop
          exit when not Person_List.Has_Element (C);
 
@@ -924,7 +875,6 @@ package body Yolk.Syndication.DOM_Builder is
 
          Person_List.Next (C);
       end loop;
-
    end Create_Person_Elements;
 
    -----------------------------
@@ -939,7 +889,6 @@ package body Yolk.Syndication.DOM_Builder is
       Parent    : in DOM.Core.Node;
       Text_Kind : in Text_Kinds)
    is
-
       use DOM.Core;
       use DOM.Core.Documents;
       use DOM.Core.Elements;
@@ -947,9 +896,7 @@ package body Yolk.Syndication.DOM_Builder is
       use Yolk.Utilities;
 
       Elem_Node : Node;
-
    begin
-
       Elem_Node := Append_Child
         (N         => Parent,
          New_Child => Create_Element (Doc      => Doc,
@@ -994,7 +941,6 @@ package body Yolk.Syndication.DOM_Builder is
                "<div " & DIVNS & ">" & Data & "</div>"));
 
       end case;
-
    end Create_Text_Construct;
 
 end Yolk.Syndication.DOM_Builder;

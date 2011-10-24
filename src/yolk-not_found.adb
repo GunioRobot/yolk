@@ -37,15 +37,12 @@ package body Yolk.Not_Found is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use AWS.Templates;
       use Yolk.Configuration;
 
       Content  : AWS.Response.Data;
       T        : Translate_Set;
-
    begin
-
       Insert (T, Assoc ("RESOURCE", AWS.Status.URI (Request)));
       Insert (T, Assoc ("VERSION", AWS.Version));
       Insert (T, Assoc ("DOMAIN", String'(Config.Get (Server_Name))));
@@ -59,7 +56,6 @@ package body Yolk.Not_Found is
          Status_Code   => AWS.Messages.S404);
 
       return Content;
-
    end Generate;
 
 end Yolk.Not_Found;

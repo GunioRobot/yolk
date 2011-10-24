@@ -122,30 +122,22 @@ package body Yolk.Email is
      (ES    : in     Structure;
       Email : in out GNATCOLL.Email.Message)
    is
-
       List : Attachments_Container.Vector renames ES.Attachment_List;
-
    begin
-
       for i in List.First_Index .. List.Last_Index loop
          declare
-
             use GNATCOLL.VFS;
             use Yolk.Utilities;
 
             Data : constant Attachment_Data := List.Element (i);
             File : constant Virtual_File := To_Virtual_File (Item => Data);
-
          begin
-
             Email.Attach (Path        => File,
                           MIME_Type   => AWS.MIME.Content_Type
                             (Filename => TS (Data.Path_To_File)),
                           Charset     => Get_Charset (Data.Charset));
-
          end;
       end loop;
-
    end Build_Attachments;
 
    ------------------------
@@ -157,25 +149,19 @@ package body Yolk.Email is
       Email : in out GNATCOLL.Email.Message)
    is
    begin
-
       if not ES.Bcc_List.Is_Empty then
          declare
-
             use GNATCOLL.Email;
 
             Bcc : Header := Create (Name  => "Bcc",
                                     Value => "");
-
          begin
-
             Build_Email_Data (Header => Bcc,
                               List   => ES.Bcc_List);
 
             Email.Add_Header (H => Bcc);
-
          end;
       end if;
-
    end Build_Bcc_Header;
 
    -----------------------
@@ -187,25 +173,19 @@ package body Yolk.Email is
       Email : in out GNATCOLL.Email.Message)
    is
    begin
-
       if not ES.Cc_List.Is_Empty then
          declare
-
             use GNATCOLL.Email;
 
             Cc : Header := Create (Name   => "Cc",
                                    Value  => "");
-
          begin
-
             Build_Email_Data (Header => Cc,
                               List   => ES.Cc_List);
 
             Email.Add_Header (H => Cc);
-
          end;
       end if;
-
    end Build_Cc_Header;
 
    ----------------------------------------------
@@ -216,13 +196,10 @@ package body Yolk.Email is
      (Charset : in     Character_Set;
       Email   : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
 
       CTE : Header;
-
    begin
-
       case Charset is
          when US_ASCII =>
             CTE := Create (Name  => Content_Transfer_Encoding,
@@ -236,7 +213,6 @@ package body Yolk.Email is
       end case;
 
       Email.Add_Header (H => CTE);
-
    end Build_Content_Transfer_Encoding_Header;
 
    ---------------------------------
@@ -248,19 +224,15 @@ package body Yolk.Email is
       Email : in out GNATCOLL.Email.Message;
       Kind  : in     String)
    is
-
       use GNATCOLL.Email;
 
       CT : Header;
-
    begin
-
       CT := Create (Name   => Content_Type,
                     Value  => Kind);
       CT.Set_Param (Param_Name  => "charset",
                     Param_Value => Get_Charset (ES.Text_Part.Charset));
       Email.Add_Header (H => CT);
-
    end Build_Content_Type_Header;
 
    ----------------------------
@@ -271,7 +243,6 @@ package body Yolk.Email is
      (ES    : in     Structure;
       Email : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
       use Yolk.Utilities;
 
@@ -279,9 +250,7 @@ package body Yolk.Email is
       Custom   : Header;
 
       List : Custom_Headers_Container.Vector renames ES.Custom_Headers;
-
    begin
-
       for i in List.First_Index .. List.Last_Index loop
          Data := List.Element (i);
 
@@ -291,7 +260,6 @@ package body Yolk.Email is
 
          Email.Add_Header (H => Custom);
       end loop;
-
    end Build_Custom_Headers;
 
    -------------------------
@@ -301,18 +269,14 @@ package body Yolk.Email is
    procedure Build_Date_Header
      (Email : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
       use GNATCOLL.Email.Utils;
 
       Date : constant Header := Create
         (Name  => "Date",
          Value => Format_Date (Date => Ada.Calendar.Clock));
-
    begin
-
       Email.Add_Header (H => Date);
-
    end Build_Date_Header;
 
    ------------------------
@@ -323,13 +287,10 @@ package body Yolk.Email is
      (Header   : in out GNATCOLL.Email.Header;
       List     : in     Email_Data_Container.Vector)
    is
-
       use Yolk.Utilities;
 
       Data : Email_Data;
-
    begin
-
       for i in List.First_Index .. List.Last_Index loop
          Data := List.Element (i);
 
@@ -349,7 +310,6 @@ package body Yolk.Email is
             Header.Append (Value => ", ");
          end if;
       end loop;
-
    end Build_Email_Data;
 
    -------------------------
@@ -360,19 +320,15 @@ package body Yolk.Email is
      (ES    : in     Structure;
       Email : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
 
       From : Header := Create (Name    => "From",
                                Value   => "");
-
    begin
-
       Build_Email_Data (Header => From,
                         List   => ES.From_List);
 
       Email.Add_Header (H => From);
-
    end Build_From_Header;
 
    -----------------------------
@@ -384,7 +340,6 @@ package body Yolk.Email is
       Email : in out GNATCOLL.Email.Message)
    is
    begin
-
       Build_Bcc_Header (ES    => ES,
                         Email => Email);
 
@@ -412,7 +367,6 @@ package body Yolk.Email is
 
       Build_To_Header (ES    => ES,
                        Email => Email);
-
    end Build_General_Headers;
 
    -------------------------
@@ -422,16 +376,12 @@ package body Yolk.Email is
    procedure Build_MIME_Header
      (Email : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
 
       MIME : constant Header := Create (Name  => MIME_Version,
                                         Value => "1.0");
-
    begin
-
       Email.Add_Header (H => MIME);
-
    end Build_MIME_Header;
 
    -----------------------------
@@ -443,25 +393,19 @@ package body Yolk.Email is
       Email : in out GNATCOLL.Email.Message)
    is
    begin
-
       if not ES.Reply_To_List.Is_Empty then
          declare
-
             use GNATCOLL.Email;
 
             Reply_To : Header := Create (Name   => "Reply-To",
                                          Value  => "");
-
          begin
-
             Build_Email_Data (Header => Reply_To,
                               List   => ES.Reply_To_List);
 
             Email.Add_Header (H => Reply_To);
-
          end;
       end if;
-
    end Build_Reply_To_Header;
 
    ---------------------------
@@ -473,17 +417,13 @@ package body Yolk.Email is
       Email : in out GNATCOLL.Email.Message)
    is
    begin
-
       if ES.Sender.Address /= Null_Unbounded_String then
          declare
-
             use GNATCOLL.Email;
             use Yolk.Utilities;
 
             Sender : Header;
-
          begin
-
             if ES.Sender.Name = "" then
                Sender := Create (Name    => "Sender",
                                  Value   => TS (ES.Sender.Address),
@@ -497,14 +437,12 @@ package body Yolk.Email is
             end if;
 
             Email.Add_Header (H => Sender);
-
          end;
       else
          if ES.From_List.Length > 1 then
             raise No_Sender_Set_With_Multiple_From;
          end if;
       end if;
-
    end Build_Sender_Header;
 
    ----------------------------
@@ -515,7 +453,6 @@ package body Yolk.Email is
      (ES    : in     Structure;
       Email : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
       use Yolk.Utilities;
 
@@ -523,11 +460,8 @@ package body Yolk.Email is
         (Name    => "Subject",
          Value   => TS (ES.Subject.Content),
          Charset => Get_Charset (ES.Subject.Charset));
-
    begin
-
       Email.Add_Header (H => Subject);
-
    end Build_Subject_Header;
 
    -------------------------
@@ -538,19 +472,15 @@ package body Yolk.Email is
      (ES    : in     Structure;
       Email : in out GNATCOLL.Email.Message)
    is
-
       use GNATCOLL.Email;
 
       To : Header := Create (Name   => "To",
                              Value  => "");
-
    begin
-
       Build_Email_Data (Header => To,
                         List   => ES.To_List);
 
       Email.Add_Header (H => To);
-
    end Build_To_Header;
 
    ------------------------------------
@@ -560,16 +490,13 @@ package body Yolk.Email is
    procedure Generate_Text_And_HTML_Email
      (ES : in out Structure)
    is
-
       use GNATCOLL.Email;
       use Yolk.Utilities;
 
       Email          : Message := New_Message (Multipart_Alternative);
       HTML_Payload   : Message := New_Message (Text_Html);
       Text_Payload   : Message := New_Message (Text_Plain);
-
    begin
-
       Email.Set_Boundary (Boundary => AWS.Utils.Random_String (16));
 
       Text_Payload.Set_Text_Payload
@@ -611,7 +538,6 @@ package body Yolk.Email is
                              Email => Email);
 
       ES.Composed_Message := Email;
-
    end Generate_Text_And_HTML_Email;
 
    ----------------------------------------------------
@@ -621,7 +547,6 @@ package body Yolk.Email is
    procedure Generate_Text_And_HTML_With_Attachment_Email
      (ES : in out Structure)
    is
-
       use GNATCOLL.Email;
       use Yolk.Utilities;
 
@@ -629,9 +554,7 @@ package body Yolk.Email is
       Email_Mixed    : Message := New_Message (Multipart_Mixed);
       HTML_Payload   : Message := New_Message (Text_Html);
       Text_Payload   : Message := New_Message (Text_Plain);
-
    begin
-
       Email_Alt.Set_Boundary (Boundary => AWS.Utils.Random_String (16));
       Email_Mixed.Set_Boundary (Boundary => AWS.Utils.Random_String (16));
 
@@ -680,7 +603,6 @@ package body Yolk.Email is
                              Email => Email_Mixed);
 
       ES.Composed_Message := Email_Mixed;
-
    end Generate_Text_And_HTML_With_Attachment_Email;
 
    ---------------------------
@@ -690,14 +612,11 @@ package body Yolk.Email is
    procedure Generate_Text_Email
      (ES : in out Structure)
    is
-
       use GNATCOLL.Email;
       use Yolk.Utilities;
 
       Email : Message := New_Message (MIME_Type => Text_Plain);
-
    begin
-
       Email.Set_Text_Payload
         (Payload   => TS (ES.Text_Part.Content),
          Charset   => Get_Charset (ES.Text_Part.Charset));
@@ -715,7 +634,6 @@ package body Yolk.Email is
                                  Kind  => Text_Plain);
 
       ES.Composed_Message := Email;
-
    end Generate_Text_Email;
 
    -------------------------------------------
@@ -725,15 +643,12 @@ package body Yolk.Email is
    procedure Generate_Text_With_Attachment_Email
      (ES : in out Structure)
    is
-
       use GNATCOLL.Email;
       use Yolk.Utilities;
 
       Email          : Message := New_Message (MIME_Type => Multipart_Mixed);
       Text_Payload   : Message := New_Message (MIME_Type => Text_Plain);
-
    begin
-
       Email.Set_Boundary (Boundary => AWS.Utils.Random_String (16));
 
       Text_Payload.Set_Text_Payload
@@ -762,7 +677,6 @@ package body Yolk.Email is
                              Email => Email);
 
       ES.Composed_Message := Email;
-
    end Generate_Text_With_Attachment_Email;
 
    -------------------
@@ -774,7 +688,6 @@ package body Yolk.Email is
       return String
    is
    begin
-
       case Charset is
          when US_ASCII => return GNATCOLL.Email.Charset_US_ASCII;
          when ISO_8859_1 => return GNATCOLL.Email.Charset_ISO_8859_1;
@@ -789,7 +702,6 @@ package body Yolk.Email is
          when Windows_1252 => return GNATCOLL.Email.Charset_Windows_1252;
          when UTF8 => return "utf-8";
       end case;
-
    end Get_Charset;
 
    -------------------------
@@ -799,11 +711,8 @@ package body Yolk.Email is
    procedure Set_Type_Of_Email
      (ES : in out Structure)
    is
-
       use Yolk.Utilities;
-
    begin
-
       if not ES.Has_Text_Part then
          ES.Text_Part.Content := TUS ("");
       end if;
@@ -820,7 +729,6 @@ package body Yolk.Email is
             ES.Type_Of_Email := Text_And_HTML_With_Attachment;
          end if;
       end if;
-
    end Set_Type_Of_Email;
 
    -----------------------
@@ -831,21 +739,17 @@ package body Yolk.Email is
      (Item : in Attachment_Data)
       return GNATCOLL.VFS.Virtual_File
    is
-
       use Ada.Directories;
       use GNATCOLL.VFS;
       use Yolk.Utilities;
 
       Path_To_File : constant String := TS (Item.Path_To_File);
-
    begin
-
       if not Exists (Path_To_File) then
          raise Attachment_File_Not_Found;
       end if;
 
       return Locate_On_Path (Filesystem_String (Path_To_File));
-
    end To_Virtual_File;
 
 end Yolk.Email;

@@ -36,7 +36,6 @@ package body View.Email is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-
       use AWS.Templates;
 
       procedure Populate_Form
@@ -55,26 +54,21 @@ package body View.Email is
          Recip_Address : in     String)
       is
       begin
-
          Insert (T, Assoc ("RECIP_NAME", Recip_Name));
          Insert (T, Assoc ("RECIP_ADDRESS", Recip_Address));
          Insert
            (T, Assoc ("SMTP_HOST", String'(My.Config.Get (My.SMTP_Host))));
          Insert
            (T, Assoc ("SMTP_PORT", String'(My.Config.Get (My.SMTP_Port))));
-
       end Populate_Form;
 
       P : constant AWS.Parameters.List := AWS.Status.Parameters (Request);
       T : Translate_Set;
-
    begin
-
       if P.Exist ("recip_name")
         and then P.Exist ("recip_address")
       then
          declare
-
             use Ada.Strings;
             use Yolk.Email;
 
@@ -83,9 +77,7 @@ package body View.Email is
             P_Recip_Address   : constant String :=
                                   Fixed.Trim (P.Get ("recip_address"), Both);
             Email             : Structure;
-
          begin
-
             if P_Recip_Address /= "" then
                Composer.Add_Custom_Header (ES      => Email,
                                            Name    => "User-Agent",
@@ -121,7 +113,6 @@ package body View.Email is
                               Recip_Name    => P_Recip_Name,
                               Recip_Address => P_Recip_Address);
             end if;
-
          end;
       else
          Populate_Form (T             => T,
@@ -133,7 +124,6 @@ package body View.Email is
         (Status_Data   => Request,
          Template_File => My.Config.Get (My.Template_Email),
          Translations  => T);
-
    end Generate;
 
 end View.Email;

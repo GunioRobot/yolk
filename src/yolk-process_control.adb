@@ -56,7 +56,6 @@ package body Yolk.Process_Control is
    ------------------
 
    protected Controller is
-
       entry Check;
       --  If Controller_State is Shutdown then Delete_PID_File is called and
       --  the Wait procedure completes.
@@ -75,9 +74,7 @@ package body Yolk.Process_Control is
       --  Create_PID_File.
 
    private
-
       State : Controller_State := Stopped;
-
    end Controller;
 
    ----------------------
@@ -86,15 +83,12 @@ package body Yolk.Process_Control is
 
    procedure Create_PID_File
    is
-
       use Ada.Strings;
       use Ada.Text_IO;
       use POSIX.Process_Identification;
 
       File  : File_Type;
-
    begin
-
       if Exists (PID) then
          raise PID_File_Exists with PID;
       end if;
@@ -110,7 +104,6 @@ package body Yolk.Process_Control is
            Ada.Text_IO.Use_Error |
            Ada.Text_IO.Device_Error =>
          raise Cannot_Create_PID_File with PID;
-
    end Create_PID_File;
 
    -----------------------
@@ -119,11 +112,8 @@ package body Yolk.Process_Control is
 
    procedure Delete_PID_File
    is
-
       use Ada.Text_IO;
-
    begin
-
       if Exists (PID) then
          Delete_File (PID);
       end if;
@@ -133,7 +123,6 @@ package body Yolk.Process_Control is
            Ada.Text_IO.Use_Error |
            Ada.Text_IO.Device_Error =>
          raise Cannot_Delete_PID_File with PID;
-
    end Delete_PID_File;
 
    ------------
@@ -143,9 +132,7 @@ package body Yolk.Process_Control is
    procedure Stop
    is
    begin
-
       Controller.Handle_Kill;
-
    end Stop;
 
    ------------
@@ -155,7 +142,6 @@ package body Yolk.Process_Control is
    procedure Wait
    is
    begin
-
       if not Wait_Called then
          Wait_Called := True;
          Controller.Start;
@@ -165,7 +151,6 @@ package body Yolk.Process_Control is
 
          Wait_Called := False;
       end if;
-
    end Wait;
 
    ------------------
@@ -173,7 +158,6 @@ package body Yolk.Process_Control is
    ------------------
 
    protected body Controller is
-
       -------------
       --  Check  --
       -------------
@@ -181,10 +165,8 @@ package body Yolk.Process_Control is
       entry Check when State = Shutdown
       is
       begin
-
          Delete_PID_File;
          State := Stopped;
-
       end Check;
 
       -------------
@@ -194,10 +176,8 @@ package body Yolk.Process_Control is
       entry Start when State = Stopped
       is
       begin
-
          State := Running;
          Create_PID_File;
-
       end Start;
 
       -------------------
@@ -206,13 +186,10 @@ package body Yolk.Process_Control is
 
       procedure Handle_Kill is
       begin
-
          if State /= Shutdown then
             State := Shutdown;
          end if;
-
       end Handle_Kill;
-
    end Controller;
 
 end Yolk.Process_Control;

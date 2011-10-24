@@ -54,6 +54,7 @@ package View is
    --  database per AWS thread.
 
    type Cache_Keys is (Feed_Data);
+
    package Cache1 is new Yolk.Cache.Discrete_Keys
      (Key_Type        => Cache_Keys,
       Element_Type    => Unbounded_String,
