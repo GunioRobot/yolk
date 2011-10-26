@@ -71,7 +71,8 @@ package body View is
 
       return Build (Content_Type  => MIME_Type,
                     Message_Body  => Content,
-                    Encoding      => Encoding);
+                    Encoding      => Encoding,
+                    Cache_Control => No_Cache);
    end Build_Response;
 
 end View;

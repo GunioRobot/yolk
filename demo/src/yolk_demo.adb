@@ -205,9 +205,9 @@ begin
    --  Fire up the rotating log system. Calls to Yolk.Rotating_Log.Trace up
    --  until this point are silently ignored.
 
-   Initialize_Compressed_Cache_Directory;
-   --  Delete old compressed content and create a clean directory for compres-
-   --  sed static content.
+   Static_Content_Cache_Setup;
+   --  Set the reponsen Cache options. Delete old compressed content and create
+   --  a clean directory for compressed static content.
 
    for Key in Keys'Range loop
       if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then
