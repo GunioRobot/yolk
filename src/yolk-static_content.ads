@@ -26,6 +26,7 @@
 --  by the WWW_Root configuration parameter.
 --  Compressed content is saved in the Compressed_Cache_Directory.
 
+with AWS.Messages;
 with AWS.Response;
 with AWS.Status;
 
@@ -36,10 +37,19 @@ package Yolk.Static_Content is
       return AWS.Response.Data;
    --  Return non-compressed content.
 
-   procedure Initialize_Compressed_Cache_Directory
-     (Log_To_Info_Trace : in Boolean := True);
-   --  Delete and re-create the Compressed_Cache_Directory. Should preferably
-   --  be called before any AWS HTTP servers are started.
+   procedure Static_Content_Cache_Setup
+     (Log_To_Info_Trace : in Boolean := True;
+      No_Cache          : in Boolean := False;
+      No_Store          : in Boolean := False;
+      No_Transform      : in Boolean := False;
+      Max_Age           : in AWS.Messages.Delta_Seconds := 86400;
+      S_Max_Age         : in AWS.Messages.Delta_Seconds := AWS.Messages.Unset;
+      Public            : in Boolean := False;
+      Must_Revalidate   : in Boolean := True;
+      Proxy_Revalidate  : in Boolean := False);
+   --  Set the cache options for the request and delete and re-create the
+   --  Compressed_Cache_Directory. Should preferably be called before any AWS
+   --  HTTP servers are started.
    --  This is a threadsafe operation, and it can be repeated as often as
    --  need be.
 

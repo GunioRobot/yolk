@@ -24,7 +24,6 @@
 with Ada.Calendar;
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
-with AWS.Messages;
 with AWS.MIME;
 with ZLib;
 with Yolk.Configuration;
@@ -32,6 +31,8 @@ with Yolk.Not_Found;
 with Yolk.Rotating_Log;
 
 package body Yolk.Static_Content is
+
+   Cache_Data : AWS.Messages.Cache_Data (CKind => AWS.Messages.Response);
 
    protected GZip_And_Cache is
       procedure Do_It
@@ -97,7 +98,8 @@ package body Yolk.Static_Content is
                return AWS.Response.File
                  (Content_Type  => MIME_Type,
                   Filename      => GZ_Resource,
-                  Encoding      => GZip);
+                  Encoding      => GZip,
+                  Cache_Control => To_Cache_Option (Data => Cache_Data));
             else
                Delete_File (GZ_Resource);
             end if;
@@ -113,7 +115,8 @@ package body Yolk.Static_Content is
 
             return AWS.Response.File
               (Content_Type  => MIME_Type,
-               Filename      => Resource);
+               Filename      => Resource,
+               Cache_Control => To_Cache_Option (Data => Cache_Data));
          end if;
 
          if Size (Resource) > Minimum_File_Size then
@@ -123,13 +126,15 @@ package body Yolk.Static_Content is
             return AWS.Response.File
               (Content_Type  => MIME_Type,
                Filename      => GZ_Resource,
-               Encoding      => GZip);
+               Encoding      => GZip,
+               Cache_Control => To_Cache_Option (Data => Cache_Data));
          end if;
       end if;
 
       return AWS.Response.File
         (Content_Type  => MIME_Type,
-         Filename      => Resource);
+         Filename      => Resource,
+         Cache_Control => To_Cache_Option (Data => Cache_Data));
    end Compressable;
 
    ----------------
@@ -290,17 +295,6 @@ package body Yolk.Static_Content is
       end Initialize;
    end GZip_And_Cache;
 
-   ---------------------------------------------
-   --  Initialize_Compressed_Cache_Directory  --
-   ---------------------------------------------
-
-   procedure Initialize_Compressed_Cache_Directory
-     (Log_To_Info_Trace : in Boolean := True)
-   is
-   begin
-      GZip_And_Cache.Initialize (Log_It => Log_To_Info_Trace);
-   end Initialize_Compressed_Cache_Directory;
-
    ------------------------
    --  Non_Compressable  --
    ------------------------
@@ -325,7 +319,38 @@ package body Yolk.Static_Content is
 
       return AWS.Response.File
         (Content_Type  => Content_Type (Resource),
-         Filename      => Resource);
+         Filename      => Resource,
+         Cache_Control =>
+           AWS.Messages.To_Cache_Option (Data => Cache_Data));
    end Non_Compressable;
+
+   ----------------------------------
+   --  Static_Content_Cache_Setup  --
+   ----------------------------------
+
+   procedure Static_Content_Cache_Setup
+     (Log_To_Info_Trace : in Boolean := True;
+      No_Cache          : in Boolean := False;
+      No_Store          : in Boolean := False;
+      No_Transform      : in Boolean := False;
+      Max_Age           : in AWS.Messages.Delta_Seconds := 86400;
+      S_Max_Age         : in AWS.Messages.Delta_Seconds := AWS.Messages.Unset;
+      Public            : in Boolean := False;
+      Must_Revalidate   : in Boolean := True;
+      Proxy_Revalidate  : in Boolean := False)
+   is
+      use AWS.Messages;
+   begin
+      GZip_And_Cache.Initialize (Log_It => Log_To_Info_Trace);
+
+      Cache_Data.No_Cache           := No_Cache;
+      Cache_Data.No_Store           := No_Store;
+      Cache_Data.No_Transform       := No_Transform;
+      Cache_Data.Max_Age            := Max_Age;
+      Cache_Data.S_Max_Age          := S_Max_Age;
+      Cache_Data.Public             := Public;
+      Cache_Data.Must_Revalidate    := Must_Revalidate;
+      Cache_Data.Proxy_Revalidate   := Proxy_Revalidate;
+   end Static_Content_Cache_Setup;
 
 end Yolk.Static_Content;
