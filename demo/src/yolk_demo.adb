@@ -206,8 +206,9 @@ begin
    --  until this point are silently ignored.
 
    Static_Content_Cache_Setup;
-   --  Set the reponsen Cache options. Delete old compressed content and create
-   --  a clean directory for compressed static content.
+   --  Set the Cache-Control header options for the static content.
+   --  Delete old compressed content and create a clean directory for
+   --  the compressed static content.
 
    for Key in Keys'Range loop
       if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then
