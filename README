@@ -84,16 +84,11 @@ My usual modus operandi for setting up these 6 things goes something like this:
 
     3.  Install GNATcoll in /usr/gnat:
 
-            $ ./configure --prefix=/usr/gnat \
-                                --disable-gtk \
-                                --disable-pygtk \
-                                --with-python \
-                                --with-postgresql \
-                                --disable-projects \
-                                --without-gmp
+            $ ./configure --prefix=/usr/gnat
 
         You should of course adjust the above configuration options to fit your
-        needs, just make sure PostgreSQL support is enabled.
+        needs, just make sure PostgreSQL and SQLite support is enabled, as both
+        of these are used by the Yolk demo.
 
             $ make
             $ make install
