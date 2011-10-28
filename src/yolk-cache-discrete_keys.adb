@@ -132,7 +132,6 @@ package body Yolk.Cache.Discrete_Keys is
                                 Element         => Value,
                                 Has_Element     => True);
       end Write;
-
    end P_Element_List;
 
    -------------
