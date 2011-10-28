@@ -29,10 +29,12 @@ with AWS.MIME;
 with AWS.Status;
 with AWS.Response;
 with AWS.Templates;
+with GNATCOLL.SQL.Exec;
+with GNATCOLL.SQL.Postgres;
 with My_Configuration;
 with Yolk.Cache.Discrete_Keys;
 with Yolk.Cache.String_Keys;
-with Yolk.Connect_To_DB.PostgreSQL;
+--  with Yolk.Connect_To_DB.PostgreSQL;
 
 package View is
 
@@ -43,13 +45,21 @@ package View is
    package My renames My_Configuration;
    --  Easier to write, easier to read.
 
-   package My_DB is new Connect_To_DB.PostgreSQL
-     (DB_Credentials            => Connect_To_DB.Set_Credentials
-        (Host     => My.Config.Get (My.DB_Host),
-         Database => My.Config.Get (My.DB_Name),
-         User     => My.Config.Get (My.DB_User),
-         Password => My.Config.Get (My.DB_Password)),
-      Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
+   DB_Description : GNATCOLL.SQL.Exec.Database_Description :=
+                      GNATCOLL.SQL.Postgres.Setup
+                        (Database      => My.Config.Get (My.DB_Name),
+                         User          => My.Config.Get (My.DB_User),
+                         Host          => My.Config.Get (My.DB_Host),
+                         Password      => My.Config.Get (My.DB_Password),
+                         SSL           => GNATCOLL.SQL.Postgres.Disable);
+
+   --     package My_DB is new Connect_To_DB.PostgreSQL
+   --       (DB_Credentials            => Connect_To_DB.Set_Credentials
+   --          (Host     => My.Config.Get (My.DB_Host),
+--           Database => My.Config.Get (My.DB_Name),
+--           User     => My.Config.Get (My.DB_User),
+--           Password => My.Config.Get (My.DB_Password)),
+--        Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
    --  Note the Tast_To_DB_Mapping_Method. One connection is maintained to the
    --  database per AWS thread.
 

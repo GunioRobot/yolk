@@ -700,144 +700,7 @@ instantiation, so you might as well use this as the configuration
 foundation for the AWS HTTP server component of your application. 
 Again, see the demo application for examples on how this is done.
 
-7 Yolk.Connect_To_DB
-
-This is a small wrapper for the GNATCOLL.SQL database connection 
-functionality. Once you've connected to the database, you use 
-plain GNATCOLL.SQL tools to query/update your database. The 
-ability to stay connected to several databases in the same 
-application was what drove the development of the 
-Yolk.Connect_To_DB package, as the 
-GNATCOLL.SQL.Exec.Get_Task_Connection function did not support 
-that out of the box.
-
-At the time of writing, GNATcoll supports PostgreSQL and SQLite, 
-but Yolk only supports connecting to PostgreSQL. The reason for 
-this is simple: I don't use SQLite now and I don't plan on using 
-it in the future, and if I can't test something, I don't feel 
-like adding it to Yolk.
-
-7.1 The Connection_Mapping_Method type
-
-To define how AWS threads are mapped to the database connections, 
-you need to understand the Connection_Mapping_Method type. There 
-are two different methods of connecting to a database:
-
-1. AWS_Tasks_To_DB
-
-2. DB_Conn_Tasks_To_DB
-
-The first method is the simplest and it's also the method that 
-requires fewest resources. Using method 1. we simply map each AWS 
-thread to a database connection, meaning that if you have 5 AWS 
-threads, you're going to end up with 5 open connections to your 
-database. Whenever an AWS thread ask for a database connection, 
-it always get the same connection. If no connection has been made 
-yet, one is started and mapped to the AWS thread that started it.
-
-This works flawlessly as long as you don't need to connect to 
-more than one database, but it fails miserably if you have more 
-than one database in play. For such cases we need option 2. 
-
-When option 2. is used, one set of database connection tasks are 
-started for every database you connect to. So if you have an AWS 
-server with 5 threads and you need to connect to two databases, 
-you're going to end up with 5 small tasks whose only purpose in 
-life is to open and maintain a connection to the database. These 
-5 DB_Conn tasks are then mapped to the AWS threads using the 
-Ada.Task_Attributes package.
-
-This also means that you can only instantiate once using 
-AWS_Tasks_To_DB whereas you can instantiate as many times as you 
-like with DB_Conn_Tasks_To_DB. If you need to connect to several 
-databases, make sure that the one you use the most is setup with 
-the AWS_Tasks_To_DB connection mapping. This is the fastest and 
-most resource efficient method, as we don't have to spend time 
-going through one of the DB_Conn tasks that are necessary with 
-the DB_Conn_Tasks_To_DB method.
-
-7.2 Database credentials
-
-The Set_Credentials function is responsible for setting the 
-credentials necessary to connect to the database.
-
-Yolk.Connect_To_DB.Set_Credentials
-
-  (Host     => "localhost",
-
-   Database => "some_database",
-
-   User     => "username",
-
-   Password => "secret");
-
-
-This call return a Yolk.Connect_To_DB.Credentials type which is 
-then used when instantiating the Yolk.Connect_To_DB.PostgreSQL 
-generic.
-
-8 Yolk.Connect_To_DB.PostgreSQL
-
-When instantiated, this package provides a single function: 
-Connection. This function return a 
-GNATCOLL.SQL.Exec.Database_Connection type, which is then used to 
-interact with your database.
-
-8.1 The generic formal parameters
-
-When you're actually going to connect to your PostgreSQL 
-database(s), this is the package you want. It's a generic with 
-two formal parameters:
-
-generic
-
-   DB_Credentials : Credentials;
-
-   Task_To_DB_Mapping_Method : Connection_Mapping_Method;    
-
-package Yolk.Connect_To_DB.PostgreSQL is
-
-   function Connection return 
-GNATCOLL.SQL.Exec.Database_Connection;
-
-end Yolk.Connect_To_DB.PostgreSQL;
-
-
-Instantiation is pretty straightforward:
-
-package My_DB is new Connect_To_DB.PostgreSQL      
-
-  (DB_Credentials            => Connect_To_DB.Set_Credentials     
-    
-
-     (Host     => My.Config.Get (My.DB_Host),          
-
-      Database => My.Config.Get (My.DB_Name),          
-
-      User     => My.Config.Get (My.DB_User),          
-
-      Password => My.Config.Get (My.DB_Password)), 
-
-   Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
-
-
-In this case we've used the AWS_Tasks_To_DB mapping method, so 
-each AWS thread will be mapped to a specific database connection.
-
-8.2 Connecting to the database
-
-With the My_DB package up and running, connecting to the database 
-is done like this:
-
-DB_Conn : constant Database_Connection := My_DB.Connection;
-
-
-You can now use the DB_Conn connection just as if you'd created 
-the Database_Connection object using the method described in the [https://www.adacore.com/wp-content/files/auto_update/gnatcoll-docs/gnatcoll.html#Database-interface||GNAT Component Collection (GNATcoll) manual]
-. There's also a usage example in the Yolk demo. Take a look at 
-the View.DB_Test package.
-
-9 Yolk.Email
+7 Yolk.Email
 
 Using Yolk.Email and the child package Yolk.Email.Composer you 
 can build and send more or less any kind of email:
@@ -856,7 +719,7 @@ The Yolk.Email package define 4 exceptions and 3 types. The
 facilities for actually constructing and sending the email are 
 found in Yolk.Email.Composer.
 
-9.1 Exceptions
+7.1 Exceptions
 
 These are:
 
@@ -873,7 +736,7 @@ These are:
 • No_SMTP_Host_Set. Is raised if the SMTP host list is empty, ie. 
   no SMTP host has been set for sending the email.
 
-9.2 The Yolk.Email types
+7.2 The Yolk.Email types
 
 When using Yolk.Email.Composer to build and send emails, three 
 types declared in Yolk.Email are central:
@@ -955,7 +818,7 @@ The Structure type is at the core of it all. You declare an
 object to be of the Structure type, and then you use the 
 Yolk.Email.Composer facilities to build and send the email.
 
-10 Yolk.Email.Composer
+8 Yolk.Email.Composer
 
 The actual tools for building and sending an email is found in 
 this package. Here are tools for building emails from the ground 
@@ -966,7 +829,7 @@ I'm not going to go through ever procedure in this package,
 instead I'll show an example on how to build an email from the 
 ground up and how to use one of the convenience procedures.
 
-10.1 Building and sending an email, the easy way
+8.1 Building and sending an email, the easy way
 
 There are two convenience procedures in Yolk.Email.Composer for 
 sending emails without having to do a whole lot of work/thinking. 
@@ -1127,7 +990,7 @@ User-Agent: My User Agent
 It hardly gets any easier than that. Lets move on and see how the 
 above is accomplished the hard way.
 
-10.2 Building and sending email, the hard way
+8.2 Building and sending email, the hard way
 
 It is possible to build an email from the ground up, which 
 obviously allows for a more fine grained control over what is 
@@ -1207,7 +1070,7 @@ end;
 
 Harder yes, but really not all that much more difficult.
 
-11 Yolk.Handlers
+9 Yolk.Handlers
 
 Most web applications will need to handle various static content, 
 such as PNG, HTML and CSS files. Yolk.Handlers helps you 
@@ -1256,7 +1119,7 @@ not mandatory.
 This package makes use of the Yolk.Static_Content package for the 
 actual delivery of the content to the user.
 
-12 Yolk.Log_File_Cleanup
+10 Yolk.Log_File_Cleanup
 
 House-keeping is a very important task, and when dealing with 
 HTTP servers, one of those tasks involve keeping an eye on the 
@@ -1288,7 +1151,7 @@ Be sure to read the Logging - Rotating And Regular section in the
 demo/exe/configuration/config.ini file for more information on 
 the configuration parameters that affect this system.
 
-13 Yolk.Not_Found
+11 Yolk.Not_Found
 
 This job of this package is to return a HTTP 404 status code and 
 an accompanying simple not found HTML page. It's sole function 
@@ -1314,7 +1177,7 @@ dispatcher, is served by Yolk.Not_Found.Generate ie. a 404 is
 returned. See the demo/src/my_handlers.adb file for more 
 information.
 
-14 Yolk.Process_Control
+12 Yolk.Process_Control
 
 With Yolk.Process_Control you get the ability to control your 
 application using the SIGINT, SIGPWR and SIGTERM signals. You 
@@ -1322,7 +1185,7 @@ also get a PID file placed next to your executable, which coupled
 with the demo/tools/rc.yolk script gives you a rather nice and 
 simple way of starting and stopping your application.
 
-14.1 Exceptions
+12.1 Exceptions
 
 These are:
 
@@ -1339,7 +1202,7 @@ These are:
   ie. the application is already running or it was shutdown 
   incorrectly.
 
-14.2 Using Yolk.Process_Control
+12.2 Using Yolk.Process_Control
 
 When you use the Yolk.Process_Control package the 
 Unreserve_All_Interrupts pragma is used. This means that 
@@ -1402,7 +1265,7 @@ Wait;
 Whether or not this is actually useful I don't know, but it is 
 possible.
 
-15 Yolk.Process_Owner
+13 Yolk.Process_Owner
 
 When it is necessary to change the owner of a process, the 
 Yolk.Process_Owner package is the solution. Obviously this can 
@@ -1410,14 +1273,14 @@ also be done when starting the application, using various shell
 tricks, but I find it it much cleaner to just let the application 
 handle it by itself.
 
-15.1 Exceptions
+13.1 Exceptions
 
 There's only one:
 
 1. Username_Does_Not_Exist. This is raised if the given username 
   doesn't exist on the system.
 
-15.2 Using Yolk.Process_Owner
+13.2 Using Yolk.Process_Owner
 
 There's only a single procedure in this package and its 
 specification looks like this:
@@ -1454,7 +1317,7 @@ In the file demo/src/yolk_demo.adb you'll find that
 Yolk.Process_Owner.Set_User is used in conjunction with the 
 Yolk.Configuration.Yolk_User parameter.
 
-16 Yolk.Rotating_Log
+14 Yolk.Rotating_Log
 
 This package provides the ability to write log data to three 
 predefined log traces:
@@ -1493,7 +1356,7 @@ GNATCOLL.SQL packages. See the demo/exe/configuration/config.ini
 for how to enable/disable the different levels of SQL related log 
 data.
 
-16.1 Exceptions
+14.1 Exceptions
 
 These are:
 
@@ -1503,7 +1366,7 @@ These are:
 • Cannot_Write_To_Log_File. Is raised when it's not possible to 
   write to one of the rotating log files.
 
-16.2 Starting the rotating log files
+14.2 Starting the rotating log files
 
 It's not enough to simply with the package, you have to start the 
 rotating log system before you can actually use it. This is done 
@@ -1518,7 +1381,7 @@ Setting the Emit_Warning_If_Already_Running to False will make
 sure that a second call to Start_Rotating_Logs won't emit a 
 warning message on the Info trace.
 
-16.3 Writing log data
+14.3 Writing log data
 
 With the rotating log system started, writing data to it is a 
 simple matter of calling the Trace procedure. It looks like this:
@@ -1534,7 +1397,7 @@ It should be obvious how this procedure is used. Note that the
 configuration setting Immediate_Flush controls whether or not the 
 Log_String is written to file immediately or if a buffer is used.
 
-17 Yolk.Static_Content
+15 Yolk.Static_Content
 
 Most web applications have a lot of static content, ie. stuff 
 that doesn't change. Things like PNG's, HTML, CSS and Javascript. 
@@ -1568,7 +1431,7 @@ Yolk.Static_Content is affected by four configuration settings:
 You should carefully read the demo/exe/configuration/config.ini 
 file for information on what exactly these do.
 
-17.1 The static content cache setup
+15.1 The static content cache setup
 
 The configuration parameter Compressed_Cache_Directory defines 
 where the compressed version of the static content is saved. When 
@@ -1627,7 +1490,7 @@ compressed cache directory and reset the Control_Cache header
 according to the given parameters. This is a threadsafe 
 operation.
 
-17.2 Yolk.Static_Content.Compressable
+15.2 Yolk.Static_Content.Compressable
 
 If your application contains a bunch of compressable files of 
 significant size, you can save a lot of bandwidth by using the 
@@ -1745,7 +1608,7 @@ you can of course also define WWW_Root and
 Compressed_Cache_Directory as absolute paths in the configuration 
 file.
 
-17.3 Yolk.Static_Content.Non_Compressable
+15.3 Yolk.Static_Content.Non_Compressable
 
 A lot of static content really doesn't benefit from any further 
 compression. This is the case for PNG files, JPEG files and a 
@@ -1786,7 +1649,7 @@ is where you define you content handlers, but it can obviously be
 used wherever your application handles requests for static 
 content.
 
-18 Yolk.Syndication
+16 Yolk.Syndication
 
 The Atom Syndication format ([http://tools.ietf.org/html/rfc4287||RFC4287]
 ) is an XML-based document format that describes lists of related 
@@ -1822,7 +1685,7 @@ There are two packages in the Yolk.Syndication hierarchy:
 When time permits, I'll add a Yolk.Syndication.Reader package for 
 extraction of data from an Atom feed.
 
-18.1 Exceptions
+16.1 Exceptions
 
 There's one exception in this package:
 
@@ -1830,7 +1693,7 @@ There's one exception in this package:
   XML. This exception can be raised by all procedures that can 
   take Xhtml as content.
 
-18.2 The Yolk.Syndication types
+16.2 The Yolk.Syndication types
 
 There are 5 important types in this package:
 
@@ -1903,7 +1766,7 @@ New_Atom_Entry_Source functions respectively.
 Note that only Atom_Feed is thread safe. The two entry related 
 types are not.
 
-18.3 Yolk.Syndication.New_Atom_Feed
+16.3 Yolk.Syndication.New_Atom_Feed
 
 This function initialize an Atom_Feed type, and its specification 
 looks like this:
@@ -1943,7 +1806,7 @@ Yolk.Syndication handles all this for you, according to the
 values given when you instantiate an Atom_Feed object using 
 New_Atom_Feed.
 
-18.4 Yolk.Syndication.New_Atom_Entry
+16.4 Yolk.Syndication.New_Atom_Entry
 
 This function initialize and Atom_Entry type, and its 
 specification looks like this:
@@ -1963,7 +1826,7 @@ related parameters have already been set by they New_Atom_Feed
 function. All that is left is to define the Base_URI and the 
 natural Language used by the entry.
 
-18.5 Yolk.Syndication.New_Atom_Entry_Source
+16.5 Yolk.Syndication.New_Atom_Entry_Source
 
 This function initialize and Atom_Entry_Source type, and its 
 specification looks like this:
@@ -1982,7 +1845,7 @@ function, since its job is to return an Atom_Entry_Source object,
 which is basically just an object that describes the origins of a 
 feed entry.
 
-18.6 Yolk.Syndication.Writer
+16.6 Yolk.Syndication.Writer
 
 In this package we find all the tools necessary to build the Atom 
 XML. There are far too many subprograms in 
@@ -2084,7 +1947,7 @@ Most of the subprograms in this package deals directly with
 building the Atom XML, but there are a few exceptions. We'll go 
 over these now.
 
-18.7 Counting the amount of entries in a feed
+16.7 Counting the amount of entries in a feed
 
 If you need to know how many entries that are currently in a 
 feed, the you can use the 
@@ -2097,7 +1960,7 @@ function Amount_Of_Entries
    return Natural;
 
 
-18.8 Clearing and deleting entries
+16.8 Clearing and deleting entries
 
 There are two procedures available for clearing and deleting 
 entries, one for clearing all entries away, and one for deleting 
@@ -2124,7 +1987,7 @@ Using this one, you can delete all entries whose Id is Id. Note
 that the match must be exact, so case matters. FOO is not the 
 same as foo.
 
-18.9 Getting the Atom feed
+16.9 Getting the Atom feed
 
 When you've added titles, authors, categories, entries and 
 content to your feed, the next step is turning it into XML. This 
@@ -2174,14 +2037,14 @@ Get_XML_String and Get_XML_DOM both are pretty resource-hungry,
 so it's probably best to cache the results for later use, instead 
 of calling them on each and every hit.
 
-19 Yolk.Utilities
+17 Yolk.Utilities
 
 This package contains various support functionality or simple 
 renames of other subprograms, such as renaming the unyielding 
 To_Unbounded_String function to the more manageable TUS. Check 
 the yolk-utilities.ads source file for more information.
 
-20 Yolk.Whoops
+18 Yolk.Whoops
 
 This package contains one single procedure: 
 Unexpected_Exception_Handler. I suspect the name gives away 

@@ -24,7 +24,6 @@
 with AWS.Templates;
 with Database;
 with GNATCOLL.SQL;
-with GNATCOLL.SQL.Exec;
 
 package body View.DB_Test is
 
@@ -41,10 +40,9 @@ package body View.DB_Test is
       use GNATCOLL.SQL;
       use GNATCOLL.SQL.Exec;
 
-      Billy          : aliased String := "Billy";
-      DB_Conn        : constant Database_Connection := My_DB.Connection;
+      DB_Conn        : constant Database_Connection :=
+                         Get_Task_Connection (Description => DB_Description);
       FC             : Forward_Cursor;
-      Has_Tmp_Table  : Boolean := False;
 
       Query_Insert_Data : constant SQL_Query := SQL_Insert
         ((Tmp.Id = Integer_Param (1)) &
@@ -62,6 +60,9 @@ package body View.DB_Test is
       Prepared_Query_Select_Data : constant Prepared_Statement := Prepare
         (Query       => Query_Select_Data,
          On_Server   => True);
+
+      Billy          : aliased String := "Billy";
+      Has_Tmp_Table  : Boolean := False;
 
       Messages : Vector_Tag;
       T        : Translate_Set;
