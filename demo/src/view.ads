@@ -34,7 +34,6 @@ with GNATCOLL.SQL.Postgres;
 with My_Configuration;
 with Yolk.Cache.Discrete_Keys;
 with Yolk.Cache.String_Keys;
---  with Yolk.Connect_To_DB.PostgreSQL;
 
 package View is
 
@@ -52,16 +51,7 @@ package View is
                          Host          => My.Config.Get (My.DB_Host),
                          Password      => My.Config.Get (My.DB_Password),
                          SSL           => GNATCOLL.SQL.Postgres.Disable);
-
-   --     package My_DB is new Connect_To_DB.PostgreSQL
-   --       (DB_Credentials            => Connect_To_DB.Set_Credentials
-   --          (Host     => My.Config.Get (My.DB_Host),
---           Database => My.Config.Get (My.DB_Name),
---           User     => My.Config.Get (My.DB_User),
---           Password => My.Config.Get (My.DB_Password)),
---        Task_To_DB_Mapping_Method => Connect_To_DB.AWS_Tasks_To_DB);
-   --  Note the Tast_To_DB_Mapping_Method. One connection is maintained to the
-   --  database per AWS thread.
+   --  A GNATColl database description object.
 
    type Cache_Keys is (Feed_Data);
 
