@@ -493,7 +493,7 @@ package body Yolk.Syndication.Writer is
       Entr.Source := Source;
 
       if Clear_Entry_Source then
-         Entr.Source := Null_Atom_Entry_Source;
+         Source := Null_Atom_Entry_Source;
       end if;
    end Set_Entry_Source;
 
