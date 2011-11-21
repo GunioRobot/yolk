@@ -33,7 +33,6 @@ with GNATCOLL.SQL.Exec;
 with GNATCOLL.SQL.Postgres;
 with My_Configuration;
 with Yolk.Cache.Discrete_Keys;
-with Yolk.Cache.String_Keys;
 
 package View is
 
@@ -55,15 +54,12 @@ package View is
 
    type Cache_Keys is (Feed_Data);
 
-   package Cache1 is new Yolk.Cache.Discrete_Keys
+   package Cache is new Yolk.Cache.Discrete_Keys
      (Key_Type        => Cache_Keys,
       Element_Type    => Unbounded_String,
       Max_Element_Age => 10.0);
-
-   package Cache2 is new Yolk.Cache.String_Keys
-     (Element_Type      => Unbounded_String);
-   --  Some pages are expensive to build, so we cache them. Here we test both
-   --  the Discrete_Keys (Cache1) and the String_Keys (Cache2) caches.
+   --  Some pages are expensive to build, so we cache them. Here we test the
+   --  Discrete_Keys cache.
 
    function Build_Response
      (Status_Data    : in AWS.Status.Data;

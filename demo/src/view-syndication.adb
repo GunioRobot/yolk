@@ -38,8 +38,8 @@ package body View.Syndication is
 
    procedure Add_Entry_To_Feed
    is
-      Feed_Entry        : Atom_Entry        := New_Atom_Entry;
-      Feed_Entry_Source : Atom_Entry_Source := New_Atom_Entry_Source;
+      Feed_Entry : Atom_Entry                 := New_Atom_Entry;
+      Now        : constant Ada.Calendar.Time := Ada.Calendar.Clock;
    begin
       --  Populate the feed with an entry.
       Set_Title (Entr  => Feed_Entry,
@@ -56,25 +56,11 @@ package body View.Syndication is
       Set_Summary (Entr    => Feed_Entry,
                    Summary => "Hola!");
 
+      Set_Published (Entr           => Feed_Entry,
+                     Published_Time => Now);
+
       Set_Updated (Entr        => Feed_Entry,
-                   Update_Time => Ada.Calendar.Clock);
-
-      --  Build the entry source and add it to the entry.
-      Set_Title (Entry_Source => Feed_Entry_Source,
-                 Title        => "Entry Source Title");
-
-      Set_Id (Entry_Source => Feed_Entry_Source,
-              Id           => "http://example.org/entry/source/id");
-
-      Set_Updated (Entry_Source => Feed_Entry_Source,
-                   Update_Time  => Ada.Calendar.Clock);
-
-      Add_Author (Entry_Source => Feed_Entry_Source,
-                  Name         => "Entry Source Author");
-
-      Set_Entry_Source (Entr               => Feed_Entry,
-                        Source             => Feed_Entry_Source,
-                        Clear_Entry_Source => True);
+                   Update_Time => Now);
 
       --  Add the entry to the feed.
       Add_Entry (Feed        => Feed,
@@ -97,17 +83,20 @@ package body View.Syndication is
       Valid : Boolean := False;
       Value : Unbounded_String;
    begin
-      Cache1.Read (Key      => Feed_Data,
-                   Is_Valid => Valid,
-                   Value    => Value);
+      Cache.Read (Key      => Feed_Data,
+                  Is_Valid => Valid,
+                  Value    => Value);
 
       if not Valid then
          Add_Entry_To_Feed;
 
+         Set_Updated (Feed        => Feed,
+                      Update_Time => Ada.Calendar.Clock);
+
          Value := TUS (Get_XML_String (Feed => Feed));
 
-         Cache1.Write (Key   => Feed_Data,
-                       Value => Value);
+         Cache.Write (Key   => Feed_Data,
+                      Value => Value);
       end if;
 
       return Build_Response

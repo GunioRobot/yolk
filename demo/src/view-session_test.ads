@@ -2,9 +2,9 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               View.Index                                  --
+--                            View.Session_Test                              --
 --                                                                           --
---                                  BODY                                     --
+--                                  SPEC                                     --
 --                                                                           --
 --                   Copyright (C) 2010-2011, Thomas Løcke                   --
 --                                                                           --
@@ -21,48 +21,16 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Calendar;
-with AWS.Session;
+--  The /sessiontest resource.
 
-package body View.Index is
+with AWS.Response;
+with AWS.Status;
 
-   ---------------
-   --  Generate --
-   ---------------
+package View.Session_Test is
 
    function Generate
      (Request : in AWS.Status.Data)
-      return AWS.Response.Data
-   is
-      use Ada.Calendar;
-      use AWS.Session;
-      use AWS.Templates;
+      return AWS.Response.Data;
+   --  Generate the content for the /sessiontest resource.
 
-      Session_Id : Id;
-      T          : Translate_Set;
-   begin
-      if AWS.Status.Has_Session (Request) then
-         Insert (T, Assoc ("SESSION_ENABLED", True));
-
-         Session_Id := AWS.Status.Session (Request);
-
-         if Get (Session_Id, "counter") > 0 then
-            Insert (T, Assoc ("SESSION_COUNTER",
-              Natural'(Get (Session_Id, "counter"))));
-
-            Set (Session_Id, "counter", 0);
-         end if;
-      end if;
-
-      Insert (T, Assoc ("YOLK_VERSION", Version));
-      Insert (T, Assoc ("COPYRIGHT_YEAR", Year (Clock)));
-
-      return Build_Response
-        (Status_Data => Request,
-         Content     =>
-           Parse (Filename     => My.Config.Get (My.Template_Index),
-                  Translations => T,
-                  Cached       => True));
-   end Generate;
-
-end View.Index;
+end View.Session_Test;

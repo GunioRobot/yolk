@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                               View.Index                                  --
+--                            View.Session_Test                              --
 --                                                                           --
 --                                  BODY                                     --
 --                                                                           --
@@ -21,10 +21,10 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Calendar;
 with AWS.Session;
+with AWS.Templates;
 
-package body View.Index is
+package body View.Session_Test is
 
    ---------------
    --  Generate --
@@ -34,10 +34,10 @@ package body View.Index is
      (Request : in AWS.Status.Data)
       return AWS.Response.Data
    is
-      use Ada.Calendar;
       use AWS.Session;
       use AWS.Templates;
 
+      Counter    : Natural := 0;
       Session_Id : Id;
       T          : Translate_Set;
    begin
@@ -46,23 +46,19 @@ package body View.Index is
 
          Session_Id := AWS.Status.Session (Request);
 
-         if Get (Session_Id, "counter") > 0 then
-            Insert (T, Assoc ("SESSION_COUNTER",
-              Natural'(Get (Session_Id, "counter"))));
+         Insert (T, Assoc ("HAS_SESSION_ID", True));
+         Insert (T, Assoc ("SESSION_ID", Image (Session_Id)));
 
-            Set (Session_Id, "counter", 0);
-         end if;
+         Counter := Get (Session_Id, "counter");
+         Insert (T, Assoc ("SESSION_COUNTER", Counter));
+         Counter := Counter + 1;
+         Set (Session_Id, "counter", Counter);
       end if;
 
-      Insert (T, Assoc ("YOLK_VERSION", Version));
-      Insert (T, Assoc ("COPYRIGHT_YEAR", Year (Clock)));
-
       return Build_Response
-        (Status_Data => Request,
-         Content     =>
-           Parse (Filename     => My.Config.Get (My.Template_Index),
-                  Translations => T,
-                  Cached       => True));
+        (Status_Data   => Request,
+         Template_File => My.Config.Get (My.Template_Session_Test),
+         Translations  => T);
    end Generate;
 
-end View.Index;
+end View.Session_Test;

@@ -28,6 +28,7 @@ with View.Dir;
 with View.Email;
 with Yolk.Handlers;
 with View.Index;
+with View.Session_Test;
 with View.Syndication;
 with Yolk.Not_Found;
 
@@ -89,6 +90,11 @@ package body My_Handlers is
         (Dispatcher => RH,
          URI        => My.Config.Get (My.Handler_Index),
          Action     => Create (Callback => View.Index.Generate'Access));
+
+      AWS.Services.Dispatchers.URI.Register
+        (Dispatcher => RH,
+         URI        => My.Config.Get (My.Handler_Session_Test),
+         Action     => Create (Callback => View.Session_Test.Generate'Access));
 
       AWS.Services.Dispatchers.URI.Register
         (Dispatcher => RH,

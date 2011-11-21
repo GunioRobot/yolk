@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" type="text/css" href="/css/index.css"/>
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
+        <title>
+            Yolk Web Toolbox
+        </title>
+    </head>
+<body>
+    <h3>Session Test</h3>
+    @@IF@@ @_SESSION_ENABLED_@
+        <p>
+            Sessions are enabled on the server. If you refresh this page, you'll see the Test Counter move. If it does, you know
+            sessions are working properly.
+        </p>
+        @@IF@@ @_HAS_SESSION_ID_@
+            <p>
+                The session ID is: @_SESSION_ID_@
+            </p>
+            <p>
+                Test Counter: @_SESSION_COUNTER_@
+            </p>
+        @@ELSE@@
+            <p>
+                Session ID not recieved.
+            </p>
+        @@END_IF@@
+    @@ELSE@@
+        <p>
+            Sessions are disabled.
+        </p>
+    @@END_IF@@
+    <p>
+        Go back to the <a href="/">main page</a>.
+    </p>
+</body>
+</html>

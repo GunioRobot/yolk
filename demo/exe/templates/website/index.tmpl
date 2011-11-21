@@ -79,6 +79,20 @@
         <dd>
             To test the XML/XSL handlers <a href="/xml/test.xml">click here</a>.
         </dd>
+        <dt>Session test:</dt>
+        <dd>
+            @@IF@@ @_SESSION_ENABLED_@
+                @@IF@@ @_SESSION_COUNTER_@ > 0
+                    Sessions are enabled. You've previously visited the <a href="/sessiontest">/sessiontest</a> page and the 
+                    session Test Counter were at @_SESSION_COUNTER_@. The Test Counter has been reset to 0 again. On refresh, this
+                    message will disappear.
+                @@ELSE@@
+                    Sessions are enabled. Click <a href="/sessiontest">here</a> to test.
+                @@END_IF@@
+            @@ELSE@@
+                Sessions are disabled. To test sessions, please enable them in the configuration/config.ini file and restart the server.
+            @@END_IF@@
+        </dd>
     </dl>
     <p>
         If everything is functional, then you're ready to start using Yolk.

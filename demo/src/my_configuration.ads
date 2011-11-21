@@ -39,12 +39,14 @@ package My_Configuration is
                  Handler_Dir,
                  Handler_Email,
                  Handler_Index,
+                 Handler_Session_Test,
                  Handler_Syndication,
                  SMTP_Host,
                  SMTP_Port,
                  Template_DB_Test,
                  Template_Email,
-                 Template_Index);
+                 Template_Index,
+                 Template_Session_Test);
    --  The valid configuration keys.
 
    type Defaults_Array is array (Keys) of
@@ -67,6 +69,8 @@ package My_Configuration is
                        => TUS ("/email"),
                        Handler_Index
                        => TUS ("/"),
+                       Handler_Session_Test
+                       => TUS ("/sessiontest"),
                        Handler_Syndication
                        => TUS ("/syndication"),
                        SMTP_Host
@@ -78,7 +82,9 @@ package My_Configuration is
                        Template_Email
                        => TUS ("templates/website/email.tmpl"),
                        Template_Index
-                       => TUS ("templates/website/index.tmpl"));
+                       => TUS ("templates/website/index.tmpl"),
+                       Template_Session_Test
+                       => TUS ("templates/website/session_test.tmpl"));
    --  Default values for the configuration Keys. These values can be over-
    --  written by the configuration file given when instantiating the
    --  Yolk.Config_File_Parser generic.
