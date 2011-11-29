@@ -60,7 +60,7 @@ package body View.Dir is
                  (Directory_Name => Parent_Directory & Resource,
                   Request        => Request);
 
-               Insert (T, Assoc ("YOLK_VERSION", Version));
+               Insert (T, Assoc ("YOLK_VERSION", Yolk.Version));
 
                return Build_Response
                  (Status_Data   => Request,

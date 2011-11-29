@@ -54,7 +54,7 @@ package body View.Index is
          end if;
       end if;
 
-      Insert (T, Assoc ("YOLK_VERSION", Version));
+      Insert (T, Assoc ("YOLK_VERSION", Yolk.Version));
       Insert (T, Assoc ("COPYRIGHT_YEAR", Year (Clock)));
 
       return Build_Response
