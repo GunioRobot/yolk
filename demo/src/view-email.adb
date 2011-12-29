@@ -25,6 +25,7 @@ with Ada.Strings.Fixed;
 with AWS.Parameters;
 with AWS.Templates;
 with Yolk.Email.Composer;
+with Yolk.Log;
 
 package body View.Email is
 
@@ -37,6 +38,7 @@ package body View.Email is
       return AWS.Response.Data
    is
       use AWS.Templates;
+      use Yolk.Log;
 
       procedure Populate_Form
         (T             :    out Translate_Set;
@@ -97,9 +99,21 @@ package body View.Email is
                   Insert (T, Assoc ("IS_SEND", True));
                   Insert (T, Assoc ("SMTP_HOST",
                     String'(My.Config.Get (My.SMTP_Host))));
+
+                  Trace (Handle  => Info,
+                         Message => "Email sent to " &
+                         P_Recip_Address &
+                         " using " &
+                         String'(My.Config.Get (My.SMTP_Host)));
                else
                   Insert (T, Assoc ("IS_SEND", False));
                   --  Sending failed.
+
+                  Trace (Handle  => Error,
+                         Message => "Email failed to " &
+                         P_Recip_Address &
+                         " using " &
+                         String'(My.Config.Get (My.SMTP_Host)));
 
                   Populate_Form (T             => T,
                                  Recip_Name    => P_Recip_Name,

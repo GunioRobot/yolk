@@ -69,7 +69,7 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised October 26th.
+Revised December 7th.
  2011
 \end_layout
 
@@ -125,9 +125,10 @@ target "http://libre.adacore.com/libre/tools/gnat-component-collection/"
 \end_inset
 
 , but it does make the job of building complete web-applications a bit simpler.
- Things like changing user for the running application, accessing multiple
- databases, automatically cleaning up log files, adding basic static content
- handlers and building Atom syndication XML are all handled by Yolk.
+ Things like changing user for the running application, catching POSIX signals
+ such as SIGKILL, sending log data to syslogd, adding basic static content
+ handlers and building Atom syndication XML are all made a bit easier with
+ Yolk.
 \end_layout
 
 \begin_layout Standard
@@ -292,8 +293,8 @@ Yolk.Cache.Discrete_Keys
 \begin_layout Standard
 If a piece of data doesn't change very often and it is expensive to build,
  then caching it might be worthwhile.
- Instead of going to file/database on every hit, you simply go to the cache
- and grab the latest version from there.
+ Instead of going to a file or database on every hit, you simply go to the
+ cache and grab the latest version from there.
  This is 
 \series bold
 \emph on
@@ -720,7 +721,7 @@ False
 \emph on
 Value
 \emph default
- contains undefined garbage.
+ is undefined.
 \end_layout
 
 \begin_layout Subsection
@@ -729,7 +730,7 @@ Checking if a key is valid
 
 \begin_layout Standard
 If you need to check whether a specific key exists in the cache and is valid,
- then you need to use the 
+ then you must use the 
 \emph on
 Is_Valid
 \emph default
@@ -1056,8 +1057,7 @@ Reserved_Capacity
  should be set as close as possible to the expected final size of the cache.
  If your best guestimate is 200 elements in the cache, then set this to
  200.
- Note that this setting has no bearing has no bearing on the actual size
- of the cache.
+ Note that this setting has no bearing on the actual size of the cache.
  The cache will happily grow beyond the 
 \emph on
 Reserved_Capacity
@@ -1128,7 +1128,7 @@ And that is all.
 \emph on
 My_Cache
 \emph default
- object that can hold 200 objects of the type 
+ object that can hold objects of the type 
 \emph on
 Unbounded_String
 \emph default
@@ -1137,7 +1137,7 @@ Unbounded_String
 Max_Element_Age
 \emph default
  of 3600.0 seconds.
- 
+ Also we've told the cache to set aside at least 200 positions for content.
 \end_layout
 
 \begin_layout Subsection
@@ -1210,7 +1210,6 @@ end;
 \end_layout
 
 \begin_layout Standard
-That is all it takes: 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1550,10 +1549,6 @@ My_Cache.Clear;
 
 \end_layout
 
-\begin_layout Standard
-And that's all it takes.
-\end_layout
-
 \begin_layout Subsection
 How much is in there?
 \end_layout
@@ -1563,13 +1558,17 @@ With the
 \emph on
 Discrete_Keys
 \emph default
- cache we obviously always now the exact amount of keys available, since
+ cache we obviously always know the exact amount of keys available, since
  we've defined the keys ourselves.
  This is not the case with the 
 \emph on
 String_Keys
 \emph default
- cache, where any String can be a key.
+ cache, where any 
+\emph on
+String
+\emph default
+ can be a key.
  If we need to know how many elements that are currently in the cache, we
  call the 
 \emph on
@@ -1728,7 +1727,7 @@ Yolk.Config_File_Parser
 \end_layout
 
 \begin_layout Standard
-This package enable you to access KEY/VALUE pairs in configuration files
+This package enables you to access KEY/VALUE pairs in configuration files
  that are written in the style:
 \end_layout
 
@@ -1788,8 +1787,27 @@ some value with whitespace
 Get (KEY)
 \emph default
 .
- If VALUE is Boolean True or False (case-insensitive), then the KEY can
- be returned as a String or a Boolean, depending on the target type.
+ If VALUE is 
+\emph on
+Boolean
+\emph default
+ 
+\emph on
+True
+\emph default
+ or 
+\emph on
+False
+\emph default
+ (case-insensitive), then the KEY can be returned as a 
+\emph on
+String
+\emph default
+ or a 
+\emph on
+Boolean
+\emph default
+, depending on the target type.
  If the target type does not match the VALUE and no sensible conversion
  can be made, then a 
 \emph on
@@ -1889,7 +1907,11 @@ Config_File
 \emph default
  parameter has a default value.
  This path is actually where Yolk expects to find the configuration file
- used by the Yolk.Configuration package.
+ used by the 
+\emph on
+Yolk.Configuration
+\emph default
+ package.
 \end_layout
 
 \begin_layout Subsection
@@ -1943,7 +1965,11 @@ Conversion_Error
 \begin_inset Quotes erd
 \end_inset
 
- to a Boolean.
+ to a 
+\emph on
+Boolean
+\emph default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -2156,8 +2182,7 @@ My_Configuration.Config.Load_File ("new_config.ini");
 \end_layout
 
 \begin_layout Standard
-And that is all.
- Now the KEY/VALUE pairs of 
+Now the KEY/VALUE pairs of 
 \emph on
 new_config.ini
 \emph default
@@ -2236,37 +2261,60 @@ There are Get functions for the following types:
 \end_layout
 
 \begin_layout Itemize
+
+\emph on
 Boolean
 \end_layout
 
 \begin_layout Itemize
+
+\emph on
 Duration
 \end_layout
 
 \begin_layout Itemize
+
+\emph on
 Float
 \end_layout
 
 \begin_layout Itemize
+
+\emph on
 Integer
 \end_layout
 
 \begin_layout Itemize
+
+\emph on
 String
 \end_layout
 
 \begin_layout Itemize
+
+\emph on
 Unbounded_String
 \end_layout
 
 \begin_layout Standard
-Empty keys simply return an empty String or a 
+Empty keys simply return an empty 
+\emph on
+String
+\emph default
+ or a 
 \emph on
 Null_Unbounded_String
 \emph default
 , depending on the target type.
- If a key is empty and the target type is not a String or an Unbounded_String,
- then the 
+ If a key is empty and the target type is not a 
+\emph on
+String
+\emph default
+ or an 
+\emph on
+Unbounded_String
+\emph default
+, then the 
 \emph on
 Conversion_Error
 \emph default
@@ -2331,8 +2379,15 @@ end if;
 \end_layout
 
 \begin_layout Standard
-Basically all this function does is return Boolean True if the value of
- the given key is not a 
+Basically all this function does is return 
+\emph on
+Boolean
+\emph default
+ 
+\emph on
+True
+\emph default
+ if the value of the given key is not a 
 \emph on
 Null_Unbounded_String
 \emph default
@@ -2349,8 +2404,8 @@ This package is a bit of an oddball, as all it does is instantiate the
 Yolk.Config_File_Parser
 \emph default
  generic with the default AWS and Yolk configuration values.
- This is used by Yolk internally, but also possibly by the AWS component
- of your application.
+ This is used by Yolk internally, but also by the AWS component of your
+ application.
  The instantiation looks like this:
 \end_layout
 
@@ -2461,7 +2516,7 @@ Yolk.Configuration
 \emph on
 Get_AWS_Configuration
 \emph default
- function, like this:
+ function:
 \end_layout
 
 \begin_layout Standard
@@ -2767,8 +2822,11 @@ US_ASCII
 \emph on
 Name
 \emph default
- had contained an ISO-8859-1 encoded String, then the call would've looked
- like this:
+ had contained an ISO-8859-1 encoded 
+\emph on
+String
+\emph default
+, then the call would've looked like this:
 \end_layout
 
 \begin_layout Standard
@@ -2827,12 +2885,12 @@ begin
 
 \begin_layout Plain Layout
 
-      Address   => "thomas@12boo.net",
+      Address   => "alice@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-      Name      => "Thomas Løcke",
+      Name      => "Alice",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2860,12 +2918,12 @@ In this case you will end up with a From header looking like this:
 \end_layout
 
 \begin_layout LyX-Code
-From: =?ISO-8859-1?Q?Thomas_L=F8cke?= <thomas@12boo.net>
+From: =?ISO-8859-1?Q?Alice?= <alice@domain.tld>
 \end_layout
 
 \begin_layout Standard
-So bear in mind that it is your responsibility to encode that data as you
- need, and then set the 
+So bear in mind that it is your responsibility to encode your data, and
+ then set the 
 \emph on
 Character_Set
 \emph default
@@ -2882,14 +2940,20 @@ Recipient_Kind
 \end_layout
 
 \begin_layout Enumerate
+
+\emph on
 Bcc
 \end_layout
 
 \begin_layout Enumerate
+
+\emph on
 Cc
 \end_layout
 
 \begin_layout Enumerate
+
+\emph on
 To
 \end_layout
 
@@ -2898,8 +2962,20 @@ When adding recipients to an email
 \emph on
 Structure
 \emph default
- the default is To, but since not all recipients are equal, you have the
- 
+ the default is 
+\emph on
+To
+\emph default
+, but since not all recipients are equal, you can change the kind of recipient
+ to 
+\emph on
+Bcc
+\emph default
+ or 
+\emph on
+Cc
+\emph default
+, according to your needs.
 \end_layout
 
 \begin_layout Standard
@@ -2950,7 +3026,7 @@ Yolk.Email.Composer
 \emph on
 Send
 \emph default
- and they both look like this:
+ and they look like this:
 \end_layout
 
 \begin_layout Standard
@@ -3164,22 +3240,22 @@ begin
 
 \begin_layout Plain Layout
 
-                  From_Address => "thomas@12boo.net",
+                  From_Address => "alice@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-                  From_Name    => "Thomas Løcke",
+                  From_Name    => "Alice",
 \end_layout
 
 \begin_layout Plain Layout
 
-                  To_Address   => "tl@ada-dk.org",
+                  To_Address   => "bob@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-                  To_Name      => "Me",
+                  To_Name      => "Bob",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3244,7 +3320,7 @@ end;
 
 \begin_layout Standard
 It is possible, and allowed, to call some of the various other procedures
- prior to calling one of these.
+ prior to calling one of convenience procedures.
  If for example you want to add a custom header, it can be done like this:
 \end_layout
 
@@ -3318,22 +3394,22 @@ begin
 
 \begin_layout Plain Layout
 
-                  From_Address => "thomas@12boo.net",
+                  From_Address => "alice@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-                  From_Name    => "Thomas Løcke",
+                  From_Name    => "Alice",
 \end_layout
 
 \begin_layout Plain Layout
 
-                  To_Address   => "tl@ada-dk.org",
+                  To_Address   => "bob@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-                  To_Name      => "Me",
+                  To_Name      => "Bob",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3478,17 +3554,17 @@ begin
 
 \begin_layout Plain Layout
 
-   Composer.Add_Custom_Header (ES      => Email,
+   Composer.Add_Custom_Header (ES    => Email,
 \end_layout
 
 \begin_layout Plain Layout
 
-                               Name    => "User-Agent",
+                               Name  => "User-Agent",
 \end_layout
 
 \begin_layout Plain Layout
 
-                               Value   => "My User Agent");
+                               Value => "My User Agent");
 \end_layout
 
 \begin_layout Plain Layout
@@ -3502,12 +3578,12 @@ begin
 
 \begin_layout Plain Layout
 
-                      Address => "thomas@12boo.net",
+                      Address => "alice@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-                      Name    => "Thomas Løcke",
+                      Name    => "Alice",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3526,12 +3602,12 @@ begin
 
 \begin_layout Plain Layout
 
-                           Address => "tl@ada-dk.org",
+                           Address => "bob@domain.tld",
 \end_layout
 
 \begin_layout Plain Layout
 
-                           Name    => "Me");
+                           Name    => "Bob");
 \end_layout
 
 \begin_layout Plain Layout
@@ -3555,7 +3631,7 @@ begin
 
 \begin_layout Plain Layout
 
-   Composer.Set_Text_Part (ES => Email,
+   Composer.Set_Text_Part (ES   => Email,
 \end_layout
 
 \begin_layout Plain Layout
@@ -3641,8 +3717,8 @@ Yolk.Handlers
 \end_layout
 
 \begin_layout Standard
-Most web applications will need to handle various static content, such as
- PNG, HTML and CSS files.
+Most web applications will need to handle static content, such as PNG, HTML
+ and CSS files.
  
 \emph on
 Yolk.Handlers
@@ -3704,12 +3780,12 @@ The filetypes that are textual, are compressed according to the
 \emph on
 Yolk.Configuration
 \emph default
- setting 
+ parameter 
 \emph on
 Compress_Static_Content
 \emph default
- parameter, and the various regular expressions for identifying these filetypes
- are also defined in 
+, and the various regular expressions for identifying these filetypes are
+ also defined in 
 \emph on
 Yolk.Configuration
 \emph default
@@ -3787,19 +3863,72 @@ Yolk.Static_Content
 \end_layout
 
 \begin_layout Section
-Yolk.Log_File_Cleanup
+Yolk.Log
 \end_layout
 
 \begin_layout Standard
-House-keeping is a very important task, and when dealing with HTTP servers,
- one of those tasks involve keeping an eye on the ever growing amount of
- access and error log files.
- To help automate this task we have the 
+This package serves two purposes:
+\end_layout
+
+\begin_layout Enumerate
+It contains the two callback procedures used to write AWS logging data (access
+ and error) to syslogd.
+\end_layout
+
+\begin_layout Enumerate
+It creates the SQL, Error and Info trace handles, and activates them according
+ to the values defined in the configuration file.
+\end_layout
+
+\begin_layout Standard
+Out of the box, a Yolk application requires a running syslogd daemon, as
+ all log data is sent to syslogd.
+ If for some reason you don't want to use syslogd, you're going to have
+ to hack the 
 \emph on
-Yolk.Log_File_Cleanup
+Yolk.Log
 \emph default
- package.
- This package contains one procedure:
+ package, or remove it entirely.
+\end_layout
+
+\begin_layout Standard
+The two procedures named 
+\emph on
+AWS_*
+\emph default
+ are used by the AWS HTTP(S) server.
+ These should not be used for anything else - or rather: If you use them
+ for anything else, the 
+\emph on
+Message
+\emph default
+ given is going to be written to syslogd with either the AWS access log
+ label or AWS error log label.
+ There's absolutely no harm in this, except it might be a bit confusing
+ when reading the log data.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Trace
+\emph default
+ procedure is the one that you will be using in your application.
+ You can send log data to the trace handles defined in 
+\emph on
+Yolk.Log.Trace_Handles
+\emph default
+.
+ All log data is then sent to the syslogd daemon using the facilities set
+ in the configuration file for the given trace handle.
+\end_layout
+
+\begin_layout Standard
+Using 
+\emph on
+Trace
+\emph default
+ is about as easy as it gets:
 \end_layout
 
 \begin_layout Standard
@@ -3824,22 +3953,12 @@ status open
 
 \begin_layout Plain Layout
 
-procedure Delete      
+Yolk.Log.Trace (Handle  => Error,
 \end_layout
 
 \begin_layout Plain Layout
 
-  (Config_Object           : in AWS.Config.Object;       
-\end_layout
-
-\begin_layout Plain Layout
-
-   Web_Server              : in AWS.Server.HTTP;
-\end_layout
-
-\begin_layout Plain Layout
-
-   Amount_Of_Files_To_Keep : in Positive);
+                Message => "Secret sauce to Error!");
 \end_layout
 
 \end_inset
@@ -3853,53 +3972,16 @@ procedure Delete
 \end_layout
 
 \begin_layout Standard
-Whenever the 
+If you haven't activated a trace handle, then calling 
 \emph on
-Delete
+Trace
 \emph default
- procedure is called, the directory where AWS keeps its log files is traversed
- and if more log files than 
+ for that handle does nothing, ie.
+ you don't have to remove all your 
 \emph on
-Amount_Of_Files_To_Keep
+Trace
 \emph default
- is found, then the oldest of these are deleted until the amount equals
- 
-\emph on
-Amount_Of_Files_To_Keep
-\emph default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Note that 
-\emph on
-Yolk.Log_File_Cleanup
-\emph default
- only deals with the AWS acces and error log files.
- In the demo file 
-\emph on
-demo/src/yolk_demo.adb
-\emph default
- there's an example on how to call this procedure using a task that wakes
- up according to the configuration setting 
-\emph on
-Log_File_Cleanup_Interval
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Be sure to read the 
-\emph on
-Logging - Rotating And Regular
-\emph default
- section in the 
-\emph on
-demo/exe/configuration/config.ini
-\emph default
- file for more information on the configuration parameters that affect this
- system.
+ calls from the code if you don't use them.
 \end_layout
 
 \begin_layout Section
@@ -4464,281 +4546,6 @@ Yolk.Configuration.Yolk_User
 \end_layout
 
 \begin_layout Section
-Yolk.Rotating_Log
-\end_layout
-
-\begin_layout Standard
-This package provides the ability to write log data to three predefined
- log traces:
-\end_layout
-
-\begin_layout Enumerate
-Error
-\end_layout
-
-\begin_layout Enumerate
-Info
-\end_layout
-
-\begin_layout Enumerate
-SQL
-\end_layout
-
-\begin_layout Standard
-These traces correspond with the components of the 
-\emph on
-Yolk.Rotating_Log.Trace_Handles
-\emph default
- enumeration type.
- Data written to one of these traces are written to files and these files
- are automatically rotated when they reach a specified size.
- The rotation happens according to a 
-\begin_inset Quotes eld
-\end_inset
-
-slot
-\begin_inset Quotes erd
-\end_inset
-
- system, so you don't have to worry about cleaning away old log files on
- a regular basis.
- The slot system works by appending a slot number to each log file, so if
- you set the configuration parameter 
-\emph on
-Max_Slot_Count
-\emph default
- to 3, then when starting the rotating log system you'll get a file named
- 
-\emph on
-Foo-rotating-INFO-1.log
-\emph default
- for the 
-\emph on
-Info
-\emph default
- trace (if your application is named Foo) and when that file reaches the
- 
-\emph on
-Rotating_Log_Size_Limit
-\emph default
- it is rotated to 
-\emph on
-Foo-rotating-INFO-2.log
-\emph default
- and so on and so forth.
- When the last slot rotates, it starts all over with 1.
-\end_layout
-
-\begin_layout Standard
-This system has the obvious advantage of never growing beyond a known limited
- size.
- On the other hand it has the disadvantage of not being very good at keeping
- old log data readily at hand, as everything is going to get overwritten
- sooner or later.
-\end_layout
-
-\begin_layout Standard
-For more information, take a look at the 
-\emph on
-Logging - Rotating And Regular
-\emph default
- section of the 
-\emph on
-demo/exe/configuration/config.ini
-\emph default
- file.
-\end_layout
-
-\begin_layout Standard
-Note that this package handles all log data generated by the 
-\emph on
-GNATCOLL.SQL
-\emph default
- packages.
- See the 
-\emph on
-demo/exe/configuration/config.ini
-\emph default
- for how to enable/disable the different levels of SQL related log data.
-\end_layout
-
-\begin_layout Subsection
-Exceptions
-\end_layout
-
-\begin_layout Standard
-These are:
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-Cannot_Create_Log_File
-\emph default
-.
- Is raised when it's not possible to create one of the rotating log files.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-Cannot_Write_To_Log_File
-\emph default
-.
- Is raised when it's not possible to write to one of the rotating log files.
-\end_layout
-
-\begin_layout Subsection
-Starting the rotating log files
-\end_layout
-
-\begin_layout Standard
-It's not enough to simply 
-\emph on
-with
-\emph default
- the package, you have to start the rotating log system before you can actually
- use it.
- This is done with the aptly named 
-\emph on
-Start_Rotating_Logs
-\emph default
- procedure:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-procedure Start_Rotating_Logs
-\end_layout
-
-\begin_layout Plain Layout
-
-  (Emit_Warning_If_Already_Running : Boolean := True);
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Setting the 
-\emph on
-Emit_Warning_If_Already_Running
-\emph default
- to 
-\emph on
-False
-\emph default
- will make sure that a second call to 
-\emph on
-Start_Rotating_Logs
-\emph default
- won't emit a warning message on the 
-\emph on
-Info
-\emph default
- trace.
-\end_layout
-
-\begin_layout Subsection
-Writing log data
-\end_layout
-
-\begin_layout Standard
-With the rotating log system started, writing data to it is a simple matter
- of calling the 
-\emph on
-Trace
-\emph default
- procedure.
- It looks like this:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\begin_inset listings
-lstparams "basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em"
-inline false
-status open
-
-\begin_layout Plain Layout
-
-procedure Trace      
-\end_layout
-
-\begin_layout Plain Layout
-
-  (Handle     : in Trace_Handles;       
-\end_layout
-
-\begin_layout Plain Layout
-
-   Log_String : in String);
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It should be obvious how this procedure is used.
- Note that the configuration setting 
-\emph on
-Immediate_Flush
-\emph default
- controls whether or not the 
-\emph on
-Log_String
-\emph default
- is written to file immediately or if a buffer is used.
-\end_layout
-
-\begin_layout Section
 Yolk.Static_Content
 \end_layout
 
@@ -4936,7 +4743,11 @@ Log_To_Info_Trace
 False
 \emph default
  then no information about the deletion and creation of the compressed cache
- directory is logged to the rotating log Info trace.
+ directory is logged to the 
+\emph on
+Yolk.Log.Info
+\emph default
+ trace.
 \end_layout
 
 \begin_layout Standard
@@ -5001,7 +4812,7 @@ You must call
 \emph on
 Static_Content_Cache_Setup
 \emph default
- prior to starting the HTTP(S) server, if you plan on using the 
+ prior to starting the HTTP server, if you plan on using the 
 \emph on
 Yolk.Static_Content
 \emph default
@@ -5109,15 +4920,7 @@ declare
 
 \begin_layout Plain Layout
 
-\end_layout
-
-\begin_layout Plain Layout
-
    package SC renames Yolk.Static_Content;
-\end_layout
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \begin_layout Plain Layout
@@ -5127,15 +4930,7 @@ declare
 
 \begin_layout Plain Layout
 
-\end_layout
-
-\begin_layout Plain Layout
-
 begin
-\end_layout
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \begin_layout Plain Layout
@@ -5184,10 +4979,6 @@ begin
 \begin_layout Plain Layout
 
       Action      => Create (Callback => SC.Compressable'Access));
-\end_layout
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \begin_layout Plain Layout
@@ -5500,7 +5291,7 @@ And that's it.
  Either the resource is there, or it isn't.
  If the requested resource is 
 \emph on
-/css/index.css
+/images/foo.png
 \emph default
 , then the 
 \emph on
@@ -5531,7 +5322,7 @@ status open
 
 \begin_layout Plain Layout
 
-WWW_Root & "/css/index.ss";
+WWW_Root & "/images/foo.png";
 \end_layout
 
 \end_inset
@@ -5553,7 +5344,7 @@ WWW_Root
 \end_layout
 
 \begin_layout LyX-Code
-static_content/css/index.css
+static_content/images/foo.png
 \end_layout
 
 \begin_layout Standard
@@ -5658,7 +5449,7 @@ Yolk.Syndication
 Yolk.Syndication.Writer
 \emph default
  - Here the functions and procedures for actually creating an Atom feed
- is are defined.
+ are defined.
 \end_layout
 
 \begin_layout Standard
@@ -5684,7 +5475,7 @@ Not_Valid_XML
 \emph default
 .
  Is raised when some Xhtml content is not valid XML.
- This exception can be raised by all procedures that can take Xhtml as content.
+ This exception can be raised by all procedures that takes Xhtml as content.
 \end_layout
 
 \begin_layout Subsection
@@ -5808,7 +5599,7 @@ Self
 \emph on
 Self
 \emph default
- relation.
+ relation pointing to itself.
 \end_layout
 
 \begin_layout Itemize
@@ -6062,7 +5853,7 @@ Yolk.Syndication.New_Atom_Entry
 \end_layout
 
 \begin_layout Standard
-This function initialize and 
+This function initialize an 
 \emph on
 Atom_Entry
 \emph default
@@ -6147,7 +5938,7 @@ Yolk.Syndication.New_Atom_Entry_Source
 \end_layout
 
 \begin_layout Standard
-This function initialize and 
+This function initialize an 
 \emph on
 Atom_Entry_Source
 \emph default
@@ -6531,7 +6322,7 @@ Set_
 \emph on
 Set_Title
 \emph default
- create a 
+ creates a 
 \emph on
 <title>Foo</title>
 \emph default
@@ -6556,8 +6347,7 @@ ry source.
 
 \begin_layout Standard
 Most of the subprograms in this package deals directly with building the
- Atom XML, but there are a few exceptions.
- We'll go over these now.
+ Atom XML, but there are a few exceptions, as you will see next.
 \end_layout
 
 \begin_layout Subsection
@@ -6914,7 +6704,7 @@ Unexpected_Exception_Handler
 \emph default
 .
  I suspect the name gives away exactly what this procedure does.
- It looks like this:'
+ It looks like this:
 \end_layout
 
 \begin_layout Standard
@@ -6984,11 +6774,15 @@ Unexpected_Reception_Handler
 \end_layout
 
 \begin_layout Enumerate
-The exception is logged to the rotating log system in the 
+The exception is logged to the 
 \emph on
-Error
+Yolk.Log
 \emph default
- trace.
+.
+\emph on
+Error 
+\emph default
+trace.
 \end_layout
 
 \begin_layout Enumerate

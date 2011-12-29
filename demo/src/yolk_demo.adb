@@ -33,10 +33,9 @@ with AWS.Services.Dispatchers.URI;
 with AWS.Session;
 with My_Handlers;
 with Yolk.Configuration;
-with Yolk.Log_File_Cleanup;
+with Yolk.Log;
 with Yolk.Process_Control;
 with Yolk.Process_Owner;
-with Yolk.Rotating_Log;
 with Yolk.Static_Content;
 with Yolk.Utilities;
 with Yolk.Whoops;
@@ -46,9 +45,9 @@ procedure Yolk_Demo is
    use Ada.Exceptions;
    use My_Handlers;
    use Yolk.Configuration;
+   use Yolk.Log;
    use Yolk.Process_Control;
    use Yolk.Process_Owner;
-   use Yolk.Rotating_Log;
    use Yolk.Static_Content;
    use Yolk.Utilities;
 
@@ -66,21 +65,13 @@ procedure Yolk_Demo is
    --    Used by AWS: Yes
    --  Default values are set in the Yolk.Configuration package.
 
-   task Log_File_Monitor is
-      entry Start;
-      entry Stop;
-   end Log_File_Monitor;
-   --  This task monitors the Log_File_Directory and deletes excess/old AWS
-   --  access and error log files using the Yolk.Log_File_Cleanup.Delete
-   --  procedure.
-
    --------------------
    --  Start_Server  --
    --------------------
 
    procedure Start_Server;
-   --  Start the AWS server. A short message is written to the rotating Info
-   --  log track whenever the server is started.
+   --  Start the AWS server. A short message is written to the Info log trace
+   --  whenever the server is started.
 
    procedure Start_Server
    is
@@ -102,18 +93,26 @@ procedure Yolk_Demo is
       --  Log_File_Directory directory, but instead they are created in the
       --  directory where the executable is.
 
-      if Config.Get (Enable_Access_Log) then
-         AWS.Server.Log.Start (Web_Server => Web_Server,
-                               Auto_Flush => Config.Get (Immediate_Flush));
+      if Config.Get (Activate_AWS_Access_Log) then
+         AWS.Server.Log.Start
+           (Web_Server => Web_Server,
+            Callback   => Yolk.Log.AWS_Access_Log_Writer'Access,
+            Name       => "AWS Access Log");
       end if;
-      AWS.Server.Log.Start_Error (Web_Server);
-      --  Start the access and error logs.
 
-      Trace (Handle     => Info,
-             Log_String => "Started " &
+      if Config.Get (Activate_AWS_Error_Log) then
+         AWS.Server.Log.Start_Error
+           (Web_Server => Web_Server,
+            Callback   => Yolk.Log.AWS_Error_Log_Writer'Access,
+            Name       => "AWS Error Log");
+         --  Start the access and error logs.
+      end if;
+
+      Trace (Handle  => Info,
+             Message => "Started " &
              AWS.Config.Server_Name (Web_Server_Config));
-      Trace (Handle     => Info,
-             Log_String => "Yolk version " & Yolk.Version);
+      Trace (Handle  => Info,
+             Message => "Yolk version " & Yolk.Version);
    end Start_Server;
 
    -------------------
@@ -121,8 +120,8 @@ procedure Yolk_Demo is
    -------------------
 
    procedure Stop_Server;
-   --  Stop the AWS server. A short message is written to the rotating Info log
-   --  track whenever the server is stopped.
+   --  Stop the AWS server. A short message is written to the Info log trace
+   --  whenever the server is stopped.
 
    procedure Stop_Server
    is
@@ -138,72 +137,18 @@ procedure Yolk_Demo is
       if AWS.Server.Log.Is_Active (Web_Server) then
          AWS.Server.Log.Stop (Web_Server);
       end if;
-      AWS.Server.Log.Stop_Error (Web_Server);
 
-      Trace (Handle     => Info,
-             Log_String => "Stopped " &
+      if AWS.Server.Log.Is_Error_Active (Web_Server) then
+         AWS.Server.Log.Stop_Error (Web_Server);
+      end if;
+
+      Trace (Handle  => Info,
+             Message => "Stopped " &
              AWS.Config.Server_Name (Web_Server_Config));
    end Stop_Server;
-
-   ----------------------
-   -- Log_File_Monitor --
-   ----------------------
-
-   task body Log_File_Monitor
-   is
-      use AWS.Config;
-      use Yolk.Log_File_Cleanup;
-
-      Exit_Loop      : Boolean := False;
-      Files_To_Keep  : constant Positive :=
-                         Config.Get (Amount_Of_Log_Files_To_Keep);
-      --  How many log files to keep. If more than this amount is found, then
-      --  the oldest are deleted.
-      Good_To_Go     : Boolean := False;
-      Interval       : constant Duration :=
-                         Config.Get (Log_File_Cleanup_Interval);
-      --  How often do we check for excess/old logfiles?
-   begin
-      loop
-         exit when Exit_Loop;
-
-         select
-            accept Start do
-               Good_To_Go := True;
-
-               Trace (Handle     => Info,
-                      Log_String => "Logfile monitor started.");
-
-               Delete (Config_Object             => Web_Server_Config,
-                       Web_Server                => Web_Server,
-                       Amount_Of_Files_To_Keep   => Files_To_Keep);
-               --  Do an initial clean-up.
-            end Start;
-         or
-            accept Stop do
-               Exit_Loop := True;
-
-               Trace (Handle     => Info,
-                      Log_String => "Logfile monitor stopped.");
-            end Stop;
-         or
-            delay Interval;
-
-            if Good_To_Go then
-               Delete (Config_Object             => Web_Server_Config,
-                       Web_Server                => Web_Server,
-                       Amount_Of_Files_To_Keep   => Files_To_Keep);
-            end if;
-         end select;
-      end loop;
-   end Log_File_Monitor;
 begin
    Set_User (Username => Config.Get (Yolk_User));
    --  Switch user.
-
-   Start_Rotating_Logs;
-   --  Fire up the rotating log system. Calls to Yolk.Rotating_Log.Trace up
-   --  until this point are silently ignored.
 
    Static_Content_Cache_Setup;
    --  Set the Cache-Control header options for the static content.
@@ -212,18 +157,17 @@ begin
 
    for Key in Keys'Range loop
       if TS (Default_Values (Key)) /= TS (Config.Get (Key)) then
-         Trace (Handle     => Info,
-                Log_String => "Configuration key " &
+         Trace (Handle  => Info,
+                Message => "Configuration key " &
                 Keys'Image (Key) & " is not default value.");
-         Trace (Handle     => Info,
-                Log_String => "    Default is: " & TS (Default_Values (Key)));
-         Trace (Handle     => Info,
-                Log_String => "    Set value is: " & TS (Config.Get (Key)));
+         Trace (Handle  => Info,
+                Message => "    Default is: " & TS (Default_Values (Key)));
+         Trace (Handle  => Info,
+                Message => "    Set value is: " & TS (Config.Get (Key)));
       end if;
    end loop;
    --  Check for configuration settings where the setting differ from the
-   --  default value, and notify the user of these on the rotating Info log
-   --  track.
+   --  default value, and notify the user of these on the Info log trace.
 
    AWS.MIME.Load (MIME_File => Config.Get (MIME_Types));
    --  Load the MIME type file. We need to do this here, because the AWS.MIME
@@ -233,9 +177,6 @@ begin
 
    Set (RH => Resource_Handlers);
    --  Populate the Resource_Handlers object.
-
-   Log_File_Monitor.Start;
-   --  Start the logfile monitor.
 
    AWS.Server.Set_Unexpected_Exception_Handler
      (Web_Server => Web_Server,
@@ -247,12 +188,12 @@ begin
    Start_Server;
    --  Start the server.
 
-   Trace (Handle     => Info,
-          Log_String => "Starting " &
+   Trace (Handle  => Info,
+          Message => "Starting " &
           AWS.Config.Server_Name (Web_Server_Config) &
           ". Listening on port" &
           AWS.Config.Server_Port (Web_Server_Config)'Img);
-   --  We're alive! Log this fact to the Info track.
+   --  We're alive! Log this fact to the Info trace.
 
    Wait;
    --  This is the main "loop". We will wait here as long as the
@@ -262,17 +203,11 @@ begin
    --  Shutdown requested in Yolk.Process_Control.Controller, so we will
    --  attempt to shutdown the server.
 
-   Log_File_Monitor.Stop;
-   --  Stop the logfile monitor.
-
 exception
    when Event : others =>
-      Start_Rotating_Logs (Emit_Warning_If_Already_Running => False);
-      Trace (Handle     => Error,
-             Log_String => Exception_Information (Event));
+      Trace (Handle  => Error,
+             Message => Exception_Information (Event));
       --  Write the exception information to the rotating Error log trace.
       Stop_Server;
-      Log_File_Monitor.Stop;
-      --  First stop the server, then stop the log file monitor task.
 
 end Yolk_Demo;

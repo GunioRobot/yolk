@@ -28,7 +28,7 @@ with AWS.MIME;
 with ZLib;
 with Yolk.Configuration;
 with Yolk.Not_Found;
-with Yolk.Rotating_Log;
+with Yolk.Log;
 
 package body Yolk.Static_Content is
 
@@ -68,15 +68,15 @@ package body Yolk.Static_Content is
       use Ada.Directories;
       use AWS.Messages;
       use AWS.Status;
-      use Yolk.Rotating_Log;
       use Yolk.Configuration;
+      use Yolk.Log;
 
       GZ_Resource : constant String :=
                       Config.Get (Compressed_Cache_Directory)
                       & URI (Request) & ".gz";
       --  The path to the GZipped resource.
 
-      Resource : constant String := Config.Get (WWW_Root) & URI (Request);
+      Resource    : constant String := Config.Get (WWW_Root) & URI (Request);
       --  The path to the requested resource.
 
       MIME_Type         : constant String := AWS.MIME.Content_Type (Resource);
@@ -106,11 +106,11 @@ package body Yolk.Static_Content is
          elsif Exists (GZ_Resource)
            and then Kind (GZ_Resource) /= Ordinary_File
          then
-            --  Not so good. Log to ERROR track and return un-compressed
+            --  Not so good. Log to ERROR trace and return un-compressed
             --  content.
             Trace
-              (Handle     => Error,
-               Log_String => GZ_Resource
+              (Handle  => Error,
+               Message => GZ_Resource
                & " exists and is not an ordinary file");
 
             return AWS.Response.File
@@ -267,8 +267,8 @@ package body Yolk.Static_Content is
         (Log_It : in Boolean := True)
       is
          use Ada.Directories;
-         use Yolk.Rotating_Log;
          use Yolk.Configuration;
+         use Yolk.Log;
       begin
          if Exists (Config.Get (Compressed_Cache_Directory))
            and then Kind (Config.Get (Compressed_Cache_Directory)) = Directory
@@ -276,9 +276,10 @@ package body Yolk.Static_Content is
             Delete_Tree (Directory => Config.Get (Compressed_Cache_Directory));
 
             if Log_It then
+               null;
                Trace
-                 (Handle     => Info,
-                  Log_String => Config.Get (Compressed_Cache_Directory)
+                 (Handle  => Info,
+                  Message => Config.Get (Compressed_Cache_Directory)
                   & " deleted by Yolk.Static_Content.Initialize");
             end if;
          end if;
@@ -287,9 +288,10 @@ package body Yolk.Static_Content is
            (New_Directory => Config.Get (Compressed_Cache_Directory));
 
          if Log_It then
+            null;
             Trace
-              (Handle     => Info,
-               Log_String => Config.Get (Compressed_Cache_Directory)
+              (Handle  => Info,
+               Message => Config.Get (Compressed_Cache_Directory)
                & " created by Yolk.Static_Content.Initialize");
          end if;
       end Initialize;

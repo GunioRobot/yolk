@@ -34,7 +34,7 @@
 \title{Yolk Manual}
 
 
-\date{Revised October 26th. 2011}
+\date{Revised December 7th. 2011}
 
 \maketitle
 \newpage{}
@@ -54,10 +54,10 @@ using Ada. Yolk itself doesn't do a whole lot that can't be accomplished
 simply by using \href{http://libre.adacore.com/libre/tools/aws/}{AWS}
 and the \href{http://libre.adacore.com/libre/tools/gnat-component-collection/}{GNAT Component Collection (GNATcoll)},
 but it does make the job of building complete web-applications a bit
-simpler. Things like changing user for the running application, accessing
-multiple databases, automatically cleaning up log files, adding basic
-static content handlers and building Atom syndication XML are all
-handled by Yolk.
+simpler. Things like changing user for the running application, catching
+POSIX signals such as SIGKILL, sending log data to syslogd, adding
+basic static content handlers and building Atom syndication XML are
+all made a bit easier with Yolk.
 
 A Yolk application is in reality an AWS application, with some sugar
 added, so you're not really building a Yolk web-application, as much
@@ -144,10 +144,10 @@ to most applications.
 \section{Yolk.Cache.Discrete\_Keys}
 
 If a piece of data doesn't change very often and it is expensive to
-build, then caching it might be worthwhile. Instead of going to file/database
-on every hit, you simply go to the cache and grab the latest version
-from there. This is \textbf{\emph{very}} fast, at the cost of some
-memory.
+build, then caching it might be worthwhile. Instead of going to a
+file or database on every hit, you simply go to the cache and grab
+the latest version from there. This is \textbf{\emph{very}} fast,
+at the cost of some memory.
 
 If you know exactly what you want to cache, the \emph{Yolk.Cache.Discrete\_Keys}
 package might be just what you need.
@@ -249,14 +249,13 @@ is true), it must:
 \item have been added to the cache in the first place
 \item be younger than \emph{Max\_Element\_Age}
 \end{enumerate}
-If \emph{Is\_Valid} is \emph{False}, then \emph{Value} contains undefined
-garbage.
+If \emph{Is\_Valid} is \emph{False}, then \emph{Value} is undefined.
 
 
 \subsection{Checking if a key is valid}
 
 If you need to check whether a specific key exists in the cache and
-is valid, then you need to use the \emph{Is\_Valid} function.
+is valid, then you must use the \emph{Is\_Valid} function.
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -341,8 +340,8 @@ content in the cache. You cannot set this individually for each element.
 \emph{Reserved\_Capacity} should be set as close as possible to the
 expected final size of the cache. If your best guestimate is 200 elements
 in the cache, then set this to 200. Note that this setting has no
-bearing has no bearing on the actual size of the cache. The cache
-will happily grow beyond the \emph{Reserved\_Capacity} value.
+bearing on the actual size of the cache. The cache will happily grow
+beyond the \emph{Reserved\_Capacity} value.
 
 
 \subsection{Instantiation}
@@ -359,8 +358,9 @@ package My_Cache is new Yolk.Cache.String_Keys
 \end{minipage}
 
 And that is all. We now have a \emph{My\_Cache} object that can hold
-200 objects of the type \emph{Unbounded\_String}, all of which have
-a \emph{Max\_Element\_Age} of 3600.0 seconds. 
+objects of the type \emph{Unbounded\_String}, all of which have a
+\emph{Max\_Element\_Age} of 3600.0 seconds. Also we've told the cache
+to set aside at least 200 positions for content.
 
 
 \subsection{Writing to the cache}
@@ -380,11 +380,10 @@ end;
 %
 \end{minipage}
 
-That is all it takes: {}``42'' is now safely tucked away in the
-\emph{My\_Cache} object under the key {}``Foo'', and will be so
-for 3600.0 seconds. Calling \emph{Write} with the {}``Foo''\emph{
-}String will always overwrite earlier written {}``Foo'' elements,
-no matter their age.
+{}``42'' is now safely tucked away in the \emph{My\_Cache} object
+under the key {}``Foo'', and will be so for 3600.0 seconds. Calling
+\emph{Write} with the {}``Foo''\emph{ }String will always overwrite
+earlier written {}``Foo'' elements, no matter their age.
 
 
 \subsection{Reading from the cache}
@@ -458,16 +457,14 @@ My_Cache.Clear;
 %
 \end{minipage}
 
-And that's all it takes.
-
 
 \subsection{How much is in there?}
 
-With the \emph{Discrete\_Keys} cache we obviously always now the exact
-amount of keys available, since we've defined the keys ourselves.
+With the \emph{Discrete\_Keys} cache we obviously always know the
+exact amount of keys available, since we've defined the keys ourselves.
 This is not the case with the \emph{String\_Keys} cache, where any
-String can be a key. If we need to know how many elements that are
-currently in the cache, we call the \emph{Length} function:
+\emph{String} can be a key. If we need to know how many elements that
+are currently in the cache, we call the \emph{Length} function:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -503,7 +500,7 @@ make sure you call \emph{Cleanup} on a regular basis.
 
 \section{Yolk.Config\_File\_Parser}
 
-This package enable you to access KEY/VALUE pairs in configuration
+This package enables you to access KEY/VALUE pairs in configuration
 files that are written in the style:
 \begin{lyxcode}
 \#~This~is~a~comment
@@ -520,11 +517,12 @@ that contain whitespace, to this:
 KEY~some~value~with~whitespace
 \end{lyxcode}
 is perfectly valid, and will return {}``\emph{some value with whitespace}''
-when calling \emph{Get (KEY)}. If VALUE is Boolean True or False (case-insensitive),
-then the KEY can be returned as a String or a Boolean, depending on
-the target type. If the target type does not match the VALUE and no
-sensible conversion can be made, then a \emph{Conversion\_Error} exception
-is raised. No dummy values are returned at any time.
+when calling \emph{Get (KEY)}. If VALUE is \emph{Boolean} \emph{True}
+or \emph{False} (case-insensitive), then the KEY can be returned as
+a \emph{String} or a \emph{Boolean}, depending on the target type.
+If the target type does not match the VALUE and no sensible conversion
+can be made, then a \emph{Conversion\_Error} exception is raised.
+No dummy values are returned at any time.
 
 To clear a default value, simply add the key to the configuration
 file, with no value set.
@@ -550,7 +548,7 @@ package Yolk.Config_File_Parser is
 
 Note that the \emph{Config\_File} parameter has a default value. This
 path is actually where Yolk expects to find the configuration file
-used by the Yolk.Configuration package.
+used by the \emph{Yolk.Configuration} package.
 
 
 \subsection{Exceptions}
@@ -564,7 +562,7 @@ when \emph{Load\_File} is called.
 \item \emph{Cannot\_Open\_Config\_File}. This is raised when a configuration
 file cannot be read.
 \item \emph{Conversion\_Error}. This is raised when a value cannot be converted
-to the target type, ie. the value {}``42'' to a Boolean.
+to the target type, ie. the value {}``42'' to a \emph{Boolean}.
 \end{itemize}
 
 \subsection{Instantiation}
@@ -616,12 +614,12 @@ My_Configuration.Config.Load_File ("new_config.ini");
 %
 \end{minipage}
 
-And that is all. Now the KEY/VALUE pairs of \emph{new\_config.ini}
-will overwrite the ones originally found in the \emph{config.ini}
-file the package was instantiated with. You can do this as many times
-as you like. Note that you cannot change what KEY's are valid, so
-if the \emph{new\_config.ini} file contains unknown keys, \emph{Load\_File}
-will raise the \emph{Unknown\_Key} exception.
+Now the KEY/VALUE pairs of \emph{new\_config.ini} will overwrite the
+ones originally found in the \emph{config.ini} file the package was
+instantiated with. You can do this as many times as you like. Note
+that you cannot change what KEY's are valid, so if the \emph{new\_config.ini}
+file contains unknown keys, \emph{Load\_File} will raise the \emph{Unknown\_Key}
+exception.
 
 
 \subsection{Getting values}
@@ -639,16 +637,16 @@ My_Configuration.Config.Get (Foo);
 
 There are Get functions for the following types:
 \begin{itemize}
-\item Boolean
-\item Duration
-\item Float
-\item Integer
-\item String
-\item Unbounded\_String
+\item \emph{Boolean}
+\item \emph{Duration}
+\item \emph{Float}
+\item \emph{Integer}
+\item \emph{String}
+\item \emph{Unbounded\_String}
 \end{itemize}
-Empty keys simply return an empty String or a \emph{Null\_Unbounded\_String},
+Empty keys simply return an empty \emph{String} or a \emph{Null\_Unbounded\_String},
 depending on the target type. If a key is empty and the target type
-is not a String or an Unbounded\_String, then the \emph{Conversion\_Error}
+is not a \emph{String} or an \emph{Unbounded\_String}, then the \emph{Conversion\_Error}
 exception is raised.
 
 
@@ -665,8 +663,8 @@ end if;
 %
 \end{minipage}
 
-Basically all this function does is return Boolean True if the value
-of the given key is not a \emph{Null\_Unbounded\_String}.
+Basically all this function does is return \emph{Boolean} \emph{True}
+if the value of the given key is not a \emph{Null\_Unbounded\_String}.
 
 
 \section{Yolk.Configuration}
@@ -674,8 +672,8 @@ of the given key is not a \emph{Null\_Unbounded\_String}.
 This package is a bit of an oddball, as all it does is instantiate
 the \emph{Yolk.Config\_File\_Parser} generic with the default AWS
 and Yolk configuration values. This is used by Yolk internally, but
-also possibly by the AWS component of your application. The instantiation
-looks like this:
+also by the AWS component of your application. The instantiation looks
+like this:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -705,7 +703,7 @@ the \emph{Yolk.Configuration} package is used.
 When you start an AWS server, you need to give it an \emph{AWS.Config.Object}
 with all the necessary configuration settings. This is already handled
 for you in \emph{Yolk.Configuration}, all you have to do is call the
-\emph{Get\_AWS\_Configuration} function, like this:
+\emph{Get\_AWS\_Configuration} function:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -787,8 +785,8 @@ procedure Add_From
 This does not mean that \emph{Yolk.Email.Composer.Add\_From} will
 encode \emph{Name} as \emph{US\_ASCII}, instead it means that the
 data given in \emph{Name} is already encoded as \emph{US\_ASCII}.
-So if \emph{Name} had contained an ISO-8859-1 encoded String, then
-the call would've looked like this:
+So if \emph{Name} had contained an ISO-8859-1 encoded \emph{String},
+then the call would've looked like this:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -799,8 +797,8 @@ declare
 begin
    Composer.Add_From      
      (ES        => Email,       
-      Address   => "thomas@12boo.net",
-      Name      => "Thomas Løcke",
+      Address   => "alice@domain.tld",
+      Name      => "Alice",
       Charset   => ISO_8859_1);
 end;
 \end{lstlisting}
@@ -809,21 +807,23 @@ end;
 
 In this case you will end up with a From header looking like this:
 \begin{lyxcode}
-From:~=?ISO-8859-1?Q?Thomas\_L=F8cke?=~<thomas@12boo.net>
+From:~=?ISO-8859-1?Q?Alice?=~<alice@domain.tld>
 \end{lyxcode}
-So bear in mind that it is your responsibility to encode that data
-as you need, and then set the \emph{Character\_Set} parameters accordingly.
+So bear in mind that it is your responsibility to encode your data,
+and then set the \emph{Character\_Set} parameters accordingly.
 
 The \emph{Recipient\_Kind} type define the kind of recipient that
 is being added to an email. If you've worked with email, these three
 should be familiar to you:
 \begin{enumerate}
-\item Bcc
-\item Cc
-\item To
+\item \emph{Bcc}
+\item \emph{Cc}
+\item \emph{To}
 \end{enumerate}
 When adding recipients to an email \emph{Structure} the default is
-To, but since not all recipients are equal, you have the 
+\emph{To}, but since not all recipients are equal, you can change
+the kind of recipient to \emph{Bcc} or \emph{Cc}, according to your
+needs.
 
 The \emph{Structure} type is at the core of it all. You declare an
 object to be of the \emph{Structure} type, and then you use the \emph{Yolk.Email.Composer}
@@ -846,7 +846,7 @@ how to use one of the convenience procedures.
 
 There are two convenience procedures in \emph{Yolk.Email.Composer}
 for sending emails without having to do a whole lot of work/thinking.
-They are both named \emph{Send} and they both look like this:
+They are both named \emph{Send} and they look like this:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -890,10 +890,10 @@ declare
    Email : Structure;
 begin
    Composer.Send (ES           => Email,
-                  From_Address => "thomas@12boo.net",
-                  From_Name    => "Thomas Løcke",
-                  To_Address   => "tl@ada-dk.org",
-                  To_Name      => "Me",
+                  From_Address => "alice@domain.tld",
+                  From_Name    => "Alice",
+                  To_Address   => "bob@domain.tld",
+                  To_Name      => "Bob",
                   Subject      => "Is this thing on?",
                   Text_Part    => "Hey you!",
                   Charset      => ISO_8859_1);
@@ -909,8 +909,8 @@ end;
 \end{minipage}
 
 It is possible, and allowed, to call some of the various other procedures
-prior to calling one of these. If for example you want to add a custom
-header, it can be done like this:
+prior to calling one of convenience procedures. If for example you
+want to add a custom header, it can be done like this:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -924,10 +924,10 @@ begin
                                Value   => "My User Agent");
 
    Composer.Send (ES           => Email,
-                  From_Address => "thomas@12boo.net",
-                  From_Name    => "Thomas Løcke",
-                  To_Address   => "tl@ada-dk.org",
-                  To_Name      => "Me",
+                  From_Address => "alice@domain.tld",
+                  From_Name    => "Alice",
+                  To_Address   => "bob@domain.tld",
+                  To_Name      => "Bob",
                   Subject      => "Is this thing on?",
                   Text_Part    => "Hey you!",
                   Charset      => ISO_8859_1);
@@ -964,23 +964,23 @@ declare
 
    Email : Structure;
 begin
-   Composer.Add_Custom_Header (ES      => Email,
-                               Name    => "User-Agent",
-                               Value   => "My User Agent");
+   Composer.Add_Custom_Header (ES    => Email,
+                               Name  => "User-Agent",
+                               Value => "My User Agent");
 
    Composer.Add_From (ES      => Email,
-                      Address => "thomas@12boo.net",
-                      Name    => "Thomas Løcke",
+                      Address => "alice@domain.tld",
+                      Name    => "Alice",
                       Charset => ISO_8859_1);
 
    Composer.Add_Recipient (ES      => Email,
-                           Address => "tl@ada-dk.org",
-                           Name    => "Me");
+                           Address => "bob@domain.tld",
+                           Name    => "Bob");
  
    Composer.Set_Subject (ES      => Email,
                          Subject => "Is this thing on?");
 
-   Composer.Set_Text_Part (ES => Email,
+   Composer.Set_Text_Part (ES   => Email,
                            Part => "Hey you!");
 
    Composer.Add_SMTP_Server (ES   => Email,
@@ -1003,8 +1003,8 @@ Harder yes, but really not all that much more difficult.
 
 \section{Yolk.Handlers}
 
-Most web applications will need to handle various static content,
-such as PNG, HTML and CSS files. \emph{Yolk.Handlers} helps you accomplish
+Most web applications will need to handle static content, such as
+PNG, HTML and CSS files. \emph{Yolk.Handlers} helps you accomplish
 that, so you don't have to build your own handlers for these kinds
 of files.
 
@@ -1022,10 +1022,10 @@ The following filetypes are supported by \emph{Yolk.Handlers}:
 \item XSL
 \end{itemize}
 The filetypes that are textual, are compressed according to the \emph{Yolk.Configuration}
-setting \emph{Compress\_Static\_Content} parameter, and the various
-regular expressions for identifying these filetypes are also defined
-in \emph{Yolk.Configuration} by the \emph{Handler\_{*}} parameters.
-These regular expressions are registered by the \emph{AWS.Services.Dispatchers.URI.Register\_Regexp}
+parameter \emph{Compress\_Static\_Content}, and the various regular
+expressions for identifying these filetypes are also defined in \emph{Yolk.Configuration}
+by the \emph{Handler\_{*}} parameters. These regular expressions are
+registered by the \emph{AWS.Services.Dispatchers.URI.Register\_Regexp}
 procedure.
 
 There's only one procedure in the \emph{Yolk.Handlers} package:
@@ -1045,37 +1045,46 @@ This package makes use of the \emph{Yolk.Static\_Content} package
 for the actual delivery of the content to the user.
 
 
-\section{Yolk.Log\_File\_Cleanup}
+\section{Yolk.Log}
 
-House-keeping is a very important task, and when dealing with HTTP
-servers, one of those tasks involve keeping an eye on the ever growing
-amount of access and error log files. To help automate this task we
-have the \emph{Yolk.Log\_File\_Cleanup} package. This package contains
-one procedure:
+This package serves two purposes:
+\begin{enumerate}
+\item It contains the two callback procedures used to write AWS logging
+data (access and error) to syslogd.
+\item It creates the SQL, Error and Info trace handles, and activates them
+according to the values defined in the configuration file.
+\end{enumerate}
+Out of the box, a Yolk application requires a running syslogd daemon,
+as all log data is sent to syslogd. If for some reason you don't want
+to use syslogd, you're going to have to hack the \emph{Yolk.Log} package,
+or remove it entirely.
+
+The two procedures named \emph{AWS\_{*}} are used by the AWS HTTP(S)
+server. These should not be used for anything else - or rather: If
+you use them for anything else, the \emph{Message} given is going
+to be written to syslogd with either the AWS access log label or AWS
+error log label. There's absolutely no harm in this, except it might
+be a bit confusing when reading the log data.
+
+The \emph{Trace} procedure is the one that you will be using in your
+application. You can send log data to the trace handles defined in
+\emph{Yolk.Log.Trace\_Handles}. All log data is then sent to the syslogd
+daemon using the facilities set in the configuration file for the
+given trace handle.
+
+Using \emph{Trace} is about as easy as it gets:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
-procedure Delete      
-  (Config_Object           : in AWS.Config.Object;       
-   Web_Server              : in AWS.Server.HTTP;
-   Amount_Of_Files_To_Keep : in Positive);
+Yolk.Log.Trace (Handle  => Error,
+                Message => "Secret sauce to Error!");
 \end{lstlisting}
 %
 \end{minipage}
 
-Whenever the \emph{Delete} procedure is called, the directory where
-AWS keeps its log files is traversed and if more log files than \emph{Amount\_Of\_Files\_To\_Keep}
-is found, then the oldest of these are deleted until the amount equals
-\emph{Amount\_Of\_Files\_To\_Keep}. 
-
-Note that \emph{Yolk.Log\_File\_Cleanup} only deals with the AWS acces
-and error log files. In the demo file \emph{demo/src/yolk\_demo.adb}
-there's an example on how to call this procedure using a task that
-wakes up according to the configuration setting \emph{Log\_File\_Cleanup\_Interval}.
-
-Be sure to read the \emph{Logging - Rotating And Regular} section
-in the \emph{demo/exe/configuration/config.ini} file for more information
-on the configuration parameters that affect this system.
+If you haven't activated a trace handle, then calling \emph{Trace}
+for that handle does nothing, ie. you don't have to remove all your
+\emph{Trace} calls from the code if you don't use them.
 
 
 \section{Yolk.Not\_Found}
@@ -1243,90 +1252,6 @@ is used in conjunction with the \emph{Yolk.Configuration.Yolk\_User}
 parameter.
 
 
-\section{Yolk.Rotating\_Log}
-
-This package provides the ability to write log data to three predefined
-log traces:
-\begin{enumerate}
-\item Error
-\item Info
-\item SQL
-\end{enumerate}
-These traces correspond with the components of the \emph{Yolk.Rotating\_Log.Trace\_Handles}
-enumeration type. Data written to one of these traces are written
-to files and these files are automatically rotated when they reach
-a specified size. The rotation happens according to a {}``slot''
-system, so you don't have to worry about cleaning away old log files
-on a regular basis. The slot system works by appending a slot number
-to each log file, so if you set the configuration parameter \emph{Max\_Slot\_Count}
-to 3, then when starting the rotating log system you'll get a file
-named \emph{Foo-rotating-INFO-1.log} for the \emph{Info} trace (if
-your application is named Foo) and when that file reaches the \emph{Rotating\_Log\_Size\_Limit}
-it is rotated to \emph{Foo-rotating-INFO-2.log} and so on and so forth.
-When the last slot rotates, it starts all over with 1.
-
-This system has the obvious advantage of never growing beyond a known
-limited size. On the other hand it has the disadvantage of not being
-very good at keeping old log data readily at hand, as everything is
-going to get overwritten sooner or later.
-
-For more information, take a look at the \emph{Logging - Rotating
-And Regular} section of the \emph{demo/exe/configuration/config.ini}
-file.
-
-Note that this package handles all log data generated by the \emph{GNATCOLL.SQL}
-packages. See the \emph{demo/exe/configuration/config.ini} for how
-to enable/disable the different levels of SQL related log data.
-
-
-\subsection{Exceptions}
-
-These are:
-\begin{itemize}
-\item \emph{Cannot\_Create\_Log\_File}. Is raised when it's not possible
-to create one of the rotating log files.
-\item \emph{Cannot\_Write\_To\_Log\_File}. Is raised when it's not possible
-to write to one of the rotating log files.
-\end{itemize}
-
-\subsection{Starting the rotating log files}
-
-It's not enough to simply \emph{with} the package, you have to start
-the rotating log system before you can actually use it. This is done
-with the aptly named \emph{Start\_Rotating\_Logs} procedure:
-
-\begin{minipage}[t]{1\columnwidth}%
-\begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
-procedure Start_Rotating_Logs
-  (Emit_Warning_If_Already_Running : Boolean := True);
-\end{lstlisting}
-%
-\end{minipage}
-
-Setting the \emph{Emit\_Warning\_If\_Already\_Running} to \emph{False}
-will make sure that a second call to \emph{Start\_Rotating\_Logs}
-won't emit a warning message on the \emph{Info} trace.
-
-
-\subsection{Writing log data}
-
-With the rotating log system started, writing data to it is a simple
-matter of calling the \emph{Trace} procedure. It looks like this:
-
-\begin{minipage}[t]{1\columnwidth}%
-\begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
-procedure Trace      
-  (Handle     : in Trace_Handles;       
-   Log_String : in String);
-\end{lstlisting}
-%
-\end{minipage}
-
-It should be obvious how this procedure is used. Note that the configuration
-setting \emph{Immediate\_Flush} controls whether or not the \emph{Log\_String}
-is written to file immediately or if a buffer is used.
-
-
 \section{Yolk.Static\_Content}
 
 Most web applications have a lot of static content, ie. stuff that
@@ -1389,7 +1314,7 @@ you're left with an empty directory after a call to this procedure.
 
 If \emph{Log\_To\_Info\_Trace} is \emph{False} then no information
 about the deletion and creation of the compressed cache directory
-is logged to the rotating log Info trace.
+is logged to the \emph{Yolk.Log.Info} trace.
 
 The remaining parameters defines the content of the \emph{Cache-Control}
 header sent to the user agent when a request for static content is
@@ -1407,7 +1332,7 @@ Read the \href{http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html\#sec14.9}{
 for more information on what the various settings do.
 
 You must call \emph{Static\_Content\_Cache\_Setup} prior to starting
-the HTTP(S) server, if you plan on using the \emph{Yolk.Static\_Content}
+the HTTP server, if you plan on using the \emph{Yolk.Static\_Content}
 package. Calling it repeatedly will simply wipe out the compressed
 cache directory and reset the \emph{Control\_Cache} header according
 to the given parameters. This is a threadsafe operation.
@@ -1435,13 +1360,9 @@ the \emph{Yolk.Handlers} package:
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
 declare
-
    package SC renames Yolk.Static_Content;
-
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
-
 begin
-
    AWS.Services.Dispatchers.URI.Register_Regexp         
      (Dispatcher  => Resource_Handlers,          
       URI         => "\.css$",          
@@ -1451,7 +1372,6 @@ begin
      (Dispatcher  => Resource_Handlers,          
       URI         => "\.html$",          
       Action      => Create (Callback => SC.Compressable'Access));
-
 end;
 \end{lstlisting}
 %
@@ -1551,12 +1471,12 @@ to it's sibling function \emph{Compressable}:
 \end{enumerate}
 \end{enumerate}
 And that's it. Either the resource is there, or it isn't. If the requested
-resource is \emph{/css/index.css}, then the \emph{Non\_Compressable}
+resource is \emph{/images/foo.png}, then the \emph{Non\_Compressable}
 function searches for the resource in:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
-WWW_Root & "/css/index.ss";
+WWW_Root & "/images/foo.png";
 \end{lstlisting}
 %
 \end{minipage}
@@ -1564,7 +1484,7 @@ WWW_Root & "/css/index.ss";
 Using the default configuration value for \emph{WWW\_Root}, we'll
 end up with the path:
 \begin{lyxcode}
-static\_content/css/index.css
+static\_content/images/foo.png
 \end{lyxcode}
 Just as with \emph{Compressable} a natural place to use \emph{Non\_Compressable}
 is where you define you content handlers, but it can obviously be
@@ -1601,7 +1521,7 @@ There are two packages in the \emph{Yolk.Syndication} hierarchy:
 \item \emph{Yolk.Syndication} - Here the necessary types and exceptions
 are defined.
 \item \emph{Yolk.Syndication.Writer} - Here the functions and procedures
-for actually creating an Atom feed is are defined.
+for actually creating an Atom feed are defined.
 \end{itemize}
 When time permits, I'll add a \emph{Yolk.Syndication.Reader} package
 for extraction of data from an Atom feed.
@@ -1612,8 +1532,8 @@ for extraction of data from an Atom feed.
 There's one exception in this package:
 \begin{itemize}
 \item \emph{Not\_Valid\_XML}. Is raised when some Xhtml content is not valid
-XML. This exception can be raised by all procedures that can take
-Xhtml as content.
+XML. This exception can be raised by all procedures that takes Xhtml
+as content.
 \end{itemize}
 
 \subsection{The Yolk.Syndication types}
@@ -1649,7 +1569,8 @@ is related to, but not the same as, the resource described by the
 containing element.
 \item \emph{Self}: Signifies that the link points to a resource that is
 equivalent to the resource described by the containing element. All
-feeds should have one link with a \emph{Self} relation.
+feeds should have one link with a \emph{Self} relation pointing to
+itself.
 \item \emph{Enclosure}: Signifies that the link points to a resource that
 is related to, but not the same as, the resource described by the
 containing element. It also signifies that the resource potentially
@@ -1717,7 +1638,7 @@ an \emph{Atom\_Feed} object using \emph{New\_Atom\_Feed}.
 
 \subsection{Yolk.Syndication.New\_Atom\_Entry}
 
-This function initialize and \emph{Atom\_Entry} type, and its specification
+This function initialize an \emph{Atom\_Entry} type, and its specification
 looks like this:
 
 \begin{minipage}[t]{1\columnwidth}%
@@ -1739,8 +1660,8 @@ natural \emph{Language} used by the entry.
 
 \subsection{Yolk.Syndication.New\_Atom\_Entry\_Source}
 
-This function initialize and \emph{Atom\_Entry\_Source} type, and
-its specification looks like this:
+This function initialize an \emph{Atom\_Entry\_Source} type, and its
+specification looks like this:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -1828,7 +1749,7 @@ procedure Add_Author
 There's actually a hint about the kind of XML element that is being
 produced by these procedures. If the name of the procedure starts
 with \emph{Set\_} then it hints at an XML element of which there's
-only ever one. So \emph{Set\_Title} create a \emph{<title>Foo</title>}
+only ever one. So \emph{Set\_Title} creates a \emph{<title>Foo</title>}
 element, and if called again, overwrites the previous value, whereas
 if the name of procedure starts with \emph{Add\_} then the Atom specification
 allows for multiples of these, as can be seen with the \emph{Add\_Author}
@@ -1837,8 +1758,7 @@ calling it again simply adds one more author to the feed/entry/entry
 source.
 
 Most of the subprograms in this package deals directly with building
-the Atom XML, but there are a few exceptions. We'll go over these
-now.
+the Atom XML, but there are a few exceptions, as you will see next.
 
 
 \subsection{Counting the amount of entries in a feed}
@@ -1947,7 +1867,7 @@ source file for more information.
 
 This package contains one single procedure: \emph{Unexpected\_Exception\_Handler}.
 I suspect the name gives away exactly what this procedure does. It
-looks like this:'
+looks like this:
 
 \begin{minipage}[t]{1\columnwidth}%
 \begin{lstlisting}[basicstyle={\small\sffamily},frame=tblr,language=Ada,showstringspaces=false,tabsize=3,xleftmargin=1em,xrightmargin=1em]
@@ -1965,8 +1885,7 @@ failed to catch in your application, ie. the ones AWS pickup and fail
 to do anything sensible with. When \emph{Unexpected\_Reception\_Handler}
 catch an exception, two things happen:
 \begin{enumerate}
-\item The exception is logged to the rotating log system in the \emph{Error}
-trace.
+\item The exception is logged to the \emph{Yolk.Log}.\emph{Error }trace.
 \item A HTTP status code 500 is returned to the user.
 \end{enumerate}
 The template used to create the HTTP code 500 error message is\emph{

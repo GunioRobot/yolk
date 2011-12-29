@@ -2,7 +2,7 @@
 --                                                                           --
 --                                  Yolk                                     --
 --                                                                           --
---                          Yolk.Logfile_Cleanup                             --
+--                                Yolk.Log                                   --
 --                                                                           --
 --                                  SPEC                                     --
 --                                                                           --
@@ -21,17 +21,25 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  Search for and delete old and excess logfiles in the Log_File_Directory
---  defined in the server configuration file.
+package Yolk.Log is
 
-with AWS.Config;
-with AWS.Server;
+   type Trace_Handles is (Error, Info, SQL, SQL_Cache, SQL_Error, SQL_Select);
+   --  These six handles are available to your application. Not that the SQL
+   --  handles are also used by GNATColl's database packages, if enabled.
 
-package Yolk.Log_File_Cleanup is
+   procedure AWS_Access_Log_Writer
+     (Message : in String);
+   --  AWS can send its access log data to this procedure.
 
-   procedure Delete
-     (Config_Object           : in AWS.Config.Object;
-      Web_Server              : in AWS.Server.HTTP;
-      Amount_Of_Files_To_Keep : in Positive);
+   procedure AWS_Error_Log_Writer
+     (Message : in String);
+   --  AWS can send its error log data to this procedure.
 
-end Yolk.Log_File_Cleanup;
+   procedure Trace
+     (Handle  : in Trace_Handles;
+      Message : in String);
+   --  Use Trace to log various events in your application. All log data is
+   --  sent to syslogd according to the configuration found in the config.ini
+   --  file.
+
+end Yolk.Log;

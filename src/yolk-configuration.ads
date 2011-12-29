@@ -36,13 +36,18 @@ package Yolk.Configuration is
    use Yolk.Utilities;
 
    type Keys is (Accept_Queue_Size, --  AWS
-                 Activate_Rotating_SQL_Log,
-                 Activate_Rotating_SQL_Cache_Log,
-                 Activate_Rotating_SQL_Error_Log,
-                 Activate_Rotating_SQL_Select_Log,
+                 Activate_AWS_Access_Log,
+                 Activate_AWS_Error_Log,
+                 Activate_Error_Log,
+                 Activate_Info_Log,
+                 Activate_SQL_Log,
+                 Activate_SQL_Cache_Log,
+                 Activate_SQL_Error_Log,
+                 Activate_SQL_Select_Log,
+                 AWS_Access_Syslog_Facility_Level,
+                 AWS_Error_Syslog_Facility_Level,
                  Admin_Password, --  AWS
                  Admin_URI, --  AWS
-                 Amount_Of_Log_Files_To_Keep,
                  Case_Sensitive_Parameters, --  AWS
                  Certificate, --  AWS
                  Check_URL_Validity, --  AWS
@@ -54,9 +59,6 @@ package Yolk.Configuration is
                  Compressed_Max_Age,
                  Compress_Minimum_File_Size,
                  Context_Lifetime, --  AWS
-                 Enable_Access_Log,
-                 Error_Log_Filename_Prefix, -- AWS
-                 Error_Log_Split_Mode, --  AWS
                  Exchange_Certificate, --  AWS
                  Force_Client_Data_Timeout, --  AWS
                  Force_Client_Header_Timeout, --  AWS
@@ -79,18 +81,11 @@ package Yolk.Configuration is
                  Key, --  AWS
                  Line_Stack_Size, --  AWS
                  Log_Extended_Fields, --  AWS
-                 Log_File_Cleanup_Interval,
-                 Log_File_Directory, --  AWS
-                 Log_Filename_Prefix, --  AWS
-                 Log_Size_Limit, --  AWS
-                 Log_Split_Mode, --  AWS
                  Max_Concurrent_Download, --  AWS
                  Max_Connection, --  AWS
-                 Max_Slot_Count,
                  MIME_Types, --  AWS
                  Receive_Timeout, --  AWS
                  Reuse_Address, --  AWS
-                 Rotating_Log_Size_Limit,
                  Security, --  AWS
                  Security_Mode, --  AWS
                  Send_Timeout, --  AWS
@@ -116,20 +111,30 @@ package Yolk.Configuration is
    Default_Values : constant Defaults_Array :=
                       (Accept_Queue_Size
                        => TUS ("64"),
-                       Activate_Rotating_SQL_Log
+                       Activate_AWS_Access_Log
                        => TUS ("True"),
-                       Activate_Rotating_SQL_Cache_Log
+                       Activate_AWS_Error_Log
                        => TUS ("True"),
-                       Activate_Rotating_SQL_Error_Log
+                       Activate_Error_Log
                        => TUS ("True"),
-                       Activate_Rotating_SQL_Select_Log
+                       Activate_Info_Log
                        => TUS ("True"),
+                       Activate_SQL_Log
+                       => TUS ("True"),
+                       Activate_SQL_Cache_Log
+                       => TUS ("True"),
+                       Activate_SQL_Error_Log
+                       => TUS ("True"),
+                       Activate_SQL_Select_Log
+                       => TUS ("True"),
+                       AWS_Access_Syslog_Facility_Level
+                       => TUS ("True"),
+                       AWS_Error_Syslog_Facility_Level
+                       => TUS ("False"),
                        Admin_Password
                        => TUS ("0ac9c9d0c0b1ee058b65ae70c9aeb3a7"),
                        Admin_URI
                        => TUS ("/status"),
-                       Amount_Of_Log_Files_To_Keep
-                       => TUS ("30"),
                        Case_Sensitive_Parameters
                        => TUS ("True"),
                        Certificate
@@ -152,12 +157,6 @@ package Yolk.Configuration is
                        => TUS ("200"),
                        Context_Lifetime
                        => TUS ("28800.0"),
-                       Enable_Access_Log
-                       => TUS ("True"),
-                       Error_Log_Filename_Prefix
-                       => TUS ("yolk_error"),
-                       Error_Log_Split_Mode
-                       => TUS ("Daily"),
                        Exchange_Certificate
                        => TUS ("False"),
                        Force_Client_Data_Timeout
@@ -202,30 +201,16 @@ package Yolk.Configuration is
                        => TUS ("16#150_000#"),
                        Log_Extended_Fields
                        => TUS (""),
-                       Log_File_Cleanup_Interval
-                       => TUS ("3600.0"),
-                       Log_File_Directory
-                       => TUS ("logs/"),
-                       Log_Filename_Prefix
-                       => TUS ("yolk_access"),
-                       Log_Size_Limit
-                       => TUS ("10_000_000"),
-                       Log_Split_Mode
-                       => TUS ("Daily"),
                        Max_Concurrent_Download
                        => TUS ("25"),
                        Max_Connection
                        => TUS ("5"),
-                       Max_Slot_Count
-                       => TUS ("3"),
                        MIME_Types
                        => TUS ("configuration/aws.mime"),
                        Receive_Timeout
                        => TUS ("30.0"),
                        Reuse_Address
                        => TUS ("False"),
-                       Rotating_Log_Size_Limit
-                       => TUS ("1_000_000"),
                        Security
                        => TUS ("False"),
                        Security_Mode
@@ -239,7 +224,7 @@ package Yolk.Configuration is
                        Server_Port
                        => TUS ("4242"),
                        Session
-                       => TUS ("False"),
+                       => TUS ("True"),
                        Session_Cleanup_Interval
                        => TUS ("300.0"),
                        Session_Data_File

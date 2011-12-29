@@ -80,14 +80,6 @@ package body Yolk.Configuration is
         (O     => Object,
          Value => Config.Get (System_Templates_Path) & "/aws_directory.tmpl");
 
-      AWS.Config.Set.Error_Log_Filename_Prefix
-        (O     => Object,
-         Value => Config.Get (Error_Log_Filename_Prefix));
-
-      AWS.Config.Set.Error_Log_Split_Mode
-        (O     => Object,
-         Value => Config.Get (Error_Log_Split_Mode));
-
       AWS.Config.Set.Exchange_Certificate
         (O     => Object,
          Value => Config.Get (Exchange_Certificate));
@@ -131,22 +123,6 @@ package body Yolk.Configuration is
       AWS.Config.Set.Log_Extended_Fields
         (O     => Object,
          Value => Config.Get (Log_Extended_Fields));
-
-      AWS.Config.Set.Log_File_Directory
-        (O     => Object,
-         Value => Config.Get (Log_File_Directory));
-
-      AWS.Config.Set.Log_Filename_Prefix
-        (O     => Object,
-         Value => Config.Get (Log_Filename_Prefix));
-
-      AWS.Config.Set.Log_Size_Limit
-        (O     => Object,
-         Value => Config.Get (Log_Size_Limit));
-
-      AWS.Config.Set.Log_Split_Mode
-        (O     => Object,
-         Value => Config.Get (Log_Split_Mode));
 
       AWS.Config.Set.Max_Concurrent_Download
         (Value => Config.Get (Max_Concurrent_Download));

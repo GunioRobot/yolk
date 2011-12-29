@@ -1,6 +1,6 @@
 Yolk Manual
 
-Revised October 26th. 2011
+Revised December 7th. 2011
 
 
 
@@ -22,9 +22,10 @@ that can't be accomplished simply by using [http://libre.adacore.com/libre/tools
  and the [http://libre.adacore.com/libre/tools/gnat-component-collection/||GNAT Component Collection (GNATcoll)]
 , but it does make the job of building complete web-applications 
 a bit simpler. Things like changing user for the running 
-application, accessing multiple databases, automatically cleaning 
-up log files, adding basic static content handlers and building 
-Atom syndication XML are all handled by Yolk.
+application, catching POSIX signals such as SIGKILL, sending log 
+data to syslogd, adding basic static content handlers and 
+building Atom syndication XML are all made a bit easier with 
+Yolk.
 
 A Yolk application is in reality an AWS application, with some 
 sugar added, so you're not really building a Yolk 
@@ -110,8 +111,8 @@ that's of vital importance to most applications.
 
 If a piece of data doesn't change very often and it is expensive 
 to build, then caching it might be worthwhile. Instead of going 
-to file/database on every hit, you simply go to the cache and 
-grab the latest version from there. This is very fast, at the 
+to a file or database on every hit, you simply go to the cache 
+and grab the latest version from there. This is very fast, at the 
 cost of some memory.
 
 If you know exactly what you want to cache, the 
@@ -221,12 +222,12 @@ true), it must:
 
 2. be younger than Max_Element_Age
 
-If Is_Valid is False, then Value contains undefined garbage.
+If Is_Valid is False, then Value is undefined.
 
 3.5 Checking if a key is valid
 
 If you need to check whether a specific key exists in the cache 
-and is valid, then you need to use the Is_Valid function.
+and is valid, then you must use the Is_Valid function.
 
 if My_Cache.Is_Valid (Foo) then
 
@@ -313,9 +314,8 @@ element.
 Reserved_Capacity should be set as close as possible to the 
 expected final size of the cache. If your best guestimate is 200 
 elements in the cache, then set this to 200. Note that this 
-setting has no bearing has no bearing on the actual size of the 
-cache. The cache will happily grow beyond the Reserved_Capacity 
-value.
+setting has no bearing on the actual size of the cache. The cache 
+will happily grow beyond the Reserved_Capacity value.
 
 4.2 Instantiation
 
@@ -328,9 +328,10 @@ package My_Cache is new Yolk.Cache.String_Keys
    Reserved_Capacity => 200);
 
 
-And that is all. We now have a My_Cache object that can hold 200 
+And that is all. We now have a My_Cache object that can hold 
 objects of the type Unbounded_String, all of which have a 
-Max_Element_Age of 3600.0 seconds. 
+Max_Element_Age of 3600.0 seconds. Also we've told the cache to 
+set aside at least 200 positions for content.
 
 4.3 Writing to the cache
 
@@ -350,10 +351,10 @@ begin
 end;
 
 
-That is all it takes: “42” is now safely tucked away in the 
-My_Cache object under the key “Foo”, and will be so for 3600.0 
-seconds. Calling Write with the “Foo” String will always 
-overwrite earlier written “Foo” elements, no matter their age.
+“42” is now safely tucked away in the My_Cache object under the 
+key “Foo”, and will be so for 3600.0 seconds. Calling Write with 
+the “Foo” String will always overwrite earlier written “Foo” 
+elements, no matter their age.
 
 4.4 Reading from the cache
 
@@ -432,11 +433,9 @@ My_Cache.Clear (Key => "Foo");
 My_Cache.Clear;
 
 
-And that's all it takes.
-
 4.7 How much is in there?
 
-With the Discrete_Keys cache we obviously always now the exact 
+With the Discrete_Keys cache we obviously always know the exact 
 amount of keys available, since we've defined the keys ourselves. 
 This is not the case with the String_Keys cache, where any String 
 can be a key. If we need to know how many elements that are 
@@ -470,7 +469,7 @@ sure you call Cleanup on a regular basis.
 
 5 Yolk.Config_File_Parser
 
-This package enable you to access KEY/VALUE pairs in 
+This package enables you to access KEY/VALUE pairs in 
 configuration files that are written in the style:
 
 # This is a comment
@@ -596,12 +595,12 @@ file into your Config package:
 My_Configuration.Config.Load_File ("new_config.ini");
 
 
-And that is all. Now the KEY/VALUE pairs of new_config.ini will 
-overwrite the ones originally found in the config.ini file the 
-package was instantiated with. You can do this as many times as 
-you like. Note that you cannot change what KEY's are valid, so if 
-the new_config.ini file contains unknown keys, Load_File will 
-raise the Unknown_Key exception.
+Now the KEY/VALUE pairs of new_config.ini will overwrite the ones 
+originally found in the config.ini file the package was 
+instantiated with. You can do this as many times as you like. 
+Note that you cannot change what KEY's are valid, so if the 
+new_config.ini file contains unknown keys, Load_File will raise 
+the Unknown_Key exception.
 
 5.5 Getting values
 
@@ -650,8 +649,8 @@ value of the given key is not a Null_Unbounded_String.
 This package is a bit of an oddball, as all it does is 
 instantiate the Yolk.Config_File_Parser generic with the default 
 AWS and Yolk configuration values. This is used by Yolk 
-internally, but also possibly by the AWS component of your 
-application. The instantiation looks like this:
+internally, but also by the AWS component of your application. 
+The instantiation looks like this:
 
 package Config is new Config_File_Parser
 
@@ -680,7 +679,7 @@ the Yolk.Configuration package is used.
 When you start an AWS server, you need to give it an 
 AWS.Config.Object with all the necessary configuration settings. 
 This is already handled for you in Yolk.Configuration, all you 
-have to do is call the Get_AWS_Configuration function, like this:
+have to do is call the Get_AWS_Configuration function:
 
 AWS_Config : constant AWS.Config.Object := 
 
@@ -783,9 +782,9 @@ begin
 
      (ES        => Email,       
 
-      Address   => "thomas@12boo.net",
+      Address   => "alice@domain.tld",
 
-      Name      => "Thomas Løcke",
+      Name      => "Alice",
 
       Charset   => ISO_8859_1);
 
@@ -795,11 +794,10 @@ end;
 In this case you will end up with a From header looking like 
 this:
 
-From: =?ISO-8859-1?Q?Thomas_L=F8cke?= <thomas@12boo.net>
+From: =?ISO-8859-1?Q?Alice?= <alice@domain.tld>
 
-So bear in mind that it is your responsibility to encode that 
-data as you need, and then set the Character_Set parameters 
-accordingly.
+So bear in mind that it is your responsibility to encode your 
+data, and then set the Character_Set parameters accordingly.
 
 The Recipient_Kind type define the kind of recipient that is 
 being added to an email. If you've worked with email, these three 
@@ -812,7 +810,8 @@ should be familiar to you:
 3. To
 
 When adding recipients to an email Structure the default is To, 
-but since not all recipients are equal, you have the 
+but since not all recipients are equal, you can change the kind 
+of recipient to Bcc or Cc, according to your needs.
 
 The Structure type is at the core of it all. You declare an 
 object to be of the Structure type, and then you use the 
@@ -833,7 +832,7 @@ ground up and how to use one of the convenience procedures.
 
 There are two convenience procedures in Yolk.Email.Composer for 
 sending emails without having to do a whole lot of work/thinking. 
-They are both named Send and they both look like this:
+They are both named Send and they look like this:
 
 procedure Send      
 
@@ -901,13 +900,13 @@ begin
 
    Composer.Send (ES           => Email,
 
-                  From_Address => "thomas@12boo.net",
+                  From_Address => "alice@domain.tld",
 
-                  From_Name    => "Thomas Løcke",
+                  From_Name    => "Alice",
 
-                  To_Address   => "tl@ada-dk.org",
+                  To_Address   => "bob@domain.tld",
 
-                  To_Name      => "Me",
+                  To_Name      => "Bob",
 
                   Subject      => "Is this thing on?",
 
@@ -931,8 +930,9 @@ end;
 
 
 It is possible, and allowed, to call some of the various other 
-procedures prior to calling one of these. If for example you want 
-to add a custom header, it can be done like this:
+procedures prior to calling one of convenience procedures. If for 
+example you want to add a custom header, it can be done like 
+this:
 
 declare
 
@@ -954,13 +954,13 @@ begin
 
    Composer.Send (ES           => Email,
 
-                  From_Address => "thomas@12boo.net",
+                  From_Address => "alice@domain.tld",
 
-                  From_Name    => "Thomas Løcke",
+                  From_Name    => "Alice",
 
-                  To_Address   => "tl@ada-dk.org",
+                  To_Address   => "bob@domain.tld",
 
-                  To_Name      => "Me",
+                  To_Name      => "Bob",
 
                   Subject      => "Is this thing on?",
 
@@ -1007,19 +1007,19 @@ declare
 
 begin
 
-   Composer.Add_Custom_Header (ES      => Email,
+   Composer.Add_Custom_Header (ES    => Email,
 
-                               Name    => "User-Agent",
+                               Name  => "User-Agent",
 
-                               Value   => "My User Agent");
+                               Value => "My User Agent");
 
 
 
    Composer.Add_From (ES      => Email,
 
-                      Address => "thomas@12boo.net",
+                      Address => "alice@domain.tld",
 
-                      Name    => "Thomas Løcke",
+                      Name    => "Alice",
 
                       Charset => ISO_8859_1);
 
@@ -1027,9 +1027,9 @@ begin
 
    Composer.Add_Recipient (ES      => Email,
 
-                           Address => "tl@ada-dk.org",
+                           Address => "bob@domain.tld",
 
-                           Name    => "Me");
+                           Name    => "Bob");
 
  
 
@@ -1039,7 +1039,7 @@ begin
 
 
 
-   Composer.Set_Text_Part (ES => Email,
+   Composer.Set_Text_Part (ES   => Email,
 
                            Part => "Hey you!");
 
@@ -1072,10 +1072,10 @@ Harder yes, but really not all that much more difficult.
 
 9 Yolk.Handlers
 
-Most web applications will need to handle various static content, 
-such as PNG, HTML and CSS files. Yolk.Handlers helps you 
-accomplish that, so you don't have to build your own handlers for 
-these kinds of files.
+Most web applications will need to handle static content, such as 
+PNG, HTML and CSS files. Yolk.Handlers helps you accomplish that, 
+so you don't have to build your own handlers for these kinds of 
+files.
 
 The following filetypes are supported by Yolk.Handlers:
 
@@ -1100,10 +1100,10 @@ The following filetypes are supported by Yolk.Handlers:
 • XSL
 
 The filetypes that are textual, are compressed according to the 
-Yolk.Configuration setting Compress_Static_Content parameter, and 
-the various regular expressions for identifying these filetypes 
-are also defined in Yolk.Configuration by the Handler_* 
-parameters. These regular expressions are registered by the 
+Yolk.Configuration parameter Compress_Static_Content, and the 
+various regular expressions for identifying these filetypes are 
+also defined in Yolk.Configuration by the Handler_* parameters. 
+These regular expressions are registered by the 
 AWS.Services.Dispatchers.URI.Register_Regexp procedure.
 
 There's only one procedure in the Yolk.Handlers package:
@@ -1119,37 +1119,45 @@ not mandatory.
 This package makes use of the Yolk.Static_Content package for the 
 actual delivery of the content to the user.
 
-10 Yolk.Log_File_Cleanup
+10 Yolk.Log
 
-House-keeping is a very important task, and when dealing with 
-HTTP servers, one of those tasks involve keeping an eye on the 
-ever growing amount of access and error log files. To help 
-automate this task we have the Yolk.Log_File_Cleanup package. 
-This package contains one procedure:
+This package serves two purposes:
 
-procedure Delete      
+1. It contains the two callback procedures used to write AWS 
+  logging data (access and error) to syslogd.
 
-  (Config_Object           : in AWS.Config.Object;       
+2. It creates the SQL, Error and Info trace handles, and 
+  activates them according to the values defined in the 
+  configuration file.
 
-   Web_Server              : in AWS.Server.HTTP;
+Out of the box, a Yolk application requires a running syslogd 
+daemon, as all log data is sent to syslogd. If for some reason 
+you don't want to use syslogd, you're going to have to hack the 
+Yolk.Log package, or remove it entirely.
 
-   Amount_Of_Files_To_Keep : in Positive);
+The two procedures named AWS_* are used by the AWS HTTP(S) 
+server. These should not be used for anything else - or rather: 
+If you use them for anything else, the Message given is going to 
+be written to syslogd with either the AWS access log label or AWS 
+error log label. There's absolutely no harm in this, except it 
+might be a bit confusing when reading the log data.
+
+The Trace procedure is the one that you will be using in your 
+application. You can send log data to the trace handles defined 
+in Yolk.Log.Trace_Handles. All log data is then sent to the 
+syslogd daemon using the facilities set in the configuration file 
+for the given trace handle.
+
+Using Trace is about as easy as it gets:
+
+Yolk.Log.Trace (Handle  => Error,
+
+                Message => "Secret sauce to Error!");
 
 
-Whenever the Delete procedure is called, the directory where AWS 
-keeps its log files is traversed and if more log files than 
-Amount_Of_Files_To_Keep is found, then the oldest of these are 
-deleted until the amount equals Amount_Of_Files_To_Keep. 
-
-Note that Yolk.Log_File_Cleanup only deals with the AWS acces and 
-error log files. In the demo file demo/src/yolk_demo.adb there's 
-an example on how to call this procedure using a task that wakes 
-up according to the configuration setting 
-Log_File_Cleanup_Interval.
-
-Be sure to read the Logging - Rotating And Regular section in the 
-demo/exe/configuration/config.ini file for more information on 
-the configuration parameters that affect this system.
+If you haven't activated a trace handle, then calling Trace for 
+that handle does nothing, ie. you don't have to remove all your 
+Trace calls from the code if you don't use them.
 
 11 Yolk.Not_Found
 
@@ -1317,87 +1325,7 @@ In the file demo/src/yolk_demo.adb you'll find that
 Yolk.Process_Owner.Set_User is used in conjunction with the 
 Yolk.Configuration.Yolk_User parameter.
 
-14 Yolk.Rotating_Log
-
-This package provides the ability to write log data to three 
-predefined log traces:
-
-1. Error
-
-2. Info
-
-3. SQL
-
-These traces correspond with the components of the 
-Yolk.Rotating_Log.Trace_Handles enumeration type. Data written to 
-one of these traces are written to files and these files are 
-automatically rotated when they reach a specified size. The 
-rotation happens according to a “slot” system, so you don't have 
-to worry about cleaning away old log files on a regular basis. 
-The slot system works by appending a slot number to each log 
-file, so if you set the configuration parameter Max_Slot_Count to 
-3, then when starting the rotating log system you'll get a file 
-named Foo-rotating-INFO-1.log for the Info trace (if your 
-application is named Foo) and when that file reaches the 
-Rotating_Log_Size_Limit it is rotated to Foo-rotating-INFO-2.log 
-and so on and so forth. When the last slot rotates, it starts all 
-over with 1.
-
-This system has the obvious advantage of never growing beyond a 
-known limited size. On the other hand it has the disadvantage of 
-not being very good at keeping old log data readily at hand, as 
-everything is going to get overwritten sooner or later.
-
-For more information, take a look at the Logging - Rotating And 
-Regular section of the demo/exe/configuration/config.ini file.
-
-Note that this package handles all log data generated by the 
-GNATCOLL.SQL packages. See the demo/exe/configuration/config.ini 
-for how to enable/disable the different levels of SQL related log 
-data.
-
-14.1 Exceptions
-
-These are:
-
-• Cannot_Create_Log_File. Is raised when it's not possible to 
-  create one of the rotating log files.
-
-• Cannot_Write_To_Log_File. Is raised when it's not possible to 
-  write to one of the rotating log files.
-
-14.2 Starting the rotating log files
-
-It's not enough to simply with the package, you have to start the 
-rotating log system before you can actually use it. This is done 
-with the aptly named Start_Rotating_Logs procedure:
-
-procedure Start_Rotating_Logs
-
-  (Emit_Warning_If_Already_Running : Boolean := True);
-
-
-Setting the Emit_Warning_If_Already_Running to False will make 
-sure that a second call to Start_Rotating_Logs won't emit a 
-warning message on the Info trace.
-
-14.3 Writing log data
-
-With the rotating log system started, writing data to it is a 
-simple matter of calling the Trace procedure. It looks like this:
-
-procedure Trace      
-
-  (Handle     : in Trace_Handles;       
-
-   Log_String : in String);
-
-
-It should be obvious how this procedure is used. Note that the 
-configuration setting Immediate_Flush controls whether or not the 
-Log_String is written to file immediately or if a buffer is used.
-
-15 Yolk.Static_Content
+14 Yolk.Static_Content
 
 Most web applications have a lot of static content, ie. stuff 
 that doesn't change. Things like PNG's, HTML, CSS and Javascript. 
@@ -1431,7 +1359,7 @@ Yolk.Static_Content is affected by four configuration settings:
 You should carefully read the demo/exe/configuration/config.ini 
 file for information on what exactly these do.
 
-15.1 The static content cache setup
+14.1 The static content cache setup
 
 The configuration parameter Compressed_Cache_Directory defines 
 where the compressed version of the static content is saved. When 
@@ -1470,7 +1398,7 @@ to this procedure.
 
 If Log_To_Info_Trace is False then no information about the 
 deletion and creation of the compressed cache directory is logged 
-to the rotating log Info trace.
+to the Yolk.Log.Info trace.
 
 The remaining parameters defines the content of the Cache-Control 
 header sent to the user agent when a request for static content 
@@ -1484,13 +1412,13 @@ Read the [http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9||HTTP/1
  for more information on what the various settings do.
 
 You must call Static_Content_Cache_Setup prior to starting the 
-HTTP(S) server, if you plan on using the Yolk.Static_Content 
+HTTP server, if you plan on using the Yolk.Static_Content 
 package. Calling it repeatedly will simply wipe out the 
 compressed cache directory and reset the Control_Cache header 
 according to the given parameters. This is a threadsafe 
 operation.
 
-15.2 Yolk.Static_Content.Compressable
+14.2 Yolk.Static_Content.Compressable
 
 If your application contains a bunch of compressable files of 
 significant size, you can save a lot of bandwidth by using the 
@@ -1509,19 +1437,11 @@ from the Yolk.Handlers package:
 
 declare
 
-
-
    package SC renames Yolk.Static_Content;
-
-
 
    Resource_Handlers : AWS.Services.Dispatchers.URI.Handler;
 
-
-
 begin
-
-
 
    AWS.Services.Dispatchers.URI.Register_Regexp         
 
@@ -1542,8 +1462,6 @@ SC.Compressable'Access));
 
       Action      => Create (Callback => 
 SC.Compressable'Access));
-
-
 
 end;
 
@@ -1608,7 +1526,7 @@ you can of course also define WWW_Root and
 Compressed_Cache_Directory as absolute paths in the configuration 
 file.
 
-15.3 Yolk.Static_Content.Non_Compressable
+14.3 Yolk.Static_Content.Non_Compressable
 
 A lot of static content really doesn't benefit from any further 
 compression. This is the case for PNG files, JPEG files and a 
@@ -1633,23 +1551,23 @@ it's sibling function Compressable:
   (b) if yes, then return the file
 
 And that's it. Either the resource is there, or it isn't. If the 
-requested resource is /css/index.css, then the Non_Compressable 
+requested resource is /images/foo.png, then the Non_Compressable 
 function searches for the resource in:
 
-WWW_Root & "/css/index.ss";
+WWW_Root & "/images/foo.png";
 
 
 Using the default configuration value for WWW_Root, we'll end up 
 with the path:
 
-static_content/css/index.css
+static_content/images/foo.png
 
 Just as with Compressable a natural place to use Non_Compressable 
 is where you define you content handlers, but it can obviously be 
 used wherever your application handles requests for static 
 content.
 
-16 Yolk.Syndication
+15 Yolk.Syndication
 
 The Atom Syndication format ([http://tools.ietf.org/html/rfc4287||RFC4287]
 ) is an XML-based document format that describes lists of related 
@@ -1680,20 +1598,20 @@ There are two packages in the Yolk.Syndication hierarchy:
   defined.
 
 • Yolk.Syndication.Writer - Here the functions and procedures for 
-  actually creating an Atom feed is are defined.
+  actually creating an Atom feed are defined.
 
 When time permits, I'll add a Yolk.Syndication.Reader package for 
 extraction of data from an Atom feed.
 
-16.1 Exceptions
+15.1 Exceptions
 
 There's one exception in this package:
 
 • Not_Valid_XML. Is raised when some Xhtml content is not valid 
-  XML. This exception can be raised by all procedures that can 
-  take Xhtml as content.
+  XML. This exception can be raised by all procedures that takes 
+  Xhtml as content.
 
-16.2 The Yolk.Syndication types
+15.2 The Yolk.Syndication types
 
 There are 5 important types in this package:
 
@@ -1735,7 +1653,8 @@ current feed/entry. There are 5 possible relations:
 
 • Self: Signifies that the link points to a resource that is 
   equivalent to the resource described by the containing element. 
-  All feeds should have one link with a Self relation.
+  All feeds should have one link with a Self relation pointing to 
+  itself.
 
 • Enclosure: Signifies that the link points to a resource that is 
   related to, but not the same as, the resource described by the 
@@ -1766,7 +1685,7 @@ New_Atom_Entry_Source functions respectively.
 Note that only Atom_Feed is thread safe. The two entry related 
 types are not.
 
-16.3 Yolk.Syndication.New_Atom_Feed
+15.3 Yolk.Syndication.New_Atom_Feed
 
 This function initialize an Atom_Feed type, and its specification 
 looks like this:
@@ -1806,9 +1725,9 @@ Yolk.Syndication handles all this for you, according to the
 values given when you instantiate an Atom_Feed object using 
 New_Atom_Feed.
 
-16.4 Yolk.Syndication.New_Atom_Entry
+15.4 Yolk.Syndication.New_Atom_Entry
 
-This function initialize and Atom_Entry type, and its 
+This function initialize an Atom_Entry type, and its 
 specification looks like this:
 
 function New_Atom_Entry      
@@ -1826,9 +1745,9 @@ related parameters have already been set by they New_Atom_Feed
 function. All that is left is to define the Base_URI and the 
 natural Language used by the entry.
 
-16.5 Yolk.Syndication.New_Atom_Entry_Source
+15.5 Yolk.Syndication.New_Atom_Entry_Source
 
-This function initialize and Atom_Entry_Source type, and its 
+This function initialize an Atom_Entry_Source type, and its 
 specification looks like this:
 
 function New_Atom_Entry_Source      
@@ -1845,7 +1764,7 @@ function, since its job is to return an Atom_Entry_Source object,
 which is basically just an object that describes the origins of a 
 feed entry.
 
-16.6 Yolk.Syndication.Writer
+15.6 Yolk.Syndication.Writer
 
 In this package we find all the tools necessary to build the Atom 
 XML. There are far too many subprograms in 
@@ -1935,7 +1854,7 @@ procedure Add_Author
 There's actually a hint about the kind of XML element that is 
 being produced by these procedures. If the name of the procedure 
 starts with Set_ then it hints at an XML element of which there's 
-only ever one. So Set_Title create a <title>Foo</title> element, 
+only ever one. So Set_Title creates a <title>Foo</title> element, 
 and if called again, overwrites the previous value, whereas if 
 the name of procedure starts with Add_ then the Atom 
 specification allows for multiples of these, as can be seen with 
@@ -1944,10 +1863,10 @@ element, and calling it again simply adds one more author to the
 feed/entry/entry source.
 
 Most of the subprograms in this package deals directly with 
-building the Atom XML, but there are a few exceptions. We'll go 
-over these now.
+building the Atom XML, but there are a few exceptions, as you 
+will see next.
 
-16.7 Counting the amount of entries in a feed
+15.7 Counting the amount of entries in a feed
 
 If you need to know how many entries that are currently in a 
 feed, the you can use the 
@@ -1960,7 +1879,7 @@ function Amount_Of_Entries
    return Natural;
 
 
-16.8 Clearing and deleting entries
+15.8 Clearing and deleting entries
 
 There are two procedures available for clearing and deleting 
 entries, one for clearing all entries away, and one for deleting 
@@ -1987,7 +1906,7 @@ Using this one, you can delete all entries whose Id is Id. Note
 that the match must be exact, so case matters. FOO is not the 
 same as foo.
 
-16.9 Getting the Atom feed
+15.9 Getting the Atom feed
 
 When you've added titles, authors, categories, entries and 
 content to your feed, the next step is turning it into XML. This 
@@ -2037,18 +1956,18 @@ Get_XML_String and Get_XML_DOM both are pretty resource-hungry,
 so it's probably best to cache the results for later use, instead 
 of calling them on each and every hit.
 
-17 Yolk.Utilities
+16 Yolk.Utilities
 
 This package contains various support functionality or simple 
 renames of other subprograms, such as renaming the unyielding 
 To_Unbounded_String function to the more manageable TUS. Check 
 the yolk-utilities.ads source file for more information.
 
-18 Yolk.Whoops
+17 Yolk.Whoops
 
 This package contains one single procedure: 
 Unexpected_Exception_Handler. I suspect the name gives away 
-exactly what this procedure does. It looks like this:'
+exactly what this procedure does. It looks like this:
 
 procedure Unexpected_Exception_Handler      
 
@@ -2067,8 +1986,7 @@ fail to do anything sensible with. When
 Unexpected_Reception_Handler catch an exception, two things 
 happen:
 
-1. The exception is logged to the rotating log system in the 
-  Error trace.
+1. The exception is logged to the Yolk.Log.Error trace.
 
 2. A HTTP status code 500 is returned to the user.
 

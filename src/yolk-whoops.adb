@@ -26,7 +26,7 @@ with AWS.MIME;
 with AWS.Status;
 with AWS.Templates;
 with Yolk.Configuration;
-with Yolk.Rotating_Log;
+with Yolk.Log;
 
 package body Yolk.Whoops is
 
@@ -46,43 +46,39 @@ package body Yolk.Whoops is
       use AWS.Status;
       use AWS.Templates;
       use Yolk.Configuration;
-      use Yolk.Rotating_Log;
+      use Yolk.Log;
 
       S : Data renames Error.Request;
       T : Translate_Set;
    begin
       if Error.Fatal then
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "");
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "-- FATAL Unexpected Exception Begin --");
-         Trace (Handle     => Yolk.Rotating_Log.Error,
-                Log_String => Exception_Information (E));
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "We have a serious problem. One of the AWS" &
+         Trace (Handle  => Yolk.Log.Error,
+                Message => "-- FATAL Unexpected Exception Begin --");
+         Trace (Handle  => Yolk.Log.Error,
+                Message => Exception_Information (E));
+         Trace (Handle  => Yolk.Log.Error,
+                Message => "We have a serious problem. One of the AWS" &
                 "slots have died.");
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "Slot " & Positive'Image (Error.Slot) &
+         Trace (Handle  => Yolk.Log.Error,
+                Message => "Slot " & Positive'Image (Error.Slot) &
                 " is dead now.");
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "-- FATAL Unexpected Exception End --");
+         Trace (Handle  => Yolk.Log.Error,
+                Message => "-- FATAL Unexpected Exception End --");
       else
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "");
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "-- Unexpected Exception Begin --");
-         Trace (Handle     => Yolk.Rotating_Log.Error,
-                Log_String => Exception_Information (E));
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => " Client: " & Peername (S));
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => " Method: " & Method (S));
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => " URI: " & URI (S));
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => " HTTP version: " & HTTP_Version (S));
-         Trace (Handle     => Rotating_Log.Error,
-                Log_String => "-- Unexpected Exception End --");
+         Trace (Handle  => Yolk.Log.Error,
+                Message => "-- Unexpected Exception Begin --");
+         Trace (Handle  => Yolk.Log.Error,
+                Message => Exception_Information (E));
+         Trace (Handle  => Yolk.Log.Error,
+                Message => " Client: " & Peername (S));
+         Trace (Handle  => Yolk.Log.Error,
+                Message => " Method: " & Method (S));
+         Trace (Handle  => Yolk.Log.Error,
+                Message => " URI: " & URI (S));
+         Trace (Handle  => Yolk.Log.Error,
+                Message => " HTTP version: " & HTTP_Version (S));
+         Trace (Handle  => Yolk.Log.Error,
+                Message => "-- Unexpected Exception End --");
       end if;
 
       Insert (T, Assoc ("VERSION", AWS.Version));
