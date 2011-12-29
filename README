@@ -18,13 +18,13 @@ accomplished using plain AWS, GNATcoll, XML/Ada and Florist. It is, for lack of
 a better term, a convenience. Some of things that Yolk offers are:
 
     * Sending emails from the application
-    * Setting up rotating log files and handling basic log file management
     * Loading configuration files
     * Handling the most common static content types (HTML, PNG, ICO and so on)
     * Easy Atom RSS feed generation
     * Connecting to one or more PostgreSQL databases
     * Switching to an un-privileged user.
     * Start/stop as a "regular" daemon using an rc script.
+    * Easy logging to syslogd.
 
 Be sure to check out the Yolk demo application for a good example on how to make
 use of Yolk.
