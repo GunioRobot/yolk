@@ -1,6 +1,6 @@
 Yolk Manual
 
-Revised December 7th. 2011
+Revised January 6th. 2012
 
 
 
@@ -14,7 +14,21 @@ Table of Contents
 
 General Information
 
-1 What is Yolk?
+1 Copyright and License
+
+This document is copyright (C) 2010-2012, Thomas Løcke. You may 
+copy this document, in whole or in part, in any form or by any 
+means, as is or with alterations, provided that (1) alterations 
+are clearly marked as alterations and (2) this copyright notice 
+is included unmodified in any copy.
+
+Yolk is GPLv3 software. You should have received a copy of the 
+GNU General Public License and a copy of the GCC Runtime Library 
+Exception along with this program; see the files COPYING3 and 
+COPYING.RUNTIME respectively. If not, see [http://www.gnu.org/licenses/||http://www.gnu.org/licenses/]
+. 
+
+2 What is Yolk?
 
 Yolk is a collection of packages that aim to help build solid 
 web-applications using Ada. Yolk itself doesn't do a whole lot 
@@ -35,7 +49,7 @@ understand how to use AWS, in order for Yolk to make any kind of
 sense. What you get when using Yolk is the little things that AWS 
 does not readily provide.
 
-1.1 The Yolk demo application
+2.1 The Yolk demo application
 
 Reading this manual will of course (I hope!) help you understand 
 how to use Yolk, but please consider taking a closer look at the 
@@ -50,7 +64,7 @@ manual, the Yolk source files and the demo application, you
 should be able to make full use of the Yolk packages in your own 
 applications.
 
-1.2 The source code
+2.2 The source code
 
 The Yolk source code is the best documentation there is. This 
 document is never going to be as comprehensive as the actual 
@@ -60,12 +74,12 @@ are short descriptions of what a package is meant to do and
 perhaps small usage examples, not a complete rundown of every 
 type and procedure in a package.
 
-1.3 Building and installing Yolk
+2.3 Building and installing Yolk
 
 See the README and INSTALL files. These are found in the Yolk 
 root directory.
 
-1.4 The files Yolk depend upon
+2.4 The files Yolk depend upon
 
 When you read this document and the Yolk source code, you'll 
 notice that quite a few packages depend on various files being 
@@ -86,7 +100,7 @@ your Yolk install is working as intended. Just read the
 demo/README and demo/INSTALL files for instructions on how to get 
 it up and running.
 
-1.5 The Yolk packages naming
+2.5 The Yolk packages naming
 
 The Yolk packages are pretty diverse, ranging from process 
 control to sending email. I've tried naming them as sensibly as 
@@ -100,14 +114,14 @@ yourself.
 
 The Yolk Packages
 
-2 Yolk
+3 Yolk
 
 The Yolk main package currently only contain one thing: The Yolk 
 Version string. This is used in a few places, for example in the 
 directory.tmpl template file, but obviously it's not something 
 that's of vital importance to most applications.
 
-3 Yolk.Cache.Discrete_Keys
+4 Yolk.Cache.Discrete_Keys
 
 If a piece of data doesn't change very often and it is expensive 
 to build, then caching it might be worthwhile. Instead of going 
@@ -118,7 +132,7 @@ cost of some memory.
 If you know exactly what you want to cache, the 
 Yolk.Cache.Discrete_Keys package might be just what you need.
 
-3.1 The generic formal parameters
+4.1 The generic formal parameters
 
 These are:
 
@@ -140,7 +154,7 @@ set this to whatever suits your needs. This timer is used for all
 content in the cache. You cannot set this individually for each 
 element.
 
-3.2 Instantiation
+4.2 Instantiation
 
 If for example we have two different sets of data (Foo and Bar) 
 that are expensive to build, we can instantiate a Discrete_Keys 
@@ -159,7 +173,7 @@ And that is all. We now have a My_Cache object that can hold two
 objects: Foo and Bar. These are of the type Unbounded_String and 
 they have a Max_Element_Age of 3600.0 seconds.
 
-3.3 Writing to the cache
+4.3 Writing to the cache
 
 Before we can read something from the cache, we must first write 
 something to it:
@@ -182,7 +196,7 @@ My_Cache object, and will be so for 3600.0 seconds. Calling Write
 with the Foo key will always overwrite earlier written Foo 
 elements, no matter their age.
 
-3.4 Reading from the cache
+4.4 Reading from the cache
 
 A cache obviously only makes sense if you intend to read from it. 
 In our case we want to get our hands on the previously written “
@@ -224,7 +238,7 @@ true), it must:
 
 If Is_Valid is False, then Value is undefined.
 
-3.5 Checking if a key is valid
+4.5 Checking if a key is valid
 
 If you need to check whether a specific key exists in the cache 
 and is valid, then you must use the Is_Valid function.
@@ -243,7 +257,7 @@ end if;
 This follows the same rules as the Is_Valid parameter for the 
 Read procedure.
 
-3.6 Clearing keys and the entire cache
+4.6 Clearing keys and the entire cache
 
 For clearing of keys and the entire cache we have, naturally, two 
 Clear procedures:
@@ -261,7 +275,7 @@ My_Cache.Clear;
 
 And that's all it takes.
 
-4 Yolk.Cache.String_Keys
+5 Yolk.Cache.String_Keys
 
 This package is almost similar to the Yolk.Cache.Discrete_Keys 
 package. The biggest difference is that where the Discrete_Keys 
@@ -275,7 +289,7 @@ are the same. The biggest difference lies in the available
 generic formal parameters and the addition of the Cleanup 
 procedure and the Length function.
 
-4.1 The generic formal parameters
+5.1 The generic formal parameters
 
 These are:
 
@@ -317,7 +331,7 @@ elements in the cache, then set this to 200. Note that this
 setting has no bearing on the actual size of the cache. The cache 
 will happily grow beyond the Reserved_Capacity value.
 
-4.2 Instantiation
+5.2 Instantiation
 
 Instantiating String_Keys is done like this:
 
@@ -333,7 +347,7 @@ objects of the type Unbounded_String, all of which have a
 Max_Element_Age of 3600.0 seconds. Also we've told the cache to 
 set aside at least 200 positions for content.
 
-4.3 Writing to the cache
+5.3 Writing to the cache
 
 Before we can read something from the cache, we must first write 
 something to it:
@@ -356,7 +370,7 @@ key “Foo”, and will be so for 3600.0 seconds. Calling Write with
 the “Foo” String will always overwrite earlier written “Foo” 
 elements, no matter their age.
 
-4.4 Reading from the cache
+5.4 Reading from the cache
 
 A cache obviously only makes sense if you intend to read from it. 
 In our case we want to get our hands on the previously written “
@@ -398,7 +412,7 @@ true), it must:
 
 If Is_Valid is False, then Value contains undefined garbage.
 
-4.5 Checking if a key is valid
+5.5 Checking if a key is valid
 
 If you need to check whether a specific key exists in the cache 
 and is valid, then you need to use the Is_Valid function.
@@ -417,7 +431,7 @@ end if;
 This follows the same rules as the Is_Valid parameter for the 
 Read procedure.
 
-4.6 Clearing keys and the entire cache
+5.6 Clearing keys and the entire cache
 
 For clearing of keys and the entire cache we have, naturally, two 
 Clear procedures:
@@ -433,7 +447,7 @@ My_Cache.Clear (Key => "Foo");
 My_Cache.Clear;
 
 
-4.7 How much is in there?
+5.7 How much is in there?
 
 With the Discrete_Keys cache we obviously always know the exact 
 amount of keys available, since we've defined the keys ourselves. 
@@ -450,7 +464,7 @@ end if;
 
 Note that Length count both valid and invalid elements.
 
-4.8 Cleanup - Keeping cache size in check
+5.8 Cleanup - Keeping cache size in check
 
 if Cleanup_On_Write is True, then Cleanup is called by Write 
 whenever the size of the cache reach Cleanup_Size. It is of 
@@ -467,7 +481,7 @@ If you've set Cleanup_On_Write to Boolean False and the String
 keys are coming from outside sources, then you really should make 
 sure you call Cleanup on a regular basis. 
 
-5 Yolk.Config_File_Parser
+6 Yolk.Config_File_Parser
 
 This package enables you to access KEY/VALUE pairs in 
 configuration files that are written in the style:
@@ -496,7 +510,7 @@ returned at any time.
 To clear a default value, simply add the key to the configuration 
 file, with no value set.
 
-5.1 The generic formal parameters
+6.1 The generic formal parameters
 
 These are:
 
@@ -522,7 +536,7 @@ Note that the Config_File parameter has a default value. This
 path is actually where Yolk expects to find the configuration 
 file used by the Yolk.Configuration package.
 
-5.2 Exceptions
+6.2 Exceptions
 
 There are 3 different exceptions that can be raised by the 
 Yolk.Config_File_Parser package. These are:
@@ -537,7 +551,7 @@ Yolk.Config_File_Parser package. These are:
 • Conversion_Error. This is raised when a value cannot be 
   converted to the target type, ie. the value “42” to a Boolean.
 
-5.3 Instantiation
+6.3 Instantiation
 
 Yolk.Config_File_Parser is a generic package, so in order to use 
 it, you have to instantiate it, like this:
@@ -587,7 +601,7 @@ file will overwrite the default values set in the Default_Values
 array. Setting a default value to Null_Unbounded_String means the 
 value is empty.
 
-5.4 Re-loading configuration files
+6.4 Re-loading configuration files
 
 With the Load_File procedure you can re-load a new configuration 
 file into your Config package:
@@ -602,7 +616,7 @@ Note that you cannot change what KEY's are valid, so if the
 new_config.ini file contains unknown keys, Load_File will raise 
 the Unknown_Key exception.
 
-5.5 Getting values
+6.5 Getting values
 
 With instantiation and loading of configuration files out of the 
 way, it is now time to get to the configuration values. To get 
@@ -630,7 +644,7 @@ Null_Unbounded_String, depending on the target type. If a key is
 empty and the target type is not a String or an Unbounded_String, 
 then the Conversion_Error exception is raised.
 
-5.6 Checking if a KEY has a VALUE
+6.6 Checking if a KEY has a VALUE
 
 You can check if a key has a value with the Has_Value function:
 
@@ -644,7 +658,7 @@ end if;
 Basically all this function does is return Boolean True if the 
 value of the given key is not a Null_Unbounded_String.
 
-6 Yolk.Configuration
+7 Yolk.Configuration
 
 This package is a bit of an oddball, as all it does is 
 instantiate the Yolk.Config_File_Parser generic with the default 
@@ -674,7 +688,7 @@ the source file before compiling Yolk.
 I recommend taking a look at the Yolk demo application to see how 
 the Yolk.Configuration package is used.
 
-6.1 Get the AWS specific configuration settings
+7.1 Get the AWS specific configuration settings
 
 When you start an AWS server, you need to give it an 
 AWS.Config.Object with all the necessary configuration settings. 
@@ -699,7 +713,7 @@ instantiation, so you might as well use this as the configuration
 foundation for the AWS HTTP server component of your application. 
 Again, see the demo application for examples on how this is done.
 
-7 Yolk.Email
+8 Yolk.Email
 
 Using Yolk.Email and the child package Yolk.Email.Composer you 
 can build and send more or less any kind of email:
@@ -718,7 +732,7 @@ The Yolk.Email package define 4 exceptions and 3 types. The
 facilities for actually constructing and sending the email are 
 found in Yolk.Email.Composer.
 
-7.1 Exceptions
+8.1 Exceptions
 
 These are:
 
@@ -735,7 +749,7 @@ These are:
 • No_SMTP_Host_Set. Is raised if the SMTP host list is empty, ie. 
   no SMTP host has been set for sending the email.
 
-7.2 The Yolk.Email types
+8.2 The Yolk.Email types
 
 When using Yolk.Email.Composer to build and send emails, three 
 types declared in Yolk.Email are central:
@@ -817,7 +831,7 @@ The Structure type is at the core of it all. You declare an
 object to be of the Structure type, and then you use the 
 Yolk.Email.Composer facilities to build and send the email.
 
-8 Yolk.Email.Composer
+9 Yolk.Email.Composer
 
 The actual tools for building and sending an email is found in 
 this package. Here are tools for building emails from the ground 
@@ -828,7 +842,7 @@ I'm not going to go through ever procedure in this package,
 instead I'll show an example on how to build an email from the 
 ground up and how to use one of the convenience procedures.
 
-8.1 Building and sending an email, the easy way
+9.1 Building and sending an email, the easy way
 
 There are two convenience procedures in Yolk.Email.Composer for 
 sending emails without having to do a whole lot of work/thinking. 
@@ -990,7 +1004,7 @@ User-Agent: My User Agent
 It hardly gets any easier than that. Lets move on and see how the 
 above is accomplished the hard way.
 
-8.2 Building and sending email, the hard way
+9.2 Building and sending email, the hard way
 
 It is possible to build an email from the ground up, which 
 obviously allows for a more fine grained control over what is 
@@ -1070,7 +1084,7 @@ end;
 
 Harder yes, but really not all that much more difficult.
 
-9 Yolk.Handlers
+10 Yolk.Handlers
 
 Most web applications will need to handle static content, such as 
 PNG, HTML and CSS files. Yolk.Handlers helps you accomplish that, 
@@ -1119,7 +1133,7 @@ not mandatory.
 This package makes use of the Yolk.Static_Content package for the 
 actual delivery of the content to the user.
 
-10 Yolk.Log
+11 Yolk.Log
 
 This package serves two purposes:
 
@@ -1159,7 +1173,7 @@ If you haven't activated a trace handle, then calling Trace for
 that handle does nothing, ie. you don't have to remove all your 
 Trace calls from the code if you don't use them.
 
-11 Yolk.Not_Found
+12 Yolk.Not_Found
 
 This job of this package is to return a HTTP 404 status code and 
 an accompanying simple not found HTML page. It's sole function 
@@ -1185,7 +1199,7 @@ dispatcher, is served by Yolk.Not_Found.Generate ie. a 404 is
 returned. See the demo/src/my_handlers.adb file for more 
 information.
 
-12 Yolk.Process_Control
+13 Yolk.Process_Control
 
 With Yolk.Process_Control you get the ability to control your 
 application using the SIGINT, SIGPWR and SIGTERM signals. You 
@@ -1193,7 +1207,7 @@ also get a PID file placed next to your executable, which coupled
 with the demo/tools/rc.yolk script gives you a rather nice and 
 simple way of starting and stopping your application.
 
-12.1 Exceptions
+13.1 Exceptions
 
 These are:
 
@@ -1210,7 +1224,7 @@ These are:
   ie. the application is already running or it was shutdown 
   incorrectly.
 
-12.2 Using Yolk.Process_Control
+13.2 Using Yolk.Process_Control
 
 When you use the Yolk.Process_Control package the 
 Unreserve_All_Interrupts pragma is used. This means that 
@@ -1273,7 +1287,7 @@ Wait;
 Whether or not this is actually useful I don't know, but it is 
 possible.
 
-13 Yolk.Process_Owner
+14 Yolk.Process_Owner
 
 When it is necessary to change the owner of a process, the 
 Yolk.Process_Owner package is the solution. Obviously this can 
@@ -1281,14 +1295,14 @@ also be done when starting the application, using various shell
 tricks, but I find it it much cleaner to just let the application 
 handle it by itself.
 
-13.1 Exceptions
+14.1 Exceptions
 
 There's only one:
 
 1. Username_Does_Not_Exist. This is raised if the given username 
   doesn't exist on the system.
 
-13.2 Using Yolk.Process_Owner
+14.2 Using Yolk.Process_Owner
 
 There's only a single procedure in this package and its 
 specification looks like this:
@@ -1325,7 +1339,7 @@ In the file demo/src/yolk_demo.adb you'll find that
 Yolk.Process_Owner.Set_User is used in conjunction with the 
 Yolk.Configuration.Yolk_User parameter.
 
-14 Yolk.Static_Content
+15 Yolk.Static_Content
 
 Most web applications have a lot of static content, ie. stuff 
 that doesn't change. Things like PNG's, HTML, CSS and Javascript. 
@@ -1359,7 +1373,7 @@ Yolk.Static_Content is affected by four configuration settings:
 You should carefully read the demo/exe/configuration/config.ini 
 file for information on what exactly these do.
 
-14.1 The static content cache setup
+15.1 The static content cache setup
 
 The configuration parameter Compressed_Cache_Directory defines 
 where the compressed version of the static content is saved. When 
@@ -1418,7 +1432,7 @@ compressed cache directory and reset the Control_Cache header
 according to the given parameters. This is a threadsafe 
 operation.
 
-14.2 Yolk.Static_Content.Compressable
+15.2 Yolk.Static_Content.Compressable
 
 If your application contains a bunch of compressable files of 
 significant size, you can save a lot of bandwidth by using the 
@@ -1526,7 +1540,7 @@ you can of course also define WWW_Root and
 Compressed_Cache_Directory as absolute paths in the configuration 
 file.
 
-14.3 Yolk.Static_Content.Non_Compressable
+15.3 Yolk.Static_Content.Non_Compressable
 
 A lot of static content really doesn't benefit from any further 
 compression. This is the case for PNG files, JPEG files and a 
@@ -1567,7 +1581,7 @@ is where you define you content handlers, but it can obviously be
 used wherever your application handles requests for static 
 content.
 
-15 Yolk.Syndication
+16 Yolk.Syndication
 
 The Atom Syndication format ([http://tools.ietf.org/html/rfc4287||RFC4287]
 ) is an XML-based document format that describes lists of related 
@@ -1603,7 +1617,7 @@ There are two packages in the Yolk.Syndication hierarchy:
 When time permits, I'll add a Yolk.Syndication.Reader package for 
 extraction of data from an Atom feed.
 
-15.1 Exceptions
+16.1 Exceptions
 
 There's one exception in this package:
 
@@ -1611,7 +1625,7 @@ There's one exception in this package:
   XML. This exception can be raised by all procedures that takes 
   Xhtml as content.
 
-15.2 The Yolk.Syndication types
+16.2 The Yolk.Syndication types
 
 There are 5 important types in this package:
 
@@ -1685,7 +1699,7 @@ New_Atom_Entry_Source functions respectively.
 Note that only Atom_Feed is thread safe. The two entry related 
 types are not.
 
-15.3 Yolk.Syndication.New_Atom_Feed
+16.3 Yolk.Syndication.New_Atom_Feed
 
 This function initialize an Atom_Feed type, and its specification 
 looks like this:
@@ -1725,7 +1739,7 @@ Yolk.Syndication handles all this for you, according to the
 values given when you instantiate an Atom_Feed object using 
 New_Atom_Feed.
 
-15.4 Yolk.Syndication.New_Atom_Entry
+16.4 Yolk.Syndication.New_Atom_Entry
 
 This function initialize an Atom_Entry type, and its 
 specification looks like this:
@@ -1745,7 +1759,7 @@ related parameters have already been set by they New_Atom_Feed
 function. All that is left is to define the Base_URI and the 
 natural Language used by the entry.
 
-15.5 Yolk.Syndication.New_Atom_Entry_Source
+16.5 Yolk.Syndication.New_Atom_Entry_Source
 
 This function initialize an Atom_Entry_Source type, and its 
 specification looks like this:
@@ -1764,7 +1778,7 @@ function, since its job is to return an Atom_Entry_Source object,
 which is basically just an object that describes the origins of a 
 feed entry.
 
-15.6 Yolk.Syndication.Writer
+16.6 Yolk.Syndication.Writer
 
 In this package we find all the tools necessary to build the Atom 
 XML. There are far too many subprograms in 
@@ -1866,7 +1880,7 @@ Most of the subprograms in this package deals directly with
 building the Atom XML, but there are a few exceptions, as you 
 will see next.
 
-15.7 Counting the amount of entries in a feed
+16.7 Counting the amount of entries in a feed
 
 If you need to know how many entries that are currently in a 
 feed, the you can use the 
@@ -1879,7 +1893,7 @@ function Amount_Of_Entries
    return Natural;
 
 
-15.8 Clearing and deleting entries
+16.8 Clearing and deleting entries
 
 There are two procedures available for clearing and deleting 
 entries, one for clearing all entries away, and one for deleting 
@@ -1906,7 +1920,7 @@ Using this one, you can delete all entries whose Id is Id. Note
 that the match must be exact, so case matters. FOO is not the 
 same as foo.
 
-15.9 Getting the Atom feed
+16.9 Getting the Atom feed
 
 When you've added titles, authors, categories, entries and 
 content to your feed, the next step is turning it into XML. This 
@@ -1956,14 +1970,14 @@ Get_XML_String and Get_XML_DOM both are pretty resource-hungry,
 so it's probably best to cache the results for later use, instead 
 of calling them on each and every hit.
 
-16 Yolk.Utilities
+17 Yolk.Utilities
 
 This package contains various support functionality or simple 
 renames of other subprograms, such as renaming the unyielding 
 To_Unbounded_String function to the more manageable TUS. Check 
 the yolk-utilities.ads source file for more information.
 
-17 Yolk.Whoops
+18 Yolk.Whoops
 
 This package contains one single procedure: 
 Unexpected_Exception_Handler. I suspect the name gives away 

@@ -69,8 +69,8 @@ Yolk Manual
 \end_layout
 
 \begin_layout Date
-Revised December 7th.
- 2011
+Revised January 6th.
+ 2012
 \end_layout
 
 \begin_layout Standard
@@ -98,6 +98,35 @@ LatexCommand tableofcontents
 
 \begin_layout Part
 General Information
+\end_layout
+
+\begin_layout Section
+Copyright and License
+\end_layout
+
+\begin_layout Standard
+This document is copyright (C) 2010-2012, Thomas Løcke.
+ You may copy this document, in whole or in part, in any form or by any
+ means, as is or with alterations, provided that (1) alterations are clearly
+ marked as alterations and (2) this copyright notice is included unmodified
+ in any copy.
+\end_layout
+
+\begin_layout Standard
+Yolk is GPLv3 software.
+ You should have received a copy of the GNU General Public License and a
+ copy of the GCC Runtime Library Exception along with this program; see
+ the files COPYING3 and COPYING.RUNTIME respectively.
+ If not, see 
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.gnu.org/licenses/"
+target "http://www.gnu.org/licenses/"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Section

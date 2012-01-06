@@ -7,7 +7,7 @@ Contents of this README:
     3. The database demo page
     4. The email demo page
     5. Using the Yolk demo application
-    6. Using the Yolk demo as a foundation    
+    6. Using the Yolk demo as a foundation
 
 -------------------
 --  Introduction --
@@ -21,6 +21,8 @@ The Yolk demo application serves two purposes:
 Obviously Yolk comes with complete documentation and a fair amount of source
 code comments, but in some cases it is easier to "get" a system if you see
 some actual working code. The Yolk demo application is such working code.
+
+Yolk is GPLv3, see COPYING3 and COPYING.RUNTIME.
 
 --------------------
 --  Dependencies  --
@@ -82,11 +84,11 @@ run a Yolk application like any other server-software. It is properly detached
 from the console. All you have to do is edit a few variables at the beginning of
 the script, so it fits your environment.
 
-To see the status page for the application, go to 
+To see the status page for the application, go to
 
     http://localhost:4242/status
 
-and enter "admin" as username and "changemenow" as password. See config.ini for 
+and enter "admin" as username and "changemenow" as password. See config.ini for
 how to change the password for this page. Look for the Admin_Password option.
 
 -------------------------------------------

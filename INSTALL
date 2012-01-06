@@ -3,10 +3,11 @@ all the dependencies are met.
 
 Building and installing Yolk is as simple as:
 
-    Editing makefile.setup to suit your needs
+    Edit makefile.setup to suit your needs
     $ make
     $ make install
 
 You can remove Yolk from your system by doing:
 
     $ make distclean
+

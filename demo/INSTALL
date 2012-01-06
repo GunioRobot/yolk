@@ -4,7 +4,7 @@ and make sure that all the dependencies are met.
 Building the Yolk demo is as simple as:
 
     $ make
-   
+
 And that's all. You now have a fully functioning Yolk application in the exe/
 directory. Be sure to adjust the exe/configuration/* config files to match your
 setup.
@@ -20,5 +20,6 @@ with:
                   --show-possibly-lost=no \
                   --track-origins=yes yolk_demo
 
-You'll get some leaks, but they are stable and does not grow over time, so don't
-worry about them.
+You'll get some leaks, but they are stable and does not grow over time, so
+don't worry about them.
+

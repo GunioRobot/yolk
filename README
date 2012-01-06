@@ -10,7 +10,7 @@ Contents of this README:
 --  Introduction --
 -------------------
 
-Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2], 
+Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2],
 Florist[3], XML/Ada[4] and PostgreSQL[5].
 
 It is important to understand that Yolk itself does very little that cannot be
@@ -34,6 +34,8 @@ and I've no current plans for trying my hand at those two platforms. If you'd
 like to help make it work for Mac and/or Windows, feel free to contact me at
 thomas@12boo.net
 
+Yolk is GPLv3, see COPYING3 and COPYING.RUNTIME.
+
 --------------------
 --  Dependencies  --
 --------------------
@@ -51,12 +53,12 @@ Yolk might work with other versions of the above software, but those are the
 versions I've tested it with.
 
 The path to the AWS, GNATcoll, Florist and XML/Ada project files must be added
-to the GPR_PROJECT_PATH and ADA_PROJECT_PATH environment variables, or else your 
+to the GPR_PROJECT_PATH and ADA_PROJECT_PATH environment variables, or else your
 Yolk project wont compile.
 
 My usual modus operandi for setting up these 6 things goes something like this:
 
-    1.  Install PostgreSQL by whatever means is fitting for the OS. 
+    1.  Install PostgreSQL by whatever means is fitting for the OS.
 
     2.  Install GNAT GPL in its default location (/usr/gnat) and add /usr/gnat/bin
         to your PATH:
@@ -139,7 +141,7 @@ My usual modus operandi for setting up these 6 things goes something like this:
 
     5.  Add /usr/gnat/bin to your PATH environment variable.
 
-    6.  Add /usr/gnat/lib/gnat to your GPR_PROJECT_PATH and ADA_PROJECT_PATH 
+    6.  Add /usr/gnat/lib/gnat to your GPR_PROJECT_PATH and ADA_PROJECT_PATH
         environment variables.
 
 Don't take the above for gospel. You should _always_ read all the accompanying
@@ -153,7 +155,7 @@ XML/Ada, Florist and GNATcoll project files available in these directories:
     /usr/gnat/lib/gnat/florist.gpr
     /usr/gnat/lib/gnat/gnatcoll_postgresql.gpr
 
-My GPR_PROJECT_PATH / ADA_PROJECT_PATH environment variables hence contains 
+My GPR_PROJECT_PATH / ADA_PROJECT_PATH environment variables hence contains
 this:
 
     /usr/gnat/lib/gnat
