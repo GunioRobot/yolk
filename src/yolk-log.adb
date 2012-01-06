@@ -83,64 +83,70 @@ package body Yolk.Log is
       Handle_Array (Error) := GNATCOLL.Traces.Create
         (Unit_Name => "ERROR",
          Default   => GNATCOLL.Traces.On,
-         Stream    => "&syslog:user:info");
+         Stream    =>
+           "&syslog:" & Config.Get (Error_Syslog_Facility_Level));
 
       Handle_Array (Info) := GNATCOLL.Traces.Create
         (Unit_Name => "INFO",
          Default   => GNATCOLL.Traces.On,
-         Stream    => "&syslog:user:info");
+         Stream    =>
+           "&syslog:" & Config.Get (Info_Syslog_Facility_Level));
 
       Handle_Array (SQL) := GNATCOLL.Traces.Create
         (Unit_Name => "SQL",
          Default   => GNATCOLL.Traces.On,
-         Stream    => "&syslog:user:info");
+         Stream    =>
+           "&syslog:" & Config.Get (SQL_Syslog_Facility_Level));
 
       Handle_Array (SQL_Cache) := GNATCOLL.Traces.Create
         (Unit_Name => "SQL.CACHE",
          Default   => GNATCOLL.Traces.On,
-         Stream    => "&syslog:user:info");
+         Stream    =>
+           "&syslog:" & Config.Get (SQL_Cache_Syslog_Facility_Level));
 
       Handle_Array (SQL_Error) := GNATCOLL.Traces.Create
         (Unit_Name => "SQL.ERROR",
          Default   => GNATCOLL.Traces.On,
-         Stream    => "&syslog:user:info");
+         Stream    =>
+           "&syslog:" & Config.Get (SQL_Error_Syslog_Facility_Level));
 
       Handle_Array (SQL_Select) := GNATCOLL.Traces.Create
         (Unit_Name => "SQL.SELECT",
          Default   => GNATCOLL.Traces.On,
-         Stream    => "&syslog:user:info");
+         Stream    =>
+           "&syslog:" & Config.Get (SQL_Select_Syslog_Facility_Level));
 
       GNATCOLL.Traces.Set_Active
         (Handle => AWS_Access,
-         Active => Config.Get (Activate_AWS_Access_Log));
+         Active => Config.Get (AWS_Access_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => AWS_Error,
-         Active => Config.Get (Activate_AWS_Error_Log));
+         Active => Config.Get (AWS_Error_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => Handle_Array (Error),
-         Active => Config.Get (Activate_Error_Log));
+         Active => Config.Get (Error_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => Handle_Array (Info),
-         Active => Config.Get (Activate_Info_Log));
+         Active => Config.Get (Info_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => Handle_Array (SQL),
-         Active => Config.Get (Activate_SQL_Log));
+         Active => Config.Get (SQL_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => Handle_Array (SQL_Cache),
-         Active => Config.Get (Activate_SQL_Cache_Log));
+         Active => Config.Get (SQL_Cache_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => Handle_Array (SQL_Error),
-         Active => Config.Get (Activate_SQL_Error_Log));
+         Active => Config.Get (SQL_Error_Log_Activate));
 
       GNATCOLL.Traces.Set_Active
         (Handle => Handle_Array (SQL_Select),
-         Active => Config.Get (Activate_SQL_Select_Log));
+         Active => Config.Get (SQL_Select_Log_Activate));
    end Initialize;
 
    -------------

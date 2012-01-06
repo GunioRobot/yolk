@@ -88,7 +88,8 @@ My usual modus operandi for setting up these 6 things goes something like this:
 
         You should of course adjust the above configuration options to fit your
         needs, just make sure PostgreSQL and SQLite support is enabled, as both
-        of these are used by the Yolk demo.
+        of these are used by the Yolk demo. You must also make sure that syslog
+        support is compiled in, since all logging data is sent to syslog.
 
             $ make
             $ make install

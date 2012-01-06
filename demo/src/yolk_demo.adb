@@ -93,14 +93,14 @@ procedure Yolk_Demo is
       --  Log_File_Directory directory, but instead they are created in the
       --  directory where the executable is.
 
-      if Config.Get (Activate_AWS_Access_Log) then
+      if Config.Get (AWS_Access_Log_Activate) then
          AWS.Server.Log.Start
            (Web_Server => Web_Server,
             Callback   => Yolk.Log.AWS_Access_Log_Writer'Access,
             Name       => "AWS Access Log");
       end if;
 
-      if Config.Get (Activate_AWS_Error_Log) then
+      if Config.Get (AWS_Error_Log_Activate) then
          AWS.Server.Log.Start_Error
            (Web_Server => Web_Server,
             Callback   => Yolk.Log.AWS_Error_Log_Writer'Access,

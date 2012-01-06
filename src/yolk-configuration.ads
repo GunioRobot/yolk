@@ -36,18 +36,12 @@ package Yolk.Configuration is
    use Yolk.Utilities;
 
    type Keys is (Accept_Queue_Size, --  AWS
-                 Activate_AWS_Access_Log,
-                 Activate_AWS_Error_Log,
-                 Activate_Error_Log,
-                 Activate_Info_Log,
-                 Activate_SQL_Log,
-                 Activate_SQL_Cache_Log,
-                 Activate_SQL_Error_Log,
-                 Activate_SQL_Select_Log,
-                 AWS_Access_Syslog_Facility_Level,
-                 AWS_Error_Syslog_Facility_Level,
                  Admin_Password, --  AWS
                  Admin_URI, --  AWS
+                 AWS_Access_Log_Activate,
+                 AWS_Access_Syslog_Facility_Level,
+                 AWS_Error_Log_Activate,
+                 AWS_Error_Syslog_Facility_Level,
                  Case_Sensitive_Parameters, --  AWS
                  Certificate, --  AWS
                  Check_URL_Validity, --  AWS
@@ -59,6 +53,8 @@ package Yolk.Configuration is
                  Compressed_Max_Age,
                  Compress_Minimum_File_Size,
                  Context_Lifetime, --  AWS
+                 Error_Log_Activate,
+                 Error_Syslog_Facility_Level,
                  Exchange_Certificate, --  AWS
                  Force_Client_Data_Timeout, --  AWS
                  Force_Client_Header_Timeout, --  AWS
@@ -77,6 +73,8 @@ package Yolk.Configuration is
                  Handler_XSL,
                  Hotplug_Port, --  AWS
                  Immediate_Flush,
+                 Info_Log_Activate,
+                 Info_Syslog_Facility_Level,
                  Keep_Alive_Force_Limit, --  AWS
                  Key, --  AWS
                  Line_Stack_Size, --  AWS
@@ -97,6 +95,14 @@ package Yolk.Configuration is
                  Session_Data_File,
                  Session_Lifetime, --  AWS
                  Session_Name, --  AWS
+                 SQL_Log_Activate,
+                 SQL_Syslog_Facility_Level,
+                 SQL_Cache_Log_Activate,
+                 SQL_Cache_Syslog_Facility_Level,
+                 SQL_Error_Log_Activate,
+                 SQL_Error_Syslog_Facility_Level,
+                 SQL_Select_Log_Activate,
+                 SQL_Select_Syslog_Facility_Level,
                  Status_Page, --  AWS
                  System_Templates_Path,
                  Transient_Cleanup_Interval, --  AWS
@@ -110,27 +116,15 @@ package Yolk.Configuration is
 
    Default_Values : constant Defaults_Array :=
                       (Accept_Queue_Size
-                       => TUS ("64"),
-                       Activate_AWS_Access_Log
-                       => TUS ("True"),
-                       Activate_AWS_Error_Log
-                       => TUS ("True"),
-                       Activate_Error_Log
-                       => TUS ("True"),
-                       Activate_Info_Log
-                       => TUS ("True"),
-                       Activate_SQL_Log
-                       => TUS ("True"),
-                       Activate_SQL_Cache_Log
-                       => TUS ("True"),
-                       Activate_SQL_Error_Log
-                       => TUS ("True"),
-                       Activate_SQL_Select_Log
+                       => TUS ("128"),
+                       AWS_Access_Log_Activate
                        => TUS ("True"),
                        AWS_Access_Syslog_Facility_Level
+                       => TUS ("user:info"),
+                       AWS_Error_Log_Activate
                        => TUS ("True"),
                        AWS_Error_Syslog_Facility_Level
-                       => TUS ("False"),
+                       => TUS ("user:info"),
                        Admin_Password
                        => TUS ("0ac9c9d0c0b1ee058b65ae70c9aeb3a7"),
                        Admin_URI
@@ -142,13 +136,13 @@ package Yolk.Configuration is
                        Check_URL_Validity
                        => TUS ("True"),
                        Cleaner_Client_Data_Timeout
-                       => TUS ("28800.0"),
+                       => TUS ("60.0"),
                        Cleaner_Client_Header_Timeout
                        => TUS ("7.0"),
                        Cleaner_Server_Response_Timeout
-                       => TUS ("28800.0"),
+                       => TUS ("60.0"),
                        Cleaner_Wait_For_Client_Timeout
-                       => TUS ("80.0"),
+                       => TUS ("60.0"),
                        Compressed_Cache_Directory
                        => TUS ("static_content/compressed_cache"),
                        Compressed_Max_Age
@@ -157,14 +151,18 @@ package Yolk.Configuration is
                        => TUS ("200"),
                        Context_Lifetime
                        => TUS ("28800.0"),
+                       Error_Log_Activate
+                       => TUS ("True"),
+                       Error_Syslog_Facility_Level
+                       => TUS ("user:info"),
                        Exchange_Certificate
                        => TUS ("False"),
                        Force_Client_Data_Timeout
-                       => TUS ("10800.0"),
+                       => TUS ("30.0"),
                        Force_Client_Header_Timeout
                        => TUS ("2.0"),
                        Force_Server_Response_Timeout
-                       => TUS ("10800.0"),
+                       => TUS ("30.0"),
                        Force_Wait_For_Client_Timeout
                        => TUS ("2.0"),
                        Free_Slots_Keep_Alive_Limit
@@ -193,6 +191,10 @@ package Yolk.Configuration is
                        => TUS ("8888"),
                        Immediate_Flush
                        => TUS ("False"),
+                       Info_Log_Activate
+                       => TUS ("True"),
+                       Info_Syslog_Facility_Level
+                       => TUS ("user:info"),
                        Keep_Alive_Force_Limit
                        => TUS ("0"),
                        Key
@@ -233,6 +235,22 @@ package Yolk.Configuration is
                        => TUS ("1200.0"),
                        Session_Name
                        => TUS ("Yolk"),
+                       SQL_Log_Activate
+                       => TUS ("True"),
+                       SQL_Syslog_Facility_Level
+                       => TUS ("user:info"),
+                       SQL_Cache_Log_Activate
+                       => TUS ("True"),
+                       SQL_Cache_Syslog_Facility_Level
+                       => TUS ("user:info"),
+                       SQL_Error_Log_Activate
+                       => TUS ("True"),
+                       SQL_Error_Syslog_Facility_Level
+                       => TUS ("user:info"),
+                       SQL_Select_Log_Activate
+                       => TUS ("True"),
+                       SQL_Select_Syslog_Facility_Level
+                       => TUS ("user:info"),
                        Status_Page
                        => TUS ("templates/system/aws_status.thtml"),
                        System_Templates_Path
