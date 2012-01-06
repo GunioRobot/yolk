@@ -4,7 +4,6 @@ library/*
 !build*/.gitignore
 !library/.gitignore
 
-# demo/
 # Do not track demo build objects.
 demo/build_debug/*
 demo/build_production/*
