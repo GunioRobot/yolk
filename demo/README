@@ -22,7 +22,7 @@ Obviously Yolk comes with complete documentation and a fair amount of source
 code comments, but in some cases it is easier to "get" a system if you see
 some actual working code. The Yolk demo application is such working code.
 
-Yolk is GPLv3, see COPYING3 and COPYING.RUNTIME.
+Yolk is GPLv3, see ../COPYING3 and ../COPYING.RUNTIME.
 
 --------------------
 --  Dependencies  --

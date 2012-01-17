@@ -22,7 +22,6 @@
 with "aws";
 with "florist";
 with "gnatcoll";
-with "gnatcoll_postgres";
 
 project Yolk is
 

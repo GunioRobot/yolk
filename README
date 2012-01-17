@@ -11,7 +11,10 @@ Contents of this README:
 -------------------
 
 Yolk is an Ada based web-toolbox that sits on top of AWS[1], GNATcoll[2],
-Florist[3], XML/Ada[4] and PostgreSQL[5].
+Florist[3] and XML/Ada[4]. You will also need to compile GNATcoll
+with PostgreSQL[5] support in order to try the Yolk demo. If you don't want to
+muck about with the demo, and you have no need for PostgreSQL, then you can 
+safely compile GNATcoll without support for PostgreSQL.
 
 It is important to understand that Yolk itself does very little that cannot be
 accomplished using plain AWS, GNATcoll, XML/Ada and Florist. It is, for lack of
@@ -47,7 +50,7 @@ Yolk depends on 6 things out of the box. All of these are required:
     3. GNATcoll (required version >= SVN revision 183848)
     4. Florist (required version >= florist-gpl-2011)
     5. XML/Ada (required version >= 4.1)
-    6. PostgreSQL (compile GNATcoll with PostgreSQL support)
+    6. PostgreSQL (compile GNATcoll with PostgreSQL to try the Yolk demo)
 
 Yolk might work with other versions of the above software, but those are the
 versions I've tested it with.

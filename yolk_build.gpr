@@ -22,7 +22,6 @@
 with "aws";
 with "florist";
 with "gnatcoll";
-with "gnatcoll_postgres";
 
 library project Yolk_Build is
 
