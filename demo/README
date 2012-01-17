@@ -28,7 +28,10 @@ Yolk is GPLv3, see ../COPYING3 and ../COPYING.RUNTIME.
 --  Dependencies  --
 --------------------
 
-The Yolk demo application depends on one thing: Yolk.
+The Yolk demo application depends on:
+
+    1. Yolk.
+    2. GNATcoll, compiled with PostgreSQL support.
 
 If you managed to build and install Yolk, you will most certainly be able to
 build and use the Yolk demo application.
