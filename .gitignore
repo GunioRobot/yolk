@@ -14,9 +14,6 @@ demo/build_production/*
 demo/exe/yolk_demo
 demo/exe/*.pid
 
-# Do not track the log files
-demo/exe/logs/*.log
-
 # Do not track demo session data
 demo/exe/session/*
 
