@@ -65,13 +65,17 @@ procedure Yolk_Demo is
    --    Used by AWS: Yes
    --  Default values are set in the Yolk.Configuration package.
 
-   --------------------
-   --  Start_Server  --
-   --------------------
-
    procedure Start_Server;
    --  Start the AWS server. A short message is written to the Info log trace
    --  whenever the server is started.
+
+   procedure Stop_Server;
+   --  Stop the AWS server. A short message is written to the Info log trace
+   --  whenever the server is stopped.
+
+   --------------------
+   --  Start_Server  --
+   --------------------
 
    procedure Start_Server
    is
@@ -88,10 +92,6 @@ procedure Yolk_Demo is
       AWS.Server.Start (Web_Server => Web_Server,
                         Dispatcher => Resource_Handlers,
                         Config     => Web_Server_Config);
-      --  Unfortunately we have to start the server BEFORE we start the logs.
-      --  If we start the logs first, then the log files aren't created in the
-      --  Log_File_Directory directory, but instead they are created in the
-      --  directory where the executable is.
 
       if Config.Get (AWS_Access_Log_Activate) then
          AWS.Server.Log.Start
@@ -118,10 +118,6 @@ procedure Yolk_Demo is
    -------------------
    --  Stop_Server  --
    -------------------
-
-   procedure Stop_Server;
-   --  Stop the AWS server. A short message is written to the Info log trace
-   --  whenever the server is stopped.
 
    procedure Stop_Server
    is
